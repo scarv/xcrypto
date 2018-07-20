@@ -26,3 +26,5 @@ Novel bit:
 - [Random Operand Padding](docs/operand-padding.md)
 - [Byte Addressing Registers](docs/byte-registers.md)
 - [Instruction Proposals](docs/instructions.md)
+- [Implementation Notes](docs/implementation.md)
+
