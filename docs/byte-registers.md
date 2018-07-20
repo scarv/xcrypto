@@ -16,3 +16,5 @@
   addressable would need 6 bits of register address in an instruction coding, and
   a mapping of 6-bit encodings onto 5-bit register addresses and 2-bit byte
   indexes. Or, just using the 8 argument registers, everything stays in 5-bits.
+- Having 16 byte addressable registers means an entire AES-128 round state can be
+  kept inside the CPU without needing register spills.
