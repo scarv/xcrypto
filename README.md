@@ -10,6 +10,8 @@ random operand padding as a way of reducing side channel leakage.
 Novel bit:
 - ISA support for data operand hiding by utilising the existing, unused
   parts of the datapath.
+- Actually putting this all together and making the implementation / evaluation
+  available to people.
 
 - I think this scheme should give a *net energy efficency increase* for things
   like AES, since it dramatically reduces the need for register spills to
