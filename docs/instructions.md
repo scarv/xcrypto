@@ -165,6 +165,10 @@ def LB.B(rd,rdb, rs1, imm):
     GPRS[rd][rdb] = ldata
 ```
 
+It is implementation dependent if the memory bus lines which are *not* carrying
+the requested data are also randomised. This may only be possible when the
+bus architecture can identify which byte lanes will be ignored by the CPU.
+
 ### LB.RB
 
 Identical to the existing RISC-V load byte instruction, but the loaded byte is
@@ -190,6 +194,10 @@ def LB.RB(rd, rs1, imm):
     GPRS[rd] = {24_random_bits,ldata}
 ```
 
+It is implementation dependent if the memory bus lines which are *not* carrying
+the requested data are also randomised. This may only be possible when the
+bus architecture can identify which byte lanes will be ignored by the CPU.
+
 
 ### SB.RB
 
@@ -211,3 +219,7 @@ def SB.RB(rs1, rs2,rs2b, imm):
 
     MEM[base+offset] = GPRS[rs2][rs2b]
 ```
+
+It is implementation dependent if the memory bus lines which are *not* carrying
+the requested data are also randomised. This may only be possible when the
+bus architecture can identify which byte lanes will be ignored by the CPU.
