@@ -48,7 +48,7 @@ end
 //
 
 wire        clk_req         ; // Block clock request
-wire        dut_clk = clk & clk_req;
+wire        dut_clk = clk & (clk_req || !resetn);
 
 reg         cop_req         ; // COP request valid
 wire        cop_acc         ; // COP request accept
@@ -73,6 +73,15 @@ wire [ 3:0] cop_mem_ben     ; // COP memory write byte enable.
 wire [31:0] cop_mem_wdata   ; // COP memory if write data
 reg  [31:0] cop_mem_rdata   ; // COP memory if read data
 wire [31:0] cop_mem_addr    ; // COP memory if address
+
+//
+// Setup initial DUT input values
+//
+initial begin
+
+    cop_req = 1'b0;
+
+end
 
 //
 //  Test running and control.
