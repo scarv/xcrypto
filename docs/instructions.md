@@ -37,13 +37,13 @@ Denotes the concatenation of variables `x` and `y`.
 
 ### XOR.RB
 
-Perform a logical XOR between two bytes, padding the input bytes upto 32-bits with
-random data. The result now has the correct XOR'd value in the low 8 bits, plus
-24-bits of random data.
+Perform a logical XOR between two bytes, padding the input bytes upto 32-bits
+with random data. The result now has the correct XOR'd value in the low 8
+bits, plus 24-bits of random data.
 
-If the `kr` (keep random) bit of the instruction is set, the whole 32-bit result is
-written to `GPRS[rd]`. If it is not set, then the low 8-bits are written to the 
-specified byte of the target GPR `GPRS[rd][rdb]`.
+If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
+result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
+written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
 Mnemonics:
 
@@ -72,13 +72,13 @@ def XOR.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
 
 ### AND.RB
 
-Perform a logical AND between two bytes, padding the input bytes upto 32-bits with
-random data. The result now has the correct AND'd value in the low 8 bits, plus
-24-bits of random data.
+Perform a logical AND between two bytes, padding the input bytes upto 32-bits
+with random data. The result now has the correct AND'd value in the low 8
+bits, plus 24-bits of random data.
 
-If the `kr` (keep random) bit of the instruction is set, the whole 32-bit result is
-written to `GPRS[rd]`. If it is not set, then the low 8-bits are written to the 
-specified byte of the target GPR `GPRS[rd][rdb]`.
+If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
+result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
+written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
 Mnemonics:
 
@@ -107,13 +107,13 @@ def AND.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
 
 ### OR.RB
 
-Perform a logical OR between two bytes, padding the input bytes upto 32-bits with
-random data. The result now has the correct OR'd value in the low 8 bits, plus
-24-bits of random data.
+Perform a logical OR between two bytes, padding the input bytes upto 32-bits
+with random data. The result now has the correct OR'd value in the low 8
+bits, plus 24-bits of random data.
 
-If the `kr` (keep random) bit of the instruction is set, the whole 32-bit result is
-written to `GPRS[rd]`. If it is not set, then the low 8-bits are written to the 
-specified byte of the target GPR `GPRS[rd][rdb]`.
+If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
+result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
+written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
 Mnemonics:
 
@@ -142,9 +142,9 @@ def OR.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
 
 ### LB.B
 
-Identical to the existing RISC-V load byte instruction, but the loaded byte is
-written to a specific byte of the destination register, and *all other destination
-register bytes are un-modified*.
+Identical to the existing RISC-V load byte instruction, but the loaded byte
+is written to a specific byte of the destination register, and *all other
+destination register bytes are un-modified*.
 
 Mnemonics:
 
@@ -165,15 +165,16 @@ def LB.B(rd,rdb, rs1, imm):
     GPRS[rd][rdb] = ldata
 ```
 
-It is implementation dependent if the memory bus lines which are *not* carrying
-the requested data are also randomised. This may only be possible when the
-bus architecture can identify which byte lanes will be ignored by the CPU.
+It is implementation dependent if the memory bus lines which are *not*
+carrying the requested data are also randomised. This may only be possible
+when the bus architecture can identify which byte lanes will be ignored by
+the CPU.
 
 ### LB.RB
 
-Identical to the existing RISC-V load byte instruction, but the loaded byte is
-padded with 24 random bits. The whole word is then written back to the destination
-register.
+Identical to the existing RISC-V load byte instruction, but the loaded byte
+is padded with 24 random bits. The whole word is then written back to the
+destination register.
 
 Mnemonics:
 
@@ -194,15 +195,17 @@ def LB.RB(rd, rs1, imm):
     GPRS[rd] = {24_random_bits,ldata}
 ```
 
-It is implementation dependent if the memory bus lines which are *not* carrying
-the requested data are also randomised. This may only be possible when the
-bus architecture can identify which byte lanes will be ignored by the CPU.
+It is implementation dependent if the memory bus lines which are *not*
+carrying the requested data are also randomised. This may only be possible
+when the bus architecture can identify which byte lanes will be ignored by
+the CPU.
 
 
 ### SB.RB
 
-Identical to the RISC-V store byte instruction, but can source the byte to be written
-from any byte in the source register, rather than just the lowest byte.
+Identical to the RISC-V store byte instruction, but can source the byte to be
+written from any byte in the source register, rather than just the lowest
+byte.
 
 Mnemonics:
 
@@ -220,6 +223,8 @@ def SB.RB(rs1, rs2,rs2b, imm):
     MEM[base+offset] = GPRS[rs2][rs2b]
 ```
 
-It is implementation dependent if the memory bus lines which are *not* carrying
-the requested data are also randomised. This may only be possible when the
-bus architecture can identify which byte lanes will be ignored by the CPU.
+It is implementation dependent if the memory bus lines which are *not*
+carrying the requested data are also randomised. This may only be possible
+when the bus architecture can identify which byte lanes will be ignored by
+the CPU.
+
