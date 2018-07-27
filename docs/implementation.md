@@ -20,12 +20,13 @@
     show the leakage differences.
   - As a feature, it can be removed or turned off relatively easily.
   - Will require heavier modification of the core.
+  - Only make argument registers `a0`-`a7` byte readable / writable.
 
 - Implement the new datapaths for the proposed instructions as a
   co-processor. This co-processor will have it's own memory interface.
   - This will make integration with all cores much easier.
   - Easier verification and design re-use.
 
-- Use the "custom-0" instruction encoding space for the new instructions.
+- Use the "custom-1" instruction encoding space for the new instructions.
   - Instructions can be assembled easily using the `.insn` directive
     present in the RISC-V GNU ASM tool.

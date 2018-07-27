@@ -35,6 +35,36 @@ Denotes the concatenation of variables `x` and `y`.
 
 ## Instructions
 
+The encoding space for the instructions uses the predefined `custom1` RISC-V
+opcode: `0101011`.
+
+**R-type** Instructions:
+
+XOR.RB, XOR.RBK, AND.RB, AND.RBK, OR.RB, OR.RBK
+
+```
+0000??? ----- ----- 001 ----- 0101011
+  f7     rs2   rs1  f3   rd   opcode
+```
+
+**I-type** Instructions:
+
+LB.B, LB.BK
+
+```
+------------  ----- 01? ----- 0101011
+  imm[11:0]    rs1  f3   rd   opcode
+```
+
+**S-type** Instructions:
+
+SB.B
+
+```
+ -------  ----- ----- 000  -----   0101011
+imm[11:5]  rs2   rs1  f3  imm[4:0] opcode
+```
+
 ### XOR.RB
 
 Perform a logical XOR between two bytes, padding the input bytes upto 32-bits
@@ -45,14 +75,22 @@ If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
 result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
 written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
 XOR.RB  rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 0
 XOR.RBK rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 1
 ```
 
-Functionality:
+**Encoding:**
+
+```
+XOR.RB  0000000 ----- ----- 001 ----- 0101011
+XOR.RBK 0000001 ----- ----- 001 ----- 0101011
+          f7     rs2   rs1  f3   rd   opcode
+```
+
+**Functionality:**
 
 ```
 def XOR.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
@@ -80,14 +118,22 @@ If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
 result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
 written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
 AND.RB  rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 0
 AND.RBK rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 1
 ```
 
-Functionality:
+**Encoding:** 
+
+```
+AND.RB  0000010 ----- ----- 001 ----- 0101011
+AND.RBK 0000011 ----- ----- 001 ----- 0101011
+          f7     rs2   rs1  f3   rd   opcode
+```
+
+**Functionality:**
 
 ```
 def AND.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
@@ -115,14 +161,22 @@ If the `kr` (keep random) bit of the instruction is set, the whole 32-bit
 result is written to `GPRS[rd]`. If it is not set, then the low 8-bits are
 written to the specified byte of the target GPR `GPRS[rd][rdb]`.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
 OR.RB  rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 0
 OR.RBK rd, rdb, rs1, rs1b, rs2, rs2b   # KR = 1
 ```
 
-Functionality:
+**Encoding:** 
+
+```
+OR.RB  0000100 ----- ----- 001 ----- 0101011
+OR.RBK 0000101 ----- ----- 001 ----- 0101011
+         f7     rs2   rs1  f3   rd   opcode
+```
+
+**Functionality:**
 
 ```
 def OR.RB(rd,rdb, rs1,rs1b, rs2,rs2b, kr):
@@ -146,13 +200,20 @@ Identical to the existing RISC-V load byte instruction, but the loaded byte
 is written to a specific byte of the destination register, and *all other
 destination register bytes are un-modified*.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
 LB.B  rd, rdb, imm(rs1)
 ```
 
-Functionality:
+**Encoding:**
+
+```
+LB.B    ------------  ----- 010 ----- 0101011
+          imm[11:0]    rs1  f3   rd   opcode
+```
+
+**Functionality:**
 
 ```
 def LB.B(rd,rdb, rs1, imm):
@@ -170,22 +231,29 @@ carrying the requested data are also randomised. This may only be possible
 when the bus architecture can identify which byte lanes will be ignored by
 the CPU.
 
-### LB.RB
+### LB.BK
 
 Identical to the existing RISC-V load byte instruction, but the loaded byte
 is padded with 24 random bits. The whole word is then written back to the
 destination register.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
-LB.RB  rd, rdb, imm(rs1)
+LB.BK  rd, rdb, imm(rs1)
 ```
 
-Functionality:
+**Encoding:**
 
 ```
-def LB.RB(rd, rs1, imm):
+LB.BK   ------------  ----- 011 ----- 0101011
+          imm[11:0]    rs1  f3   rd   opcode
+```
+
+**Functionality:**
+
+```
+def LB.BK(rd, rs1, imm):
     
     base   = GPRS[rs1]
     offset = signextend(imm)
@@ -194,6 +262,8 @@ def LB.RB(rd, rs1, imm):
 
     GPRS[rd] = {24_random_bits,ldata}
 ```
+
+Note that `LB.BK` operates on any GPR, and always writes an entire word.
 
 It is implementation dependent if the memory bus lines which are *not*
 carrying the requested data are also randomised. This may only be possible
@@ -207,13 +277,20 @@ Identical to the RISC-V store byte instruction, but can source the byte to be
 written from any byte in the source register, rather than just the lowest
 byte.
 
-Mnemonics:
+**Mnemonics:**
 
 ```
 LB.SB  rs2, rs2b, imm(rs1)
 ```
 
-Functionality:
+**Encoding:**
+
+```
+SB.B    -------  ----- ----- 000  -----   0101011
+       imm[11:5]  rs2   rs1  f3  imm[4:0] opcode
+```
+
+**Functionality:**
 
 ```
 def SB.RB(rs1, rs2,rs2b, imm):
