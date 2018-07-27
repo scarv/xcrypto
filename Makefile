@@ -11,3 +11,6 @@ sim:
 
 run:
 	$(MAKE) -C $(ROP_HOME)/flow/icarus run
+
+smt2:
+	$(MAKE) -C $(ROP_HOME)/flow/yosys smt2
