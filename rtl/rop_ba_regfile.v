@@ -15,18 +15,18 @@ input  wire         clk             , // Global clock
 input  wire [ 4:0]  a_reg_addr      , // Register word address
 input  wire         a_byte          , // Make byte request
 input  wire [ 1:0]  a_byte_addr     , // Which byte to ask for
-output wire [31:0]  a_rdata           // Returned word / zero padded byte
+output wire [31:0]  a_rdata         , // Returned word / zero padded byte
 
 input  wire [ 4:0]  b_reg_addr      , // Register word address
 input  wire         b_byte          , // Make byte request
 input  wire [ 1:0]  b_byte_addr     , // Which byte to ask for
-output wire [31:0]  b_rdata           // Returned word / zero padded byte
+output wire [31:0]  b_rdata         , // Returned word / zero padded byte
 
 input  wire         c_wen           , // Write enable pin
 input  wire [ 4:0]  c_reg_addr      , // Which register to write too
 input  wire         c_byte          , // Write to specific byte / whole word
 input  wire [ 1:0]  c_byte_addr     , // Which byte to write
-input  wire [31:0]  c_wdata         , // LSB aligned write data
+input  wire [31:0]  c_wdata           // LSB aligned write data
 
 );
 
@@ -69,7 +69,7 @@ generate for(r = 1; r < 32; r = r + 1) begin : g_reg
     // Is register r being written too?
     wire reg_w_en = c_wen && c_reg_addr == r;
 
-    for(b = 0; b < 4; b = b + 1) begin g_reg_byte
+    for(b = 0; b < 4; b = b + 1) begin : g_reg_byte
 
         // Storage register for byte b of register r.
         reg r_byte[7:0];
@@ -97,6 +97,6 @@ generate for(r = 1; r < 32; r = r + 1) begin : g_reg
 
     end
 
-end
+end endgenerate
 
 endmodule
