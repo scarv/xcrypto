@@ -36,12 +36,12 @@ reg resetn;
 wire        clk_req         ; // Block clock request
 wire        dut_clk = clk & (clk_req || !resetn);
 
-reg         cop_req         ; // COP request valid
+wire        cop_req         = $anyseq; // COP request valid
 wire        cop_acc         ; // COP request accept
 wire        cop_rsp         ; // COP response valid
-reg  [31:0] cop_instr_in    ; // Input instruction word
-reg  [31:0] cop_rs1         ; // Input source register 1
-reg  [31:0] cop_rs2         ; // Input source register 2
+wire [31:0] cop_instr_in    = $anyseq; // Input instruction word
+wire [31:0] cop_rs1         = $anyseq; // Input source register 1
+wire [31:0] cop_rs2         = $anyseq; // Input source register 2
 
 wire [ 2:0] cop_rd_byte     ; // Output destination byte / register.
 wire [ 4:0] cop_rd          ; // Output destination register.
@@ -52,13 +52,29 @@ wire        cop_mem_ld_error; // Memory error on load.
 wire        cop_mem_st_error; // Memory error on store.
 
 wire        cop_mem_cen     ; // COP memory if chip enable.
-reg         cop_mem_stall   ; // COP memory if stall
-reg         cop_mem_error   ; // COP memory if error
+wire        cop_mem_stall   = $anyseq; // COP memory if stall
+wire        cop_mem_error   = $anyseq; // COP memory if error
 wire        cop_mem_wen     ; // COP memory if write enable.
 wire [ 3:0] cop_mem_ben     ; // COP memory write byte enable.
 wire [31:0] cop_mem_wdata   ; // COP memory if write data
-reg  [31:0] cop_mem_rdata   ; // COP memory if read data
+wire [31:0] cop_mem_rdata   = $anyseq; // COP memory if read data
 wire [31:0] cop_mem_addr    ; // COP memory if address
+
+//
+// Formal checks.
+//
+
+always @(posedge clk) if(!resetn) begin
+
+    if(cop_req == 1'b0) begin
+        // If there is no request, the module should do nothing!
+        $assert(cop_mem_cen == 1'b0);
+        $assert(cop_wen     == 1'b0);
+        $assert(cop_rsp     == 1'b0);
+        $assert(cop_acc     == 1'b0);
+    end
+
+end
 
 
 //
