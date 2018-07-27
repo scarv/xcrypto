@@ -14,3 +14,6 @@ run:
 
 smt2:
 	$(MAKE) -C $(ROP_HOME)/flow/yosys smt2
+
+prove:
+	$(MAKE) -C $(ROP_HOME)/flow/yosys/ prove-induction

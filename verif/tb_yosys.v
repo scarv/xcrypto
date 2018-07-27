@@ -64,16 +64,59 @@ wire [31:0] cop_mem_addr    ; // COP memory if address
 // Formal checks.
 //
 
-always @(posedge clk) if(!resetn) begin
+initial assume(resetn == 1'b0);
+
+// Don't issue requests during a reset.
+always @(posedge clk) assume(!(resetn && cop_req));
+
+always @(posedge clk) if(resetn) begin
 
     if(cop_req == 1'b0) begin
         // If there is no request, the module should do nothing!
-        $assert(cop_mem_cen == 1'b0);
-        $assert(cop_wen     == 1'b0);
-        $assert(cop_rsp     == 1'b0);
-        $assert(cop_acc     == 1'b0);
+        assert(cop_mem_cen == 1'b0);
+        assert(cop_wen     == 1'b0);
+        assert(cop_rsp     == 1'b0);
+        assert(cop_acc     == 1'b0);
+
+        if ($stable(cop_req) && $stable(resetn)) begin
+            assert($stable(cop_mem_addr ));
+            assert($stable(cop_mem_wdata));
+            assert($stable(cop_mem_ben  ));
+            assert($stable(cop_wdata    ));
+            assert($stable(cop_wen      ));
+        end
     end
 
+
+    if(cop_req == 1'b1) begin
+        // There is an active request.
+
+        if(cop_instr_in[ 6: 0] == DEC_ISE_OPCODE &&
+           cop_instr_in[14:12] == DEC_F3_R) begin
+            // All R type instructions finish immediately
+            assert(cop_acc == 1'b1);
+            assert(cop_rsp == 1'b1);
+        end
+        
+        if(cop_instr_in[ 6: 0] == DEC_ISE_OPCODE &&
+           cop_instr_in[14:12] != DEC_F3_R) begin
+            // All load/store instructions take at least one cycle to
+            // finish.
+            assert(cop_acc == 1'b1);
+
+            if(!$stable(cop_req)) begin
+                assert(cop_rsp == 1'b0);
+            end else begin
+                assert(cop_rsp == !cop_mem_stall);
+            end
+        end
+
+
+    end
+
+end else begin
+    // We are in reset
+    assume(cop_req == 1'b0);
 end
 
 

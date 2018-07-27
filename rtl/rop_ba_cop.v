@@ -84,6 +84,9 @@ wire [31:0] arith_lhs; // Left hand arithmetic operand
 wire [31:0] arith_rhs; // Right hand arithmetic operand
 wire [31:0] arith_out; // Arithmetic instruction output.
 
+wire [31:0] m_rs1 = cop_rs1 & {32{cop_req}};
+wire [31:0] m_rs2 = cop_rs2 & {32{cop_req}};
+
 wire        mem_op_done; // Is the current memory operation finished?
 
 //
@@ -147,8 +150,8 @@ assign arith_lhs[31:8] = prng_out[31: 8];
 assign arith_rhs[31:8] = prng_out[55:32];
 
 // Source actual parts of data we want to compute.
-assign arith_lhs[7:0]  = cop_rs1[7:0];
-assign arith_rhs[7:0]  = cop_rs2[7:0];
+assign arith_lhs[7:0]  = m_rs1[7:0];
+assign arith_rhs[7:0]  = m_rs2[7:0];
 
 wire   arith_op_xor = dec_instr_xor_rb || dec_instr_xor_rbk;
 wire   arith_op_and = dec_instr_and_rb || dec_instr_and_rbk;
@@ -183,11 +186,11 @@ wire [31:0] lb_offset = {{20{m_mem_instr[31]}},m_mem_instr[31:20]};
 wire [31:0] mem_offset =     dec_instr_sb_b ? sb_offset :
                                               lb_offset ;
 
-wire [32:0] mem_addr   = (mem_offset + cop_rs1);
+wire [32:0] mem_addr   = (mem_offset + m_rs1);
 
 assign cop_mem_cen    = mem_op && !cop_mem_error;
 assign cop_mem_wen    = dec_instr_sb_b;
-assign cop_mem_wdata  = cop_rs2;
+assign cop_mem_wdata  = m_rs2;
 assign cop_mem_addr   = mem_addr[31:0] & 32'hFFFF_FFFC;
 assign cop_mem_ben[0] = mem_addr[1:0] == 2'b00;
 assign cop_mem_ben[1] = mem_addr[1:0] == 2'b01;
