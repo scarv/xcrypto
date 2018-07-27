@@ -24,7 +24,7 @@ input              resetn  , // Active low reset signal
 
 input              rng_en    , // Generate the next random number.
 
-output reg  [63:0] rng_random, // Current random number output
+output reg  [63:0] rng_random  // Current random number output
 
 );
 

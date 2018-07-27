@@ -169,7 +169,7 @@ assign arith_out =
 
 // Are we currently executing a memory operation?
 wire  mem_load  = dec_instr_lb_b || dec_instr_lb_bk;
-wire  mem_op    = dec_instr_sb_b || mem_load
+wire  mem_op    = dec_instr_sb_b || mem_load;
 
 wire [31:0] sb_offset = 
     {{20{cop_instr_in[31]}},cop_instr_in[31:25],cop_instr_in[11:7]};
@@ -206,7 +206,7 @@ assign cop_wen  = arith_op || (mem_op && !dec_instr_sb_b);
 assign cop_wdata= mem_op ? cop_mem_rdata :
                            arith_out     ;
 
-wire   instr_rd     = cop_instr_in[11:7];
+wire [4:0] instr_rd     = cop_instr_in[11:7];
 
 // When writing back to a byte addressable register, map the low three
 // bits of the RD encoded in the instruction onto one of the "argument"
