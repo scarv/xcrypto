@@ -72,7 +72,7 @@ generate for(r = 1; r < 32; r = r + 1) begin : g_reg
     for(b = 0; b < 4; b = b + 1) begin : g_reg_byte
 
         // Storage register for byte b of register r.
-        reg r_byte[7:0];
+        reg [7:0] r_byte;
         
         // Is byte b of register r being written too *specifically*
         wire byte_w_en = c_byte && c_byte_addr == b;
