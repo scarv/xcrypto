@@ -93,9 +93,9 @@ wire        mem_op_done; // Is the current memory operation finished?
 //
 
 // Opcode decode fields for all RISC-V instructions, include custom ones.
-wire    dec_opcode = cop_instr_in[6:0];
-wire    dec_f3     = cop_instr_in[14:12];
-wire    dec_f7     = cop_instr_in[31:25];
+wire [6:0]   dec_opcode = cop_instr_in[6:0];
+wire [2:0]   dec_f3     = cop_instr_in[14:12];
+wire [6:0]   dec_f7     = cop_instr_in[31:25];
 
 // Offered instruction is in the ISE major opcode space?
 wire    dec_in_ise = cop_req && dec_opcode == DEC_ISE_OPCODE;
@@ -171,10 +171,13 @@ assign arith_out =
 wire  mem_load  = dec_instr_lb_b || dec_instr_lb_bk;
 wire  mem_op    = dec_instr_sb_b || mem_load;
 
-wire [31:0] sb_offset = 
-    {{20{cop_instr_in[31]}},cop_instr_in[31:25],cop_instr_in[11:7]};
+// Operand masking for memory instructions.
+wire [31:0] m_mem_instr = {32{mem_op}} & cop_instr_in;
 
-wire [31:0] lb_offset = {{20{cop_instr_in[31]}},cop_instr_in[31:20]};
+wire [31:0] sb_offset = 
+    {{20{m_mem_instr[31]}},m_mem_instr[31:25],m_mem_instr[11:7]};
+
+wire [31:0] lb_offset = {{20{m_mem_instr[31]}},m_mem_instr[31:20]};
 
 // Compute the target address for the memory.
 wire [31:0] mem_offset =     dec_instr_sb_b ? sb_offset :
@@ -182,7 +185,7 @@ wire [31:0] mem_offset =     dec_instr_sb_b ? sb_offset :
 
 wire [32:0] mem_addr   = (mem_offset + cop_rs1);
 
-assign cop_mem_cen    = (mem_op || cop_mem_stall) && !cop_mem_error;
+assign cop_mem_cen    = mem_op && !cop_mem_error;
 assign cop_mem_wen    = dec_instr_sb_b;
 assign cop_mem_wdata  = cop_rs2;
 assign cop_mem_addr   = mem_addr[31:0] & 32'hFFFF_FFFC;
