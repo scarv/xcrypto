@@ -191,6 +191,10 @@ the value in {\tt SHAMT}.
 The \ASM{XORT}, \ASM{ANDT}, and \ASM{ORT} instructions compute the
 appropriate bitwise result of their operation between the {\tt rs1} and
 {\tt rs2} operands. The result is then written into {\tt rd}.
+\designnote{Originally the bitwise instructions were to have twiddle
+functionality built-in, removing the need for a dedicated twiddle instruction.
+The encoding space required however did not fit well with the existing RISC-V
+register address and function field layout, and was extremely expensive.}
 
 The difference between these instructions and their standard RISC-V
 counterparts is that they operate on the $\CPR$ register file, and so
