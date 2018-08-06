@@ -2,12 +2,103 @@
 This section specifies the ISE in terms of it's state and the instructions
 which operate on that state.
 
-\subsection{State}
+\subsection{Notation}
 
 Lorem ipsum doler set amet.
+
+
+\subsection{State}
+
+The ISE introduces an additional $16$ by $32$-bit register file.
+These registers are referenced in the following ways:
+
+\begin{itemize}
+\item $\CPR$ for the whole register file.
+\item $\CPR[*][i]$ for the four byte row $i$ of the register file,
+    where $0 <= i < 16$.
+\item $\CPR[*][i][j]$ for byte $j$ of row $i$ of the register file, where
+    $0 <= i < 16, 0 <= j < 3$.
+\end{itemize}
 
 
 \subsection{Instructions}
 
+All instructions occupy the \encspace encoding space of the RISC-V opcode
+map, using the associated \encopcode prefix for bits $6:0$ of each 
+instruction.
+
+\subsubsection{Move Instructions}
+\paragraph{MVCOP[.t]}
+Move a $\CPR$ register to a $\GPR$ register. The transpose $.t$ varient moves
+a column of four bytes from the $\CPR$ to the specified $\GPR$ register.
+
+\begin{itemize}
+\item \INST{MVCOP gpr, cpr}{
+    $\GPR[*][\OPER{gpr}] \ASN \CPR[*][\OPER{cpr}]$
+}
+
+\item \INST{MVCOP.t gpr, cpr, b}{
+    $\GPR[*][\OPER{gpr}] \ASN (\CPR[*][\OPER{cpr + 3}][\OPER{i}]  \
+                         \CONS \CPR[*][\OPER{cpr + 2}][\OPER{i}]  \
+                         \CONS \CPR[*][\OPER{cpr + 1}][\OPER{i}]  \
+                         \CONS \CPR[*][\OPER{cpr + 0}][\OPER{i}]  )$
+}
+\end{itemize}
+
+
+\paragraph{MVGPR[.t]}
+
+The complement of \ASM{MVCOP}.
+Move a $\GPR$ register to a $\CPR$ register. The transpose $.t$ varient moves
+the specified $\GPR$ register toa column of four bytes in the $\CPR$.
+
+\begin{itemize}
+\item \INST{MVGPR cpr, gpr}{
+    $\CPR[*][\OPER{cpr}] \ASN \GPR[*][\OPER{gpr}]$
+}
+
+\item \INST{MVCOP.t cpr, b, gpr}{
+    $\CPR[*][\OPER{cpr}][0] \ASN \GPR[*][\OPER{gpr}][ 7: 0]$ \\
+    $\CPR[*][\OPER{cpr}][1] \ASN \GPR[*][\OPER{gpr}][15: 8]$ \\
+    $\CPR[*][\OPER{cpr}][2] \ASN \GPR[*][\OPER{gpr}][23:16]$ \\
+    $\CPR[*][\OPER{cpr}][3] \ASN \GPR[*][\OPER{gpr}][31:24]$
+}
+\end{itemize}
+
+\subsubsection{Packed Arithmetic}
+\paragraph{ADD.p}
+\paragraph{SUB.p}
+\paragraph{MUL.p}
+\paragraph{XOR.p}
+\paragraph{AND.p}
+\paragraph{ OR.p}
+\paragraph{SLL.p}
+\paragraph{SRL.p}
+\paragraph{ROT.p}
+
+\subsubsection{Multi-precision Arithmetic}
+\paragraph{ADD.m}
+\paragraph{SUB.m}
+\paragraph{ACC.m}
+\paragraph{MAC.m}
+\paragraph{SLL.m}
+\paragraph{SRL.m}
+\paragraph{EQU.m}
+\paragraph{LTU.m}
+\paragraph{GTU.m}
+
+\subsubsection{Byte Manipulation}
+\paragraph{TWI[.t]}
+
+\subsubsection{Memory Access}
+\paragraph{SCATTER[.t]}
+\paragraph{GATHER[.t]}
+\paragraph{LBU}
+\paragraph{SB}
+
+
+\subsection{Instruction Encodings}
+
 Lorem ipsum doler set amet.
+
 
