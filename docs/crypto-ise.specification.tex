@@ -9,17 +9,74 @@ Lorem ipsum doler set amet.
 
 \subsection{State}
 
-The ISE introduces an additional $16$ by $32$-bit register file.
-These registers are referenced in the following ways:
+The ISE introduces an additional $16$ by $32$-bit register file. It can
+be accessed in {\em standard} mode or {\em transposed} mode.
 
-\begin{itemize}
-\item $\CPR$ for the whole register file.
-\item $\CPR[*][i]$ for the four byte row $i$ of the register file,
-    where $0 <= i < 16$.
-\item $\CPR[*][i][j]$ for byte $j$ of row $i$ of the register file, where
-    $0 <= i < 16, 0 <= j < 3$.
-\end{itemize}
+The addressing is shown diagramatically in table \ref{tab:state-addr}.
 
+Because there are 32 RISC-V $\GPR$s and only 16 ISE $\CPR$s, the spare
+register address bit in the ISE instruction encodings is used to determine
+whether to access the register file in standard or transpose mode. In this
+case, the {\em top} 16 register addresses access transpose mode, while the
+{\em bottom} 16 register addresses access standard mode. \designnote{
+    This introduces some complexities with regard to forwarding register
+    values in a pipelined design, since one must identify on a per-byte
+    basis whether a value must be forwarded, rather than on a per-word
+    basis.
+}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l l l l|}
+\hline
+\multicolumn{1}{|l|}{2:0} & \textbf{ } & \textbf{ } & \textbf{ } & \textbf{ } \\ \hline
+\textbf{0 }   & r0.3       & r0.2       & r0.1       & r0.0       \\ \hline
+\textbf{1 }   & r1.3       & r1.2       & r1.1       & r1.0       \\ \hline
+\textbf{2 }   & r2.3       & r2.2       & r2.1       & r2.0       \\ \hline
+\textbf{3 }   & r3.3       & r3.2       & r3.1       & r3.0       \\ \hline
+\textbf{4 }   & r4.3       & r4.2       & r4.1       & r4.0       \\ \hline
+\textbf{5 }   & r5.3       & r5.2       & r5.1       & r5.0       \\ \hline
+\textbf{6 }   & r6.3       & r6.2       & r6.1       & r6.0       \\ \hline
+\textbf{7 }   & r7.3       & r7.2       & r7.1       & r7.0       \\ \hline
+\textbf{8 }   & r8.3       & r8.2       & r8.1       & r8.0       \\ \hline
+\textbf{9 }   & r9.3       & r9.2       & r9.1       & r9.0       \\ \hline
+\textbf{10}   & r10.3      & r10.2      & r10.1      & r10.0      \\ \hline
+\textbf{11}   & r11.3      & r11.2      & r11.1      & r11.0      \\ \hline
+\textbf{12}   & r12.3      & r12.2      & r12.1      & r12.0      \\ \hline
+\textbf{13}   & r13.3      & r13.2      & r13.1      & r13.0      \\ \hline
+\textbf{14}   & r14.3      & r14.2      & r14.1      & r14.0      \\ \hline
+\textbf{15}   & r15.3      & r15.2      & r15.1      & r15.0      \\ \hline
+\end{tabular}
+\quad
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{1}{|l|}{2:1 \textbackslash 1:0} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\multirow{4}{*}{\textbf{0}}                  & r3.0       & r2.0       & r1.0       & r0.0       \\
+                                             & r3.1       & r2.1       & r1.1       & r0.1       \\
+                                             & r3.2       & r2.2       & r1.2       & r0.2       \\
+                                             & r3.3       & r2.3       & r1.3       & r0.3       \\ \hline
+\multirow{4}{*}{\textbf{1}}                  & r7.0       & r6.0       & r5.0       & r4.0       \\
+                                             & r7.1       & r6.1       & r5.1       & r4.1       \\
+                                             & r7.2       & r6.2       & r5.2       & r4.2       \\
+                                             & r7.3       & r6.3       & r5.3       & r4.3       \\ \hline
+\multirow{4}{*}{\textbf{2}}                  & r11.0      & r10.0      & r9.0       & r8.0       \\
+                                             & r11.1      & r10.1      & r9.1       & r8.1       \\
+                                             & r11.2      & r10.2      & r9.2       & r8.2       \\
+                                             & r11.3      & r10.3      & r9.3       & r8.3       \\ \hline
+\multirow{4}{*}{\textbf{3}}                  & r15.0      & r14.0      & r13.0      & r12.0      \\
+                                             & r15.1      & r14.1      & r13.1      & r12.1      \\
+                                             & r15.2      & r14.2      & r13.2      & r12.2      \\
+                                             & r15.3      & r14.3      & r13.3      & r12.3      \\ \hline
+\end{tabular}
+\caption{These two table show the per-byte layoute in standard and transposed
+addressing modes. On the left is the standard addressing mode, where the
+4-bit register address corresponds to rows in the table. On the right
+is the transposed mode, where registers are addressed in four rows of
+four columns.}
+\label{tab:state-addr}
+\end{table}
+
+Unlike the RISC-V $\GPR$s, the zeroth $\CPR$ is not tied to zero.
 
 \subsection{Instructions}
 
@@ -28,20 +85,13 @@ map, using the associated \encopcode prefix for bits $6:0$ of each
 instruction.
 
 \subsubsection{Move Instructions}
-\paragraph{MVCOP[.t]}
-Move a $\CPR$ register to a $\GPR$ register. The transpose $.t$ varient moves
-a column of four bytes from the $\CPR$ to the specified $\GPR$ register.
+\paragraph{MVCOP}
+
+Move a $\CPR$ register to a $\GPR$ register.
 
 \begin{itemize}
 \item \INST{MVCOP gpr, cpr}{
     $\GPR[*][\OPER{gpr}] \ASN \CPR[*][\OPER{cpr}]$
-}
-
-\item \INST{MVCOP.t gpr, cpr, b}{
-    $\GPR[*][\OPER{gpr}] \ASN (\CPR[*][\OPER{cpr + 3}][\OPER{i}]  \
-                         \CONS \CPR[*][\OPER{cpr + 2}][\OPER{i}]  \
-                         \CONS \CPR[*][\OPER{cpr + 1}][\OPER{i}]  \
-                         \CONS \CPR[*][\OPER{cpr + 0}][\OPER{i}]  )$
 }
 \end{itemize}
 
@@ -49,32 +99,132 @@ a column of four bytes from the $\CPR$ to the specified $\GPR$ register.
 \paragraph{MVGPR[.t]}
 
 The complement of \ASM{MVCOP}.
-Move a $\GPR$ register to a $\CPR$ register. The transpose $.t$ varient moves
-the specified $\GPR$ register toa column of four bytes in the $\CPR$.
+Move a $\GPR$ register to a $\CPR$ register.
 
 \begin{itemize}
 \item \INST{MVGPR cpr, gpr}{
     $\CPR[*][\OPER{cpr}] \ASN \GPR[*][\OPER{gpr}]$
 }
-
-\item \INST{MVCOP.t cpr, b, gpr}{
-    $\CPR[*][\OPER{cpr}][0] \ASN \GPR[*][\OPER{gpr}][ 7: 0]$ \\
-    $\CPR[*][\OPER{cpr}][1] \ASN \GPR[*][\OPER{gpr}][15: 8]$ \\
-    $\CPR[*][\OPER{cpr}][2] \ASN \GPR[*][\OPER{gpr}][23:16]$ \\
-    $\CPR[*][\OPER{cpr}][3] \ASN \GPR[*][\OPER{gpr}][31:24]$
-}
 \end{itemize}
 
 \subsubsection{Packed Arithmetic}
-\paragraph{ADD.p}
-\paragraph{SUB.p}
-\paragraph{MUL.p}
-\paragraph{XOR.p}
-\paragraph{AND.p}
-\paragraph{ OR.p}
-\paragraph{SLL.p}
-\paragraph{SRL.p}
-\paragraph{ROT.p}
+\paragraph{ADD.px}
+
+The instruction \ASM{ADD.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and adds corresponding fields together
+ignoring any carry bits.
+
+No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptons.
+
+\begin{itemize}
+\item \INST{ADD.p8, rd, rs1, rs2}{
+$\CPR[*][rd][ 3: 0] \ASN \CPR[*][rs1][ 3: 0] + \CPR[*][rs2][ 3: 0]$\\
+$\CPR[*][rd][ 7: 4] \ASN \CPR[*][rs1][ 7: 4] + \CPR[*][rs2][ 7: 4]$\\
+$\CPR[*][rd][11: 8] \ASN \CPR[*][rs1][11: 8] + \CPR[*][rs2][11: 8]$\\
+$\CPR[*][rd][15:12] \ASN \CPR[*][rs1][15:12] + \CPR[*][rs2][15:12]$\\
+$\CPR[*][rd][19:16] \ASN \CPR[*][rs1][19:16] + \CPR[*][rs2][19:16]$\\
+$\CPR[*][rd][23:20] \ASN \CPR[*][rs1][23:20] + \CPR[*][rs2][23:20]$\\
+$\CPR[*][rd][25:24] \ASN \CPR[*][rs1][25:24] + \CPR[*][rs2][25:24]$\\
+$\CPR[*][rd][31:26] \ASN \CPR[*][rs1][31:26] + \CPR[*][rs2][31:26]$\\
+}
+\item \INST{ADD.p4, rd, rs1, rs2}{
+$\CPR[*][rd][ 7: 0] \ASN \CPR[*][rs1][ 7: 0] + \CPR[*][rs2][ 7: 0]$\\
+$\CPR[*][rd][15: 8] \ASN \CPR[*][rs1][15: 8] + \CPR[*][rs2][15: 8]$\\
+$\CPR[*][rd][23:16] \ASN \CPR[*][rs1][23:16] + \CPR[*][rs2][23:16]$\\
+$\CPR[*][rd][31:24] \ASN \CPR[*][rs1][31:24] + \CPR[*][rs2][31:24]$\\
+}
+\item \INST{ADD.p2, rd, rs1, rs2}{
+$\CPR[*][rd][15: 0] \ASN \CPR[*][rs1][15: 0] + \CPR[*][rs2][15: 0]$\\
+$\CPR[*][rd][31:16] \ASN \CPR[*][rs1][31:16] + \CPR[*][rs2][31:16]$\\
+}
+\item \INST{ADD.p1, rd, rs1, rs2}{
+$\CPR[*][rd] \ASN \CPR[*][rs1] + \CPR[*][rs2]$\\
+}
+\end{itemize}
+
+\paragraph{SUB.px}
+
+The instruction \ASM{SUB.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and subtracts the {\tt rs2} fields from
+the corresponding {\tt rs1} fields.
+
+No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptons.
+
+\paragraph{MUL.px}
+
+The instruction \ASM{MUL.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and multiplies the {\tt rs2} fields by
+the corresponding {\tt rs1} fields.
+
+No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptons.
+
+\paragraph{SLL.px}
+
+The instruction \ASM{SLL.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and shifts the {\tt rs1} fields left
+by the value in {\tt SHAMT}.
+
+If the distance to shift by is greater than or equal to the size of each
+packed field, then the result of the \ASM{SLL.px} instruction is
+{\em implementation dependent}.
+
+\paragraph{SRL.px}
+
+The instruction \ASM{SRL.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and shifts the {\tt rs1} fields right
+by the value in {\tt SHAMT}.
+
+If the distance to shift by is greater than or equal to the size of each
+packed field, then the result of the \ASM{SRL.px} instruction is
+{\em implementation dependent}.
+
+\paragraph{ROT.px}
+
+The instruction \ASM{ROT.px} treats the source and destination registers as
+1,2,4 or 8 unsigned, packed fields, and rotates the {\tt rs2} fields by
+the value in {\tt SHAMT}.
+
+\subsubsection{Twiddle Arithmetic Instructions}
+
+\paragraph{XORT, ANDT, ORT}
+
+The \ASM{XOR}, \ASM{AND}, and \ASM{OR} instructions first compute the
+appropriate bitwise result of their operation between the {\tt rs1} and
+{\tt rs2} operands. The bytes of the result are then {\em twiddled}, and
+can be re-arranged in a 1-to-1 permutation such that any byte of the
+intermediate result can be placed in any other byte position of the final
+result.
+
+\begin{itemize}
+\item \INST{XORT rd, rs1, rs2, b0, b1, b2, b3}{
+    $ I \ASN \CPR[*][rs1] \XOR \CPR[*][rs2] $ \\
+    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
+    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
+    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
+    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+}
+\item \INST{ANDT rd, rs1, rs2, b0, b1, b2, b3}{
+    $ I \ASN \CPR[*][rs1] \AND \CPR[*][rs2] $ \\
+    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
+    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
+    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
+    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+}
+\item \INST{ORT rd, rs1, rs2, b0, b1, b2, b3}{
+    $ I \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
+    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
+    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
+    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
+    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+}
+\end{itemize}
+
+For all twiddle arithmetic instructions, the {\tt bX} fields are two bits
+wide.
+
+Note that by having {\tt rs1} the same as {\tt rs2}, the twiddle
+arithmetic instructions can be used to arbitrarily re-arrange bytes
+within words. They can also be used to duplicate bytes within words.
 
 \subsubsection{Multi-precision Arithmetic}
 \paragraph{ADD.m}
@@ -86,9 +236,6 @@ the specified $\GPR$ register toa column of four bytes in the $\CPR$.
 \paragraph{EQU.m}
 \paragraph{LTU.m}
 \paragraph{GTU.m}
-
-\subsubsection{Byte Manipulation}
-\paragraph{TWI[.t]}
 
 \subsubsection{Memory Access}
 \paragraph{SCATTER[.t]}
