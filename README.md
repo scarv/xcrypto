@@ -1,8 +1,10 @@
 
 # Crypto ISE Co-processor
 
-This project looks to build a cryptographic accelerator, in a similar style to a
-floating-point co-processor.
+This project looks to build a cryptographic accelerator, in a similar style
+to a floating-point co-processor.
+
+![Drawing Board](./docs/drawing-board.png)
 
 ## Getting Started
 
