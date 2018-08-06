@@ -184,49 +184,49 @@ The instruction \ASM{ROT.px} treats the source and destination registers as
 1,2,4 or 8 unsigned, packed fields, and rotates the {\tt rs2} fields by
 the value in {\tt SHAMT}.
 
-\subsubsection{Twiddle Arithmetic Instructions}
+\subsubsection{Bitwise and Twiddle Instructions}
 
 \paragraph{XORT, ANDT, ORT}
 
-The \ASM{XOR}, \ASM{AND}, and \ASM{OR} instructions first compute the
+The \ASM{XORT}, \ASM{ANDT}, and \ASM{ORT} instructions compute the
 appropriate bitwise result of their operation between the {\tt rs1} and
-{\tt rs2} operands. The bytes of the result are then {\em twiddled}, and
-can be re-arranged in a 1-to-1 permutation such that any byte of the
-intermediate result can be placed in any other byte position of the final
-result.
+{\tt rs2} operands. The result is then written into {\tt rd}.
+
+The difference between these instructions and their standard RISC-V
+counterparts is that they operate on the $\CPR$ register file, and so
+support the transposed addressing modes.
 
 \begin{itemize}
-\item \INST{XORT rd, rs1, rs2, b0, b1, b2, b3}{
-    $ I \ASN \CPR[*][rs1] \XOR \CPR[*][rs2] $ \\
-    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
-    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
-    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
-    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+\item \INST{XORT rd, rs1, rs2}{
+    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \XOR \CPR[*][rs2] $ \\
 }
-\item \INST{ANDT rd, rs1, rs2, b0, b1, b2, b3}{
-    $ I \ASN \CPR[*][rs1] \AND \CPR[*][rs2] $ \\
-    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
-    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
-    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
-    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+\item \INST{ANDT rd, rs1, rs2}{
+    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \AND \CPR[*][rs2] $ \\
 }
-\item \INST{ORT rd, rs1, rs2, b0, b1, b2, b3}{
-    $ I \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
-    $ \CPR[*][\OPER{rd}][0] \ASN I[\OPER{b0}] $ \\
-    $ \CPR[*][\OPER{rd}][1] \ASN I[\OPER{b1}] $ \\
-    $ \CPR[*][\OPER{rd}][2] \ASN I[\OPER{b2}] $ \\
-    $ \CPR[*][\OPER{rd}][3] \ASN I[\OPER{b3}] $ 
+\item \INST{ORT rd, rs1, rs2}{
+    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
 }
 \end{itemize}
-
-For all twiddle arithmetic instructions, the {\tt bX} fields are two bits
-wide. \designnote{ It may yet become nessesary to use a more compact
-encoding for the {\tt bX} fields. The alternative is to force
-{\tt rs2} to be the same as {\tt rd} and use an I-type encoding.}
 
 Note that by having {\tt rs1} the same as {\tt rs2}, the twiddle
 arithmetic instructions can be used to arbitrarily re-arrange bytes
 within words. They can also be used to duplicate bytes within words.
+
+\paragraph{TWID}
+
+The \ASM{TWID} instruction is used to {\em twiddle} bytes within words.
+It arbitrarily maps the bytes of a source word onto the bytes of a
+destination word.
+
+\begin{itemize}
+\item \INST{TWID rd, rs1, b0, b1, b2, b3}{
+    $ \CPR[*][\OPER{rd}][0] \ASN \CPR[*][\OPER{rs1}][\OPER{b0}] $ \\
+    $ \CPR[*][\OPER{rd}][1] \ASN \CPR[*][\OPER{rs1}][\OPER{b1}] $ \\
+    $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
+    $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
+}
+\end{itemize}
+
 
 \subsubsection{Multi-precision Arithmetic}
 \paragraph{ADD.m}
