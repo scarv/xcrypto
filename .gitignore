@@ -14,6 +14,9 @@ docs/*.log
 docs/*.toc
 docs/*.pdf
 docs/*.out
+docs/*.bcf
+docs/*.run.xml
+
 docs/diagrams/*.eps
 docs/diagrams/*.pdf
 
