@@ -1,0 +1,40 @@
+
+This section introduces some of the main concepts and ideas which are
+integrated into the ISE.
+
+\subsection{Byte Addressable Register Files}
+
+Most CPU general purpose register files (GPRs) are accessed in machine-word
+width chunks. This makes many operations involving sub-word-width data
+cumbersome or inefficent.
+
+For example, loading a series of non-contiguous bytes into memory requires
+not just loading of the bytes, but shifting and or'ing of the loaded bytes
+into the target register.
+
+A byte addressable register file does not have this problem. It can simply
+load a data byte directly into the correct part of a register, so long
+as the instruction is capable of specifying which byte to put the result in.
+
+\subsection{Packed ALU Operations}
+
+It is common for some CPUs / DSP extensions to allow packed ALU operations.
+This is essentialy using the normal GPRs to do SIMD operations on multiple
+pieces of data which are either a halfword or a byte in size.
+
+\subsection{Transposed Register Accesses}
+
+In \cite{jung2000register}, the authors describe an alternate addressing mode
+for GPRs which allows them to be accessed row wise (as normal) and
+column wise. This can potentially speed up operations which rely on both
+column and row wise access to some state matrix.
+
+\subsection{Scatter / Gather}
+
+Many algorithms rely on bringing together non-contiguous data from memory,
+operating on it as a unit, then placing the results non-contiguously back
+into memory. Scater / Gather instructions are varients of normal load/store
+instructions which allow a set of offsets (rather that just one) to be
+specified and the data at each offset loaded/stored into a single word
+as approproate.
+

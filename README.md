@@ -1,5 +1,5 @@
 
-# Crypto Co-processor
+# Crypto ISE Co-processor
 
 This project looks to build a cryptographic accelerator, in a similar style to a
 floating-point co-processor.

@@ -16,6 +16,7 @@ docs/*.pdf
 docs/*.out
 docs/*.bcf
 docs/*.run.xml
+docs/*.bak
 
 docs/diagrams/*.eps
 docs/diagrams/*.pdf
