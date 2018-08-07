@@ -244,10 +244,101 @@ destination word.
 \paragraph{GTU.m}
 
 \subsubsection{Memory Access}
+
+\paragraph{LBU.cr, LHU.cr, LW.cr}
+
+The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
+the standard RISC-V varients but with the following differences:
+
+\begin{itemize}
+\item They support transposition in their destination $\CPR$ register.
+\item The halfword and byte varients can specify which halfword or byte of
+      the destination register they are targeting.
+\item The base address is taken from the normal RISC-V $\GPR$ set, while the
+      target register is always in the $\CPR$ set.
+\end{itemize}
+
+These instructions will raise a {\em load address misaligned} instruction
+if: the final source address is not aligned to the data type the instruction
+is loading {\em and} the implementation does not support misaligned accesses.
+The general rule here is that the \ASM{L*.cr} instructions should behave in
+the same way as their RISC-V cousins in terms of exception handling,
+interrupt behaviour and atomicity rules.
+
+\begin{itemize}
+\item \INST{LBU.cr  rd, b, imm(rs1)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+    $\CPR[*][rd][b] \ASN \MEM[*][addr]$
+}
+\item \INST{LHU.cr  rd, h, imm(rs1)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+    $b_1 \ASN  (2'00_2 \IOR h) \LSH 1$ \\
+    $b_2 \ASN  b_1 \IOR 1'1_2$ \\
+    $\CPR[*][rd][b_2] \ASN \MEM[*][addr + 1]$ \\
+    $\CPR[*][rd][b_1] \ASN \MEM[*][addr + 0]$
+}
+\item \INST{LW.cr  rd, imm(rs1)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+    $\CPR[*][rd][rb + 3] \ASN \MEM[*][addr+3]$ \\
+    $\CPR[*][rd][rb + 2] \ASN \MEM[*][addr+2]$ \\
+    $\CPR[*][rd][rb + 1] \ASN \MEM[*][addr+1]$ \\
+    $\CPR[*][rd][rb + 0] \ASN \MEM[*][addr+0]$
+}
+\end{itemize}
+
+\note{
+    The notation above assumes a byte addressed memory, where {\tt db}
+    is a two bit byte address and {\tt dh} is a one bit halfword address.
+}
+
+\paragraph{SB.cr, SH.cr, SW.cr}
+
+The \ASM{SB.cr}, \ASM{SH.cr} and \ASM{SW.cr} instructions are analogous to
+the standard RISC-V varients but with the following differences:
+
+\begin{itemize}
+\item They support transposition in their source data $\CPR$ register.
+\item The halfword and byte varients can specify which halfword or byte of
+      the source register they store.
+\item The base address is taken from the normal RISC-V $\GPR$ set, while the
+      source data register is always in the $\CPR$ set.
+\end{itemize}
+
+These instructions will raise a {\em store address misaligned} instruction
+if: the final source address is not aligned to the data type the instruction
+is storing {\em and} the implementation does not support misaligned accesses.
+The general rule here is that the \ASM{L*.cr} instructions should behave in
+the same way as their RISC-V cousins in terms of exception handling,
+interrupt behaviour and atomicity rules.
+
+\begin{itemize}
+\item \INST{SB.cr  rs1, b, imm(rs2)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+     $\MEM[*][addr] \ASN \CPR[*][rs2][b]$
+}
+\item \INST{SH.cr  rs1, h, imm(rs2)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+    $b_1 \ASN  (2'00_2 \IOR h) \LSH 1$ \\
+    $b_2 \ASN  b_1 \IOR 1'1_2$ \\
+    $\MEM[*][addr + 1] \ASN \CPR[*][rs2][b_2]$ \\
+    $\MEM[*][addr + 0] \ASN \CPR[*][rs2][b_1]$
+}
+\item \INST{SW.cr  rs1, imm(rs2)}{
+    $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
+    $\MEM[*][addr+3] \ASN \CPR[*][rd][rb + 3]$ \\
+    $\MEM[*][addr+2] \ASN \CPR[*][rd][rb + 2]$ \\
+    $\MEM[*][addr+1] \ASN \CPR[*][rd][rb + 1]$ \\
+    $\MEM[*][addr+0] \ASN \CPR[*][rd][rb + 0]$
+}
+\end{itemize}
+
+\note{
+    The notation above assumes a byte addressed memory, where {\tt b}
+    is a two bit byte address and {\tt h} is a one bit halfword address.
+}
+
 \paragraph{SCATTER[.t]}
 \paragraph{GATHER[.t]}
-\paragraph{LBU}
-\paragraph{SB}
 
 
 \subsection{Instruction Encodings}
