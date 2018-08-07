@@ -78,6 +78,24 @@ four columns.}
 
 Unlike the RISC-V $\GPR$s, the zeroth $\CPR$ is not tied to zero.
 
+\subsubsection{ABI Standards}
+
+All of the state added in the Crypto ISE is considered {\em callee save}
+for the purposes of the ABI. That is, if {\tt function1} calls 
+{\tt function2}, then {\tt function2} is responsible for saving to the
+stack any $\CPR$ registers it needs, and poping them off before returning.
+
+Registers which are pushed to the stack in standard or transpose
+way must be popped back using the same mode they were stored with.
+
+The $\CPR$ registers $0..4$ are considered as function arguments
+and/or return values. Due to the standard / transpose addressing modes, this
+means that registers $16..19$  (which alias $0..4$ as per table \ref{tab:state-addr}) are also considered function arguments and/or return values. It is the
+programmer's responsibility to correctly interpret results as being in
+transposed or standard form.
+
+All other $\CPR$ registers are considered temporaries.
+
 \subsection{Instructions}
 
 All instructions occupy the \encspace encoding space of the RISC-V opcode
