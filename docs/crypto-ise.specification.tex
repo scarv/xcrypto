@@ -246,6 +246,9 @@ destination word.
     $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
     $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
 }
+
+Twiddle can be used to broadcast bytes within words and re-order bytes
+across rows and columns via the transpose addressing mode.
 \end{itemize}
 
 
@@ -354,9 +357,88 @@ interrupt behaviour and atomicity rules.
     is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
-\paragraph{SCATTER[.t]}
-\paragraph{GATHER[.t]}
+\paragraph{SCATTER, GATHER}
 
+The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
+sbox lookup instructions. They allow four separate lookups per instruction
+into a 256 entry LUT stored in memory. \ASM{GATHER} will move the looked-up
+values from memory into a register, while \ASM{SCATTER} will move bytes of a
+register word back into the LUT in memory.
+
+The address $a_x$ of each byte to be loaded or stored is computed by
+adding an offset byte $x$ from the {\tt offsets} $\CPR$ register, and
+adding it to the $base$ $\GPR$ register.
+
+Both instructions use the $\GPR$s to source their base address, while the
+offset indicies into the LUT come from the $\CPR$ registers. This mirrors
+how the ISE load and store instructions compute their addresses.
+
+Both instructions support transpose and standard addressing modes for the
+offset and destination registers. The base address register, since it is
+a $\GPR$, supports only standard mode addressing, but can be any one of the
+$\GPR$s.
+
+\begin{itemize}
+\item \INST{GATHER rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+    $\CPR[*][rd][0] \ASN \MEM[*][a_0]$ \\
+    $\CPR[*][rd][1] \ASN \MEM[*][a_1]$ \\
+    $\CPR[*][rd][2] \ASN \MEM[*][a_2]$ \\
+    $\CPR[*][rd][3] \ASN \MEM[*][a_3]$
+}
+\item \INST{SCATTER rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+    $ \MEM[*][a_0] \ASN \CPR[*][rs][0]$ \\
+    $ \MEM[*][a_1] \ASN \CPR[*][rs][1]$ \\
+    $ \MEM[*][a_2] \ASN \CPR[*][rs][2]$ \\
+    $ \MEM[*][a_3] \ASN \CPR[*][rs][3]$
+}
+\end{itemize}
+
+\note{
+    The scatter instruction requires three register file reads.
+    Because the reads are split across the $\GPR$ and $\CPR$ registers,
+    no {\em extra} ports are needed on either register file beyond the
+    standard two-read-one-write set.
+}
+
+An implementation may perform the memory accesses in any order. The accesses
+appear as {\em byte} accesses, so the value of the {\em base} register
+need not be word or halfword aligned.
+
+If any of the memory accesses cause
+a {\em load access fault, load page fault, store page fault} or
+{\em store access fault} then the address of the access which caused the
+exception is written to the {\tt MTVAL} csr. The value taken by the
+destination register bytes should an exception occur at any point in the
+instruction is {\em implementation dependent}.
+
+Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
+though in order to service an interrupt. If the instructions are aborted
+early, the value taken by the destination register bytes is {\em
+implementation dependent}. The implementation is responsible for ensuring
+that the {\tt EPC} register is set appropriately depending on whether the
+interrupt is taken during, or at the end of, the instruction.
+\designnote{Implementation of these instructions consider the impact of
+shared memory systems, since it will be possible for other agents in the
+system to access memory during the execution of this instruction. In systems
+posessing a cache, programmers must be mindful that these instructions
+can cause odd behaviour due to the non-linear access pattern the instruction
+creates. All accesses will be within 256 bytes of one another however.}
+
+The rationale for these instructions is two fold. They help with code density,
+since atleast four instructions worth of work (eight in RV32) can now be done
+in one instruction. They can also help with energy efficiency, since fewer
+instructions need to be fetched and travel through an execution pipeline in
+order to achieve the same goal. They are not designed to enhance performance
+(in terms of cycles to complete an operation), but this may be a side-effect
+of some implementations.
 
 \newpage
 \subsection{Instruction Listings}
@@ -388,8 +470,8 @@ SRL.p2  rd, rs1, rs2 \quad\quad\quad LW.cr   rd, imm(rs1)            \\
 SRL.p4  rd, rs1, rs2 \quad\quad\quad SB.cr   rs2, imm(rs1)           \\
 SRL.p8  rd, rs1, rs2 \quad\quad\quad SH.cr   rs2, imm(rs1)           \\
 ROT.p1  rd, rs1, rs2 \quad\quad\quad SW.cr   rs2, imm(rs1)           \\
-ROT.p2  rd, rs1, rs2 \quad\quad\quad SCATTER TBD                     \\
-ROT.p4  rd, rs1, rs2 \quad\quad\quad GATHER  TBD                     \\
+ROT.p2  rd, rs1, rs2 \quad\quad\quad SCATTER rs, base, offsets       \\
+ROT.p4  rd, rs1, rs2 \quad\quad\quad GATHER  rd, base, offsets       \\
 ROT.p8  rd, rs1, rs2 \quad\quad\quad 
 }
 
@@ -459,8 +541,10 @@ The table below shows the encodings for all instructions in the ISE
 \BB{7}{ 0011000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
 \BB{7}{ 0011001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
 \BB{7}{ 0011010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
-\BB{7}{ 0011011 }& \BB{5}{00001}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
-\BB{7}{ 0011011 }& \BB{5}{00010}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
+\BB{7}{ 0011011 }& \BB{5}{00000}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
+\BB{7}{ 0011011 }& \BB{5}{00001}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
+\BB{7}{ 0011100 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER} \\
+\BB{7}{ 0011101 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
 \end{bytefield}
 
 \begin{bytefield}[endianness=big]{32}
