@@ -11,7 +11,8 @@ ${TARGETS} : %.pdf : %.tex
 all      : ${TARGETS}
 
 clean    :
-	@rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.pdf *.version *.xml
+	@rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.pdf *.version *.xml *.toc \
+        *.bak
 
 spotless : clean
 	@rm -f *.pdf 

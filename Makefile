@@ -7,3 +7,8 @@ endif
 .PHONY: docs
 docs:
 	$(MAKE) -C $(COP_HOME)/docs all
+
+.PHONY: clean
+clean:
+	$(MAKE) -C $(COP_HOME)/docs clean
+
