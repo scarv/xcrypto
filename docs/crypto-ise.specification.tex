@@ -321,10 +321,21 @@ the standard RISC-V varients but with the following differences:
 \item The halfword and byte varients can specify which halfword or byte of
       the source register they store.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
-      source data register is always in the $\CPR$ set.
+      source data / destination register is always in the $\CPR$ set.
+      \designnote{
+        The decision to source the base address from the $\GPR$ set rather
+        than a $\CPR$ was because all of the RISC-V address calculation
+        instructions work perfectly well on the $\GPR$s and there is no sense
+        in duplicating that functionality for this ISE. This free's up
+        encoding space, and lets the $\CPR$ state be used for the compute
+        work it was designed for rather than mundane address calculation.
+        While care must be
+        taken to avoid hazards between the difference register sets, we
+        belive this decision makes sense overall.
+      }
 \end{itemize}
 
-These instructions will raise a {\em store address misaligned} instruction
+These instructions will raise a {\em store address misaligned} exception
 if: the final source address is not aligned to the data type the instruction
 is storing {\em and} the implementation does not support misaligned accesses.
 The general rule here is that the \ASM{L*.cr} instructions should behave in
@@ -430,7 +441,8 @@ shared memory systems, since it will be possible for other agents in the
 system to access memory during the execution of this instruction. In systems
 posessing a cache, programmers must be mindful that these instructions
 can cause odd behaviour due to the non-linear access pattern the instruction
-creates. All accesses will be within 256 bytes of one another however.}
+creates. All accesses will be within 256 bytes of one another however,
+which may motivate particular alignment of the LUT based on cache-line size}
 
 The rationale for these instructions is two fold. They help with code density,
 since atleast four instructions worth of work (eight in RV32) can now be done
@@ -446,36 +458,58 @@ of some implementations.
 This section lists the assembly notation for the instructions, as well as
 their encodings.
 
-\subsubsection{Listing}
-
 {\tt
-ADD.p1  rd, rs1, rs2 \quad\quad\quad MVCOP   rd, rs1                 \\
-ADD.p2  rd, rs1, rs2 \quad\quad\quad MVGPR   rd, rs1                 \\
-ADD.p4  rd, rs1, rs2 \quad\quad\quad XORT    rd, rs1, rs2            \\
-ADD.p8  rd, rs1, rs2 \quad\quad\quad ANDT    rd, rs1, rs2            \\
-SUB.p1  rd, rs1, rs2 \quad\quad\quad ORT     rd, rs1, rs2            \\
-SUB.p2  rd, rs1, rs2 \quad\quad\quad TWID    rd, rs1, b0, b1, b2, b3 \\
-SUB.p4  rd, rs1, rs2 \quad\quad\quad ADD.m   TBD                     \\
-SUB.p8  rd, rs1, rs2 \quad\quad\quad SUB.m   TBD                     \\
-MUL.p1  rd, rs1, rs2 \quad\quad\quad ACC.m   TBD                     \\
-MUL.p2  rd, rs1, rs2 \quad\quad\quad MAC.m   TBD                     \\
-MUL.p4  rd, rs1, rs2 \quad\quad\quad SLL.m   TBD                     \\
-MUL.p8  rd, rs1, rs2 \quad\quad\quad SRL.m   TBD                     \\
-SLL.p1  rd, rs1, rs2 \quad\quad\quad EQU.m   TBD                     \\
-SLL.p2  rd, rs1, rs2 \quad\quad\quad LTU.m   TBD                     \\
-SLL.p4  rd, rs1, rs2 \quad\quad\quad GTU.m   TBD                     \\
-SLL.p8  rd, rs1, rs2 \quad\quad\quad LBU.cr  rd, imm(rs1)            \\
-SRL.p1  rd, rs1, rs2 \quad\quad\quad LHU.cr  rd, imm(rs1)            \\
-SRL.p2  rd, rs1, rs2 \quad\quad\quad LW.cr   rd, imm(rs1)            \\
-SRL.p4  rd, rs1, rs2 \quad\quad\quad SB.cr   rs2, imm(rs1)           \\
-SRL.p8  rd, rs1, rs2 \quad\quad\quad SH.cr   rs2, imm(rs1)           \\
-ROT.p1  rd, rs1, rs2 \quad\quad\quad SW.cr   rs2, imm(rs1)           \\
-ROT.p2  rd, rs1, rs2 \quad\quad\quad SCATTER rs, base, offsets       \\
-ROT.p4  rd, rs1, rs2 \quad\quad\quad GATHER  rd, base, offsets       \\
-ROT.p8  rd, rs1, rs2 \quad\quad\quad 
+ADD.p1  rd, rs1, rs2            \\
+ADD.p2  rd, rs1, rs2            \\
+ADD.p4  rd, rs1, rs2            \\
+ADD.p8  rd, rs1, rs2            \\
+SUB.p1  rd, rs1, rs2            \\
+SUB.p2  rd, rs1, rs2            \\
+SUB.p4  rd, rs1, rs2            \\
+SUB.p8  rd, rs1, rs2            \\
+MUL.p1  rd, rs1, rs2            \\
+MUL.p2  rd, rs1, rs2            \\
+MUL.p4  rd, rs1, rs2            \\
+MUL.p8  rd, rs1, rs2            \\
+SLL.p1  rd, rs1, rs2            \\
+SLL.p2  rd, rs1, rs2            \\
+SLL.p4  rd, rs1, rs2            \\
+SLL.p8  rd, rs1, rs2            \\
+SRL.p1  rd, rs1, rs2            \\
+SRL.p2  rd, rs1, rs2            \\
+SRL.p4  rd, rs1, rs2            \\
+SRL.p8  rd, rs1, rs2            \\
+ROT.p1  rd, rs1, rs2            \\
+ROT.p2  rd, rs1, rs2            \\
+ROT.p4  rd, rs1, rs2            \\
+ROT.p8  rd, rs1, rs2            \\
+MVCOP   rd, rs1                 \\
+MVGPR   rd, rs1                 \\
+XORT    rd, rs1, rs2            \\
+ANDT    rd, rs1, rs2            \\
+ORT     rd, rs1, rs2            \\
+TWID    rd, rs1, b0, b1, b2, b3 \\
+ADD.m   TBD                     \\
+SUB.m   TBD                     \\
+ACC.m   TBD                     \\
+MAC.m   TBD                     \\
+SLL.m   TBD                     \\
+SRL.m   TBD                     \\
+EQU.m   TBD                     \\
+LTU.m   TBD                     \\
+GTU.m   TBD                     \\
+LBU.cr  rd, imm(rs1)            \\
+LHU.cr  rd, imm(rs1)            \\
+LW.cr   rd, imm(rs1)            \\
+SB.cr   rs2, imm(rs1)           \\
+SH.cr   rs2, imm(rs1)           \\
+SW.cr   rs2, imm(rs1)           \\
+SCATTER rs, base, offsets       \\
+GATHER  rd, base, offsets       \\
 }
 
-\subsubsection{Encoding}
+\newpage
+\subsection{Instruction Encodings}
 
 The following standard RISC-V instruction encoding types are used in this
 ISE:
@@ -508,9 +542,32 @@ ISE:
 \end{bytefield}
 \end{center}
 
-The table below shows the encodings for all instructions in the ISE
+The tables below shows the encodings for all instructions in the ISE
 
 \begin{center}
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{12}{imm[11:0]}& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 100 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 101 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 110 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
+
+\BB{4}{0000}& 
+\BB{2}{b0}&
+\BB{2}{b1}&
+\BB{2}{b2}&
+\BB{2}{b3}&
+\BB{5}{rs1  }& \BB{3}{ 111 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{TWID  } \\
+\end{bytefield}
+  
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{7}{imm[11:5]}& \BH{5}{rs1  }& \BH{5}{rs2  }& \BH{3}{func3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 001 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.cr} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 010 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.cr} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 011 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.cr} \\
+\end{bytefield}
+
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
 \BH{7}{func7}& \BH{5}{rs2  }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{R-type} \\
@@ -545,28 +602,5 @@ The table below shows the encodings for all instructions in the ISE
 \BB{7}{ 0011011 }& \BB{5}{00001}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
 \BB{7}{ 0011100 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER} \\
 \BB{7}{ 0011101 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
-\end{bytefield}
-
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{12}{imm[11:0]}& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 100 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 101 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 110 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
-
-\BB{4}{0000}& 
-\BB{2}{b0}&
-\BB{2}{b1}&
-\BB{2}{b2}&
-\BB{2}{b3}&
-\BB{5}{rs1  }& \BB{3}{ 111 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{TWID  } \\
-\end{bytefield}
-  
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{7}{imm[11:5]}& \BH{5}{rs1  }& \BH{5}{rs2  }& \BH{3}{func3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 001 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.cr} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 010 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.cr} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 011 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.cr} \\
 \end{bytefield}
 \end{center}
