@@ -20,9 +20,8 @@ whether to access the register file in standard or transpose mode. In this
 case, the {\em top} 16 register addresses access transpose mode, while the
 {\em bottom} 16 register addresses access standard mode. \designnote{
     This introduces some complexities with regard to forwarding register
-    values in a pipelined design, since one must identify on a per-byte
-    basis whether a value must be forwarded, rather than on a per-word
-    basis.
+    values in a pipelined design, since one must identify hazards on a 
+    per-byte basis, rather than on a per-word basis.
 }
 
 \begin{table}[h!]
