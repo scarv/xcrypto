@@ -77,6 +77,11 @@ four columns.}
 
 Unlike the RISC-V $\GPR$s, the zeroth $\CPR$ is not tied to zero.
 
+\note{
+A smart programmer will remember to clear their $\CPR$s of any secret data
+before returning execution to some part of the system they did not write.
+}
+
 \subsubsection{ABI Standards}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
@@ -471,18 +476,18 @@ MUL.p1  rd, rs1, rs2            \\
 MUL.p2  rd, rs1, rs2            \\
 MUL.p4  rd, rs1, rs2            \\
 MUL.p8  rd, rs1, rs2            \\
-SLL.p1  rd, rs1, rs2            \\
-SLL.p2  rd, rs1, rs2            \\
-SLL.p4  rd, rs1, rs2            \\
-SLL.p8  rd, rs1, rs2            \\
-SRL.p1  rd, rs1, rs2            \\
-SRL.p2  rd, rs1, rs2            \\
-SRL.p4  rd, rs1, rs2            \\
-SRL.p8  rd, rs1, rs2            \\
-ROT.p1  rd, rs1, rs2            \\
-ROT.p2  rd, rs1, rs2            \\
-ROT.p4  rd, rs1, rs2            \\
-ROT.p8  rd, rs1, rs2            \\
+SLL.p1  rd, rs1, shamt          \\
+SLL.p2  rd, rs1, shamt          \\
+SLL.p4  rd, rs1, shamt          \\
+SLL.p8  rd, rs1, shamt          \\
+SRL.p1  rd, rs1, shamt          \\
+SRL.p2  rd, rs1, shamt          \\
+SRL.p4  rd, rs1, shamt          \\
+SRL.p8  rd, rs1, shamt          \\
+ROT.p1  rd, rs1, shamt          \\
+ROT.p2  rd, rs1, shamt          \\
+ROT.p4  rd, rs1, shamt          \\
+ROT.p8  rd, rs1, shamt          \\
 MVCOP   rd, rs1                 \\
 MVGPR   rd, rs1                 \\
 XORT    rd, rs1, rs2            \\
@@ -583,18 +588,18 @@ The tables below shows the encodings for all instructions in the ISE
 \BB{7}{ 0001001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p2 } \\
 \BB{7}{ 0001010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p4 } \\
 \BB{7}{ 0001011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p8 } \\
-\BB{7}{ 0001100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p1 } \\
-\BB{7}{ 0001101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p2 } \\
-\BB{7}{ 0001110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p4 } \\
-\BB{7}{ 0001111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p8 } \\
-\BB{7}{ 0010000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p1 } \\
-\BB{7}{ 0010001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p2 } \\
-\BB{7}{ 0010010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p4 } \\
-\BB{7}{ 0010011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p8 } \\
-\BB{7}{ 0010100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p1 } \\
-\BB{7}{ 0010101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p2 } \\
-\BB{7}{ 0010110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p4 } \\
-\BB{7}{ 0010111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p8 } \\
+\BB{7}{ 0001100 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p1 } \\
+\BB{7}{ 0001101 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p2 } \\
+\BB{7}{ 0001110 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p4 } \\
+\BB{7}{ 0001111 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p8 } \\
+\BB{7}{ 0010000 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p1 } \\
+\BB{7}{ 0010001 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p2 } \\
+\BB{7}{ 0010010 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p4 } \\
+\BB{7}{ 0010011 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p8 } \\
+\BB{7}{ 0010100 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p1 } \\
+\BB{7}{ 0010101 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p2 } \\
+\BB{7}{ 0010110 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p4 } \\
+\BB{7}{ 0010111 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p8 } \\
 \BB{7}{ 0011000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
 \BB{7}{ 0011001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
 \BB{7}{ 0011010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
