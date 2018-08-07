@@ -341,8 +341,131 @@ interrupt behaviour and atomicity rules.
 \paragraph{GATHER[.t]}
 
 
-\subsection{Instruction Encodings}
+\newpage
+\subsection{Instruction Listings}
 
-Lorem ipsum doler set amet.
+This section lists the assembly notation for the instructions, as well as
+their encodings.
 
+\subsubsection{Listing}
 
+{\tt
+ADD.p1  rd, rs1, rs2 \quad\quad\quad MVCOP   rd, rs1                 \\
+ADD.p2  rd, rs1, rs2 \quad\quad\quad MVGPR   rd, rs1                 \\
+ADD.p4  rd, rs1, rs2 \quad\quad\quad XORT    rd, rs1, rs2            \\
+ADD.p8  rd, rs1, rs2 \quad\quad\quad ANDT    rd, rs1, rs2            \\
+SUB.p1  rd, rs1, rs2 \quad\quad\quad ORT     rd, rs1, rs2            \\
+SUB.p2  rd, rs1, rs2 \quad\quad\quad TWID    rd, rs1, b0, b1, b2, b3 \\
+SUB.p4  rd, rs1, rs2 \quad\quad\quad ADD.m   TBD                     \\
+SUB.p8  rd, rs1, rs2 \quad\quad\quad SUB.m   TBD                     \\
+MUL.p1  rd, rs1, rs2 \quad\quad\quad ACC.m   TBD                     \\
+MUL.p2  rd, rs1, rs2 \quad\quad\quad MAC.m   TBD                     \\
+MUL.p4  rd, rs1, rs2 \quad\quad\quad SLL.m   TBD                     \\
+MUL.p8  rd, rs1, rs2 \quad\quad\quad SRL.m   TBD                     \\
+SLL.p1  rd, rs1, rs2 \quad\quad\quad EQU.m   TBD                     \\
+SLL.p2  rd, rs1, rs2 \quad\quad\quad LTU.m   TBD                     \\
+SLL.p4  rd, rs1, rs2 \quad\quad\quad GTU.m   TBD                     \\
+SLL.p8  rd, rs1, rs2 \quad\quad\quad LBU.cr  rd, imm(rs1)            \\
+SRL.p1  rd, rs1, rs2 \quad\quad\quad LHU.cr  rd, imm(rs1)            \\
+SRL.p2  rd, rs1, rs2 \quad\quad\quad LW.cr   rd, imm(rs1)            \\
+SRL.p4  rd, rs1, rs2 \quad\quad\quad SB.cr   rs2, imm(rs1)           \\
+SRL.p8  rd, rs1, rs2 \quad\quad\quad SH.cr   rs2, imm(rs1)           \\
+ROT.p1  rd, rs1, rs2 \quad\quad\quad SW.cr   rs2, imm(rs1)           \\
+ROT.p2  rd, rs1, rs2 \quad\quad\quad SCATTER TBD                     \\
+ROT.p4  rd, rs1, rs2 \quad\quad\quad GATHER  TBD                     \\
+ROT.p8  rd, rs1, rs2 \quad\quad\quad 
+}
+
+\subsubsection{Encoding}
+
+The following standard RISC-V instruction encoding types are used in this
+ISE:
+
+\begin{center}
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+  \BB{7}{func7}
+& \BB{5}{rs2  }
+& \BB{5}{rs1  }
+& \BB{3}{func3}
+& \BB{5}{rd   }
+& \BB{8}{opcode}
+& \BB{8}{R-type} \\
+
+  \BB{12}{imm[11:0]}
+& \BB{5}{rs1  }
+& \BB{3}{func3}
+& \BB{5}{rd   }
+& \BB{8}{opcode}
+& \BB{8}{I-type} \\
+  
+  \BB{7}{imm[11:5]}
+& \BB{5}{rs1  }
+& \BB{5}{rs2  }
+& \BB{3}{func3}
+& \BB{5}{imm[4:0]}
+& \BB{8}{opcode}
+& \BB{8}{S-type} \\
+\end{bytefield}
+\end{center}
+
+The table below shows the encodings for all instructions in the ISE
+
+\begin{center}
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{7}{func7}& \BH{5}{rs2  }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{R-type} \\
+\BB{7}{ 0000000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p1 } \\
+\BB{7}{ 0000001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p2 } \\
+\BB{7}{ 0000010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p4 } \\
+\BB{7}{ 0000011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p8 } \\
+\BB{7}{ 0000100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p1 } \\
+\BB{7}{ 0000101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p2 } \\
+\BB{7}{ 0000110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p4 } \\
+\BB{7}{ 0000111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p8 } \\
+\BB{7}{ 0001000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p1 } \\
+\BB{7}{ 0001001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p2 } \\
+\BB{7}{ 0001010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p4 } \\
+\BB{7}{ 0001011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p8 } \\
+\BB{7}{ 0001100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p1 } \\
+\BB{7}{ 0001101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p2 } \\
+\BB{7}{ 0001110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p4 } \\
+\BB{7}{ 0001111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p8 } \\
+\BB{7}{ 0010000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p1 } \\
+\BB{7}{ 0010001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p2 } \\
+\BB{7}{ 0010010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p4 } \\
+\BB{7}{ 0010011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p8 } \\
+\BB{7}{ 0010100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p1 } \\
+\BB{7}{ 0010101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p2 } \\
+\BB{7}{ 0010110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p4 } \\
+\BB{7}{ 0010111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p8 } \\
+\BB{7}{ 0011000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
+\BB{7}{ 0011001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
+\BB{7}{ 0011010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
+\BB{7}{ 0011011 }& \BB{5}{00001}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
+\BB{7}{ 0011011 }& \BB{5}{00010}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
+\end{bytefield}
+
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{12}{imm[11:0]}& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 100 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 101 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
+\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 110 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
+
+\BB{4}{0000}& 
+\BB{2}{b0}&
+\BB{2}{b1}&
+\BB{2}{b2}&
+\BB{2}{b3}&
+\BB{5}{rs1  }& \BB{3}{ 111 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{TWID  } \\
+\end{bytefield}
+  
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{7}{imm[11:5]}& \BH{5}{rs1  }& \BH{5}{rs2  }& \BH{3}{func3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 001 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.cr} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 010 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.cr} \\
+\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 011 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.cr} \\
+\end{bytefield}
+\end{center}
