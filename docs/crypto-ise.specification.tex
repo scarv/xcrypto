@@ -28,7 +28,7 @@ case, the {\em top} 16 register addresses access transpose mode, while the
 \centering
 \begin{tabular}{|l|l l l l|}
 \hline
-\multicolumn{1}{|l|}{2:0} & \textbf{ } & \textbf{ } & \textbf{ } & \textbf{ } \\ \hline
+\multicolumn{1}{|l|}{3:0} & \textbf{ } & \textbf{ } & \textbf{ } & \textbf{ } \\ \hline
 \textbf{0 }   & r0.3       & r0.2       & r0.1       & r0.0       \\ \hline
 \textbf{1 }   & r1.3       & r1.2       & r1.1       & r1.0       \\ \hline
 \textbf{2 }   & r2.3       & r2.2       & r2.1       & r2.0       \\ \hline
@@ -49,7 +49,7 @@ case, the {\em top} 16 register addresses access transpose mode, while the
 \quad
 \begin{tabular}{|l|l|l|l|l|}
 \hline
-\multicolumn{1}{|l|}{2:1 \textbackslash 1:0} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\multicolumn{1}{|l|}{3:2 \textbackslash 1:0} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
 \multirow{4}{*}{\textbf{0}} & r19.0   & r18.0   & r17.0   & r16.0   \\
                             & r19.1   & r18.1   & r17.1   & r16.1   \\
                             & r19.2   & r18.2   & r17.2   & r16.2   \\
@@ -251,22 +251,139 @@ destination word.
     $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
     $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
 }
+\end{itemize}
 
 Twiddle can be used to broadcast bytes within words and re-order bytes
 across rows and columns via the transpose addressing mode.
-\end{itemize}
 
 
 \subsubsection{Multi-precision Arithmetic}
-\paragraph{ADD.m}
-\paragraph{SUB.m}
-\paragraph{ACC.m}
-\paragraph{MAC.m}
-\paragraph{SLL.m}
-\paragraph{SRL.m}
-\paragraph{EQU.m}
-\paragraph{LTU.m}
-\paragraph{GTU.m}
+
+Public key cryptography relies heavily on modular arithmetic over very
+large integers. The following instructions are designed to allow
+operations over arbitrarily large integers, using software based carry
+and overflow mechanisms. This mirrors how the base RISC-V ISA currently
+supports carry and overflow.
+
+These instructions use two destination registers and between three
+and four source registers. Hence, some restrictions are placed on how
+registers can be addressed.
+
+\begin{itemize}
+\item The instructions can only access the register file in standard
+mode, not transpose mode. That is, only register addresses $0$ to $15$
+are accessible, according to table \ref{tab:state-addr}.
+
+\item Destination registers are referred too as contiguous, even-odd
+pairs. This means any two adjacently addressed registers, where the
+first register address is even (zero being considered even for this
+discussion) and the second address is one more than the first can be
+used as the destination for a multi-precision instructions. \designnote{
+    This scheme means the function to compute the actual source registers
+    from the minimum 3-bit encoding is simply to append either {\tt 00}
+    or {\tt 01} depending on the even or odd address respectivley.
+}
+
+For example, $(0,1), (2,3)$ and $(10,11)$ are all valid
+pairs of destination registers. $(5,6)$ is not valid because the first
+is an odd number. $(6,5)$ is not valid because $6 > 5$. The pair $(6,9)$
+is not valid because $6$ and $9$ are not adjacent.
+\end{itemize}
+
+\paragraph{ADD.mp}
+
+The \ASM{ADD.mp} instruction takes three source registers and two
+destination registers. The intermediate result $t_0$ is a $32$
+bit integer, comprising the unsigned sum of the $32$ bit values in
+{\tt rs1} and {\tt rs2}. The final $33$ bit result $t_1$ is the signed
+sum of $t_0$ and the $32$ bit value in $rs3$.
+
+The low $32$ bits of $t_1$ are written to {\tt rd1}, while the carry out
+bit is written to {\tt rd2}.
+
+\begin{itemize}
+\item \INST{ADD.mp (rd1, rd2), rs1, rs2, rs3     }{
+$t \ASN ( \GPR[*][\OPER{rs}_1] \SOP{+}{u}     \GPR[*][\OPER{rs}_2] ) + \GPR[*][\OPER{rs}_3] $\\
+$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+}
+\end{itemize}
+
+\paragraph{SUB.mp}
+
+\begin{itemize}
+\item \INST{SUB.mp (rd1, rd2), rs1, rs2, rs3     }{
+$t                  \ASN ( \GPR[*][\OPER{rs}_1] \SOP{+}{u}     \GPR[*][\OPER{rs}_2] ) - \GPR[*][\OPER{rs}_3]$\\
+$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+}
+\end{itemize}
+
+\paragraph{ACC.mp}
+
+\begin{itemize}
+\item \INST{ACC.mp (rd1, rd2), rs1, rs2, rs3     }{
+$t \ASN ( \GPR[*][\OPER{rs}_1] \CONS \GPR[*][\OPER{rs}_0] ) + \GPR[*][\OPER{rs}_2] + \GPR[*][\OPER{rs}_3] $\\
+$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
+$\GPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
+}
+\end{itemize}
+
+\paragraph{MAC.mp}
+
+\begin{itemize}
+\item \INST{MAC.mp (rd1, rd2), rs1, rs2, rs3}{
+$t                  \ASN ( \GPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \GPR[*][\OPER{rs}_2] ) + \GPR[*][\OPER{rs}_3]$\\
+$\GPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\GPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
+}
+\end{itemize}
+
+\note{Originally this instruction was to have a fourth source register operand
+which would have been added into the final accumulate. It was removed because it
+did not fit sensibly into the encoding space.}
+
+\paragraph{SLL.mp}
+
+\begin{itemize}
+\item \INST{SLL.mp (rd1, rd2), rs1, rs2, rs3     }{
+$\GPR[*][\OPER{rd}_2] \ASN \GPR[*][\OPER{rs}_1] \LSH      \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \GPR[*][\OPER{rs}_3]$\\
+$\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH \W - \GPR[*][\OPER{rs}_1]_{\log_2(\W)-1 \ldots 0}$\\
+}
+\end{itemize}
+
+\paragraph{SRL.mp}
+
+\begin{itemize}
+\item \INST{SRL.mp (rd1, rd2), rs1, rs2, rs3     }{
+$\GPR[*][\OPER{rd}_2] \ASN \GPR[*][\OPER{rs}_1] \LSH \W - \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0}$\\
+$\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH      \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \GPR[*][\OPER{rs}_3]$\\
+}
+\end{itemize}
+
+\paragraph{EQU.mp}
+
+\begin{itemize}
+\item \INST{EQU.mp rd1,      rs1, rs2, rs3     }{
+$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3]  $\\
+}
+\end{itemize}
+
+\paragraph{LTU.mp}
+
+\begin{itemize}
+\item \INST{LTU.mp rd1,      rs1, rs2, rs3     }{
+$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] < \GPR[*][\OPER{rs}_2] ) \IOR ( ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3] )$
+}
+\end{itemize}
+
+\paragraph{GTU.mp}
+
+\begin{itemize}
+\item \INST{GTU.mp rd1,      rs1, rs2, rs3     }{
+$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] > \GPR[*][\OPER{rs}_2] ) \IOR ( ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3] )$
+}
+\end{itemize}
 
 \subsubsection{Memory Access}
 
@@ -517,7 +634,8 @@ GATHER  rd, base, offsets       \\
 \subsection{Instruction Encodings}
 
 The following standard RISC-V instruction encoding types are used in this
-ISE:
+ISE. We also define a new {\em multi-register} or {\em MR} instruction
+format, which is used for the multi-precision arithmetic instructions.
 
 \begin{center}
 \begin{bytefield}[endianness=big]{32}
@@ -547,7 +665,7 @@ ISE:
 \end{bytefield}
 \end{center}
 
-The tables below shows the encodings for all instructions in the ISE
+The tables below show the encodings for all instructions in the ISE.
 
 \begin{center}
 \begin{bytefield}[endianness=big]{32}
@@ -572,6 +690,36 @@ The tables below shows the encodings for all instructions in the ISE
 \BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 010 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.cr} \\
 \BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 011 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.cr} \\
 \end{bytefield}
+
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{6}{func6   }& \BH{2}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}& \BH{3}{func3}& \BH{2}{rs3}& \BH{3}{rdm}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
+\BB{6}{ 100000 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ADD.mp } \\
+\BB{6}{ 100010 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SUB.mp } \\
+\BB{6}{ 100100 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ACC.mp } \\
+\BB{6}{ 100110 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
+\BB{6}{ 101000 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SLL.mp } \\
+\BB{6}{ 101010 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SRL.mp } \\
+\end{bytefield}
+
+\note{For the MR-type instructions \ASM{ADD.mp}, \ASM{SUB.mp}, \ASM{ACC.mp},
+\ASM{MAC.mp}, \ASM{SLL.mp} and \ASM{SRL.mp} the {\tt rs3} register address
+is created by concatenating the 2-bit {\tt B} field with the 2-bit {\tt A}
+field to create the 4-bit register address.}
+\bigskip
+
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{5}{func5  }& \BH{3}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}&\BH{3}{func3}& \BH{1}{rs3} &\BH{4}{rd}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
+\BB{5}{ 11000 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ EQU.mp } \\
+\BB{5}{ 11001 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ LTU.mp } \\
+\BB{5}{ 11010 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ GTU.mp } \\
+\end{bytefield}
+
+\note{For the MR-type instructions \ASM{EQU.mp}, \ASM{LTU.mp} and 
+\ASM{GTU.mp}, the {\tt rs3} register address is created by concatenating
+the 3-bit {\tt B} field with the 1-bit {\tt A} field to create the
+4-bit register address.}
 
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
