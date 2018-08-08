@@ -611,15 +611,15 @@ XORT    rd, rs1, rs2            \\
 ANDT    rd, rs1, rs2            \\
 ORT     rd, rs1, rs2            \\
 TWID    rd, rs1, b0, b1, b2, b3 \\
-ADD.m   TBD                     \\
-SUB.m   TBD                     \\
-ACC.m   TBD                     \\
-MAC.m   TBD                     \\
-SLL.m   TBD                     \\
-SRL.m   TBD                     \\
-EQU.m   TBD                     \\
-LTU.m   TBD                     \\
-GTU.m   TBD                     \\
+ADD.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+SUB.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+ACC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+MAC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+SLL.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+SRL.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+EQU.mp  rd1,         rs1, rs2, rs3 \\
+LTU.mp  rd1,         rs1, rs2, rs3 \\
+GTU.mp  rd1,         rs1, rs2, rs3 \\
 LBU.cr  rd, imm(rs1)            \\
 LHU.cr  rd, imm(rs1)            \\
 LW.cr   rd, imm(rs1)            \\
