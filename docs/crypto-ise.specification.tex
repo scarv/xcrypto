@@ -9,20 +9,12 @@ Lorem ipsum doler set amet.
 
 \subsection{State}
 
-The ISE introduces an additional $16$ by $32$-bit register file. It can
-be accessed in {\em standard} mode or {\em transposed} mode.
+The ISE introduces an additional $16$ by $32$-bit register file which
+is used exclusivley by the instructions in this ISE. It is to the
+crypto ISE what the floating-point register file is to the RISC-V
+F extension.
 
 The addressing is shown diagramatically in table \ref{tab:state-addr}.
-
-Because there are 32 RISC-V $\GPR$s and only 16 ISE $\CPR$s, the spare
-register address bit in the ISE instruction encodings is used to determine
-whether to access the register file in standard or transpose mode. In this
-case, the {\em top} 16 register addresses access transpose mode, while the
-{\em bottom} 16 register addresses access standard mode. \designnote{
-    This introduces some complexities with regard to forwarding register
-    values in a pipelined design, since one must identify hazards on a 
-    per-byte basis, rather than on a per-word basis.
-}
 
 \begin{table}[h!]
 \centering
@@ -46,32 +38,9 @@ case, the {\em top} 16 register addresses access transpose mode, while the
 \textbf{14}   & r14.3      & r14.2      & r14.1      & r14.0      \\ \hline
 \textbf{15}   & r15.3      & r15.2      & r15.1      & r15.0      \\ \hline
 \end{tabular}
-\quad
-\begin{tabular}{|l|l|l|l|l|}
-\hline
-\multicolumn{1}{|l|}{3:2 \textbackslash 1:0} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\multirow{4}{*}{\textbf{0}} & r19.0   & r18.0   & r17.0   & r16.0   \\
-                            & r19.1   & r18.1   & r17.1   & r16.1   \\
-                            & r19.2   & r18.2   & r17.2   & r16.2   \\
-                            & r19.3   & r18.3   & r17.3   & r16.3   \\ \hline
-\multirow{4}{*}{\textbf{1}} & r23.0   & r22.0   & r21.0   & r20.0   \\
-                            & r23.1   & r22.1   & r21.1   & r20.1   \\
-                            & r23.2   & r22.2   & r21.2   & r20.2   \\
-                            & r23.3   & r22.3   & r21.3   & r20.3   \\ \hline
-\multirow{4}{*}{\textbf{2}} & r27.0   & r26.0   & r25.0   & r24.0   \\
-                            & r27.1   & r26.1   & r25.1   & r24.1   \\
-                            & r27.2   & r26.2   & r25.2   & r24.2   \\
-                            & r27.3   & r26.3   & r25.3   & r24.3   \\ \hline
-\multirow{4}{*}{\textbf{3}} & r31.0   & r30.0   & r29.0   & r28.0   \\
-                            & r31.1   & r30.1   & r29.1   & r28.1   \\
-                            & r31.2   & r30.2   & r29.2   & r28.2   \\
-                            & r31.3   & r30.3   & r29.3   & r28.3   \\ \hline
-\end{tabular}
-\caption{These two table show the per-byte layoute in standard and transposed
-addressing modes. On the left is the standard addressing mode, where the
-4-bit register address corresponds to rows in the table. On the right
-is the transposed mode, where registers are addressed in four rows of
-four columns.}
+\caption{This table shows the per-byte layout of the register file. Note
+that there is no {\em zero} register in the ISE. The register with
+address $0$ will preserve writes.}
 \label{tab:state-addr}
 \end{table}
 
@@ -89,15 +58,8 @@ for the purposes of the ABI. That is, if {\tt function1} calls
 {\tt function2}, then {\tt function2} is responsible for saving to the
 stack any $\CPR$ registers it needs, and poping them off before returning.
 
-Registers which are pushed to the stack in standard or transpose
-way must be popped back using the same mode they were stored with.
-
 The $\CPR$ registers $0..4$ are considered as function arguments
-and/or return values. Due to the standard / transpose addressing modes, this
-means that registers $16..19$  (which alias $0..4$ as per table \ref{tab:state-addr}) are also considered function arguments and/or return values. It is the
-programmer's responsibility to correctly interpret results as being in
-transposed or standard form.
-
+and/or return values. 
 All other $\CPR$ registers are considered temporaries.
 
 \subsection{Instructions}
@@ -218,9 +180,8 @@ functionality built-in, removing the need for a dedicated twiddle instruction.
 The encoding space required however did not fit well with the existing RISC-V
 register address and function field layout, and was extremely expensive.}
 
-The difference between these instructions and their standard RISC-V
-counterparts is that they operate on the $\CPR$ register file, and so
-support the transposed addressing modes.
+The only difference between these instructions and their standard RISC-V
+counterparts is that they operate on the $\CPR$ register file.
 
 \begin{itemize}
 \item \INST{XORT rd, rs1, rs2}{
@@ -253,8 +214,7 @@ destination word.
 }
 \end{itemize}
 
-Twiddle can be used to broadcast bytes within words and re-order bytes
-across rows and columns via the transpose addressing mode.
+Twiddle can be used to broadcast and re-order bytes within words.
 
 
 \subsubsection{Multi-precision Arithmetic}
@@ -270,10 +230,6 @@ and four source registers. Hence, some restrictions are placed on how
 registers can be addressed.
 
 \begin{itemize}
-\item The instructions can only access the register file in standard
-mode, not transpose mode. That is, only register addresses $0$ to $15$
-are accessible, according to table \ref{tab:state-addr}.
-
 \item Destination registers are referred too as contiguous, even-odd
 pairs. This means any two adjacently addressed registers, where the
 first register address is even (zero being considered even for this
@@ -393,7 +349,6 @@ The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
 the standard RISC-V varients but with the following differences:
 
 \begin{itemize}
-\item They support transposition in their destination $\CPR$ register.
 \item The halfword and byte varients can specify which halfword or byte of
       the destination register they are targeting.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
@@ -439,7 +394,6 @@ The \ASM{SB.cr}, \ASM{SH.cr} and \ASM{SW.cr} instructions are analogous to
 the standard RISC-V varients but with the following differences:
 
 \begin{itemize}
-\item They support transposition in their source data $\CPR$ register.
 \item The halfword and byte varients can specify which halfword or byte of
       the source register they store.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
@@ -505,11 +459,6 @@ adding it to the $base$ $\GPR$ register.
 Both instructions use the $\GPR$s to source their base address, while the
 offset indicies into the LUT come from the $\CPR$ registers. This mirrors
 how the ISE load and store instructions compute their addresses.
-
-Both instructions support transpose and standard addressing modes for the
-offset and destination registers. The base address register, since it is
-a $\GPR$, supports only standard mode addressing, but can be any one of the
-$\GPR$s.
 
 \begin{itemize}
 \item \INST{GATHER rd, base, offsets}{
@@ -693,13 +642,13 @@ The tables below show the encodings for all instructions in the ISE.
 
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
-\BH{6}{func6   }& \BH{2}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}& \BH{3}{func3}& \BH{2}{rs3}& \BH{3}{rdm}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
-\BB{6}{ 100000 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ADD.mp } \\
-\BB{6}{ 100010 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SUB.mp } \\
-\BB{6}{ 100100 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ACC.mp } \\
-\BB{6}{ 100110 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
-\BB{6}{ 101000 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SLL.mp } \\
-\BB{6}{ 101010 }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SRL.mp } \\
+\BH{6}{func5  }&\BH{1}{ ? }& \BH{2}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}& \BH{3}{func3}& \BH{2}{rs3}& \BH{3}{rdm}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ADD.mp } \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SUB.mp } \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ACC.mp } \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SLL.mp } \\
+\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SRL.mp } \\
 \end{bytefield}
 
 \note{For the MR-type instructions \ASM{ADD.mp}, \ASM{SUB.mp}, \ASM{ACC.mp},
@@ -723,37 +672,40 @@ the 3-bit {\tt B} field with the 1-bit {\tt A} field to create the
 
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
-\BH{7}{func7}& \BH{5}{rs2  }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{R-type} \\
-\BB{7}{ 0000000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p1 } \\
-\BB{7}{ 0000001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p2 } \\
-\BB{7}{ 0000010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p4 } \\
-\BB{7}{ 0000011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.p8 } \\
-\BB{7}{ 0000100 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p1 } \\
-\BB{7}{ 0000101 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p2 } \\
-\BB{7}{ 0000110 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p4 } \\
-\BB{7}{ 0000111 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.p8 } \\
-\BB{7}{ 0001000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p1 } \\
-\BB{7}{ 0001001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p2 } \\
-\BB{7}{ 0001010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p4 } \\
-\BB{7}{ 0001011 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.p8 } \\
-\BB{7}{ 0001100 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p1 } \\
-\BB{7}{ 0001101 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p2 } \\
-\BB{7}{ 0001110 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p4 } \\
-\BB{7}{ 0001111 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.p8 } \\
-\BB{7}{ 0010000 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p1 } \\
-\BB{7}{ 0010001 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p2 } \\
-\BB{7}{ 0010010 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p4 } \\
-\BB{7}{ 0010011 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.p8 } \\
-\BB{7}{ 0010100 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p1 } \\
-\BB{7}{ 0010101 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p2 } \\
-\BB{7}{ 0010110 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p4 } \\
-\BB{7}{ 0010111 }& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.p8 } \\
-\BB{7}{ 0011000 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
-\BB{7}{ 0011001 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
-\BB{7}{ 0011010 }& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
-\BB{7}{ 0011011 }& \BB{5}{00000}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
-\BB{7}{ 0011011 }& \BB{5}{00001}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
-\BB{7}{ 0011100 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER} \\
-\BB{7}{ 0011101 }& \BB{5}{offsets}& \BB{5}{base}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
+\BH{5}{func5 }& \BH{2}{pw}& \BH{5}{rs2  }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{R-type} \\
+\BB{5}{ 00000}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.px } \\
+\BB{5}{ 00001}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.px } \\
+\BB{5}{ 00010}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.px } \\
+\BB{5}{ 00011}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.px } \\
+\BB{5}{ 00100}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.px } \\
+\BB{5}{ 00101}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.px } \\
 \end{bytefield}
 \end{center}
+
+\note{For the R-type instructions with a {\em pack-width} ({\tt pw}) field, 
+this field indicates the size of the packed operation to perform. The two
+bit field is decoded thus:}
+\begin{itemize}
+\item $0 \Rightarrow 32$ bit ops - Words.
+\item $1 \Rightarrow 16$ bit ops - Halfwords.
+\item $2 \Rightarrow 8$ bit ops - Bytes.
+\item $3 \Rightarrow 4$ bit ops - Nibbles.
+\end{itemize}
+\bigskip
+
+\begin{center}
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{5}{func5 }& \BH{2}{op}& \BH{5}{rs2    }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
+\BB{5}{ 00110}& \BB{2}{00}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
+\BB{5}{ 00110}& \BB{2}{01}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
+\BB{5}{ 00110}& \BB{2}{10}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
+\BB{5}{ 00110}& \BB{2}{11}& \BB{5}{00000  }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
+\BB{5}{ 00110}& \BB{2}{11}& \BB{5}{00001  }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
+\BB{5}{ 00111}& \BB{2}{00}& \BB{5}{offsets}& \BB{5}{base} & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER} \\
+\BB{5}{ 00111}& \BB{2}{01}& \BB{5}{offsets}& \BB{5}{base} & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
+\end{bytefield}
+\end{center}
+
+\quad
+
