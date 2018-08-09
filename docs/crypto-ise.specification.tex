@@ -707,20 +707,20 @@ zero.}
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
-\BH{7}{   f7  }& \BH{1}{ }& \BH{5}{rs2}& \BH{1}{ }& \BH{5}{rs1}& \BH{3}{f3 }& \BH{1}{ }& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2GPR } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2COP } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
-\BB{7}{       }& \BB{1}{ }& \BB{5}{rs2}& \BB{1}{ }& \BB{5}{rs1}& \BB{3}{000}& \BB{1}{ }& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
+\BH{7}{   f7  }& \BH{1}{a}& \BH{4}{ rs2 }& \BH{1}{b}& \BH{4}{rs1}& \BH{3}{f3 }& \BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
+\BB{7}{0000000}& \BB{1}{0}& \BB{4}{00000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2GPR } \\
+\BB{7}{0000000}& \BB{1}{1}& \BB{4}{00000}&            \BB{5}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2COP } \\
+\BB{7}{0000001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
+\BB{7}{0000010}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
+\BB{7}{0000011}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
+\BB{7}{0000100}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
+\BB{7}{0000101}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
+\BB{7}{0000110}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
+\BB{7}{0000111}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
+\BB{7}{0001000}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
+\BB{7}{0001001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
+\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
+\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
 \end{bytefield}
 \caption{Register type instruction encodings.}
 \end{figure}
