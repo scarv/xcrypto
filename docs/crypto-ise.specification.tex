@@ -199,18 +199,43 @@ Note that by having {\tt rs1} the same as {\tt rs2}, the twiddle
 arithmetic instructions can be used to arbitrarily re-arrange bytes
 within words. They can also be used to duplicate bytes within words.
 
-\paragraph{TWID}
+\paragraph{TWID.B, TWID.HN, TWID.LN}
 
-The \ASM{TWID} instruction is used to {\em twiddle} bytes within words.
+The \ASM{TWID.B} instruction is used to {\em twiddle} bytes within words.
 It arbitrarily maps the bytes of a source word onto the bytes of a
 destination word.
 
+The \ASM{TWID.[HN,LN]} instruction is used to {\em twiddle} nibbles within
+the high and low half-words of a word respectivley.
+
 \begin{itemize}
-\item \INST{TWID rd, rs1, b0, b1, b2, b3}{
+\item \INST{TWID.B rd, rs1, b0, b1, b2, b3}{
     $ \CPR[*][\OPER{rd}][0] \ASN \CPR[*][\OPER{rs1}][\OPER{b0}] $ \\
     $ \CPR[*][\OPER{rd}][1] \ASN \CPR[*][\OPER{rs1}][\OPER{b1}] $ \\
     $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
     $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
+}
+\item \INST{TWID.LN rd, rs1, n0, n1, n2, n3}{
+    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [15:12],
+                          \CPR[*][\OPER{rd}] [11: 8],
+                          \CPR[*][\OPER{rd}] [ 7: 4],
+                          \CPR[*][\OPER{rd}] [ 3: 0]} $ \\
+    $ \CPR[*][\OPER{rd}] [ 3: 0] \ASN nibbles[\OPER{n0}] $ \\
+    $ \CPR[*][\OPER{rd}] [ 7: 4] \ASN nibbles[\OPER{n1}] $ \\
+    $ \CPR[*][\OPER{rd}] [11: 8] \ASN nibbles[\OPER{n2}] $ \\
+    $ \CPR[*][\OPER{rd}] [15:12] \ASN nibbles[\OPER{n3}] $ \\
+    $ \CPR[*][\OPER{rd}] [31:16] \ASN \CPR[*][\OPER{rs1}] [31:16] $
+}
+\item \INST{TWID.HN rd, rs1, n0, n1, n2, n3}{
+    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [31:28],
+                          \CPR[*][\OPER{rd}] [27:24],
+                          \CPR[*][\OPER{rd}] [23:20],
+                          \CPR[*][\OPER{rd}] [19:16]} $ \\
+    $ \CPR[*][\OPER{rd}] [19:16] \ASN nibbles[\OPER{n0}] $ \\
+    $ \CPR[*][\OPER{rd}] [23:20] \ASN nibbles[\OPER{n1}] $ \\
+    $ \CPR[*][\OPER{rd}] [27:24] \ASN nibbles[\OPER{n2}] $ \\
+    $ \CPR[*][\OPER{rd}] [31:28] \ASN nibbles[\OPER{n3}] $ \\
+    $ \CPR[*][\OPER{rd}] [15: 0] \ASN \CPR[*][\OPER{rs1}] [15: 0] $
 }
 \end{itemize}
 
@@ -559,7 +584,9 @@ MVGPR   rd, rs1                 \\
 XORT    rd, rs1, rs2            \\
 ANDT    rd, rs1, rs2            \\
 ORT     rd, rs1, rs2            \\
-TWID    rd, rs1, b0, b1, b2, b3 \\
+TWID.B  rd, rs1, b0, b1, b2, b3 \\
+TWID.HN rd, rs1, n0, n1, n2, n3 \\
+TWID.LN rd, rs1, n0, n1, n2, n3 \\
 ADD.mp  (rd1, rd2),  rs1, rs2, rs3 \\
 SUB.mp  (rd1, rd2),  rs1, rs2, rs3 \\
 ACC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
