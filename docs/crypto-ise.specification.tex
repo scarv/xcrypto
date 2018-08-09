@@ -713,22 +713,38 @@ zero.}
 \BH{7}{   f7  }& \BH{1}{a}& \BH{4}{ rs2 }& \BH{1}{b}& \BH{4}{rs1}& \BH{3}{f3 }& \BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
 \BB{7}{0000000}& \BB{1}{0}& \BB{4}{00000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2GPR } \\
 \BB{7}{0000000}& \BB{1}{1}& \BB{4}{00000}&            \BB{5}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2COP } \\
-\BB{7}{0000001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
-\BB{7}{0000010}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
-\BB{7}{0000011}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
-\BB{7}{0000100}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
-\BB{7}{0000101}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
-\BB{7}{0000110}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
-\BB{7}{0000111}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
-\BB{7}{0001000}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
-\BB{7}{0001001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
+\BB{7}{0000001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
+\BB{7}{0000010}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
+\BB{7}{0000011}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
+\BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
+\BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
+\BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
+\BB{7}{0000111}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
+\BB{7}{0001000}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
+\BB{7}{0001001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
 \BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
 \BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
 \end{bytefield}
-\caption{Register type instruction encodings. Note the different field widths
+\captionsetup{singlelinecheck=off}
+\caption[x]{Register type instruction encodings. Note the different field widths
 for {\tt rd, rs1} and {\tt base} in the \ASM{MV2GPR}, \ASM{MV2COP} and
 \ASM{SCATTER/GATHER} instructions respectivley. This is because they are
-sourced from the RISC-V $\GPR$s, rather than the $\CPR$s.}
+sourced from the RISC-V $\GPR$s, rather than the $\CPR$s.
+The fields {\tt a, b} and {\tt c} are used by the {\tt *.px} instructions
+to encode the pack width of their operations. The three bits are
+concatenated into a 3-bit vector $a,b,c$ and then decoded into pack widths
+using the following lookup table. \\
+\begin{itemize}
+\item $a,b,c = 000 \Rightarrow $ Pack width $1$
+\item $a,b,c = 001 \Rightarrow $ Pack width $2$
+\item $a,b,c = 010 \Rightarrow $ Pack width $4$
+\item $a,b,c = 011 \Rightarrow $ Pack width $8$
+\item $a,b,c = 100 \Rightarrow $ Pack width $16$
+\item $a,b,c = 101 \Rightarrow $ Pack width $32$
+\item $a,b,c = 110 $ - Reserved. Should be treated as a NOP.
+\item $a,b,c = 111 $ - Reserved. Should be treated as a NOP.
+\end{itemize}
+}
 \end{figure}
 
 
