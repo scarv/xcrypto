@@ -558,20 +558,20 @@ This section lists the assembly notation for the instructions, as well as
 their encodings.
 
 {\tt
+MV2GPR  rd, rs1                 \\
+MV2COP  rd, rs1                 \\
+TWID.B  rd, rs1, b0, b1, b2, b3 \\
+TWID.HN rd, rs1, n0, n1, n2, n3 \\
+TWID.LN rd, rs1, n0, n1, n2, n3 \\
 ADD.px  rd, rs1, rs2            \\
 SUB.px  rd, rs1, rs2            \\
 MUL.px  rd, rs1, rs2            \\
 SLL.px  rd, rs1, shamt          \\
 SRL.px  rd, rs1, shamt          \\
 ROT.px  rd, rs1, shamt          \\
-MV2GPR  rd, rs1                 \\
-MV2COP  rd, rs1                 \\
 XOR.cr  rd, rs1, rs2            \\
 AND.cr  rd, rs1, rs2            \\
 OR.cr   rd, rs1, rs2            \\
-TWID.B  rd, rs1, b0, b1, b2, b3 \\
-TWID.HN rd, rs1, n0, n1, n2, n3 \\
-TWID.LN rd, rs1, n0, n1, n2, n3 \\
 ADD.mp  (rd1, rd2),  rs1, rs2, rs3 \\
 SUB.mp  (rd1, rd2),  rs1, rs2, rs3 \\
 ACC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
@@ -610,7 +610,7 @@ is used for the multi-precision arithmetic instructions.
 & \BB{3}{f3}
 & \BB{5}{rd   }
 & \BB{8}{opcode}
-& \BB{8}{R-type} \\
+& \BB{8}{\bf R-type} \\
 
   \BB{12}{imm[11:0]}
 & \BB{1}{h}
@@ -619,7 +619,7 @@ is used for the multi-precision arithmetic instructions.
 & \BB{1}{b}
 & \BB{4}{rd   }
 & \BB{8}{opcode}
-& \BB{8}{I-type} \\
+& \BB{8}{\bf I-type} \\
   
   \BB{7}{imm[11:5]}
 & \BB{1}{b}
@@ -629,13 +629,15 @@ is used for the multi-precision arithmetic instructions.
 & \BB{3}{f3}
 & \BB{5}{imm[4:0]}
 & \BB{8}{opcode}
-& \BB{8}{S-type}
+& \BB{8}{\bf S-type}
 \end{bytefield}
 \caption{The three main types of encoding used by the ISE.}
 \end{figure}
 
 The following tables show the encodings for all instructions in the ISE,
 grouped by their layout.
+
+\bigskip
 
 \begin{figure}[h]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
@@ -653,7 +655,7 @@ zero.}
 
 \begin{figure}[h]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{\encopcode}& \BH{8}{S-type} \\
+\BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
 \BB{7}{imm[11:5]}&\BB{1}{b}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 100 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
 \BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 101 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.CR} \\
 \BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 110 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.CR}
@@ -662,4 +664,41 @@ zero.}
 which halfword, and which byte of a halfword respectivley the value to be
 stored is sourced from. Where these fields are irrelevent, they are tied to
 zero.}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+\BH{7}{   f7  }& \BH{5}{rs2}& \BH{5}{rs1}& \BH{3}{f3 }& \BH{5}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2GPR } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2COP } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.B } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.HN} \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.LN} \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
+\BB{7}{       }& \BB{5}{rs2}& \BB{5}{rs1}& \BB{3}{000}& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
+\end{bytefield}
+\caption{Register type instruction encodings.}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\begin{bytefield}[endianness=big]{32}
+\bitheader{0-31}               \\
+  \BH{17}{                               }& \BH{3}{f3 }& \BH{5}{     }& \BH{8}{opcode}& \BH{8}{\bf MR-type} \\
+  \BB{17}{                               }& \BB{3}{111}& \BB{5}{     }& \BB{8}{\encopcode}& \BB{8}{\bf MR-type} \\
+\end{bytefield}
+\caption{Multi-precision integer instruction encodings.}
 \end{figure}
