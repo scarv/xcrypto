@@ -10,11 +10,11 @@ Lorem ipsum doler set amet.
 \subsection{State}
 
 The ISE introduces an additional $16$ by $32$-bit register file which
-is used exclusivley by the instructions in this ISE. It is to the
+is used exclusively by the instructions in this ISE. It is to the
 crypto ISE what the floating-point register file is to the RISC-V
 F extension.
 
-The addressing is shown diagramatically in table \ref{tab:state-addr}.
+The addressing is shown diagrammatically in table \ref{tab:state-addr}.
 
 \begin{table}[h!]
 \centering
@@ -56,7 +56,7 @@ before returning execution to some part of the system they did not write.
 All of the state added in the Crypto ISE is considered {\em callee save}
 for the purposes of the ABI. That is, if {\tt function1} calls 
 {\tt function2}, then {\tt function2} is responsible for saving to the
-stack any $\CPR$ registers it needs, and poping them off before returning.
+stack any $\CPR$ registers it needs, and popping them off before returning.
 
 The $\CPR$ registers $0..4$ are considered as function arguments
 and/or return values. 
@@ -80,7 +80,7 @@ Move a $\CPR$ register to a $\GPR$ register.
 \end{itemize}
 
 
-\paragraph{MV2COP[.t]}
+\paragraph{MV2COP}
 
 The complement of \ASM{MV2GPR}.
 Move a $\GPR$ register to a $\CPR$ register.
@@ -98,7 +98,7 @@ The instruction \ASM{ADD.px} treats the source and destination registers as
 1,2,4 or 8 unsigned, packed fields, and adds corresponding fields together
 ignoring any carry bits.
 
-No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptons.
+No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
 
 \begin{itemize}
 \item \INST{ADD.p8, rd, rs1, rs2}{
@@ -132,7 +132,7 @@ The instruction \ASM{SUB.px} treats the source and destination registers as
 1,2,4 or 8 unsigned, packed fields, and subtracts the {\tt rs2} fields from
 the corresponding {\tt rs1} fields.
 
-No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptons.
+No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
 
 \paragraph{MUL.px}
 
@@ -140,7 +140,7 @@ The instruction \ASM{MUL.px} treats the source and destination registers as
 1,2,4 or 8 unsigned, packed fields, and multiplies the {\tt rs2} fields by
 the corresponding {\tt rs1} fields.
 
-No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptons.
+No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 
 \paragraph{SLL.px}
 
@@ -206,7 +206,7 @@ It arbitrarily maps the bytes of a source word onto the bytes of a
 destination word.
 
 The \ASM{TWID.[HN,LN]} instruction is used to {\em twiddle} nibbles within
-the high and low half-words of a word respectivley.
+the high and low half-words of a word respectively.
 
 \begin{itemize}
 \item \INST{TWID.B rd, rs1, b0, b1, b2, b3}{
@@ -262,7 +262,7 @@ discussion) and the second address is one more than the first can be
 used as the destination for a multi-precision instructions. \designnote{
     This scheme means the function to compute the actual source registers
     from the minimum 3-bit encoding is simply to append either {\tt 00}
-    or {\tt 01} depending on the even or odd address respectivley.
+    or {\tt 01} depending on the even or odd address respectively.
 }
 
 For example, $(0,1), (2,3)$ and $(10,11)$ are all valid
@@ -371,10 +371,10 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] > \GPR[*][\OPER{rs}_2] ) \IOR 
 \paragraph{LBU.cr, LHU.cr, LW.cr}
 
 The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
-the standard RISC-V varients but with the following differences:
+the standard RISC-V variants but with the following differences:
 
 \begin{itemize}
-\item The halfword and byte varients can specify which halfword or byte of
+\item The halfword and byte variants can specify which halfword or byte of
       the destination register they are targeting.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       target register is always in the $\CPR$ set.
@@ -416,10 +416,10 @@ interrupt behaviour and atomicity rules.
 \paragraph{SB.cr, SH.cr, SW.cr}
 
 The \ASM{SB.cr}, \ASM{SH.cr} and \ASM{SW.cr} instructions are analogous to
-the standard RISC-V varients but with the following differences:
+the standard RISC-V variants but with the following differences:
 
 \begin{itemize}
-\item The halfword and byte varients can specify which halfword or byte of
+\item The halfword and byte variants can specify which halfword or byte of
       the source register they store.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       source data / destination register is always in the $\CPR$ set.
@@ -472,7 +472,7 @@ interrupt behaviour and atomicity rules.
 \paragraph{SCATTER, GATHER}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
-sbox lookup instructions. They allow four separate lookups per instruction
+s-box lookup instructions. They allow four separate lookups per instruction
 into a 256 entry LUT stored in memory. \ASM{GATHER} will move the looked-up
 values from memory into a register, while \ASM{SCATTER} will move bytes of a
 register word back into the LUT in memory.
@@ -482,7 +482,7 @@ adding an offset byte $x$ from the {\tt offsets} $\CPR$ register, and
 adding it to the $base$ $\GPR$ register.
 
 Both instructions use the $\GPR$s to source their base address, while the
-offset indicies into the LUT come from the $\CPR$ registers. This mirrors
+offset indices into the LUT come from the $\CPR$ registers. This mirrors
 how the ISE load and store instructions compute their addresses.
 
 \begin{itemize}
@@ -535,13 +535,13 @@ interrupt is taken during, or at the end of, the instruction.
 \designnote{Implementation of these instructions consider the impact of
 shared memory systems, since it will be possible for other agents in the
 system to access memory during the execution of this instruction. In systems
-posessing a cache, programmers must be mindful that these instructions
+possessing a cache, programmers must be mindful that these instructions
 can cause odd behaviour due to the non-linear access pattern the instruction
 creates. All accesses will be within 256 bytes of one another however,
 which may motivate particular alignment of the LUT based on cache-line size}
 
 The rationale for these instructions is two fold. They help with code density,
-since atleast four instructions worth of work (eight in RV32) can now be done
+since at-least four instructions worth of work (eight in RV32) can now be done
 in one instruction. They can also help with energy efficiency, since fewer
 instructions need to be fetched and travel through an execution pipeline in
 order to achieve the same goal. They are not designed to enhance performance
