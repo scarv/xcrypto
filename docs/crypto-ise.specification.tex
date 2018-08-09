@@ -631,10 +631,13 @@ is used for the multi-precision arithmetic instructions.
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
   \BB{7}{f7}
-& \BB{5}{rs2  }
-& \BB{5}{rs1  }
+& \BB{1}{a    }
+& \BB{4}{rs2  }
+& \BB{1}{b    }
+& \BB{4}{rs1  }
 & \BB{3}{f3}
-& \BB{5}{rd   }
+& \BB{1}{c    }
+& \BB{4}{rd   }
 & \BB{8}{opcode}
 & \BB{8}{\bf R-type} \\
 
@@ -722,7 +725,10 @@ zero.}
 \BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
 \BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
 \end{bytefield}
-\caption{Register type instruction encodings.}
+\caption{Register type instruction encodings. Note the different field widths
+for {\tt rd, rs1} and {\tt base} in the \ASM{MV2GPR}, \ASM{MV2COP} and
+\ASM{SCATTER/GATHER} instructions respectivley. This is because they are
+sourced from the RISC-V $\GPR$s, rather than the $\CPR$s.}
 \end{figure}
 
 
