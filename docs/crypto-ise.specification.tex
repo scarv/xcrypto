@@ -91,6 +91,30 @@ Move a $\GPR$ register to a $\CPR$ register.
 }
 \end{itemize}
 
+\paragraph{LUI.cr}
+
+The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
+upper half of a $\CPR$ register. The other half of the
+destination register is set to zero.
+
+\begin{itemize}
+\item \INST{LUI.cr rd, imm16 }{
+    $\CPR[*][\OPER{rd}][31:16] \ASN imm16$ \\
+    $\CPR[*][\OPER{rd}][15: 0] \ASN 0x0$
+}
+\end{itemize}
+
+\paragraph{ORI.cr}
+
+The \ASM{ORI.cr} instruction bitwise or's a 16 bit immediate into the
+lower half of a $\CPR$ register. 
+
+\begin{itemize}
+\item \INST{ORI.cr rd, imm16 }{
+    $\CPR[*][\OPER{rd}] \ASN \CPR[*][\OPER{rd}] \IOR imm16$ \\
+}
+\end{itemize}
+
 \subsubsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
@@ -584,6 +608,8 @@ GTU.mp  rd1,         rs1, rs2, rs3 \\
 LBU.cr  rd , imm(rs1)           \\
 LHU.cr  rd , imm(rs1)           \\
 LW.cr   rd , imm(rs1)           \\
+LUI.cr  rd,  imm16              \\
+ORI.cr  rd,  imm16              \\
 SB.cr   rs2, imm(rs1)           \\
 SH.cr   rs2, imm(rs1)           \\
 SW.cr   rs2, imm(rs1)           \\
@@ -644,12 +670,15 @@ grouped by their layout.
 \BH{12}{imm[11:0]}&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3 }&\BH{1}{b}& \BH{4}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
 \BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 001 }&\BB{1}{b}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
 \BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 010 }&\BB{1}{0}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
-\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 011 }&\BB{1}{0}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr }
+\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 011 }&\BB{1}{0}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
+\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{imm4}& \BB{3}{ 010 }&\BB{1}{1}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LUI.cr} \\
+\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{imm4}& \BB{3}{ 011 }&\BB{1}{1}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{ORI.cr}
 \end{bytefield}
 \caption{Load instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the loaded
 value is written too. Where these fields are irrelevent, they are tied to
-zero.}
+zero. Here {\tt imm4} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
+represent bits $15..12$ of the $16$ bit immediate they operate with.}
 \end{figure}
 
 
