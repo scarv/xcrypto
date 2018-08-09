@@ -92,61 +92,66 @@ Move a $\GPR$ register to a $\CPR$ register.
 \end{itemize}
 
 \subsubsection{Packed Arithmetic}
+
+The packed arithmetic instructions are designed to provide scalable, sub-word
+packed operatons on multiple independent values. They operate on words, and
+chunk them into 1, 2, 4, 8, 16 or 32 separate values as shown in the table
+below.
+
+These instructions are designed to allow fast and efficient implementations
+of the highly data parallel operations found in cryptographic block ciphers.
+
+The general operation of each instruction is shown below, with $f(x,y)$
+used to represent the specific functionality of each instruction.
+
+\medskip
+
+\begin{algorithm}[H]
+    \KwIn{rs1, rs2 - Source registers 1 and 2}
+    \KwIn{rd - destination register}
+    \KwIn{pw - Pack width, the bit width of each operation}
+    $b   \ASN 0 $\;
+\While {$b < {\bf W}$}{
+$\CPR[*][rd][b+pw:b] \ASN f(\CPR[*][rs1][b+pw:b],\CPR[*][rs2][b+pw:b])$\;
+$b \ASN b + pw$\;
+    }
+\caption{Algorithm for performing packed arithmetic on words in the 
+$\CPR$ register file. Here, ${\bf W}$ is the word-width in bits of the
+registers, assumed to be $32$. For example, if $pw$ is 32, then the loop
+will execute once, applying the function to the full 32-bit word. If $pw$
+were $8$, then the function would be applied $8$, once to each corresponding
+pair of nibbles in the word.}
+\end{algorithm}
+
 \paragraph{ADD.px}
 
 The instruction \ASM{ADD.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and adds corresponding fields together
-ignoring any carry bits.
+1,2,4,8,16 or 32 unsigned packed fields, and adds corresponding fields
+together ignoring any carry bits.
 
 No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
-
-\begin{itemize}
-\item \INST{ADD.p8, rd, rs1, rs2}{
-$\CPR[*][rd][ 3: 0] \ASN \CPR[*][rs1][ 3: 0] + \CPR[*][rs2][ 3: 0]$\\
-$\CPR[*][rd][ 7: 4] \ASN \CPR[*][rs1][ 7: 4] + \CPR[*][rs2][ 7: 4]$\\
-$\CPR[*][rd][11: 8] \ASN \CPR[*][rs1][11: 8] + \CPR[*][rs2][11: 8]$\\
-$\CPR[*][rd][15:12] \ASN \CPR[*][rs1][15:12] + \CPR[*][rs2][15:12]$\\
-$\CPR[*][rd][19:16] \ASN \CPR[*][rs1][19:16] + \CPR[*][rs2][19:16]$\\
-$\CPR[*][rd][23:20] \ASN \CPR[*][rs1][23:20] + \CPR[*][rs2][23:20]$\\
-$\CPR[*][rd][25:24] \ASN \CPR[*][rs1][25:24] + \CPR[*][rs2][25:24]$\\
-$\CPR[*][rd][31:26] \ASN \CPR[*][rs1][31:26] + \CPR[*][rs2][31:26]$\\
-}
-\item \INST{ADD.p4, rd, rs1, rs2}{
-$\CPR[*][rd][ 7: 0] \ASN \CPR[*][rs1][ 7: 0] + \CPR[*][rs2][ 7: 0]$\\
-$\CPR[*][rd][15: 8] \ASN \CPR[*][rs1][15: 8] + \CPR[*][rs2][15: 8]$\\
-$\CPR[*][rd][23:16] \ASN \CPR[*][rs1][23:16] + \CPR[*][rs2][23:16]$\\
-$\CPR[*][rd][31:24] \ASN \CPR[*][rs1][31:24] + \CPR[*][rs2][31:24]$\\
-}
-\item \INST{ADD.p2, rd, rs1, rs2}{
-$\CPR[*][rd][15: 0] \ASN \CPR[*][rs1][15: 0] + \CPR[*][rs2][15: 0]$\\
-$\CPR[*][rd][31:16] \ASN \CPR[*][rs1][31:16] + \CPR[*][rs2][31:16]$\\
-}
-\item \INST{ADD.p1, rd, rs1, rs2}{
-$\CPR[*][rd] \ASN \CPR[*][rs1] + \CPR[*][rs2]$\\
-}
-\end{itemize}
 
 \paragraph{SUB.px}
 
 The instruction \ASM{SUB.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and subtracts the {\tt rs2} fields from
-the corresponding {\tt rs1} fields.
+1,2,4,8,16 or 32 unsigned, packed fields, and subtracts the {\tt rs2} fields
+from the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
 
 \paragraph{MUL.px}
 
 The instruction \ASM{MUL.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and multiplies the {\tt rs2} fields by
-the corresponding {\tt rs1} fields.
+1,2,4,8,16 or 32 unsigned, packed fields, and multiplies the {\tt rs2} fields
+by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 
 \paragraph{SLL.px}
 
 The instruction \ASM{SLL.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and shifts the {\tt rs1} fields left
-by the value in {\tt SHAMT}.
+1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs2} fields
+left by the value in {\tt SHAMT}.
 
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SLL.px} instruction is
@@ -155,8 +160,8 @@ packed field, then the result of the \ASM{SLL.px} instruction is
 \paragraph{SRL.px}
 
 The instruction \ASM{SRL.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and shifts the {\tt rs1} fields right
-by the value in {\tt SHAMT}.
+1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs2} fields
+right by the value in {\tt SHAMT}.
 
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SRL.px} instruction is
@@ -165,8 +170,8 @@ packed field, then the result of the \ASM{SRL.px} instruction is
 \paragraph{ROT.px}
 
 The instruction \ASM{ROT.px} treats the source and destination registers as
-1,2,4 or 8 unsigned, packed fields, and rotates the {\tt rs2} fields by
-the value in {\tt SHAMT}.
+1,2,4,8,16 or 32 unsigned, packed fields, and rotates the {\tt rs2} fields
+left by the value in {\tt SHAMT}.
 
 \subsubsection{Bitwise and Twiddle Instructions}
 
