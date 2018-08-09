@@ -377,6 +377,8 @@ the standard RISC-V variants but with the following differences:
 \begin{itemize}
 \item The halfword and byte variants can specify which halfword or byte of
       the destination register they are targeting.
+\item There is no sign-extending equivilent of the \ASM{LH} and \ASM{LB}
+      instructions.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       target register is always in the $\CPR$ set.
 \end{itemize}
@@ -592,54 +594,72 @@ GATHER  rd, base, offsets       \\
 \newpage
 \subsection{Instruction Encodings}
 
-The following standard RISC-V instruction encoding types are used in this
-ISE. We also define a new {\em multi-register} or {\em MR} instruction
-format, which is used for the multi-precision arithmetic instructions.
+The following variations on the standard RISC-V instruction encoding types are
+used in this ISE. The varients are kept as close as possible to the orignals,
+while still making use of spare bits due to the 4-bit register address encoding.
+We also define a new {\em multi-register} or {\em MR} instruction format, which
+is used for the multi-precision arithmetic instructions.
 
-\begin{center}
+\begin{figure}[h]
+\centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
-  \BB{7}{func7}
+  \BB{7}{f7}
 & \BB{5}{rs2  }
 & \BB{5}{rs1  }
-& \BB{3}{func3}
+& \BB{3}{f3}
 & \BB{5}{rd   }
 & \BB{8}{opcode}
 & \BB{8}{R-type} \\
 
   \BB{12}{imm[11:0]}
-& \BB{5}{rs1  }
-& \BB{3}{func3}
-& \BB{5}{rd   }
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{1}{b}
+& \BB{4}{rd   }
 & \BB{8}{opcode}
 & \BB{8}{I-type} \\
   
   \BB{7}{imm[11:5]}
-& \BB{5}{rs1  }
-& \BB{5}{rs2  }
-& \BB{3}{func3}
+& \BB{1}{b}
+& \BB{4}{rs1  }
+& \BB{1}{h}
+& \BB{4}{rs2  }
+& \BB{3}{f3}
 & \BB{5}{imm[4:0]}
 & \BB{8}{opcode}
-& \BB{8}{S-type} \\
+& \BB{8}{S-type}
 \end{bytefield}
-\end{center}
+\caption{The three main types of encoding used by the ISE.}
+\end{figure}
 
-The tables below show the encodings for all instructions in the ISE.
+The following tables show the encodings for all instructions in the ISE,
+grouped by their layout.
 
-\begin{center}
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{12}{imm[11:0]}& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 100 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 101 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
-\BB{12}{imm[11:0]}& \BB{5}{rs1  }& \BB{3}{ 110 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
-
-\BB{4}{0000}& 
-\BB{2}{b0}&
-\BB{2}{b1}&
-\BB{2}{b2}&
-\BB{2}{b3}&
-\BB{5}{rs1  }& \BB{3}{ 111 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{TWID  } \\
+\begin{figure}[h]
+\centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
+\BH{12}{imm[11:0]}&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3 }&\BH{1}{b}& \BH{4}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
+\BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 001 }&\BB{1}{b}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
+\BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 010 }&\BB{1}{0}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
+\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 011 }&\BB{1}{0}& \BB{4}{rd   }& \BB{8}{\encopcode}& \BB{8}{LW.cr }
 \end{bytefield}
-\end{center}
+\caption{Load instruction encodings. The {\tt h} and {\tt b} bits refer to
+which halfword, and which byte of a halfword respectivley the loaded
+value is written too. Where these fields are irrelevent, they are tied to
+zero.}
+\end{figure}
 
+
+\begin{figure}[h]
+\centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
+\BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{\encopcode}& \BH{8}{S-type} \\
+\BB{7}{imm[11:5]}&\BB{1}{b}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 100 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
+\BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 101 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.CR} \\
+\BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 110 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.CR}
+\end{bytefield}
+\caption{Store instruction encodings. The {\tt h} and {\tt b} bits refer to
+which halfword, and which byte of a halfword respectivley the value to be
+stored is sourced from. Where these fields are irrelevent, they are tied to
+zero.}
+\end{figure}
