@@ -289,9 +289,9 @@ bit is written to {\tt rd2}.
 
 \begin{itemize}
 \item \INST{ADD.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t \ASN ( \GPR[*][\OPER{rs}_1] \SOP{+}{u}     \GPR[*][\OPER{rs}_2] ) + \GPR[*][\OPER{rs}_3] $\\
-$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3] $\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 }
 \end{itemize}
 
@@ -299,9 +299,9 @@ $\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 
 \begin{itemize}
 \item \INST{SUB.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t                  \ASN ( \GPR[*][\OPER{rs}_1] \SOP{+}{u}     \GPR[*][\OPER{rs}_2] ) - \GPR[*][\OPER{rs}_3]$\\
-$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+$t                  \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) - \CPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 }
 \end{itemize}
 
@@ -309,9 +309,9 @@ $\GPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 
 \begin{itemize}
 \item \INST{ACC.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t \ASN ( \GPR[*][\OPER{rs}_1] \CONS \GPR[*][\OPER{rs}_0] ) + \GPR[*][\OPER{rs}_2] + \GPR[*][\OPER{rs}_3] $\\
-$\GPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
-$\GPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
+$t \ASN ( \CPR[*][\OPER{rs}_1] \CONS \CPR[*][\OPER{rs}_0] ) + \CPR[*][\OPER{rs}_2] + \CPR[*][\OPER{rs}_3] $\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
+$\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
 }
 \end{itemize}
 
@@ -319,22 +319,18 @@ $\GPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
 
 \begin{itemize}
 \item \INST{MAC.mp (rd1, rd2), rs1, rs2, rs3}{
-$t                  \ASN ( \GPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \GPR[*][\OPER{rs}_2] ) + \GPR[*][\OPER{rs}_3]$\\
-$\GPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\GPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
+$t                  \ASN ( \CPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
 }
 \end{itemize}
-
-\note{Originally this instruction was to have a fourth source register operand
-which would have been added into the final accumulate. It was removed because it
-did not fit sensibly into the encoding space.}
 
 \paragraph{SLL.mp}
 
 \begin{itemize}
 \item \INST{SLL.mp (rd1, rd2), rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_2] \ASN \GPR[*][\OPER{rs}_1] \LSH      \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \GPR[*][\OPER{rs}_3]$\\
-$\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH \W - \GPR[*][\OPER{rs}_1]_{\log_2(\W)-1 \ldots 0}$\\
+$\CPR[*][\OPER{rd}_2] \ASN \CPR[*][\OPER{rs}_1] \LSH      \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \CPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_1] \ASN \CPR[*][\OPER{rs}_1] \RSH \W - \CPR[*][\OPER{rs}_1]_{\log_2(\W)-1 \ldots 0}$\\
 }
 \end{itemize}
 
@@ -342,8 +338,8 @@ $\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH \W - \GPR[*][\OPER{rs}_1]_{
 
 \begin{itemize}
 \item \INST{SRL.mp (rd1, rd2), rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_2] \ASN \GPR[*][\OPER{rs}_1] \LSH \W - \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0}$\\
-$\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH      \GPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \GPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_2] \ASN \CPR[*][\OPER{rs}_1] \LSH \W - \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0}$\\
+$\CPR[*][\OPER{rd}_1] \ASN \CPR[*][\OPER{rs}_1] \RSH      \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \CPR[*][\OPER{rs}_3]$\\
 }
 \end{itemize}
 
@@ -351,7 +347,7 @@ $\GPR[*][\OPER{rd}_1] \ASN \GPR[*][\OPER{rs}_1] \RSH      \GPR[*][\OPER{rs}_2]_{
 
 \begin{itemize}
 \item \INST{EQU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3]  $\\
+$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3]  $\\
 }
 \end{itemize}
 
@@ -359,7 +355,7 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND 
 
 \begin{itemize}
 \item \INST{LTU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] < \GPR[*][\OPER{rs}_2] ) \IOR ( ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3] )$
+$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] < \CPR[*][\OPER{rs}_2] ) \IOR ( ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3] )$
 }
 \end{itemize}
 
@@ -367,7 +363,7 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] < \GPR[*][\OPER{rs}_2] ) \IOR 
 
 \begin{itemize}
 \item \INST{GTU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \GPR[*][\OPER{rs}_1] > \GPR[*][\OPER{rs}_2] ) \IOR ( ( \GPR[*][\OPER{rs}_1] = \GPR[*][\OPER{rs}_2] ) \AND \GPR[*][\OPER{rs}_3] )$
+$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR ( ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3] )$
 }
 \end{itemize}
 
