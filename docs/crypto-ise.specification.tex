@@ -68,7 +68,7 @@ All instructions occupy the \encspace encoding space of the RISC-V opcode
 map, using the associated \encopcode prefix for bits $6:0$ of each 
 instruction.
 
-\subsubsection{Move Instructions}
+\subsubsection{Move \& Immediate Instructions}
 \paragraph{MV2GPR}
 
 Move a $\CPR$ register to a $\GPR$ register.
@@ -146,6 +146,10 @@ will execute once, applying the function to the full 32-bit word. If $pw$
 were $8$, then the function would be applied $8$, once to each corresponding
 pair of nibbles in the word.}
 \end{algorithm}
+
+When coding these instructions as assembly mnemonics, the {\tt x} in the
+instruction names below should be replaced with the pack width. Hence
+for pack width 4, \ASM{SLL.px} becomes \ASM{SLL.p4}.
 
 \paragraph{ADD.px}
 
