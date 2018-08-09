@@ -69,24 +69,24 @@ map, using the associated \encopcode prefix for bits $6:0$ of each
 instruction.
 
 \subsubsection{Move Instructions}
-\paragraph{MVCOP}
+\paragraph{MV2GPR}
 
 Move a $\CPR$ register to a $\GPR$ register.
 
 \begin{itemize}
-\item \INST{MVCOP gpr, cpr}{
+\item \INST{MV2GPR gpr, cpr}{
     $\GPR[*][\OPER{gpr}] \ASN \CPR[*][\OPER{cpr}]$
 }
 \end{itemize}
 
 
-\paragraph{MVGPR[.t]}
+\paragraph{MV2COP[.t]}
 
-The complement of \ASM{MVCOP}.
+The complement of \ASM{MV2GPR}.
 Move a $\GPR$ register to a $\CPR$ register.
 
 \begin{itemize}
-\item \INST{MVGPR cpr, gpr}{
+\item \INST{MV2COP cpr, gpr}{
     $\CPR[*][\OPER{cpr}] \ASN \GPR[*][\OPER{gpr}]$
 }
 \end{itemize}
@@ -561,8 +561,8 @@ MUL.px  rd, rs1, rs2            \\
 SLL.px  rd, rs1, shamt          \\
 SRL.px  rd, rs1, shamt          \\
 ROT.px  rd, rs1, shamt          \\
-MVCOP   rd, rs1                 \\
-MVGPR   rd, rs1                 \\
+MV2GPR  rd, rs1                 \\
+MV2COP  rd, rs1                 \\
 XOR.cr  rd, rs1, rs2            \\
 AND.cr  rd, rs1, rs2            \\
 OR.cr   rd, rs1, rs2            \\
