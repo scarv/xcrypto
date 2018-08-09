@@ -555,30 +555,12 @@ This section lists the assembly notation for the instructions, as well as
 their encodings.
 
 {\tt
-ADD.p1  rd, rs1, rs2            \\
-ADD.p2  rd, rs1, rs2            \\
-ADD.p4  rd, rs1, rs2            \\
-ADD.p8  rd, rs1, rs2            \\
-SUB.p1  rd, rs1, rs2            \\
-SUB.p2  rd, rs1, rs2            \\
-SUB.p4  rd, rs1, rs2            \\
-SUB.p8  rd, rs1, rs2            \\
-MUL.p1  rd, rs1, rs2            \\
-MUL.p2  rd, rs1, rs2            \\
-MUL.p4  rd, rs1, rs2            \\
-MUL.p8  rd, rs1, rs2            \\
-SLL.p1  rd, rs1, shamt          \\
-SLL.p2  rd, rs1, shamt          \\
-SLL.p4  rd, rs1, shamt          \\
-SLL.p8  rd, rs1, shamt          \\
-SRL.p1  rd, rs1, shamt          \\
-SRL.p2  rd, rs1, shamt          \\
-SRL.p4  rd, rs1, shamt          \\
-SRL.p8  rd, rs1, shamt          \\
-ROT.p1  rd, rs1, shamt          \\
-ROT.p2  rd, rs1, shamt          \\
-ROT.p4  rd, rs1, shamt          \\
-ROT.p8  rd, rs1, shamt          \\
+ADD.px  rd, rs1, rs2            \\
+SUB.px  rd, rs1, rs2            \\
+MUL.px  rd, rs1, rs2            \\
+SLL.px  rd, rs1, shamt          \\
+SRL.px  rd, rs1, shamt          \\
+ROT.px  rd, rs1, shamt          \\
 MVCOP   rd, rs1                 \\
 MVGPR   rd, rs1                 \\
 XORT    rd, rs1, rs2            \\
@@ -596,9 +578,9 @@ SRL.mp  (rd1, rd2),  rs1, rs2, rs3 \\
 EQU.mp  rd1,         rs1, rs2, rs3 \\
 LTU.mp  rd1,         rs1, rs2, rs3 \\
 GTU.mp  rd1,         rs1, rs2, rs3 \\
-LBU.cr  rd, imm(rs1)            \\
-LHU.cr  rd, imm(rs1)            \\
-LW.cr   rd, imm(rs1)            \\
+LBU.cr  rd , imm(rs1)           \\
+LHU.cr  rd , imm(rs1)           \\
+LW.cr   rd , imm(rs1)           \\
 SB.cr   rs2, imm(rs1)           \\
 SH.cr   rs2, imm(rs1)           \\
 SW.cr   rs2, imm(rs1)           \\
@@ -658,81 +640,5 @@ The tables below show the encodings for all instructions in the ISE.
 \BB{2}{b3}&
 \BB{5}{rs1  }& \BB{3}{ 111 }& \BB{5}{rd   }& \BB{8}{\encopcode}& \BB{8}{TWID  } \\
 \end{bytefield}
-  
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{7}{imm[11:5]}& \BH{5}{rs1  }& \BH{5}{rs2  }& \BH{3}{func3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 001 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.cr} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 010 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.cr} \\
-\BB{7}{imm[11:5]}& \BB{5}{rs1  }& \BB{5}{rs2  }& \BB{3}{ 011 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.cr} \\
-\end{bytefield}
-
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{6}{func5  }&\BH{1}{ ? }& \BH{2}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}& \BH{3}{func3}& \BH{2}{rs3}& \BH{3}{rdm}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ADD.mp } \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SUB.mp } \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ ACC.mp } \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SLL.mp } \\
-\BB{6}{ 10??? }&\BB{1}{ ? }& \BB{2}{B}& \BB{4}{rs2}&\BB{4}{rs1}& \BB{3}{ 000 }& \BB{2}{A}& \BB{3}{rdm}& \BB{8}{\encopcode}& \BB{8}{ SRL.mp } \\
-\end{bytefield}
-
-\note{For the MR-type instructions \ASM{ADD.mp}, \ASM{SUB.mp}, \ASM{ACC.mp},
-\ASM{MAC.mp}, \ASM{SLL.mp} and \ASM{SRL.mp} the {\tt rs3} register address
-is created by concatenating the 2-bit {\tt B} field with the 2-bit {\tt A}
-field to create the 4-bit register address.}
-\bigskip
-
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{5}{func5  }& \BH{3}{rs3}& \BH{4}{rs2}&\BH{4}{rs1}&\BH{3}{func3}& \BH{1}{rs3} &\BH{4}{rd}& \BH{8}{opcode}    & \BH{8}{MR-type}  \\
-\BB{5}{ 11000 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ EQU.mp } \\
-\BB{5}{ 11001 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ LTU.mp } \\
-\BB{5}{ 11010 }& \BB{3}{B}& \BB{4}{rs2}&\BB{4}{rs1}&\BB{3}{ 000 }& \BB{1}{A} &\BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ GTU.mp } \\
-\end{bytefield}
-
-\note{For the MR-type instructions \ASM{EQU.mp}, \ASM{LTU.mp} and 
-\ASM{GTU.mp}, the {\tt rs3} register address is created by concatenating
-the 3-bit {\tt B} field with the 1-bit {\tt A} field to create the
-4-bit register address.}
-
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{5}{func5 }& \BH{2}{pw}& \BH{5}{rs2  }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd   }& \BH{8}{opcode}& \BH{8}{R-type} \\
-\BB{5}{ 00000}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ADD.px } \\
-\BB{5}{ 00001}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SUB.px } \\
-\BB{5}{ 00010}& \BB{2}{pw}& \BB{5}{ rs2 }& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MUL.px } \\
-\BB{5}{ 00011}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SLL.px } \\
-\BB{5}{ 00100}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ SRL.px } \\
-\BB{5}{ 00101}& \BB{2}{pw}& \BB{5}{SHAMT}& \BB{5}{rs1}& \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ROT.px } \\
-\end{bytefield}
 \end{center}
-
-\note{For the R-type instructions with a {\em pack-width} ({\tt pw}) field, 
-this field indicates the size of the packed operation to perform. The two
-bit field is decoded thus:}
-\begin{itemize}
-\item $0 \Rightarrow 32$ bit ops - Words.
-\item $1 \Rightarrow 16$ bit ops - Halfwords.
-\item $2 \Rightarrow 8$ bit ops - Bytes.
-\item $3 \Rightarrow 4$ bit ops - Nibbles.
-\end{itemize}
-\bigskip
-
-\begin{center}
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{5}{func5 }& \BH{2}{op}& \BH{5}{rs2    }& \BH{5}{rs1  }& \BH{3}{func3}& \BH{5}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
-\BB{5}{ 00110}& \BB{2}{00}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ XORT   } \\
-\BB{5}{ 00110}& \BB{2}{01}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ANDT   } \\
-\BB{5}{ 00110}& \BB{2}{10}& \BB{5}{ rs2   }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ ORT    } \\
-\BB{5}{ 00110}& \BB{2}{11}& \BB{5}{00000  }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVCOP  } \\
-\BB{5}{ 00110}& \BB{2}{11}& \BB{5}{00001  }& \BB{5}{rs1}  & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{ MVGPR  } \\
-\BB{5}{ 00111}& \BB{2}{00}& \BB{5}{offsets}& \BB{5}{base} & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER} \\
-\BB{5}{ 00111}& \BB{2}{01}& \BB{5}{offsets}& \BB{5}{base} & \BB{3}{ 000 }& \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
-\end{bytefield}
-\end{center}
-
-\quad
 
