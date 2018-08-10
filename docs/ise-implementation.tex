@@ -145,6 +145,10 @@ Other encodings are reserved and never appear.
     instruction has finished and that we are ready for the next one. Writeback
     and response data is valid when this signal is set.
 }
+\SIGNALO{1}{cpu\_insn\_ack}{
+    Allows the CPU to signal to the co-processor it has recieved all
+    information from the execution of an instruction.
+}
 
 \subsubsection{Example Transactions}
 
@@ -152,7 +156,15 @@ This section gives a non-exhaustive list of timing diagrams for example
 transactions over the CPU/COP interface.
 
 \begin{figure}[h]
-\caption{Simple instruction request, acknowledge, result.}
+\centering
+\includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-1.png}
+\caption{Simple instruction request, acknowledge, result with delays.
+The first transaction shows an instruction request in cycle 1, followed
+by the acknlowedgement and result in cycle 2.
+The second shows that if {\tt cop\_insn\_ack} is set already, then
+instructions can be accepted immediately and their result returned on the next
+cycle.  The third shows how the request / acknowledge protocol handles
+stalls.}
 \end{figure}
 
 \begin{figure}[h]
