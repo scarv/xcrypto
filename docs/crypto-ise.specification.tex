@@ -304,76 +304,96 @@ is an odd number. $(6,5)$ is not valid because $6 > 5$. The pair $(6,9)$
 is not valid because $6$ and $9$ are not adjacent.
 \end{itemize}
 
-\paragraph{ADD.mp}
-
-The \ASM{ADD.mp} instruction takes three source registers and two
-destination registers. The intermediate result $t$ is a $34$
-bit integer, comprising the unsigned sum of {\tt rs1}, {\tt rs2}. and
-{\tt rs3}. 
-
-The low $32$ bits of $t$ are written to {\tt rd1}, while the upper 2 bits
-are written to {\tt rd2}.
+\paragraph{ADD2.mp, ADD3.mp}
 
 \begin{itemize}
-\item \INST{ADD.mp (rd2, rd1), rs1, rs2, rs3     }{
+\item \INST{ADD3.mp (rd2, rd1), rs1, rs2, rs3     }{
 $t \ASN ( \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3] $\\
+$\CPR[*][\OPER{rd}_1] \ASN t[31: 0]$\\
+$\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
+}
+\item \INST{ADD2.mp (rd2, rd1), rs1, rs2          }{
+$t \ASN ( \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] ) $\\
 $\CPR[*][\OPER{rd}_1] \ASN t[31: 0]$\\
 $\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
-\paragraph{SUB.mp}
+\paragraph{SUB2.mp, SUB3.mp}
 
 \fixme{I'm not sure I understand this instruction. Why is rs3
 subtracted from the sum of rs1 and rs2? - Ben}
 
 \begin{itemize}
-\item \INST{SUB.mp (rd2, rd1), rs1, rs2, rs3     }{
+\item \INST{SUB3.mp (rd2, rd1), rs1, rs2, rs3     }{
 $t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) - \CPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+}
+\item \INST{SUB2.mp (rd2, rd1), rs1, rs2          }{
+$t \ASN ( \CPR[*][\OPER{rs}_1] -   \CPR[*][\OPER{rs}_2] ) $\\
 $\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
 $\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 }
 \end{itemize}
 
-\paragraph{ACC.mp}
-
-The \ASM{ACC} instruction concatenates the two destination 32-bit registers
-into a single 64-bit value. It then adds the value in {\tt rs3}, and stores
-the result back.
+\paragraph{ACC2.mp, ACC1.mp}
 
 \begin{itemize}
-\item \INST{ACC.mp (rd2, rd1), rs1, rs2, rs3     }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] \CONS \CPR[*][\OPER{rs}_0] ) + \CPR[*][\OPER{rs}_2] + \CPR[*][\OPER{rs}_3] $\\
+\item \INST{ACC2.mp (rd2, rd1), rs1, rs2}{
+$t \ASN ( \CPR[*][\OPER{rd}_2] \CONS \CPR[*][\OPER{rd}_1] ) + \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] $\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
+$\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
+}
+\item \INST{ACC1.mp (rd2, rd1), rs1}{
+$t \ASN ( \CPR[*][\OPER{rd}_2] \CONS \CPR[*][\OPER{rd}_1] ) + \CPR[*][\OPER{rs}_1]$\\
 $\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
 $\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
 }
 \end{itemize}
 
-\paragraph{MAC.mp}
+\paragraph{MAC.mp MAA.mp}
 
 \begin{itemize}
 \item \INST{MAC.mp (rd1, rd2), rs1, rs2, rs3}{
-$t                  \ASN ( \CPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3]$\\
+$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3]$\\
+$\CPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
+$\CPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
+}
+\item \INST{MAA.mp (rd1, rd2), rs1, rs2, rs3, rs4}{
+$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3]+ \CPR[*][\OPER{rs}_4]$\\
 $\CPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
 $\CPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
 }
 \end{itemize}
 
-\paragraph{SLL.mp}
+\paragraph{SLLI.mp, SLLR.mp}
 
 \begin{itemize}
-\item \INST{SLL.mp (rd1, rd2), rs1, rs2, rs3     }{
-$\CPR[*][\OPER{rd}_2] \ASN \CPR[*][\OPER{rs}_1] \LSH      \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \CPR[*][\OPER{rs}_3]$\\
-$\CPR[*][\OPER{rd}_1] \ASN \CPR[*][\OPER{rs}_1] \RSH \W - \CPR[*][\OPER{rs}_1]_{\log_2(\W)-1 \ldots 0}$\\
+\item \INST{SLLI.mp (rd2, rd1), rs1, rs2, shamt   }{
+$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \LSH shamt$\\
+$\CPR[*][rd2] \ASN t[63:32]$ \\
+$\CPR[*][rd1] \ASN t[31:0]$
+}
+\item \INST{SLLR.mp (rd1, rd2), rs1, rs2, rs3     }{
+$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \LSH \CPR[*][rs3][5:0]$\\
+$\CPR[*][rd2] \ASN t[63:32]$ \\
+$\CPR[*][rd1] \ASN t[31:0]$
 }
 \end{itemize}
 
-\paragraph{SRL.mp}
+\paragraph{SRLI.mp,SRL.mp}
 
 \begin{itemize}
-\item \INST{SRL.mp (rd1, rd2), rs1, rs2, rs3     }{
-$\CPR[*][\OPER{rd}_2] \ASN \CPR[*][\OPER{rs}_1] \LSH \W - \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0}$\\
-$\CPR[*][\OPER{rd}_1] \ASN \CPR[*][\OPER{rs}_1] \RSH      \CPR[*][\OPER{rs}_2]_{\log_2(\W)-1 \ldots 0} \IOR \CPR[*][\OPER{rs}_3]$\\
+\item \INST{SRLI.mp (rd2, rd1), rs1, rs2, shamt   }{
+$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \RSH shamt$\\
+$\CPR[*][rd2] \ASN t[63:32]$ \\
+$\CPR[*][rd1] \ASN t[31:0]$
+}
+\item \INST{SRLR.mp (rd1, rd2), rs1, rs2, rs3     }{
+$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \RSH \CPR[*][rs3][5:0]$\\
+$\CPR[*][rd2] \ASN t[63:32]$ \\
+$\CPR[*][rd1] \ASN t[31:0]$
 }
 \end{itemize}
 
@@ -606,12 +626,18 @@ ROT.px  rd, rs1, shamt          \\
 XOR.cr  rd, rs1, rs2            \\
 AND.cr  rd, rs1, rs2            \\
 OR.cr   rd, rs1, rs2            \\
-ADD.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-SUB.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-ACC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+ADD3.mp (rd1, rd2),  rs1, rs2, rs3 \\
+ADD2.mp (rd1, rd2),  rs1, rs2  \\
+SUB3.mp (rd1, rd2),  rs1, rs2, rs3 \\
+SUB2.mp (rd1, rd2),  rs1, rs2  \\
+ACC2.mp (rd1, rd2),  rs1, rs2  \\
+ACC1.mp (rd1, rd2),  rs1       \\
 MAC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-SLL.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-SRL.mp  (rd1, rd2),  rs1, rs2, rs3 \\
+MAA.mp  (rd1, rd2),  rs1, rs2, rs3, rs4 \\
+SLLI.mp (rd1, rd2),  rs1, rs2, shamt \\
+SLLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
+SRLI.mp (rd1, rd2),  rs1, rs2, shamt \\
+SRLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
 EQU.mp  rd1,         rs1, rs2, rs3 \\
 LTU.mp  rd1,         rs1, rs2, rs3 \\
 GTU.mp  rd1,         rs1, rs2, rs3 \\
@@ -761,9 +787,28 @@ using the following lookup table. \\
 \begin{figure}[h]
 \centering
 \begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-  \BH{17}{                               }& \BH{3}{f3 }& \BH{5}{     }& \BH{8}{opcode}& \BH{8}{\bf MR-type} \\
-  \BB{17}{                               }& \BB{3}{111}& \BB{5}{     }& \BB{8}{\encopcode}& \BB{8}{\bf MR-type} \\
+\bitheader{0-31}\\
+\BH{4}{ op }&\BH{4}{rs3  }&\BH{4}{rs2 }\BH{1}{c}&&\BH{4}{rs1}&& \BH{3}{f3 }&\BH{2}{ mo } \BH{3}{ rdm }& \BH{8}{opcode}& \BH{8}{\bf MR-type} \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ EQU.mp    } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ LTU.mp    } \\
+\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ GTU.mp    } \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ADD3.mp } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SUB3.mp } \\
+\BB{4}{0010}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ADD2.mp } \\
+\BB{4}{0011}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SUB2.mp } \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SLLR.mp } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SRLR.mp } \\
+\BB{4}{0010}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SLLI.mp } \\
+\BB{4}{0011}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SRLI.mp } \\
+\BB{4}{0000}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ACC2.mp } \\
+\BB{4}{0001}&\BB{4}{0000 }&\BB{4}{0000}\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ACC1.mp } \\
+\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
+\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 11 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ MAA.mp } \\
 \end{bytefield}
-\caption{Multi-precision integer instruction encodings.}
+\caption{Multi-precision integer instruction encodings. All instructions in
+this class are identified first by the {\tt f3} field, then by the {\tt c}
+field. The {\tt c} field splits comparison operations from compute operations.
+The {\tt mo} and {\tt op} fields then further identify the instructions.
+Note that the {\tt rd} field for the comparison instructions is a RISC-V
+$\GPR$ register address.}
 \end{figure}
