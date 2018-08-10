@@ -307,27 +307,29 @@ is not valid because $6$ and $9$ are not adjacent.
 \paragraph{ADD.mp}
 
 The \ASM{ADD.mp} instruction takes three source registers and two
-destination registers. The intermediate result $t_0$ is a $32$
-bit integer, comprising the unsigned sum of the $32$ bit values in
-{\tt rs1} and {\tt rs2}. The final $33$ bit result $t_1$ is the signed
-sum of $t_0$ and the $32$ bit value in $rs3$.
+destination registers. The intermediate result $t$ is a $34$
+bit integer, comprising the unsigned sum of {\tt rs1}, {\tt rs2}. and
+{\tt rs3}. 
 
-The low $32$ bits of $t_1$ are written to {\tt rd1}, while the carry out
-bit is written to {\tt rd2}.
+The low $32$ bits of $t$ are written to {\tt rd1}, while the upper 2 bits
+are written to {\tt rd2}.
 
 \begin{itemize}
-\item \INST{ADD.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3] $\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+\item \INST{ADD.mp (rd2, rd1), rs1, rs2, rs3     }{
+$t \ASN ( \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3] $\\
+$\CPR[*][\OPER{rd}_1] \ASN t[31: 0]$\\
+$\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
 \paragraph{SUB.mp}
 
+\fixme{I'm not sure I understand this instruction. Why is rs3
+subtracted from the sum of rs1 and rs2? - Ben}
+
 \begin{itemize}
-\item \INST{SUB.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t                  \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) - \CPR[*][\OPER{rs}_3]$\\
+\item \INST{SUB.mp (rd2, rd1), rs1, rs2, rs3     }{
+$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) - \CPR[*][\OPER{rs}_3]$\\
 $\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
 $\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 }
@@ -335,8 +337,12 @@ $\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 
 \paragraph{ACC.mp}
 
+The \ASM{ACC} instruction concatenates the two destination 32-bit registers
+into a single 64-bit value. It then adds the value in {\tt rs3}, and stores
+the result back.
+
 \begin{itemize}
-\item \INST{ACC.mp (rd1, rd2), rs1, rs2, rs3     }{
+\item \INST{ACC.mp (rd2, rd1), rs1, rs2, rs3     }{
 $t \ASN ( \CPR[*][\OPER{rs}_1] \CONS \CPR[*][\OPER{rs}_0] ) + \CPR[*][\OPER{rs}_2] + \CPR[*][\OPER{rs}_3] $\\
 $\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
 $\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
