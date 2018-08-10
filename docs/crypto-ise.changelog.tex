@@ -1,0 +1,26 @@
+
+\paragraph{Draft-2}
+\begin{itemize}
+\item Added high/low nibble twiddle instructions TWID.HN,TWID.LN.
+\item Added LUI.cr and ORI.cr instructions for loading immediates.
+\item Added packed width instructions for 1,2,4,8,16,32 pack widths.
+\item Removed Transpose register access support.
+\item Rename MVCOP, MVGPR  $\Rightarrow$ MV2GPR, MV2COP
+\item Rename XORT,ANDT,ORT $\Rightarrow$ XOR.cr, AND.cr, OR.cr
+\item Revised all of the multi-precision instructions.
+\begin{itemize}
+    \item Immediate and register source varients of the shift instructions.
+    \item Split most into 4 and 5 source register versions.
+\end{itemize}
+\item Revised all instruction encodings.
+\item General typo and spelling fixes.
+\end{itemize}
+
+\paragraph{Draft-1}
+\begin{itemize}
+\item Initial draft of the ISE.
+\item Transpose register support.
+\item Included initial list of instructions and behaviour.
+\item Encodings missing from the multi-precision format instructions.
+\item Describe ABI handling.
+\end{itemize}
