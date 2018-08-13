@@ -51,6 +51,24 @@ A smart programmer will remember to clear their $\CPR$s of any secret data
 before returning execution to some part of the system they did not write.
 }
 
+The number of general purpose registers to put into any ISA and ISE is
+always contentious. We chose 16 general purpose registers for this ISE
+for the following reasons:
+\begin{itemize}
+\item As demonstrated by ARM, 16 GPRs is plenty for most computation. Indeed
+ARM actually has fewer GPRs due to the special nature of some of their
+{\em high} registers. We believe mirroring the base RISC-V ISA and having
+32 GPRs would have been overkill for an ISE such as this, even when the
+{\tt F} extension adds 32 registers itself.
+\item In area-optimised implementations such as micro-controllers, the
+total area of a core is often dominated by the register-file. For embedded
+applications which do not need all 32 GPRs, one could use the {\tt E}
+extension, and use the area saved by having 16 GPRs to make room on the die
+for the crypto ISE.
+\item Fewer registers frees up instruction encoding space which would
+normally have been needed for register addresses.
+\end{itemize}
+
 \subsubsection{ABI Standards}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
@@ -118,7 +136,7 @@ lower half of a $\CPR$ register.
 \subsubsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
-packed operatons on multiple independent values. They operate on words, and
+packed operations on multiple independent values. They operate on words, and
 chunk them into 1, 2, 4, 8, 16 or 32 separate values as shown in the table
 below.
 
@@ -203,15 +221,39 @@ left by the value in {\tt SHAMT}.
 
 \subsubsection{Bitwise and Twiddle Instructions}
 
+\paragraph{BOP.cr}
+
+The \ASM{BOP.cr} is designed to express all bitwise logic functions, and be
+amenable to bit-sliced implementations of cryptographic functions.
+
+\begin{itemize}
+\item \INST{BOP.cr rd, rs1, rs2, lut4}{
+    $\forall i \in \{0..31\}$
+    $ \CPR[*][\OPER{rd}][i] \ASN $
+    $ \OPER{lut4}[\CPR[*][rs1][i] \CONS \CPR[*][rs2][i]] $ \\
+}
+\end{itemize}
+
+\ASM{BOP.cr} takes a 4-bit immediate {\tt lut4}, and uses the concatenated
+$i$'th bits of register inputs $\GPR[*][rs1]$ and  $\GPR[*][rs2]$
+as the inputs, writing the output bit of the lut to the $i$'th bit of the
+destination register.
+\designnote{
+    This instruction must be implemented with care, since a naive
+    implementation will end up with a 32-port LUT, with correspondingly
+    poor timing performance.
+}
+
 \paragraph{XOR.cr, AND.cr, OR.cr}
 
 The \ASM{XOR.cr}, \ASM{AND.cr}, and \ASM{OR.cr} instructions compute the
 appropriate bitwise result of their operation between the {\tt rs1} and
 {\tt rs2} operands. The result is then written into {\tt rd}.
-\designnote{Originally the bitwise instructions were to have twiddle
-functionality built-in, removing the need for a dedicated twiddle instruction.
-The encoding space required however did not fit well with the existing RISC-V
-register address and function field layout, and was extremely expensive.}
+
+\note{
+    These instructions are simply aliases of {\ASM BOP.cr}, and are
+    encoded as such in Figure \ref{fig:encodings-rtype}.
+}
 
 The only difference between these instructions and their standard RISC-V
 counterparts is that they operate on the $\CPR$ register file.
@@ -227,10 +269,6 @@ counterparts is that they operate on the $\CPR$ register file.
     $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
 }
 \end{itemize}
-
-Note that by having {\tt rs1} the same as {\tt rs2}, the twiddle
-arithmetic instructions can be used to arbitrarily re-arrange bytes
-within words. They can also be used to duplicate bytes within words.
 
 \paragraph{TWID.B, TWID.HN, TWID.LN}
 
@@ -450,13 +488,13 @@ the standard RISC-V variants but with the following differences:
 \begin{itemize}
 \item The halfword and byte variants can specify which halfword or byte of
       the destination register they are targeting.
-\item There is no sign-extending equivilent of the \ASM{LH} and \ASM{LB}
+\item There is no sign-extending equivalent of the \ASM{LH} and \ASM{LB}
       instructions.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       target register is always in the $\CPR$ set.
 \end{itemize}
 
-These instructions will raise a {\em load address misaligned} instruction
+These instructions will raise a {\em load address misaligned} exception
 if: the final source address is not aligned to the data type the instruction
 is loading {\em and} the implementation does not support misaligned accesses.
 The general rule here is that the \ASM{L*.cr} instructions should behave in
@@ -485,8 +523,8 @@ interrupt behaviour and atomicity rules.
 \end{itemize}
 
 \note{
-    The notation above assumes a byte addressed memory, where {\tt db}
-    is a two bit byte address and {\tt dh} is a one bit halfword address.
+    The notation above assumes a byte addressed memory, where {\tt b}
+    is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
 \paragraph{SB.cr, SH.cr, SW.cr}
@@ -507,8 +545,8 @@ the standard RISC-V variants but with the following differences:
         encoding space, and lets the $\CPR$ state be used for the compute
         work it was designed for rather than mundane address calculation.
         While care must be
-        taken to avoid hazards between the difference register sets, we
-        belive this decision makes sense overall.
+        taken to avoid hazards between the different register sets, we
+        believe this decision makes sense overall.
       }
 \end{itemize}
 
@@ -545,44 +583,76 @@ interrupt behaviour and atomicity rules.
     is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
-\paragraph{SCATTER, GATHER}
+\paragraph{SCATTER.[b,h], GATHER[.b,h]}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
-s-box lookup instructions. They allow four separate lookups per instruction
-into a 256 entry LUT stored in memory. \ASM{GATHER} will move the looked-up
-values from memory into a register, while \ASM{SCATTER} will move bytes of a
-register word back into the LUT in memory.
+s-box lookup instructions. The {\tt .b} variants allow four separate lookups
+per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
+variants allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
+will move the looked-up values from memory into a register, while \ASM{SCATTER}
+will move bytes of a register word back into the LUT in memory.
+\designnote{
+    While it is of-course possible to emulate the {\tt .h} variants of
+    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
+    the performance and efficency savings to be had from telling the hardware
+    explicitly to work on halfwords were worth the extra instructions.
+}
 
-The address $a_x$ of each byte to be loaded or stored is computed by
-adding an offset byte $x$ from the {\tt offsets} $\CPR$ register, and
-adding it to the $base$ $\GPR$ register.
+The address $a_x$ of each byte/halfword to be loaded or stored is computed by
+adding an offset $x$ from the {\tt offsets} $\CPR$ register, and adding it
+to the $base$ $\GPR$ register. For the {\tt .b} variants, there are four
+offsets each corresponding to the four bytes of the offsets source register
+word. For the {\tt .h} variant, there are two offsets corresponding to the
+upper and lower halfwords of the registers.
 
 Both instructions use the $\GPR$s to source their base address, while the
 offset indices into the LUT come from the $\CPR$ registers. This mirrors
 how the ISE load and store instructions compute their addresses.
 
+\bigskip
+
+\begin{minipage}{0.5\textwidth}
 \begin{itemize}
-\item \INST{GATHER rd, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+\item \INST{GATHER.b rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
     $\CPR[*][rd][0] \ASN \MEM[*][a_0]$ \\
     $\CPR[*][rd][1] \ASN \MEM[*][a_1]$ \\
     $\CPR[*][rd][2] \ASN \MEM[*][a_2]$ \\
     $\CPR[*][rd][3] \ASN \MEM[*][a_3]$
 }
-\item \INST{SCATTER rs, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+\item \INST{GATHER.h rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $\CPR[*][rd][15: 0] \ASN \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0]$ \\
+    $\CPR[*][rd][31:16] \ASN \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1]$
+}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{itemize}
+\item \INST{SCATTER.b rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
     $ \MEM[*][a_0] \ASN \CPR[*][rs][0]$ \\
     $ \MEM[*][a_1] \ASN \CPR[*][rs][1]$ \\
     $ \MEM[*][a_2] \ASN \CPR[*][rs][2]$ \\
     $ \MEM[*][a_3] \ASN \CPR[*][rs][3]$
 }
+\item \INST{SCATTER.h rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $ \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0] \ASN \CPR[*][rs][15: 0]$ \\
+    $ \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1] \ASN \CPR[*][rs][31:16]$
+}
 \end{itemize}
+\end{minipage}
+
+\bigskip
 
 \note{
     The scatter instruction requires three register file reads.
@@ -591,9 +661,9 @@ how the ISE load and store instructions compute their addresses.
     standard two-read-one-write set.
 }
 
-An implementation may perform the memory accesses in any order. The accesses
-appear as {\em byte} accesses, so the value of the {\em base} register
-need not be word or halfword aligned.
+An implementation may perform the memory accesses in any order. The instructions
+will raise address misalignment exceptions in line with how misalignment is
+handled in the rest of the ISA.
 
 If any of the memory accesses cause
 a {\em load access fault, load page fault, store page fault} or
@@ -608,16 +678,15 @@ early, the value taken by the destination register bytes is {\em
 implementation dependent}. The implementation is responsible for ensuring
 that the {\tt EPC} register is set appropriately depending on whether the
 interrupt is taken during, or at the end of, the instruction.
-\designnote{Implementation of these instructions consider the impact of
+\designnote{Implementation of these instructions should consider the impact of
 shared memory systems, since it will be possible for other agents in the
 system to access memory during the execution of this instruction. In systems
 possessing a cache, programmers must be mindful that these instructions
 can cause odd behaviour due to the non-linear access pattern the instruction
-creates. All accesses will be within 256 bytes of one another however,
-which may motivate particular alignment of the LUT based on cache-line size}
+creates.}
 
 The rationale for these instructions is two fold. They help with code density,
-since at-least four instructions worth of work (eight in RV32) can now be done
+since at-least four instructions worth of work can now be done
 in one instruction. They can also help with energy efficiency, since fewer
 instructions need to be fetched and travel through an execution pipeline in
 order to achieve the same goal. They are not designed to enhance performance
@@ -631,52 +700,55 @@ This section lists the assembly notation for the instructions, as well as
 their encodings.
 
 {\tt
-MV2GPR  rd, rs1                 \\
-MV2COP  rd, rs1                 \\
-TWID.B  rd, rs1, b0, b1, b2, b3 \\
-TWID.HN rd, rs1, n0, n1, n2, n3 \\
-TWID.LN rd, rs1, n0, n1, n2, n3 \\
-ADD.px  rd, rs1, rs2            \\
-SUB.px  rd, rs1, rs2            \\
-MUL.px  rd, rs1, rs2            \\
-SLL.px  rd, rs1, shamt          \\
-SRL.px  rd, rs1, shamt          \\
-ROT.px  rd, rs1, shamt          \\
-XOR.cr  rd, rs1, rs2            \\
-AND.cr  rd, rs1, rs2            \\
-OR.cr   rd, rs1, rs2            \\
-ADD3.mp (rd1, rd2),  rs1, rs2, rs3 \\
-ADD2.mp (rd1, rd2),  rs1, rs2  \\
-SUB3.mp (rd1, rd2),  rs1, rs2, rs3 \\
-SUB2.mp (rd1, rd2),  rs1, rs2  \\
-ACC2.mp (rd1, rd2),  rs1, rs2  \\
-ACC1.mp (rd1, rd2),  rs1       \\
-MAC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-MAA.mp  (rd1, rd2),  rs1, rs2, rs3, rs4 \\
-SLLI.mp (rd1, rd2),  rs1, rs2, shamt \\
-SLLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
-SRLI.mp (rd1, rd2),  rs1, rs2, shamt \\
-SRLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
-EQU.mp  rd1,         rs1, rs2, rs3 \\
-LTU.mp  rd1,         rs1, rs2, rs3 \\
-GTU.mp  rd1,         rs1, rs2, rs3 \\
-LBU.cr  rd , imm(rs1)           \\
-LHU.cr  rd , imm(rs1)           \\
-LW.cr   rd , imm(rs1)           \\
-LUI.cr  rd,  imm16              \\
-ORI.cr  rd,  imm16              \\
-SB.cr   rs2, imm(rs1)           \\
-SH.cr   rs2, imm(rs1)           \\
-SW.cr   rs2, imm(rs1)           \\
-SCATTER rs, base, offsets       \\
-GATHER  rd, base, offsets       \\
+MV2GPR      rd, rs1                 \\
+MV2COP      rd, rs1                 \\
+TWID.B      rd, rs1, b0, b1, b2, b3 \\
+TWID.HN     rd, rs1, n0, n1, n2, n3 \\
+TWID.LN     rd, rs1, n0, n1, n2, n3 \\
+ADD.px      rd, rs1, rs2            \\
+SUB.px      rd, rs1, rs2            \\
+MUL.px      rd, rs1, rs2            \\
+SLL.px      rd, rs1, shamt          \\
+SRL.px      rd, rs1, shamt          \\
+ROT.px      rd, rs1, shamt          \\
+XOR.cr      rd, rs1, rs2            \\
+AND.cr      rd, rs1, rs2            \\
+OR.cr       rd, rs1, rs2            \\
+BOP.cr      rd, rs1, rs2, lut4      \\
+ADD3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+ADD2.mp     (rd1, rd2),  rs1, rs2  \\
+SUB3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+SUB2.mp     (rd1, rd2),  rs1, rs2  \\
+ACC2.mp     (rd1, rd2),  rs1, rs2  \\
+ACC1.mp     (rd1, rd2),  rs1       \\
+MAC.mp      (rd1, rd2),  rs1, rs2, rs3 \\
+MAA.mp      (rd1, rd2),  rs1, rs2, rs3, rs4 \\
+SLLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
+SLLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+SRLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
+SRLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+EQU.mp      rd1,         rs1, rs2, rs3 \\
+LTU.mp      rd1,         rs1, rs2, rs3 \\
+GTU.mp      rd1,         rs1, rs2, rs3 \\
+LBU.cr      rd , imm(rs1)           \\
+LHU.cr      rd , imm(rs1)           \\
+LW.cr       rd , imm(rs1)           \\
+LUI.cr      rd,  imm16              \\
+ORI.cr      rd,  imm16              \\
+SB.cr       rs2, imm(rs1)           \\
+SH.cr       rs2, imm(rs1)           \\
+SW.cr       rs2, imm(rs1)           \\
+SCATTER.b   rs, base, offsets       \\
+GATHER.b    rd, base, offsets       \\
+SCATTER.h   rs, base, offsets       \\
+GATHER.h    rd, base, offsets       \\
 }
 
 \newpage
 \subsection{Instruction Encodings}
 
 The following variations on the standard RISC-V instruction encoding types are
-used in this ISE. The varients are kept as close as possible to the orignals,
+used in this ISE. The variants are kept as close as possible to the originals,
 while still making use of spare bits due to the 4-bit register address encoding.
 We also define a new {\em multi-register} or {\em MR} instruction format, which
 is used for the multi-precision arithmetic instructions.
@@ -685,6 +757,39 @@ is used for the multi-precision arithmetic instructions.
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
+
+  \BB{12}{imm[11:0]}
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{1}{b}
+& \BB{4}{rd   }
+& \BB{8}{\encopcode}
+& \BH{15}{I-type} \\
+
+  \BB{7}{imm[11:5]}
+& \BB{1}{b}
+& \BB{4}{rs2  }
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{5}{imm[4:0]}
+& \BB{8}{\encopcode}
+& \BH{15}{S-type} \\
+
+  \BB{2}{b0}
+& \BB{2}{b0}
+& \BB{2}{b2}
+& \BB{2}{b3}
+& \BB{4}{ twop}
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{1}{b}
+& \BB{4}{rd   }
+& \BB{8}{\encopcode}
+& \BH{15}{Twiddle} \\
+  
   \BB{7}{f7}
 & \BB{1}{a    }
 & \BB{4}{rs2  }
@@ -693,29 +798,19 @@ is used for the multi-precision arithmetic instructions.
 & \BB{3}{f3}
 & \BB{1}{c    }
 & \BB{4}{rd   }
-& \BB{8}{opcode}
-& \BB{8}{\bf R-type} \\
+& \BB{8}{\encopcode}
+& \BH{15}{R-type} \\
 
-  \BB{12}{imm[11:0]}
-& \BB{1}{h}
-& \BB{4}{rs1  }
-& \BB{3}{f3}
-& \BB{1}{b}
-& \BB{4}{rd   }
-& \BB{8}{opcode}
-& \BB{8}{\bf I-type} \\
-  
-  \BB{7}{imm[11:5]}
-& \BB{1}{b}
-& \BB{4}{rs1  }
-& \BB{1}{h}
-& \BB{4}{rs2  }
-& \BB{3}{f3}
-& \BB{5}{imm[4:0]}
-& \BB{8}{opcode}
-& \BB{8}{\bf S-type}
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
+\BB{7}{  f7   }& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{SCATTER/GATHER} \\
+\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{111}&\BB{5}{ rd }               & \BB{8}{\encopcode}& \BH{15}{MC-type   } \\
+\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MR-type} \\
+\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MAA.mp } \\
 \end{bytefield}
-\caption{The three main types of encoding used by the ISE.}
+\caption{The main types of encoding used by the ISE. The table includes 
+1-off instructions which are the only ones to use their particular
+encoding.}
 \end{figure}
 
 The following tables show the encodings for all instructions in the ISE,
@@ -737,7 +832,7 @@ grouped by their layout.
 \end{bytefield}
 \caption{I-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the loaded
-value is written too. Where these fields are irrelevent, they are tied to
+value is written too. Where these fields are irrelevant, they are tied to
 zero. Here {\tt imm4} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
 represent bits $15..12$ of the $16$ bit immediate they operate with.
 The \ASM{TWID.*} instructions share the {\tt f3} field encoding with
@@ -756,7 +851,7 @@ from \ASM{LW.cr}.}
 \end{bytefield}
 \caption{S-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the value to be
-stored is sourced from. Where these fields are irrelevent, they are tied to
+stored is sourced from. Where these fields are irrelevant, they are tied to
 zero.}
 \end{figure}
 
@@ -774,11 +869,11 @@ zero.}
 \BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
 \BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
 \BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
-\BB{7}{0000111}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
-\BB{7}{0001000}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
-\BB{7}{0001001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
-\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
-\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
+\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.b} \\
+\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.b } \\
+\BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.h} \\
+\BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.h } \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{BOP.cr } \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
 \caption[x]{Register type instruction encodings. Note the different field widths
@@ -800,6 +895,7 @@ using the following lookup table. \\
 \item $a,b,c = 111 $ - Reserved. Should be treated as a NOP.
 \end{itemize}
 }
+\label{fig:encodings-rtype}
 \end{figure}
 
 
