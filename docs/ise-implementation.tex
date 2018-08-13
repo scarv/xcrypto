@@ -80,8 +80,12 @@ instructions to the COP and recieve results. The three signals
 {\tt cpu\_insn\_req, cop\_insn\_ack} and {\tt cop\_insn\_rsp} control the
 rate of information flow between the CPU and the COP.
 
+\subsubsection{Signal List}
+
 \SIGNALI{1}{cpu\_insn\_req}{
     Set by the CPU to indicate a new instruction needs to be executed.
+    There must be no combinatorial path from {\tt cpu\_insn\_req} to
+    {\tt cop\_insn\_ack}.
 }
 \SIGNALO{1}{cop\_insn\_ack}{
     Co-processor acknowledge. This is asserted by the co-processor to say
@@ -93,6 +97,8 @@ rate of information flow between the CPU and the COP.
     executing (if any) and return to an idle state where it is ready to
     accept new instructions. This signal is used to abort long multi-cycle
     instructions in the presence of a pending interrupt.
+    There must be no combinatorial path from {\tt cpu\_insn\_abort} to
+    {\tt cop\_insn\_ack}.
 }
 \SIGNALI{32}{cpu\_insn\_enc}{
     The encoded instruction word to be executed by the COP.
@@ -144,6 +150,8 @@ Other encodings are reserved and never appear.
     Co-processor response. Used to indicate processing of the current
     instruction has finished and that we are ready for the next one. Writeback
     and response data is valid when this signal is set.
+    There must be no combinatorial path from {\tt cpu\_insn\_rsp} to
+    {\tt cpu\_insn\_ack}.
 }
 \SIGNALO{1}{cpu\_insn\_ack}{
     Allows the CPU to signal to the co-processor it has recieved all
@@ -165,15 +173,21 @@ The second shows that if {\tt cop\_insn\_ack} is set already, then
 instructions can be accepted immediately and their result returned on the next
 cycle.  The third shows how the request / acknowledge protocol handles
 stalls.}
+\label{fig:cpu-cop-if-waves-1}
 \end{figure}
 
 \begin{figure}[h]
-\caption{Back to back instruction requst, acknowledge, result.}
+\centering
+\includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-2.png}
+\caption{This figure shows the same three transactions as in figure
+\ref{fig:cpu-cop-if-waves-1} but with the requests issued back to back.
+In the set of transactions, the results of each transacton are not always
+accepted on the next cycle. In the second set, we see the interface working
+at maximum throughput, with every request accepted in the same cycle, and
+results always accepted in the next cycle.}
 \end{figure}
 
-\begin{figure}[h]
-\caption{Multi-cycle instruction request, acknowledge, result.}
-\end{figure}
+
 
 \subsection{Memory Interface}
 
