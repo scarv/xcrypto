@@ -9,7 +9,7 @@
 
 //
 // Instruction macro definitions
-.include "cop-instructions.S"
+#include "cop-instructions.S"
 
 //
 // ------------------- READ ONLY DATA -------------------
@@ -85,76 +85,8 @@ scv_state:    .fill 16
 .section .text
 
 
-//
-// function: scv_addroundkey
-//
-//  Assumes that the entire AES-128 state is in CPR registers
-//  4 to 7.
-//
-.global scv_addroundkey
-scv_addroundkey: //(round, roundkey pointer)
-    srli    a0  , a0 , 2
-    add     a0  , a1 , a0   // Current round key address
-    LW_CR(  cpr19,  0,a0)   // Load the words of the key in transpose form.
-    LW_CR(  cpr18,  4,a0)
-    LW_CR(  cpr17,  8,a0)
-    LW_CR(  cpr16, 12,a0)
-    XORT(   cpr23, cpr23, cpr19)// XOR the key in.
-    XORT(   cpr22, cpr22, cpr18)// XOR the key in.
-    XORT(   cpr21, cpr21, cpr17)// XOR the key in.
-    XORT(   cpr20, cpr20, cpr16)// XOR the key in.
-    ret
+.global test_sequence
+test_sequence:
 
+    LBU_cr(cpr1,0,0,9,sp)
 
-//
-// function: scv_subbytes
-//
-//  Assumes that the entire AES-128 state is in CPR registers
-//  4 to 7.
-//
-.global scv_subbytes
-scv_subbytes:
-    la      t0  , sbox
-    GATHER (cpr4, cpr4, t0) // Perform SBOX substitutions for row-0
-    GATHER (cpr5, cpr5, t0) // ...
-    GATHER (cpr6, cpr6, t0) // ...
-    GATHER (cpr7, cpr7, t0) // ...
-    ret
-
-
-//
-// function: scv_shiftrows
-//
-//  Assumes that the entire AES-128 state is in CPR registers
-//  4 to 7.
-//
-.global scv_shiftrows
-scv_shiftrows:
-    TWID   (cpr5, cpr5, 2, 1, 0, 3)
-    TWID   (cpr6, cpr6, 1, 0, 3, 2)
-    TWID   (cpr7, cpr7, 0, 3, 2, 1)
-    ret
-
-
-//
-// function: scv_mixcolumns
-//
-//  Assumes that the entire AES-128 state is in CPR registers
-//  4 to 7.
-//
-.global scv_mixcolumns
-scv_mixcolumns:
-    ret
-
-
-//
-// function: scv_xtime
-//
-//  Implements the GF(8) multiplication used in mixcolumns.
-//
-//  Takes a single word-argument in cpr0, and applies the xtime
-//  operation to each byte in the word individually, returning the
-//  value also in cpr0
-//
-scv_xtime:
-    ret

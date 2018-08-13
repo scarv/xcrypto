@@ -4,7 +4,7 @@ CC      = $(RISCV)/bin/riscv64-unknown-elf-gcc
 AS      = $(RISCV)/bin/riscv64-unknown-elf-as
 OBJDUMP = $(RISCV)/bin/riscv64-unknown-elf-objdump
 
-CCFLAGS +=-Os -O2 -march=rv32im -mabi=ilp32 -nostartfiles -nostdlib -fpie
+CCFLAGS += -E -Os -O2 -march=rv32im -mabi=ilp32 -nostartfiles -nostdlib -fpie
 
 SRC     ?= aes-accelerated.S
 
