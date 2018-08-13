@@ -545,44 +545,76 @@ interrupt behaviour and atomicity rules.
     is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
-\paragraph{SCATTER, GATHER}
+\paragraph{SCATTER.[b,h], GATHER[.b,h]}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
-s-box lookup instructions. They allow four separate lookups per instruction
-into a 256 entry LUT stored in memory. \ASM{GATHER} will move the looked-up
-values from memory into a register, while \ASM{SCATTER} will move bytes of a
-register word back into the LUT in memory.
+s-box lookup instructions. The {\tt .b} varients allow four separate lookups
+per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
+varients allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
+will move the looked-up values from memory into a register, while \ASM{SCATTER}
+will move bytes of a register word back into the LUT in memory.
+\designnote{
+    While it is ofcourse possible to emulate the {\tt .h} varients of
+    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} varients, we felt that
+    the performance and efficency savings to be had from telling the hardware
+    explicitly to work on halfwords were worth the extra instructions.
+}
 
-The address $a_x$ of each byte to be loaded or stored is computed by
-adding an offset byte $x$ from the {\tt offsets} $\CPR$ register, and
-adding it to the $base$ $\GPR$ register.
+The address $a_x$ of each byte/halfword to be loaded or stored is computed by
+adding an offset $x$ from the {\tt offsets} $\CPR$ register, and adding it
+to the $base$ $\GPR$ register. For the {\tt .b} varients, there are four
+offsets each corresponding to the four bytes of the offsets source register
+word. For the {\tt .h} varient, there are two offsets corresponding to the
+upper and lower halfwords of the registers.
 
 Both instructions use the $\GPR$s to source their base address, while the
 offset indices into the LUT come from the $\CPR$ registers. This mirrors
 how the ISE load and store instructions compute their addresses.
 
+\bigskip
+
+\begin{minipage}{0.5\textwidth}
 \begin{itemize}
-\item \INST{GATHER rd, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+\item \INST{GATHER.b rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
     $\CPR[*][rd][0] \ASN \MEM[*][a_0]$ \\
     $\CPR[*][rd][1] \ASN \MEM[*][a_1]$ \\
     $\CPR[*][rd][2] \ASN \MEM[*][a_2]$ \\
     $\CPR[*][rd][3] \ASN \MEM[*][a_3]$
 }
-\item \INST{SCATTER rs, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][1]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][2]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][3]$ \\
+\item \INST{GATHER.h rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $\CPR[*][rd][15: 0] \ASN \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0]$ \\
+    $\CPR[*][rd][31:16] \ASN \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1]$
+}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{itemize}
+\item \INST{SCATTER.b rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
     $ \MEM[*][a_0] \ASN \CPR[*][rs][0]$ \\
     $ \MEM[*][a_1] \ASN \CPR[*][rs][1]$ \\
     $ \MEM[*][a_2] \ASN \CPR[*][rs][2]$ \\
     $ \MEM[*][a_3] \ASN \CPR[*][rs][3]$
 }
+\item \INST{SCATTER.h rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $ \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0] \ASN \CPR[*][rs][15: 0]$ \\
+    $ \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1] \ASN \CPR[*][rs][31:16]$
+}
 \end{itemize}
+\end{minipage}
+
+\bigskip
 
 \note{
     The scatter instruction requires three register file reads.
@@ -591,9 +623,9 @@ how the ISE load and store instructions compute their addresses.
     standard two-read-one-write set.
 }
 
-An implementation may perform the memory accesses in any order. The accesses
-appear as {\em byte} accesses, so the value of the {\em base} register
-need not be word or halfword aligned.
+An implementation may perform the memory accesses in any order. The instructions
+will raise address misalignment exceptions in line with how misalignment is
+handled in the rest of the ISA.
 
 If any of the memory accesses cause
 a {\em load access fault, load page fault, store page fault} or
@@ -608,16 +640,15 @@ early, the value taken by the destination register bytes is {\em
 implementation dependent}. The implementation is responsible for ensuring
 that the {\tt EPC} register is set appropriately depending on whether the
 interrupt is taken during, or at the end of, the instruction.
-\designnote{Implementation of these instructions consider the impact of
+\designnote{Implementation of these instructions should consider the impact of
 shared memory systems, since it will be possible for other agents in the
 system to access memory during the execution of this instruction. In systems
 possessing a cache, programmers must be mindful that these instructions
 can cause odd behaviour due to the non-linear access pattern the instruction
-creates. All accesses will be within 256 bytes of one another however,
-which may motivate particular alignment of the LUT based on cache-line size}
+creates.}
 
 The rationale for these instructions is two fold. They help with code density,
-since at-least four instructions worth of work (eight in RV32) can now be done
+since at-least four instructions worth of work can now be done
 in one instruction. They can also help with energy efficiency, since fewer
 instructions need to be fetched and travel through an execution pipeline in
 order to achieve the same goal. They are not designed to enhance performance
@@ -631,45 +662,47 @@ This section lists the assembly notation for the instructions, as well as
 their encodings.
 
 {\tt
-MV2GPR  rd, rs1                 \\
-MV2COP  rd, rs1                 \\
-TWID.B  rd, rs1, b0, b1, b2, b3 \\
-TWID.HN rd, rs1, n0, n1, n2, n3 \\
-TWID.LN rd, rs1, n0, n1, n2, n3 \\
-ADD.px  rd, rs1, rs2            \\
-SUB.px  rd, rs1, rs2            \\
-MUL.px  rd, rs1, rs2            \\
-SLL.px  rd, rs1, shamt          \\
-SRL.px  rd, rs1, shamt          \\
-ROT.px  rd, rs1, shamt          \\
-XOR.cr  rd, rs1, rs2            \\
-AND.cr  rd, rs1, rs2            \\
-OR.cr   rd, rs1, rs2            \\
-ADD3.mp (rd1, rd2),  rs1, rs2, rs3 \\
-ADD2.mp (rd1, rd2),  rs1, rs2  \\
-SUB3.mp (rd1, rd2),  rs1, rs2, rs3 \\
-SUB2.mp (rd1, rd2),  rs1, rs2  \\
-ACC2.mp (rd1, rd2),  rs1, rs2  \\
-ACC1.mp (rd1, rd2),  rs1       \\
-MAC.mp  (rd1, rd2),  rs1, rs2, rs3 \\
-MAA.mp  (rd1, rd2),  rs1, rs2, rs3, rs4 \\
-SLLI.mp (rd1, rd2),  rs1, rs2, shamt \\
-SLLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
-SRLI.mp (rd1, rd2),  rs1, rs2, shamt \\
-SRLR.mp (rd1, rd2),  rs1, rs2, rs3 \\
-EQU.mp  rd1,         rs1, rs2, rs3 \\
-LTU.mp  rd1,         rs1, rs2, rs3 \\
-GTU.mp  rd1,         rs1, rs2, rs3 \\
-LBU.cr  rd , imm(rs1)           \\
-LHU.cr  rd , imm(rs1)           \\
-LW.cr   rd , imm(rs1)           \\
-LUI.cr  rd,  imm16              \\
-ORI.cr  rd,  imm16              \\
-SB.cr   rs2, imm(rs1)           \\
-SH.cr   rs2, imm(rs1)           \\
-SW.cr   rs2, imm(rs1)           \\
-SCATTER rs, base, offsets       \\
-GATHER  rd, base, offsets       \\
+MV2GPR      rd, rs1                 \\
+MV2COP      rd, rs1                 \\
+TWID.B      rd, rs1, b0, b1, b2, b3 \\
+TWID.HN     rd, rs1, n0, n1, n2, n3 \\
+TWID.LN     rd, rs1, n0, n1, n2, n3 \\
+ADD.px      rd, rs1, rs2            \\
+SUB.px      rd, rs1, rs2            \\
+MUL.px      rd, rs1, rs2            \\
+SLL.px      rd, rs1, shamt          \\
+SRL.px      rd, rs1, shamt          \\
+ROT.px      rd, rs1, shamt          \\
+XOR.cr      rd, rs1, rs2            \\
+AND.cr      rd, rs1, rs2            \\
+OR.cr       rd, rs1, rs2            \\
+ADD3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+ADD2.mp     (rd1, rd2),  rs1, rs2  \\
+SUB3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+SUB2.mp     (rd1, rd2),  rs1, rs2  \\
+ACC2.mp     (rd1, rd2),  rs1, rs2  \\
+ACC1.mp     (rd1, rd2),  rs1       \\
+MAC.mp      (rd1, rd2),  rs1, rs2, rs3 \\
+MAA.mp      (rd1, rd2),  rs1, rs2, rs3, rs4 \\
+SLLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
+SLLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+SRLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
+SRLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
+EQU.mp      rd1,         rs1, rs2, rs3 \\
+LTU.mp      rd1,         rs1, rs2, rs3 \\
+GTU.mp      rd1,         rs1, rs2, rs3 \\
+LBU.cr      rd , imm(rs1)           \\
+LHU.cr      rd , imm(rs1)           \\
+LW.cr       rd , imm(rs1)           \\
+LUI.cr      rd,  imm16              \\
+ORI.cr      rd,  imm16              \\
+SB.cr       rs2, imm(rs1)           \\
+SH.cr       rs2, imm(rs1)           \\
+SW.cr       rs2, imm(rs1)           \\
+SCATTER.b   rs, base, offsets       \\
+GATHER.b    rd, base, offsets       \\
+SCATTER.h   rs, base, offsets       \\
+GATHER.h    rd, base, offsets       \\
 }
 
 \newpage
@@ -777,8 +810,10 @@ zero.}
 \BB{7}{0000111}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
 \BB{7}{0001000}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
 \BB{7}{0001001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
-\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER} \\
-\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER } \\
+\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.b} \\
+\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.b } \\
+\BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.h} \\
+\BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.h } \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
 \caption[x]{Register type instruction encodings. Note the different field widths
