@@ -662,7 +662,7 @@ while still making use of spare bits due to the 4-bit register address encoding.
 We also define a new {\em multi-register} or {\em MR} instruction format, which
 is used for the multi-precision arithmetic instructions.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
@@ -704,7 +704,7 @@ grouped by their layout.
 
 \bigskip
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
 \BH{12}{imm[11:0]}&\BH{1}{h}& \BH{4}{rs1 }& \BH{3}{f3 }&\BH{1}{b}& \BH{4}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
 \BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1 }& \BB{3}{ 001 }&\BB{1}{b}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
@@ -728,7 +728,7 @@ from \ASM{LW.cr}.}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
 \BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
 \BB{7}{imm[11:5]}&\BB{1}{b}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 100 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
@@ -742,7 +742,7 @@ zero.}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
@@ -784,7 +784,7 @@ using the following lookup table. \\
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}\\
