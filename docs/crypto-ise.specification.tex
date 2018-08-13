@@ -51,6 +51,24 @@ A smart programmer will remember to clear their $\CPR$s of any secret data
 before returning execution to some part of the system they did not write.
 }
 
+The number of general purpose registers to put into any ISA and ISE is
+always contentious. We chose 16 general purpose registers for this ISE
+for the following reasons:
+\begin{itemize}
+\item As demonstrated by ARM, 16 GPRs is plenty for most computation. Indeed
+ARM actually has fewer GPRs due to the special nature of some of their
+{\em high} registers. We believe mirroring the base RISC-V ISA and having
+32 GPRs would have been overkill for an ISE such as this, even when the
+{\tt F} extension adds 32 registers itself.
+\item In area-optimised implementations such as micro-controllers, the
+total area of a core is often dominated by the register-file. For embedded
+applications which do not need all 32 GPRs, one could use the {\tt E}
+extension, and use the area saved by having 16 GPRs to make room on the die
+for the crypto ISE.
+\item Fewer registers frees up instruction encoding space which would
+normally have been needed for register addresses.
+\end{itemize}
+
 \subsubsection{ABI Standards}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
