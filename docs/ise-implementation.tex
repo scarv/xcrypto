@@ -60,6 +60,7 @@ hope that others can modify the internals of the COP to suite their own
 design constraints, and still have a drop-in compatible design.
 
 \subsection{Clock \& Reset Interface}
+\label{sec:if-clk-reset}
 
 \SIGNALI{1}{g\_clk}{The global input clock signal.}
 
@@ -190,6 +191,76 @@ results always accepted in the next cycle.}
 
 
 \subsection{Memory Interface}
+
+The COP uses a single extra memory interface in order to implement the
+load/store instructions. It is a simple SRAM-style interface which can be
+connected directly to a BRAM, converted into a bus interconnect (AXI4-Lite
+for example) or multiplexed with the CPU data memory interface.
+
+The interface uses a 32-bit, word aligned address. Misaligned accesses
+are {\em not} supported in this implementation of the ISE and will raise
+a {\em misaligned load/store exception} via the CPU/COP interface.
+
+\subsubsection{Signal List}
+
+These signals are synchronous with the {\tt g\_clk} signal described in
+section \ref{sec:if-clk-reset}.
+
+\SIGNALO{1}{cop\_mem\_cen}{
+    Memory chip enable, signaling an active transaction. When asserted this
+    signal must stay set until the following cycle, where it can be cleared
+    iff {\tt cop\_mem\_stall} is clear. If the stall signal is not clear, it
+    must remain set until either stall is clear, or {\tt cop\_mem\_error}
+    is high.
+}
+\SIGNALO{1}{cop\_mem\_wen}{
+    Memory write enable. Must remain stable during a transaction.
+}
+\SIGNALO{32}{cop\_mem\_addr}{
+    Memory address. Must remain stable during a transaction.
+}
+\SIGNALO{32}{cop\_mem\_wdata}{
+    Memory write data. Must remain stable during a transaction.
+}
+\SIGNALO{4}{cop\_mem\_ben}{
+    Memory byte enable. On a write, this indicates which bytes in the word
+    are to be updated. On a read, this indicates which bytes of the word we
+    are looking to have returned. Must remain stable during a transaction.
+}
+\SIGNALI{32}{cop\_mem\_rdata}{
+    Memory read data.
+}
+\SIGNALI{1}{cop\_mem\_stall}{
+    Memory stall, indicating the COP must wait another cycle for the response.
+}
+\SIGNALI{1}{cop\_mem\_error}{
+    Memory error. Indicates the COP has tried to access unmapped or otherwise
+    invalid memory space. The error signal can only be asserted when the
+    chip enable is high in the previous cycle. The chip enable must be
+    cleared when the error signal is asserted.
+}
+
+\subsubsection{Example Transactions}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{./diagrams/cop-mem-if-1.png}
+\caption{This timing diagram shows a read, followed by a stalled read,
+followed by a write, and finally a stalled write on the COP memory interface.
+Note that {\tt cop\_mem\_cen} remains high for only a single cycle in a
+non-stalled transaction, but must remain high while the stall signal is also
+asserted.}
+\label{fig:cop-mem-if-waves-1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{./diagrams/cop-mem-if-2.png}
+\caption{This timing diagram shows the same set of transactions as in
+\ref{fig:cop-mem-if-waves-1} but back-to-back with no intervening cycles
+where the bus is idle.}
+\label{fig:cop-mem-if-waves-2}
+\end{figure}
 
 
 \section{COP Internal Micro-architecture}
