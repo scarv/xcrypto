@@ -423,6 +423,25 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR 
 
 \subsubsection{Memory Access}
 
+The ISE contains several instructions listed below which allow memory
+accesses to directly address the $\CPR$ register file. This means we do
+not need to first load to the $\GPR$ register file, then move data into
+the $\CPR$s.
+
+All ISE memory access instructions source their base address from the
+$\GPR$ register file, but read and write data in the $\CPR$s. This
+prevents address manipulation needing to be done in the $\CPR$s.
+\designnote{
+There is no requirement for the ISE memory instructions to share the same
+address space as the standard ISA. One may wish to completely separate
+the physical memory used to store cryptographic secrets from the rest of
+the virtual / logical memory space, and the ISE does not stop implementers
+from doing so. This allows for hardware root-of-trust type devices to keep
+their keys in tamper-proof memory, while still letting the rest of the
+program exist in standard RAM/Flash.
+}
+
+
 \paragraph{LBU.cr, LHU.cr, LW.cr}
 
 The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
