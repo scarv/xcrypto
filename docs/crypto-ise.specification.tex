@@ -423,6 +423,25 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR 
 
 \subsubsection{Memory Access}
 
+The ISE contains several instructions listed below which allow memory
+accesses to directly address the $\CPR$ register file. This means we do
+not need to first load to the $\GPR$ register file, then move data into
+the $\CPR$s.
+
+All ISE memory access instructions source their base address from the
+$\GPR$ register file, but read and write data in the $\CPR$s. This
+prevents address manipulation needing to be done in the $\CPR$s.
+\designnote{
+There is no requirement for the ISE memory instructions to share the same
+address space as the standard ISA. One may wish to completely separate
+the physical memory used to store cryptographic secrets from the rest of
+the virtual / logical memory space, and the ISE does not stop implementers
+from doing so. This allows for hardware root-of-trust type devices to keep
+their keys in tamper-proof memory, while still letting the rest of the
+program exist in standard RAM/Flash.
+}
+
+
 \paragraph{LBU.cr, LHU.cr, LW.cr}
 
 The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
@@ -662,7 +681,7 @@ while still making use of spare bits due to the 4-bit register address encoding.
 We also define a new {\em multi-register} or {\em MR} instruction format, which
 is used for the multi-precision arithmetic instructions.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
@@ -704,7 +723,7 @@ grouped by their layout.
 
 \bigskip
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
 \BH{12}{imm[11:0]}&\BH{1}{h}& \BH{4}{rs1 }& \BH{3}{f3 }&\BH{1}{b}& \BH{4}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
 \BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1 }& \BB{3}{ 001 }&\BB{1}{b}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
@@ -728,7 +747,7 @@ from \ASM{LW.cr}.}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
 \BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
 \BB{7}{imm[11:5]}&\BB{1}{b}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 100 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
@@ -742,7 +761,7 @@ zero.}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
@@ -784,7 +803,7 @@ using the following lookup table. \\
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}\\
