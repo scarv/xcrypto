@@ -203,15 +203,39 @@ left by the value in {\tt SHAMT}.
 
 \subsubsection{Bitwise and Twiddle Instructions}
 
+\paragraph{BOP.cr}
+
+The \ASM{BOP.cr} is designed to express all bitwise logic functions, and be
+amenable to bitsliced implementations of cryptographic functions.
+
+\begin{itemize}
+\item \INST{BOP.cr rd, rs1, rs2, lut4}{
+    $\forall i \in \{0..31\}$
+    $ \CPR[*][\OPER{rd}][i] \ASN $
+    $ \OPER{lut4}[\CPR[*][rs1][i] \CONS \CPR[*][rs2][i]] $ \\
+}
+\end{itemize}
+
+\ASM{BOP.cr} takes a 4-bit immediate {\tt lut4}, and uses the concatenated
+$i$'th bits of register inputs $\GPR[*][rs1]$ and  $\GPR[*][rs2]$
+as the inputs, writing the output bit of the lut to the $i$'th bit of the
+destination register.
+\designnote{
+    This instruction must be implemented with care, since a naieve
+    implementation will end up with a 32-port LUT, with correspondingly
+    poor timing performance.
+}
+
 \paragraph{XOR.cr, AND.cr, OR.cr}
 
 The \ASM{XOR.cr}, \ASM{AND.cr}, and \ASM{OR.cr} instructions compute the
 appropriate bitwise result of their operation between the {\tt rs1} and
 {\tt rs2} operands. The result is then written into {\tt rd}.
-\designnote{Originally the bitwise instructions were to have twiddle
-functionality built-in, removing the need for a dedicated twiddle instruction.
-The encoding space required however did not fit well with the existing RISC-V
-register address and function field layout, and was extremely expensive.}
+
+\note{
+    These instructions are simply aliases of {\ASM BOP.cr}, and are
+    encoded as such in Figure \ref{fig:encodings-rtype}.
+}
 
 The only difference between these instructions and their standard RISC-V
 counterparts is that they operate on the $\CPR$ register file.
@@ -227,10 +251,6 @@ counterparts is that they operate on the $\CPR$ register file.
     $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
 }
 \end{itemize}
-
-Note that by having {\tt rs1} the same as {\tt rs2}, the twiddle
-arithmetic instructions can be used to arbitrarily re-arrange bytes
-within words. They can also be used to duplicate bytes within words.
 
 \paragraph{TWID.B, TWID.HN, TWID.LN}
 
@@ -676,6 +696,7 @@ ROT.px      rd, rs1, shamt          \\
 XOR.cr      rd, rs1, rs2            \\
 AND.cr      rd, rs1, rs2            \\
 OR.cr       rd, rs1, rs2            \\
+BOP.cr      rd, rs1, rs2, lut4      \\
 ADD3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
 ADD2.mp     (rd1, rd2),  rs1, rs2  \\
 SUB3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
@@ -830,13 +851,11 @@ zero.}
 \BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
 \BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
 \BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
-\BB{7}{0000111}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{XOR.cr } \\
-\BB{7}{0001000}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{AND.cr } \\
-\BB{7}{0001001}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{OR.cr  } \\
 \BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.b} \\
 \BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.b } \\
 \BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.h} \\
 \BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.h } \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{BOP.cr } \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
 \caption[x]{Register type instruction encodings. Note the different field widths
@@ -858,6 +877,7 @@ using the following lookup table. \\
 \item $a,b,c = 111 $ - Reserved. Should be treated as a NOP.
 \end{itemize}
 }
+\label{fig:encodings-rtype}
 \end{figure}
 
 
