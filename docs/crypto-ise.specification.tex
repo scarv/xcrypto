@@ -118,7 +118,7 @@ lower half of a $\CPR$ register.
 \subsubsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
-packed operatons on multiple independent values. They operate on words, and
+packed operations on multiple independent values. They operate on words, and
 chunk them into 1, 2, 4, 8, 16 or 32 separate values as shown in the table
 below.
 
@@ -206,7 +206,7 @@ left by the value in {\tt SHAMT}.
 \paragraph{BOP.cr}
 
 The \ASM{BOP.cr} is designed to express all bitwise logic functions, and be
-amenable to bitsliced implementations of cryptographic functions.
+amenable to bit-sliced implementations of cryptographic functions.
 
 \begin{itemize}
 \item \INST{BOP.cr rd, rs1, rs2, lut4}{
@@ -221,7 +221,7 @@ $i$'th bits of register inputs $\GPR[*][rs1]$ and  $\GPR[*][rs2]$
 as the inputs, writing the output bit of the lut to the $i$'th bit of the
 destination register.
 \designnote{
-    This instruction must be implemented with care, since a naieve
+    This instruction must be implemented with care, since a naive
     implementation will end up with a 32-port LUT, with correspondingly
     poor timing performance.
 }
@@ -470,13 +470,13 @@ the standard RISC-V variants but with the following differences:
 \begin{itemize}
 \item The halfword and byte variants can specify which halfword or byte of
       the destination register they are targeting.
-\item There is no sign-extending equivilent of the \ASM{LH} and \ASM{LB}
+\item There is no sign-extending equivalent of the \ASM{LH} and \ASM{LB}
       instructions.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       target register is always in the $\CPR$ set.
 \end{itemize}
 
-These instructions will raise a {\em load address misaligned} instruction
+These instructions will raise a {\em load address misaligned} exception
 if: the final source address is not aligned to the data type the instruction
 is loading {\em and} the implementation does not support misaligned accesses.
 The general rule here is that the \ASM{L*.cr} instructions should behave in
@@ -505,8 +505,8 @@ interrupt behaviour and atomicity rules.
 \end{itemize}
 
 \note{
-    The notation above assumes a byte addressed memory, where {\tt db}
-    is a two bit byte address and {\tt dh} is a one bit halfword address.
+    The notation above assumes a byte addressed memory, where {\tt b}
+    is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
 \paragraph{SB.cr, SH.cr, SW.cr}
@@ -527,8 +527,8 @@ the standard RISC-V variants but with the following differences:
         encoding space, and lets the $\CPR$ state be used for the compute
         work it was designed for rather than mundane address calculation.
         While care must be
-        taken to avoid hazards between the difference register sets, we
-        belive this decision makes sense overall.
+        taken to avoid hazards between the different register sets, we
+        believe this decision makes sense overall.
       }
 \end{itemize}
 
@@ -568,23 +568,23 @@ interrupt behaviour and atomicity rules.
 \paragraph{SCATTER.[b,h], GATHER[.b,h]}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
-s-box lookup instructions. The {\tt .b} varients allow four separate lookups
+s-box lookup instructions. The {\tt .b} variants allow four separate lookups
 per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
-varients allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
+variants allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
 will move the looked-up values from memory into a register, while \ASM{SCATTER}
 will move bytes of a register word back into the LUT in memory.
 \designnote{
-    While it is ofcourse possible to emulate the {\tt .h} varients of
-    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} varients, we felt that
+    While it is of-course possible to emulate the {\tt .h} variants of
+    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
     the performance and efficency savings to be had from telling the hardware
     explicitly to work on halfwords were worth the extra instructions.
 }
 
 The address $a_x$ of each byte/halfword to be loaded or stored is computed by
 adding an offset $x$ from the {\tt offsets} $\CPR$ register, and adding it
-to the $base$ $\GPR$ register. For the {\tt .b} varients, there are four
+to the $base$ $\GPR$ register. For the {\tt .b} variants, there are four
 offsets each corresponding to the four bytes of the offsets source register
-word. For the {\tt .h} varient, there are two offsets corresponding to the
+word. For the {\tt .h} variant, there are two offsets corresponding to the
 upper and lower halfwords of the registers.
 
 Both instructions use the $\GPR$s to source their base address, while the
@@ -730,7 +730,7 @@ GATHER.h    rd, base, offsets       \\
 \subsection{Instruction Encodings}
 
 The following variations on the standard RISC-V instruction encoding types are
-used in this ISE. The varients are kept as close as possible to the orignals,
+used in this ISE. The variants are kept as close as possible to the originals,
 while still making use of spare bits due to the 4-bit register address encoding.
 We also define a new {\em multi-register} or {\em MR} instruction format, which
 is used for the multi-precision arithmetic instructions.
@@ -814,7 +814,7 @@ grouped by their layout.
 \end{bytefield}
 \caption{I-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the loaded
-value is written too. Where these fields are irrelevent, they are tied to
+value is written too. Where these fields are irrelevant, they are tied to
 zero. Here {\tt imm4} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
 represent bits $15..12$ of the $16$ bit immediate they operate with.
 The \ASM{TWID.*} instructions share the {\tt f3} field encoding with
@@ -833,7 +833,7 @@ from \ASM{LW.cr}.}
 \end{bytefield}
 \caption{S-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the value to be
-stored is sourced from. Where these fields are irrelevent, they are tied to
+stored is sourced from. Where these fields are irrelevant, they are tied to
 zero.}
 \end{figure}
 
