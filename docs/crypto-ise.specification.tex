@@ -718,6 +718,39 @@ is used for the multi-precision arithmetic instructions.
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
+
+  \BB{12}{imm[11:0]}
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{1}{b}
+& \BB{4}{rd   }
+& \BB{8}{\encopcode}
+& \BH{15}{I-type} \\
+
+  \BB{7}{imm[11:5]}
+& \BB{1}{b}
+& \BB{4}{rs2  }
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{5}{imm[4:0]}
+& \BB{8}{\encopcode}
+& \BH{15}{S-type} \\
+
+  \BB{2}{b0}
+& \BB{2}{b0}
+& \BB{2}{b2}
+& \BB{2}{b3}
+& \BB{4}{ twop}
+& \BB{1}{h}
+& \BB{4}{rs1  }
+& \BB{3}{f3}
+& \BB{1}{b}
+& \BB{4}{rd   }
+& \BB{8}{\encopcode}
+& \BH{15}{Twiddle} \\
+  
   \BB{7}{f7}
 & \BB{1}{a    }
 & \BB{4}{rs2  }
@@ -726,29 +759,19 @@ is used for the multi-precision arithmetic instructions.
 & \BB{3}{f3}
 & \BB{1}{c    }
 & \BB{4}{rd   }
-& \BB{8}{opcode}
-& \BB{8}{\bf R-type} \\
+& \BB{8}{\encopcode}
+& \BH{15}{R-type} \\
 
-  \BB{12}{imm[11:0]}
-& \BB{1}{h}
-& \BB{4}{rs1  }
-& \BB{3}{f3}
-& \BB{1}{b}
-& \BB{4}{rd   }
-& \BB{8}{opcode}
-& \BB{8}{\bf I-type} \\
-  
-  \BB{7}{imm[11:5]}
-& \BB{1}{b}
-& \BB{4}{rs1  }
-& \BB{1}{h}
-& \BB{4}{rs2  }
-& \BB{3}{f3}
-& \BB{5}{imm[4:0]}
-& \BB{8}{opcode}
-& \BB{8}{\bf S-type}
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
+\BB{7}{  f7   }& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{SCATTER/GATHER} \\
+\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{111}&\BB{5}{ rd }               & \BB{8}{\encopcode}& \BH{15}{MC-type   } \\
+\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MR-type} \\
+\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MAA.mp } \\
 \end{bytefield}
-\caption{The three main types of encoding used by the ISE.}
+\caption{The main types of encoding used by the ISE. The table includes 
+1-off instructions which are the only ones to use their particular
+encoding.}
 \end{figure}
 
 The following tables show the encodings for all instructions in the ISE,
