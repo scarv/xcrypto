@@ -3,7 +3,9 @@
 \usepackage[plain,shortend]{algorithm2e}
 \usepackage[backend=biber,style=numeric]{biblatex}
 \usepackage{bytefield}
+\usepackage{caption}
 \usepackage{currfile}
+\usepackage{float}
 \usepackage[margin={2cm}]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -32,14 +34,18 @@
 \newcommand{\designnote}[1]{\footnote{#1}}
 \newcommandx{\note}[1]{{\bf Note:} #1\\}
 
+\newcommandx{\fixme}[1]{{\bf \color{red}{FIXME}}\footnote{#1} \\}
+
 \newcommand{\encspace}{{\em custom1} }
 \newcommand{\encopcode}{$0101011$}
 
 \newcommandx{\ASM}[1]{{\tt #1}}
 
+% Shorter bit box commands for encoding description
 \newcommandx{\BB}[2]{\bitbox{#1}{{\tt #2}}}
 \newcommandx{\BH}[2]{\bitbox{#1}{{\bf #2}}}
 
+% Assembly instruction definition
 \newcommandx{\INST}[2]{
   \ASM{#1}
   \\
