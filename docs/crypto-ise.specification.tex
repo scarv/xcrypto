@@ -167,7 +167,7 @@ pair of nibbles in the word.}
 
 When coding these instructions as assembly mnemonics, the {\tt x} in the
 instruction names below should be replaced with the pack width. Hence
-for pack width 4, \ASM{SLL.px} becomes \ASM{SLL.p4}.
+for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
 
 \paragraph{ADD.px}
 
@@ -193,31 +193,34 @@ by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 
-\paragraph{SLL.px}
+\paragraph{SLL[I].px}
 
-The instruction \ASM{SLL.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs2} fields
-left by the value in {\tt SHAMT}.
-
-If the distance to shift by is greater than or equal to the size of each
-packed field, then the result of the \ASM{SLL.px} instruction is
-{\em implementation dependent}.
-
-\paragraph{SRL.px}
-
-The instruction \ASM{SRL.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs2} fields
-right by the value in {\tt SHAMT}.
+The instruction \ASM{SLL[I].px} treats the source and destination registers as
+1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs1} fields
+left by the value in {\tt SHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
+(for \ASM{SLL.px}).
 
 If the distance to shift by is greater than or equal to the size of each
-packed field, then the result of the \ASM{SRL.px} instruction is
+packed field, then the result of the \ASM{SLL[I].px} instruction is
 {\em implementation dependent}.
 
-\paragraph{ROT.px}
+\paragraph{SRL[I].px}
 
-The instruction \ASM{ROT.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and rotates the {\tt rs2} fields
-left by the value in {\tt SHAMT}.
+The instruction \ASM{SRL[I].px} treats the source and destination registers as
+1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs1} fields
+right by the value in {\tt SHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
+(for \ASM{SRL.px}).
+
+If the distance to shift by is greater than or equal to the size of each
+packed field, then the result of the \ASM{SRL[I].px} instruction is
+{\em implementation dependent}.
+
+\paragraph{ROT[I].px}
+
+The instruction \ASM{ROT[I].px} treats the source and destination registers as
+1,2,4,8,16 or 32 unsigned, packed fields, and rotates the {\tt rs1} fields
+left by the value in {\tt SHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
+(for \ASM{ROT.px}).
 
 \subsubsection{Bitwise and Twiddle Instructions}
 
@@ -708,9 +711,12 @@ TWID.LN     rd, rs1, n0, n1, n2, n3 \\
 ADD.px      rd, rs1, rs2            \\
 SUB.px      rd, rs1, rs2            \\
 MUL.px      rd, rs1, rs2            \\
-SLL.px      rd, rs1, shamt          \\
-SRL.px      rd, rs1, shamt          \\
-ROT.px      rd, rs1, shamt          \\
+SLLI.px     rd, rs1, shamt          \\
+SRLI.px     rd, rs1, shamt          \\
+ROTI.px     rd, rs1, shamt          \\
+SLL.px      rd, rs1, rs2            \\
+SRL.px      rd, rs1, rs2            \\
+ROT.px      rd, rs1, rs2            \\
 XOR.cr      rd, rs1, rs2            \\
 AND.cr      rd, rs1, rs2            \\
 OR.cr       rd, rs1, rs2            \\
@@ -851,9 +857,12 @@ zero.}
 \BB{7}{0000001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ADD.px } \\
 \BB{7}{0000010}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SUB.px } \\
 \BB{7}{0000011}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{MUL.px } \\
-\BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLL.px } \\
-\BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRL.px } \\
-\BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROT.px } \\
+\BB{7}{0000100}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLLI.px } \\
+\BB{7}{0000101}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRLI.px } \\
+\BB{7}{0000110}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROTI.px } \\
+\BB{7}{0000111}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLL.px } \\
+\BB{7}{0001000}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRL.px } \\
+\BB{7}{0001001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROT.px } \\
 \BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.b} \\
 \BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.b } \\
 \BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.h} \\
