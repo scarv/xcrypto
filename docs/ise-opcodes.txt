@@ -1,0 +1,43 @@
+mv2gpr      14..12=0b000 6..0=0b0101011 rd    crs1
+mv2cop      14..12=0b000 6..0=0b0101011 crd   rs1
+twid.b      14..12=0b000 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+twid.hn     14..12=0b000 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+twid.ln     14..12=0b000 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+add.px      14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+sub.px      14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+mul.px      14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+sll.px      14..12=0b000 6..0=0b0101011 crd   crs1  cshamt
+srl.px      14..12=0b000 6..0=0b0101011 crd   crs1  cshamt
+rot.px      14..12=0b000 6..0=0b0101011 crd   crs1  cshamt
+xor.cr      14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+and.cr      14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+or.cr       14..12=0b000 6..0=0b0101011 crd   crs1  crs2
+bop.cr      14..12=0b000 6..0=0b0101011 crd   crs1  crs2  lut4
+add3.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3
+add2.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2
+sub3.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3
+sub2.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2
+acc2.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2
+acc1.mp     14..12=0b000 6..0=0b0101011 crdm  crs1
+mac.mp      14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3
+maa.mp      14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3  crs4
+slli.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  cshamt
+sllr.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3
+srli.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  cshamt
+srlr.mp     14..12=0b000 6..0=0b0101011 crdm  crs1  crs2  crs3
+equ.mp      14..12=0b000 6..0=0b0101011 rd1   crs1  crs2  crs3
+ltu.mp      14..12=0b000 6..0=0b0101011 rd1   crs1  crs2  crs3
+gtu.mp      14..12=0b000 6..0=0b0101011 rd1   crs1  crs2  crs3
+lbu.cr      14..12=0b000 6..0=0b0101011 crd   rs1   imm11
+lhu.cr      14..12=0b000 6..0=0b0101011 crd   rs1   imm11
+lw.cr       14..12=0b000 6..0=0b0101011 crd   rs1   imm11
+lui.cr      14..12=0b000 6..0=0b0101011 crd         imm16
+ori.cr      14..12=0b000 6..0=0b0101011 crd         imm16
+sb.cr       14..12=0b000 6..0=0b0101011 rs1   crs2  imm11
+sh.cr       14..12=0b000 6..0=0b0101011 rs1   crs2  imm11
+sw.cr       14..12=0b000 6..0=0b0101011 rs1   crs2  imm11
+scatter.b   14..12=0b000 6..0=0b0101011 rd    rs1   crs2
+gather.b    14..12=0b000 6..0=0b0101011 rd    rs1   crs2
+scatter.h   14..12=0b000 6..0=0b0101011 rd    rs1   crs2
+gather.h    14..12=0b000 6..0=0b0101011 rd    rs1   crs2
+
