@@ -758,18 +758,18 @@ is used for the multi-precision arithmetic instructions.
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
 
-\BB{11}{imm[10:0]}  &\BB{1}{b}& \BB{5}{rs1}& \BB{3}{f3 } &\BB{1}{h}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{I-type} \\
-\BB{7}{imm[10:5]}   &\BB{1}{b}& \BB{4}{rs2}& \BB{5}{rs1} &\BB{3}{f3 }&\BB{1}{h}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BH{15}{S-type} \\
+\BB{11}{imm[10:0]}  &\BB{1}{d}& \BB{5}{rs1}& \BB{3}{f3 } &\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{I-type} \\
+\BB{7}{imm[10:5]}   &\BB{1}{a}& \BB{4}{rs2}& \BB{5}{rs1} &\BB{3}{f3 }&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BH{15}{S-type} \\
 
   \BB{2}{b0}
 & \BB{2}{b0}
 & \BB{2}{b2}
 & \BB{2}{b3}
 & \BB{4}{ twop}
-& \BB{1}{h}
+& \BB{1}{0}
 & \BB{4}{rs1  }
 & \BB{3}{f3}
-& \BB{1}{b}
+& \BB{1}{c}
 & \BB{4}{rd   }
 & \BB{8}{\encopcode}
 & \BH{15}{Twiddle} \\
@@ -784,11 +784,12 @@ is used for the multi-precision arithmetic instructions.
 & \BB{4}{rd   }
 & \BB{8}{\encopcode}
 & \BH{15}{R-type} \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{BOP.cr } \\
 
-\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
-\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ f4  }&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
-\BB{7}{  f7   }& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{f3}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{SCATTER/GATHER} \\
-\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{111}&\BB{5}{ rd }               & \BB{8}{\encopcode}& \BH{15}{MC-type   } \\
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
+\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
+\BB{7}{  f7   }& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{f3}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{SCATTER/GATHER} \\
+\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{5}{ rd }               & \BB{8}{\encopcode}& \BH{15}{MC-type   } \\
 \BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MR-type} \\
 \BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MAA.mp } \\
 \end{bytefield}
@@ -804,23 +805,23 @@ grouped by their layout.
 
 \begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{11}{imm[10:0]}                                      &&\BH{1}{b} \BH{5}{rs1 }& \BH{3}{f3 }&\BH{1}{h}& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{I-type} \\
-\BB{11}{imm[10:0]}                                      &&\BB{1}{b} \BB{5}{rs1 }& \BB{3}{001}&\BB{1}{h}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
-\BB{11}{imm[10:0]}                                      &&\BB{1}{0} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{h}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
-\BB{2}{b0}&\BB{2}{b0}&\BB{2}{b2}&\BB{2}{b3}&\BB{3}{000 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.B} \\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{001 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.LN}\\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{010 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.HN}\\
-\BB{11}{imm[10:0]}                                      &&\BB{1}{0} \BB{5}{rs1 }& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
-\BB{11}{imm[10:0]}                                      &&\BB{1}{1} \BB{5}{imm5}& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LUI.cr} \\
-\BB{11}{imm[10:0]}                                      &&\BB{1}{1} \BB{5}{imm5}& \BB{3}{011}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ORI.cr}
+\BH{11}{imm[10:0]}                                      &\BH{1}{d}& \BH{5}{rs1 }& \BH{3}{f3 }&\BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}& \BH{15}{I-type} \\
+\BB{11}{imm[10:0]}                                      &\BB{1}{d}& \BB{5}{rs1 }& \BB{3}{001}&\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LBU.cr} \\
+\BB{11}{imm[10:0]}                                      &\BB{1}{0}& \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LHU.cr} \\
+\BB{2}{b0}&\BB{2}{b0}&\BB{2}{b2}&\BB{2}{b3}&\BB{3}{000 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.B} \\
+\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{001 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.LN}\\
+\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{010 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.HN}\\
+\BB{11}{imm[10:0]}                                      &\BB{1}{0}& \BB{5}{rs1 }& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LW.cr } \\
+\BB{11}{imm[10:0]}                                      &\BB{1}{1}& \BB{5}{imm5}& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LUI.cr} \\
+\BB{11}{imm[10:0]}                                      &\BB{1}{1}& \BB{5}{imm5}& \BB{3}{011}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ORI.cr}
 \end{bytefield}
-\caption{I-type instruction encodings. The {\tt h} and {\tt b} bits refer to
+\caption{I-type instruction encodings. The {\tt d} and {\tt c} bits refer to
 which halfword, and which byte of a halfword respectivley the loaded
 value is written too. Where these fields are irrelevant, they are tied to
 zero. Here {\tt imm5} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
 represent bits $15..11$ of the $16$ bit immediate they operate with.
 The \ASM{TWID.*} instructions share the {\tt f3} field encoding with
-\ASM{LHU.cr}, and must be distinguished from it using the {\tt b}
+\ASM{LHU.cr}, and must be distinguished from it using the {\tt d}
 field. Likewise for distinguishing \ASM{LUI.cr} and \ASM{ORI.cr}
 from \ASM{LW.cr}.}
 \end{figure}
@@ -828,10 +829,10 @@ from \ASM{LW.cr}.}
 
 \begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{7}{imm[10:5]}&\BH{1}{b}& \BH{4}{rs2}& \BH{5}{rs1  }& \BH{3}{f3 }&\BH{1}{h}&\BH{4}{imm[3:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
-\BB{7}{imm[10:5]}&\BB{1}{b}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{100}&\BB{1}{h}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
-\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{101}&\BB{1}{h}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SH.CR} \\
-\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{110}&\BB{1}{0}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SW.CR}
+\BH{7}{imm[10:5]}&\BH{1}{a}& \BH{4}{rs2}& \BH{5}{rs1  }& \BH{3}{f3 }&\BH{1}{c}&\BH{4}{imm[3:0]}& \BH{8}{opcode}    & \BH{15}{S-type} \\
+\BB{7}{imm[10:5]}&\BB{1}{a}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{100}&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SB.CR} \\
+\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{101}&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SH.CR} \\
+\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{110}&\BB{1}{0}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SW.CR}
 \end{bytefield}
 \caption{S-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the value to be
@@ -844,20 +845,20 @@ zero.}
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}               \\
-\BH{7}{   f7  }& \BH{1}{a}& \BH{4}{ rs2 }& \BH{1}{b}& \BH{4}{rs1}& \BH{3}{f3 }& \BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{R-type} \\
-\BB{7}{0000000}& \BB{1}{0}& \BB{4}{00000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2GPR } \\
-\BB{7}{0000000}& \BB{1}{1}& \BB{4}{00000}&            \BB{5}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MV2COP } \\
-\BB{7}{0000001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ADD.px } \\
-\BB{7}{0000010}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SUB.px } \\
-\BB{7}{0000011}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{MUL.px } \\
-\BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SLL.px } \\
-\BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SRL.px } \\
-\BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ROT.px } \\
-\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.b} \\
-\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.b } \\
-\BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{SCATTER.h} \\
-\BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{GATHER.h } \\
-\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{BOP.cr } \\
+\BH{7}{   f7  }& \BH{1}{a}& \BH{4}{ rs2 }& \BH{1}{b}& \BH{4}{rs1} & \BH{3}{f3 }& \BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}    & \BH{15}{R-type} \\
+\BB{7}{0000000}& \BB{1}{0}& \BB{4}{ 0000}& \BB{1}{0}& \BB{4}{rs1} & \BB{3}{000}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BB{15}{MV2GPR } \\
+\BB{7}{0000000}& \BB{1}{1}& \BB{4}{ 0000}&            \BB{5}{rs1} & \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{MV2COP } \\
+\BB{7}{0000001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ADD.px } \\
+\BB{7}{0000010}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SUB.px } \\
+\BB{7}{0000011}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{MUL.px } \\
+\BB{7}{0000100}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLL.px } \\
+\BB{7}{0000101}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRL.px } \\
+\BB{7}{0000110}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROT.px } \\
+\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.b} \\
+\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.b } \\
+\BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.h} \\
+\BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.h } \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{BOP.cr } \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
 \caption[x]{Register type instruction encodings. Note the different field widths
@@ -887,22 +888,22 @@ using the following lookup table. \\
 \centering
 \begin{bytefield}[endianness=big]{32}
 \bitheader{0-31}\\
-\BH{4}{ op }&\BH{4}{rs3  }&\BH{4}{rs2 }\BH{1}{c}&&\BH{4}{rs1}&& \BH{3}{f3 }&\BH{2}{ mo } \BH{3}{ rdm }& \BH{8}{opcode}& \BH{8}{\bf MR-type} \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ EQU.mp    } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ LTU.mp    } \\
-\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{8}{ GTU.mp    } \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ADD3.mp } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SUB3.mp } \\
-\BB{4}{0010}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ADD2.mp } \\
-\BB{4}{0011}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SUB2.mp } \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SLLR.mp } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SRLR.mp } \\
-\BB{4}{0010}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SLLI.mp } \\
-\BB{4}{0011}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ SRLI.mp } \\
-\BB{4}{0000}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ACC2.mp } \\
-\BB{4}{0001}&\BB{4}{0000 }&\BB{4}{0000}\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ ACC1.mp } \\
-\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ MAC.mp } \\
-\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 11 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{8}{ MAA.mp } \\
+\BH{4}{ op }&\BH{4}{rs3  }&\BH{4}{rs2 }\BH{1}{b}&&\BH{4}{rs1}&& \BH{3}{f3 }&\BH{2}{ mo } \BH{3}{ rdm }& \BH{8}{opcode}& \BH{15}{\bf MR-type} \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ EQU.mp    } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ LTU.mp    } \\
+\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ GTU.mp    } \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ADD3.mp } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SUB3.mp } \\
+\BB{4}{0010}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ADD2.mp } \\
+\BB{4}{0011}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SUB2.mp } \\
+\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SLLR.mp } \\
+\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SRLR.mp } \\
+\BB{4}{0010}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SLLI.mp } \\
+\BB{4}{0011}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SRLI.mp } \\
+\BB{4}{0000}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ACC2.mp } \\
+\BB{4}{0001}&\BB{4}{0000 }&\BB{4}{0000}\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ACC1.mp } \\
+\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ MAC.mp } \\
+\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 11 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ MAA.mp } \\
 \end{bytefield}
 \caption{Multi-precision integer instruction encodings. All instructions in
 this class are identified first by the {\tt f3} field, then by the {\tt c}
