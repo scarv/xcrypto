@@ -784,6 +784,7 @@ is used for the multi-precision arithmetic instructions.
 & \BB{4}{rd   }
 & \BB{8}{\encopcode}
 & \BH{15}{R-type} \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{BOP.cr } \\
 
 \BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
 \BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
@@ -857,7 +858,7 @@ zero.}
 \BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.b } \\
 \BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.h} \\
 \BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.h } \\
-\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{BOP.cr } \\
+\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{BOP.cr } \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
 \caption[x]{Register type instruction encodings. Note the different field widths
