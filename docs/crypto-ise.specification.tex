@@ -820,21 +820,21 @@ grouped by their layout.
 
 \begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{12}{imm[11:0]}&\BH{1}{h}& \BH{4}{rs1 }& \BH{3}{f3 }&\BH{1}{b}& \BH{4}{rd   }& \BH{8}{opcode}& \BH{8}{I-type} \\
-\BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1 }& \BB{3}{ 001 }&\BB{1}{b}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
-\BB{12}{imm[11:0]}&\BB{1}{h}& \BB{4}{rs1 }& \BB{3}{ 010 }&\BB{1}{0}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
-\BB{2}{b0}&\BB{2}{b0}&\BB{2}{b2}&\BB{2}{b3}&\BB{4}{0000 }&\BB{1}{1}& \BB{4}{rs1}& \BB{3}{ 010 }&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.B} \\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{4}{0001 }&\BB{1}{1}& \BB{4}{rs1}& \BB{3}{ 010 }&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.LN}\\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{4}{0010 }&\BB{1}{1}& \BB{4}{rs1}& \BB{3}{ 010 }&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.HN}\\
-\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{rs1 }& \BB{3}{ 011 }&\BB{1}{0}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
-\BB{12}{imm[11:0]}&\BB{1}{0}& \BB{4}{imm4}& \BB{3}{ 011 }&\BB{1}{1}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{LUI.cr} \\
-\BB{12}{imm[11:0]}&\BB{1}{1}& \BB{4}{imm4}& \BB{3}{ 011 }&\BB{1}{1}& \BB{4}{rd }& \BB{8}{\encopcode}& \BB{8}{ORI.cr}
+\BH{11}{imm[10:0]}                                      &&\BH{1}{b} \BH{5}{rs1 }& \BH{3}{f3 }&\BH{1}{h}& \BH{4}{rd}& \BH{8}{opcode}& \BH{8}{I-type} \\
+\BB{11}{imm[10:0]}                                      &&\BB{1}{b} \BB{5}{rs1 }& \BB{3}{001}&\BB{1}{h}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LBU.cr} \\
+\BB{11}{imm[10:0]}                                      &&\BB{1}{0} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{h}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LHU.cr} \\
+\BB{2}{b0}&\BB{2}{b0}&\BB{2}{b2}&\BB{2}{b3}&\BB{3}{000 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.B} \\
+\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{001 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.LN}\\
+\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{010 }&&\BB{1}{1} \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{TWID.HN}\\
+\BB{11}{imm[10:0]}                                      &&\BB{1}{0} \BB{5}{rs1 }& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LW.cr } \\
+\BB{11}{imm[10:0]}                                      &&\BB{1}{1} \BB{5}{imm5}& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{LUI.cr} \\
+\BB{11}{imm[10:0]}                                      &&\BB{1}{1} \BB{5}{imm5}& \BB{3}{011}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{8}{ORI.cr}
 \end{bytefield}
 \caption{I-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the loaded
 value is written too. Where these fields are irrelevant, they are tied to
-zero. Here {\tt imm4} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
-represent bits $15..12$ of the $16$ bit immediate they operate with.
+zero. Here {\tt imm5} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
+represent bits $15..11$ of the $16$ bit immediate they operate with.
 The \ASM{TWID.*} instructions share the {\tt f3} field encoding with
 \ASM{LHU.cr}, and must be distinguished from it using the {\tt b}
 field. Likewise for distinguishing \ASM{LUI.cr} and \ASM{ORI.cr}
@@ -844,10 +844,10 @@ from \ASM{LW.cr}.}
 
 \begin{figure}[H]
 \centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{7}{imm[11:5]}&\BH{1}{b}& \BH{4}{rs2  }&\BH{1}{h}& \BH{4}{rs1  }& \BH{3}{f3}& \BH{5}{imm[4:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
-\BB{7}{imm[11:5]}&\BB{1}{b}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 100 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
-\BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{h}& \BB{4}{rs1  }& \BB{3}{ 101 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SH.CR} \\
-\BB{7}{imm[11:5]}&\BB{1}{0}& \BB{4}{rs2  }&\BB{1}{0}& \BB{4}{rs1  }& \BB{3}{ 110 }& \BB{5}{imm[4:0]}& \BB{8}{\encopcode}& \BB{8}{SW.CR}
+\BH{7}{imm[10:5]}&\BH{1}{b}& \BH{4}{rs2}& \BH{5}{rs1  }& \BH{3}{f3 }&\BH{1}{h}&\BH{4}{imm[3:0]}& \BH{8}{opcode}& \BH{8}{S-type} \\
+\BB{7}{imm[10:5]}&\BB{1}{b}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{100}&\BB{1}{h}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SB.CR} \\
+\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{101}&\BB{1}{h}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SH.CR} \\
+\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{110}&\BB{1}{0}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{8}{SW.CR}
 \end{bytefield}
 \caption{S-type instruction encodings. The {\tt h} and {\tt b} bits refer to
 which halfword, and which byte of a halfword respectivley the value to be
