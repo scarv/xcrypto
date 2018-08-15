@@ -142,8 +142,7 @@ def make_c_extra(match,mask):
         tw += "\"x\", "                 # ISA / ISE
 
         fields = sorted(arguments[mnemonic])
-        tw += ("\"%s\", " % ",".join([acodes[f] for f in fields \
-            if f != "imm11lo"])).ljust(22)
+        tw += ("\"%s\", " % ",".join([acodes[f] for f in fields])).ljust(22)
 
         tw += "MATCH_%s, " %(mnemonic.replace(".","_").upper())
         tw += "MASK_%s, "  %(mnemonic.replace(".","_").upper())
