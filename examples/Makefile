@@ -1,19 +1,22 @@
 
 
-CC      = $(RISCV)/bin/riscv64-unknown-elf-gcc
-AS      = $(RISCV)/bin/riscv64-unknown-elf-as
-OBJDUMP = $(RISCV)/bin/riscv64-unknown-elf-objdump
+AS      = ~/riscv/riscv-binutils-gdb/build/gas/as-new
+OBJDUMP = ~/riscv/riscv-binutils-gdb/build/binutils/objdump
 
-CCFLAGS += -E -Os -O2 -march=rv32im -mabi=ilp32 -nostartfiles -nostdlib -fpie
+ASFLAGS += -march=rv32imx -mabi=ilp32 -fpic
 
-SRC     ?= aes-accelerated.S
+SRC     ?= cop-instructions.S
+OUT_OBJ := $(addprefix $(COP_WORK)/,$(SRC:%.S=%.o))
+OUT_DIS := $(addprefix $(COP_WORK)/,$(SRC:%.S=%.dis))
 
-
-all: ${COP_WORK}/aes-accelerated.o ${COP_WORK}/aes-accelerated.dis
+all: $(OUT_OBJ) $(OUT_DIS)
 
 ${COP_WORK}/%.o : %.S
-	$(CC) $(CCFLAGS) $(INC_DIRS) -c -o $@ $^
+	$(AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
 
 ${COP_WORK}/%.dis : $(COP_WORK)/%.o
 	$(OBJDUMP) -Dt $< > $@
 
+.PHONY: clean
+clean:
+	echo $(OUT_OBJ) $(OUT_DIS)
