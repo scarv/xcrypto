@@ -1,0 +1,55 @@
+
+#         a    d    b    c        rs2         f3                  f7          opcode
+mv2gpr    24=0      19=0      23..20=0b0000 14..12=0b000 31..25=0b0000000 6..0=0b0101011 rd    crs1
+mv2cop    24=1           11=0 23..20=0b0000 14..12=0b000 31..25=0b0000000 6..0=0b0101011 crd   rs1
+
+#         a    d    b    c      f3                  f7          opcode
+add.px    ca        cb   cc   14..12=0b000 31..25=0b0000001 6..0=0b0101011 crd   crs1  crs2
+sub.px    ca        cb   cc   14..12=0b000 31..25=0b0000010 6..0=0b0101011 crd   crs1  crs2
+mul.px    ca        cb   cc   14..12=0b000 31..25=0b0000011 6..0=0b0101011 crd   crs1  crs2
+sll.px    ca        cb   cc   14..12=0b000 31..25=0b0000100 6..0=0b0101011 crd   crs1  crs2
+srl.px    ca        cb   cc   14..12=0b000 31..25=0b0000101 6..0=0b0101011 crd   crs1  crs2
+rot.px    ca        cb   cc   14..12=0b000 31..25=0b0000110 6..0=0b0101011 crd   crs1  crs2
+slli.px   ca        cb   cc   14..12=0b000 31..25=0b0000111 6..0=0b0101011 crd   crs1  cshamt
+srli.px   ca        cb   cc   14..12=0b000 31..25=0b0001000 6..0=0b0101011 crd   crs1  cshamt
+roti.px   ca        cb   cc   14..12=0b000 31..25=0b0001001 6..0=0b0101011 crd   crs1  cshamt
+
+scatter.b 24=0           11=0 14..12=0b000 31..25=0b0010010 6..0=0b0101011 crd   rs1   crs2
+gather.b  24=0           11=0 14..12=0b000 31..25=0b0010011 6..0=0b0101011 crd   rs1   crs2
+scatter.h 24=0           11=0 14..12=0b000 31..25=0b0010110 6..0=0b0101011 crd   rs1   crs2
+gather.h  24=0           11=0 14..12=0b000 31..25=0b0010111 6..0=0b0101011 crd   rs1   crs2
+
+bop.cr    24=0      19=0 11=0 14..12=0b000 31..29=0b110     6..0=0b0101011 crd   crs1  crs2  lut4
+
+#         b          op                         f3            opcode
+equ.mp    19=1 31..28=0b0000             14..12=0b111 6..0=0b0101011 rd    crs1  crs2  crs3
+ltu.mp    19=1 31..28=0b0001             14..12=0b111 6..0=0b0101011 rd    crs1  crs2  crs3
+gtu.mp    19=1 31..28=0b0010             14..12=0b111 6..0=0b0101011 rd    crs1  crs2  crs3
+
+#         b          op               mo              f3            opcode
+add3.mp   19=0 31..28=0b0000          11..10=0b00 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3
+add2.mp   19=0 31..28=0b0001 27..24=0 11..10=0b00 14..12=0b111 6..0=0b0101011 crdm crs1 crs2
+sub3.mp   19=0 31..28=0b0010          11..10=0b00 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3
+sub2.mp   19=0 31..28=0b0011 27..24=0 11..10=0b00 14..12=0b111 6..0=0b0101011 crdm crs1 crs2
+slli.mp   19=0 31..28=0b0000          11..10=0b01 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  cmshamt
+sll.mp    19=0 31..28=0b0001          11..10=0b01 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3
+srli.mp   19=0 31..28=0b0010          11..10=0b01 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  cmshamt
+srl.mp    19=0 31..28=0b0011          11..10=0b01 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3
+acc2.mp   19=0 31..28=0b0000 27..24=0 11..10=0b10 14..12=0b111 6..0=0b0101011 crdm crs1 crs2
+acc1.mp   19=0 31..28=0b0001 27..20=0 11..10=0b10 14..12=0b111 6..0=0b0101011 crdm crs1
+mac.mp    19=0 31..28=0b0010          11..10=0b10 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3
+maa.mp    19=0                        11..10=0b11 14..12=0b111 6..0=0b0101011 crdm crs1 crs2  crs3  crs4
+
+lbu.cr         cd        cc   14..12=0b001 6..0=0b0101011 crd   rs1   imm11
+lhu.cr         20=0      cc   14..12=0b010 6..0=0b0101011 crd   rs1   imm11
+lw.cr          20=0      11=0 14..12=0b011 6..0=0b0101011 crd   rs1   imm11
+lui.cr         20=1      11=0 14..12=0b011 6..0=0b0101011 crd         imm11 imm5
+ori.cr         20=1      11=1 14..12=0b011 6..0=0b0101011 crd         imm11 imm5
+
+twid.b    23..21=0b000  20=1 19=0 11=1 14..12=0b010 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+twid.hn   23..21=0b001  20=1 19=0 11=1 14..12=0b010 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+twid.ln   23..21=0b010  20=1 19=0 11=1 14..12=0b010 6..0=0b0101011 crd   crs1  b0  b1  b2  b3
+
+sb.cr     ca             cc   14..12=0b100 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
+sh.cr     24=0           cc   14..12=0b101 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
+sw.cr     24=0           11=0 14..12=0b110 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
