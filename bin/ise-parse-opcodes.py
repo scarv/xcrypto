@@ -231,7 +231,7 @@ def print_header(cmd):
   print """\\newcommand{%s}[2]{
 \\begin{figure}[H]
 \\centering
-\\begin{bytefield}[endianness=big]{32}
+\\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
 \\bitheader{0-31}               \\\\
 """ % cmd
 
@@ -272,7 +272,7 @@ def print_inst(n):
         width = 1 + hi - lo
         print("\\BB{%d}{%s}" % (width,val))
 
-    print("\\BB{15}{%s}\\\\" % n)
+    print("\\BH{10}{%s}\\\\" % n)
 
 
 def print_insts(names):
