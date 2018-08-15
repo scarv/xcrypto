@@ -5,22 +5,32 @@ integrated into the ISE.
 \subsection{Packed ALU Operations}
 
 It is common for some CPUs / DSP extensions to allow packed ALU operations.
-This is essentialy using the normal GPRs to do SIMD operations on multiple
-pieces of data which are either a halfword or a byte in size.
-
-\subsection{Transposed Register Accesses}
-
-In \cite{jung2000register}, the authors describe an alternate addressing mode
-for GPRs which allows them to be accessed row wise (as normal) and
-column wise. This can potentially speed up operations which rely on both
-column and row wise access to some state matrix.
+This is essentially using the normal GPRs to do SIMD operations on multiple
+pieces of data which are either a halfword or a byte in size. We include
+variants of such instructions which operate on data widths commonly
+found in cryptographic algorithms, particularly block ciphers.
 
 \subsection{Scatter / Gather}
 
 Many algorithms rely on bringing together non-contiguous data from memory,
 operating on it as a unit, then placing the results non-contiguously back
-into memory. Scater / Gather instructions are varients of normal load/store
+into memory. Scatter / Gather instructions are variants of normal load/store
 instructions which allow a set of offsets (rather that just one) to be
 specified and the data at each offset loaded/stored into a single word
-as approproate.
+as appropriate.
 
+\subsection{Multi-precision Integer Operations}
+
+Public key cryptography often relies on manipulating very large integers.
+This necessitates efficient overflow handling. RISC-V has no support for
+hardware overflow or carry out detection, making some performance critical
+parts of public key algorithms slower than on equivalent architectures
+with such support.
+
+\subsection{Bit-sliced Cryptography}
+
+Bit-slicing is a technique which treats a CPU with an $N$ bit data-path as
+a set of $N$ SIMD lanes. Bit-slicing is an effective countermeasure to some
+side-channel attacks, but can be cumbersome to implement in a standard set of
+RISC instructions. We introduce a small set of instructions to accelerate
+bit-sliced implementations, similar to \cite{grabher2008light}.
