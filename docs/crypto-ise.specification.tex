@@ -738,8 +738,15 @@ GATHER.h    rd, base, offsets       \\
 The following tables show the encodings for all instructions in the ISE,
 grouped by their layout.
 
-\encodingsel{}
-{ fig:encodings-else }
+\encodingsel{
+    \note{The load/store byte/halfword instructions encode which bytes
+    of the destination / source register they are accessing using the
+    {\tt ca}, {\tt cc} and {\tt cd} bits.
+    For the load instructions, {\tt cd} specifies the byte, and {\tt cc}
+    specifies the halfword. For the store instructions {\tt ca}
+    specifies the byte, and {\tt cc} also specifies the halfword.
+}
+}{ fig:encodings-else }
 
 
 \encodingspx{
@@ -749,11 +756,11 @@ to encode the pack width of their operations. The three bits are
 concatenated into a 3-bit vector $a,b,c$ and then decoded into pack widths
 using the following lookup table. \\
 \begin{itemize}
-\item $ca,cb,cc = 000 \Rightarrow $ Pack width $1$
-\item $ca,cb,cc = 001 \Rightarrow $ Pack width $2$
-\item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$
-\item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$
-\item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$
+\item $ca,cb,cc = 000 \Rightarrow $ Pack width $1$  $\Rightarrow$ 1 32-bit word
+\item $ca,cb,cc = 001 \Rightarrow $ Pack width $2$  $\Rightarrow$ 2 halfwords
+\item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$  $\Rightarrow$ 4 bytes
+\item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$  $\Rightarrow$ 8 nibbles
+\item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$ $\Rightarrow$ 16 crumbs (2-bit values)
 \item $ca,cb,cc = 101 $ - Reserved. Should be treated as an invalid opcode.
 \item $ca,cb,cc = 110 $ - Reserved. Should be treated as an invalid opcode.
 \item $ca,cb,cc = 111 $ - Reserved. Should be treated as an invalid opcode.
