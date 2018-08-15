@@ -753,171 +753,41 @@ GATHER.h    rd, base, offsets       \\
 \newpage
 \subsection{Instruction Encodings}
 
-The following variations on the standard RISC-V instruction encoding types are
-used in this ISE. The variants are kept as close as possible to the originals,
-while still making use of spare bits due to the 4-bit register address encoding.
-We also define a new {\em multi-register} or {\em MR} instruction format, which
-is used for the multi-precision arithmetic instructions.
-
-\begin{figure}[H]
-\centering
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-
-\BB{11}{imm[10:0]}  &\BB{1}{d}& \BB{5}{rs1}& \BB{3}{f3 } &\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{I-type} \\
-\BB{7}{imm[10:5]}   &\BB{1}{a}& \BB{4}{rs2}& \BB{5}{rs1} &\BB{3}{f3 }&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BH{15}{S-type} \\
-
-  \BB{2}{b0}
-& \BB{2}{b0}
-& \BB{2}{b2}
-& \BB{2}{b3}
-& \BB{4}{ twop}
-& \BB{1}{0}
-& \BB{4}{rs1  }
-& \BB{3}{f3}
-& \BB{1}{c}
-& \BB{4}{rd   }
-& \BB{8}{\encopcode}
-& \BH{15}{Twiddle} \\
-  
-  \BB{7}{f7}
-& \BB{1}{a    }
-& \BB{4}{rs2  }
-& \BB{1}{b    }
-& \BB{4}{rs1  }
-& \BB{3}{f3}
-& \BB{1}{c    }
-& \BB{4}{rd   }
-& \BB{8}{\encopcode}
-& \BH{15}{R-type} \\
-\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{BOP.cr } \\
-
-\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{ f3}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2GPR } \\
-\BB{7}{  f7   }& \BB{1}{a}& \BB{4}{ 0000}&            \BB{5}{rs1}& \BB{3}{ f3}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{MV2COP } \\
-\BB{7}{  f7   }& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{f3}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BH{15}{SCATTER/GATHER} \\
-\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{5}{ rd }               & \BB{8}{\encopcode}& \BH{15}{MC-type   } \\
-\BB{4}{ f4 }&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MR-type} \\
-\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{c}&&\BB{4}{rs1}&\BB{3}{ f3}&\BB{2}{ mo } \BB{3}{ rdm } & \BB{8}{\encopcode}& \BH{15}{MAA.mp } \\
-\end{bytefield}
-\caption{The main types of encoding used by the ISE. The table includes 
-1-off instructions which are the only ones to use their particular
-encoding.}
-\end{figure}
-
 The following tables show the encodings for all instructions in the ISE,
 grouped by their layout.
 
-\bigskip
-
-\begin{figure}[H]
-\centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{11}{imm[10:0]}                                      &\BH{1}{d}& \BH{5}{rs1 }& \BH{3}{f3 }&\BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}& \BH{15}{I-type} \\
-\BB{11}{imm[10:0]}                                      &\BB{1}{d}& \BB{5}{rs1 }& \BB{3}{001}&\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LBU.cr} \\
-\BB{11}{imm[10:0]}                                      &\BB{1}{0}& \BB{5}{rs1 }& \BB{3}{010}&\BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LHU.cr} \\
-\BB{2}{b0}&\BB{2}{b0}&\BB{2}{b2}&\BB{2}{b3}&\BB{3}{000 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.B} \\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{001 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.LN}\\
-\BB{2}{n0}&\BB{2}{n1}&\BB{2}{n2}&\BB{2}{n3}&\BB{3}{010 }&\BB{1}{1}&&\BB{1}{0} \BB{4}{rs1 }& \BB{3}{010}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{TWID.HN}\\
-\BB{11}{imm[10:0]}                                      &\BB{1}{0}& \BB{5}{rs1 }& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LW.cr } \\
-\BB{11}{imm[10:0]}                                      &\BB{1}{1}& \BB{5}{imm5}& \BB{3}{011}&\BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{LUI.cr} \\
-\BB{11}{imm[10:0]}                                      &\BB{1}{1}& \BB{5}{imm5}& \BB{3}{011}&\BB{1}{1}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ORI.cr}
-\end{bytefield}
-\caption{I-type instruction encodings. The {\tt d} and {\tt c} bits refer to
-which halfword, and which byte of a halfword respectivley the loaded
-value is written too. Where these fields are irrelevant, they are tied to
-zero. Here {\tt imm5} in the \ASM{LUI.cr} and \ASM{ORI.cr} instructions
-represent bits $15..11$ of the $16$ bit immediate they operate with.
-The \ASM{TWID.*} instructions share the {\tt f3} field encoding with
-\ASM{LHU.cr}, and must be distinguished from it using the {\tt d}
-field. Likewise for distinguishing \ASM{LUI.cr} and \ASM{ORI.cr}
-from \ASM{LW.cr}.}
-\end{figure}
+\encodingsel{}
+{ fig:encodings-else }
 
 
-\begin{figure}[H]
-\centering \begin{bytefield}[endianness=big]{32} \bitheader{0-31} \\
-\BH{7}{imm[10:5]}&\BH{1}{a}& \BH{4}{rs2}& \BH{5}{rs1  }& \BH{3}{f3 }&\BH{1}{c}&\BH{4}{imm[3:0]}& \BH{8}{opcode}    & \BH{15}{S-type} \\
-\BB{7}{imm[10:5]}&\BB{1}{a}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{100}&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SB.CR} \\
-\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{101}&\BB{1}{c}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SH.CR} \\
-\BB{7}{imm[10:5]}&\BB{1}{0}& \BB{4}{rs2}& \BB{5}{rs1  }& \BB{3}{110}&\BB{1}{0}&\BB{4}{imm[3:0]}& \BB{8}{\encopcode}& \BB{15}{SW.CR}
-\end{bytefield}
-\caption{S-type instruction encodings. The {\tt h} and {\tt b} bits refer to
-which halfword, and which byte of a halfword respectivley the value to be
-stored is sourced from. Where these fields are irrelevant, they are tied to
-zero.}
-\end{figure}
-
-
-\begin{figure}[H]
-\centering
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}               \\
-\BH{7}{   f7  }& \BH{1}{a}& \BH{4}{ rs2 }& \BH{1}{b}& \BH{4}{rs1} & \BH{3}{f3 }& \BH{1}{c}& \BH{4}{rd}& \BH{8}{opcode}    & \BH{15}{R-type} \\
-\BB{7}{0000000}& \BB{1}{0}& \BB{4}{ 0000}& \BB{1}{0}& \BB{4}{rs1} & \BB{3}{000}&          & \BB{5}{rd}& \BB{8}{\encopcode}& \BB{15}{MV2GPR } \\
-\BB{7}{0000000}& \BB{1}{1}& \BB{4}{ 0000}&            \BB{5}{rs1} & \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{MV2COP } \\
-\BB{7}{0000001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ADD.px } \\
-\BB{7}{0000010}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SUB.px } \\
-\BB{7}{0000011}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{MUL.px } \\
-\BB{7}{0000100}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLLI.px } \\
-\BB{7}{0000101}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRLI.px } \\
-\BB{7}{0000110}& \BB{1}{a}& \BB{4}{SHAMT}& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROTI.px } \\
-\BB{7}{0000111}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SLL.px } \\
-\BB{7}{0001000}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SRL.px } \\
-\BB{7}{0001001}& \BB{1}{a}& \BB{4}{ rs2 }& \BB{1}{b}& \BB{4}{rs1} & \BB{3}{000}& \BB{1}{c}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{ROT.px } \\
-\BB{7}{0010010}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.b} \\
-\BB{7}{0010011}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.b } \\
-\BB{7}{0010110}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{SCATTER.h} \\
-\BB{7}{0010111}& \BB{1}{0}& \BB{4}{offsets}&          \BB{5}{base}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{GATHER.h } \\
-\BB{3}{110}& \BB{4}{lut4}& \BB{1}{0}& \BB{4}{ rs2 }& \BB{1}{0}& \BB{4}{rs1}& \BB{3}{000}& \BB{1}{0}& \BB{4}{rd}& \BB{8}{\encopcode}& \BB{15}{BOP.cr } \\
-\end{bytefield}
-\captionsetup{singlelinecheck=off}
-\caption[x]{Register type instruction encodings. Note the different field widths
-for {\tt rd, rs1} and {\tt base} in the \ASM{MV2GPR}, \ASM{MV2COP} and
-\ASM{SCATTER/GATHER} instructions respectivley. This is because they are
-sourced from the RISC-V $\GPR$s, rather than the $\CPR$s.
-The fields {\tt a, b} and {\tt c} are used by the {\tt *.px} instructions
+\encodingspx{
+Packed register type instruction encodings. 
+The fields {\tt ca, cb} and {\tt cc} are used by the {\tt *.px} instructions
 to encode the pack width of their operations. The three bits are
 concatenated into a 3-bit vector $a,b,c$ and then decoded into pack widths
 using the following lookup table. \\
 \begin{itemize}
-\item $a,b,c = 000 \Rightarrow $ Pack width $1$
-\item $a,b,c = 001 \Rightarrow $ Pack width $2$
-\item $a,b,c = 010 \Rightarrow $ Pack width $4$
-\item $a,b,c = 011 \Rightarrow $ Pack width $8$
-\item $a,b,c = 100 \Rightarrow $ Pack width $16$
-\item $a,b,c = 101 \Rightarrow $ Pack width $32$
-\item $a,b,c = 110 $ - Reserved. Should be treated as a NOP.
-\item $a,b,c = 111 $ - Reserved. Should be treated as a NOP.
+\item $ca,cb,cc = 000 \Rightarrow $ Pack width $1$
+\item $ca,cb,cc = 001 \Rightarrow $ Pack width $2$
+\item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$
+\item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$
+\item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$
+\item $ca,cb,cc = 101 \Rightarrow $ Pack width $32$
+\item $ca,cb,cc = 110 $ - Reserved. Should be treated as a NOP.
+\item $ca,cb,cc = 111 $ - Reserved. Should be treated as a NOP.
 \end{itemize}
+}{
+fig:encodings-rtype
 }
-\label{fig:encodings-rtype}
-\end{figure}
 
 
-\begin{figure}[H]
-\centering
-\begin{bytefield}[endianness=big]{32}
-\bitheader{0-31}\\
-\BH{4}{ op }&\BH{4}{rs3  }&\BH{4}{rs2 }\BH{1}{b}&&\BH{4}{rs1}&& \BH{3}{f3 }&\BH{2}{ mo } \BH{3}{ rdm }& \BH{8}{opcode}& \BH{15}{\bf MR-type} \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ EQU.mp    } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ LTU.mp    } \\
-\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{1}&&\BB{4}{rs1}& \BB{3}{111}&\BB{5}{ rd }& \BB{8}{\encopcode}& \BB{15}{ GTU.mp    } \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ADD3.mp } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SUB3.mp } \\
-\BB{4}{0010}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ADD2.mp } \\
-\BB{4}{0011}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 00 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SUB2.mp } \\
-\BB{4}{0000}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SLLR.mp } \\
-\BB{4}{0001}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SRLR.mp } \\
-\BB{4}{0010}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SLLI.mp } \\
-\BB{4}{0011}&\BB{4}{SHAMT}&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 01 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ SRLI.mp } \\
-\BB{4}{0000}&\BB{4}{0000 }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ACC2.mp } \\
-\BB{4}{0001}&\BB{4}{0000 }&\BB{4}{0000}\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ ACC1.mp } \\
-\BB{4}{0010}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 10 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ MAC.mp } \\
-\BB{4}{ rs4}&\BB{4}{rs3  }&\BB{4}{rs2 }\BB{1}{0}&&\BB{4}{rs1}&\BB{3}{111}&\BB{2}{ 11 } \BB{3}{ rdm }& \BB{8}{\encopcode}& \BB{15}{ MAA.mp } \\
-\end{bytefield}
-\caption{Multi-precision integer instruction encodings. All instructions in
+\encodingsmp{
+Multi-precision integer instruction encodings. All instructions in
 this class are identified first by the {\tt f3} field, then by the {\tt c}
 field. The {\tt c} field splits comparison operations from compute operations.
 The {\tt mo} and {\tt op} fields then further identify the instructions.
 Note that the {\tt rd} field for the comparison instructions is a RISC-V
-$\GPR$ register address.}
-\end{figure}
+$\GPR$ register address.
+}{
+fig:encodings-mp
+}

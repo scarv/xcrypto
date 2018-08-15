@@ -16,6 +16,7 @@ match = {}
 mask = {}
 pseudos = {}
 arguments = {}
+opcodebits ={}
 
 cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 , 'cshamt'  , 'cmshamt' , 'b0'      , 'b1'      ,
@@ -226,352 +227,13 @@ def str_arg(arg0,name,match,arguments):
 def str_inst(name,arguments):
   return name.replace('.rv32','').upper()
 
-def print_unimp_type(name,match,arguments):
-  print """
-&
-\\multicolumn{10}{|c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    '0'*32, \
-    'UNIMP' \
-  )
-
-def print_u_type(name,match,arguments):
-  print """
-&
-\\multicolumn{8}{|c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('imm20','imm[31:12]',match,arguments), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_uj_type(name,match,arguments):
-  print """
-&
-\\multicolumn{8}{|c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('jimm20','imm[20$\\vert$10:1$\\vert$11$\\vert$19:12]',match,arguments), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_s_type(name,match,arguments):
-  print """
-&
-\\multicolumn{4}{|c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('imm12hi','imm[11:5]',match,arguments), \
-    str_arg('rs2','',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('imm12lo','imm[4:0]',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_sb_type(name,match,arguments):
-  print """
-&
-\\multicolumn{4}{|c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('bimm12hi','imm[12$\\vert$10:5]',match,arguments), \
-    str_arg('rs2','',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('bimm12lo','imm[4:1$\\vert$11]',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_i_type(name,match,arguments):
-  print """
-&
-\\multicolumn{6}{|c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('imm12','imm[11:0]',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_csr_type(name,match,arguments):
-  print """
-&
-\\multicolumn{6}{|c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('imm12','csr',match,arguments), \
-    ('zimm' if name[-1] == 'i' else 'rs1'), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_ish_type(name,match,arguments):
-  print """
-&
-\\multicolumn{3}{|c|}{%s} &
-\\multicolumn{3}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    binary(yank(match,26,6),6), \
-    str_arg('shamt','shamt',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_ishw_type(name,match,arguments):
-  print """
-&
-\\multicolumn{4}{|c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    binary(yank(match,25,7),7), \
-    str_arg('shamtw','shamt',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_r_type(name,match,arguments):
-  print """
-&
-\\multicolumn{4}{|c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    binary(yank(match,25,7),7), \
-    str_arg('rs2','',match,arguments), \
-    'zimm' in arguments and str_arg('zimm','imm[4:0]',match,arguments) or str_arg('rs1','',match,arguments), \
-    str_arg('rm','',match,arguments), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_r4_type(name,match,arguments):
-  print """
-&
-\\multicolumn{2}{|c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('rs3','',match,arguments), \
-    binary(yank(match,25,2),2), \
-    str_arg('rs2','',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    str_arg('rm','',match,arguments), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_amo_type(name,match,arguments):
-  print """
-&
-\\multicolumn{2}{|c|}{%s} &
-\\multicolumn{1}{c|}{aq} &
-\\multicolumn{1}{c|}{rl} &
-\\multicolumn{2}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    binary(yank(match,27,5),5), \
-    str_arg('rs2','',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_fence_type(name,match,arguments):
-  print """
-&
-\\multicolumn{2}{|c|}{%s} &
-\\multicolumn{3}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} &
-\\multicolumn{1}{c|}{%s} & %s \\\\
-\\cline{2-11}
-  """ % \
-  ( \
-    str_arg('fm','fm',match,arguments), \
-    str_arg('pred','pred',match,arguments), \
-    str_arg('succ','',match,arguments), \
-    str_arg('rs1','',match,arguments), \
-    binary(yank(match,funct_base,funct_size),funct_size), \
-    str_arg('rd','',match,arguments), \
-    binary(yank(match,opcode_base,opcode_size),opcode_size), \
-    str_inst(name,arguments) \
-  )
-
-def print_header(*types):
-  print """
-\\newpage
-
-\\begin{table}[p]
-\\begin{small}
-\\begin{center}
-\\begin{tabular}{p{0in}p{0.4in}p{0.05in}p{0.05in}p{0.05in}p{0.05in}p{0.4in}p{0.6in}p{0.4in}p{0.6in}p{0.7in}l}
-& & & & & & & & & & \\\\
-                      &
-\\multicolumn{1}{l}{\\instbit{31}} &
-\\multicolumn{1}{r}{\\instbit{27}} &
-\\instbit{26} &
-\\instbit{25} &
-\\multicolumn{1}{l}{\\instbit{24}} &
-\\multicolumn{1}{r}{\\instbit{20}} &
-\\instbitrange{19}{15} &
-\\instbitrange{14}{12} &
-\\instbitrange{11}{7} &
-\\instbitrange{6}{0} \\\\
-\\cline{2-11}
-"""
-  if 'r' in types:
-    print """
-&
-\\multicolumn{4}{|c|}{funct7} &
-\\multicolumn{2}{c|}{rs2} &
-\\multicolumn{1}{c|}{rs1} &
-\\multicolumn{1}{c|}{funct3} &
-\\multicolumn{1}{c|}{rd} &
-\\multicolumn{1}{c|}{opcode} & R-type \\\\
-\\cline{2-11}
-"""
-  if 'r4' in types:
-    print """
-&
-\\multicolumn{2}{|c|}{rs3} &
-\\multicolumn{2}{c|}{funct2} &
-\\multicolumn{2}{c|}{rs2} &
-\\multicolumn{1}{c|}{rs1} &
-\\multicolumn{1}{c|}{funct3} &
-\\multicolumn{1}{c|}{rd} &
-\\multicolumn{1}{c|}{opcode} & R4-type \\\\
-\\cline{2-11}
-  """
-  if 'i' in types:
-    print """
-&
-\\multicolumn{6}{|c|}{imm[11:0]} &
-\\multicolumn{1}{c|}{rs1} &
-\\multicolumn{1}{c|}{funct3} &
-\\multicolumn{1}{c|}{rd} &
-\\multicolumn{1}{c|}{opcode} & I-type \\\\
-\\cline{2-11}
-"""
-  if 's' in types:
-    print """
-&
-\\multicolumn{4}{|c|}{imm[11:5]} &
-\\multicolumn{2}{c|}{rs2} &
-\\multicolumn{1}{c|}{rs1} &
-\\multicolumn{1}{c|}{funct3} &
-\\multicolumn{1}{c|}{imm[4:0]} &
-\\multicolumn{1}{c|}{opcode} & S-type \\\\
-\\cline{2-11}
-"""
-  if 'sb' in types:
-    print """
-&
-\\multicolumn{4}{|c|}{imm[12$\\vert$10:5]} &
-\\multicolumn{2}{c|}{rs2} &
-\\multicolumn{1}{c|}{rs1} &
-\\multicolumn{1}{c|}{funct3} &
-\\multicolumn{1}{c|}{imm[4:1$\\vert$11]} &
-\\multicolumn{1}{c|}{opcode} & B-type \\\\
-\\cline{2-11}
-"""
-  if 'u' in types:
-    print """
-&
-\\multicolumn{8}{|c|}{imm[31:12]} &
-\\multicolumn{1}{c|}{rd} &
-\\multicolumn{1}{c|}{opcode} & U-type \\\\
-\\cline{2-11}
-"""
-  if 'uj' in types:
-    print """
-&
-\\multicolumn{8}{|c|}{imm[20$\\vert$10:1$\\vert$11$\\vert$19:12]} &
-\\multicolumn{1}{c|}{rd} &
-\\multicolumn{1}{c|}{opcode} & J-type \\\\
-\\cline{2-11}
-"""
+def print_header(cmd):
+  print """\\newcommand{%s}[2]{
+\\begin{figure}[H]
+\\centering
+\\begin{bytefield}[endianness=big]{32}
+\\bitheader{0-31}               \\\\
+""" % cmd
 
 def print_subtitle(title):
   print """
@@ -584,121 +246,66 @@ def print_subtitle(title):
 
 def print_footer(caption=''):
   print """
-\\end{tabular}
-\\end{center}
-\\end{small}
-%s
-\\label{instr-table}
-\\end{table}
-  """ % caption
+\end{bytefield}
+\captionsetup{singlelinecheck=off}
+\caption[x]{#1}
+\label{#2}
+\end{figure}}
+  """
+
 
 def print_inst(n):
-  if n == 'fence' or n == 'fence.i':
-    print_fence_type(n, match[n], arguments[n])
-  elif 'aqrl' in arguments[n]:
-    print_amo_type(n, match[n], arguments[n])
-  elif 'shamt' in arguments[n]:
-    print_ish_type(n, match[n], arguments[n])
-  elif 'shamtw' in arguments[n]:
-    print_ishw_type(n, match[n], arguments[n])
-  elif 'imm20' in arguments[n]:
-    print_u_type(n, match[n], arguments[n])
-  elif 'jimm20' in arguments[n]:
-    print_uj_type(n, match[n], arguments[n])
-  elif n[:3] == 'csr':
-    print_csr_type(n, match[n], arguments[n])
-  elif 'imm12' in arguments[n] or n == 'ecall' or n == 'ebreak':
-    print_i_type(n, match[n], arguments[n])
-  elif 'imm12hi' in arguments[n]:
-    print_s_type(n, match[n], arguments[n])
-  elif 'bimm12hi' in arguments[n]:
-    print_sb_type(n, match[n], arguments[n])
-  elif 'rs3' in arguments[n]:
-    print_r4_type(n, match[n], arguments[n])
-  else:
-    print_r_type(n, match[n], arguments[n])
+    ifields = opcodebits[n]
+    fs      = []
+    for hi,lo,val in ifields:
+        width = 1 + hi - lo
+        val = bin(val)[2:].rjust(width,"0")
+        fs.append((hi,lo,val))
+    for argname in arglut:
+        if(argname in arguments[n]):
+            hi,lo = arglut[argname]
+            fs.append((hi,lo,argname))
+    
+    fs.sort(key=lambda fs:fs[0],reverse=True)
 
-def print_insts(*names):
+    for hi,lo,val in fs:
+        width = 1 + hi - lo
+        print("\\BB{%d}{%s}" % (width,val))
+
+    print("\\BB{15}{%s}\\\\" % n)
+
+
+def print_insts(names):
   for n in names:
     print_inst(n)
 
-def make_supervisor_latex_table():
-  print_header('i')
-  print_subtitle('Environment Call and Breakpoint')
-  print_insts('ecall', 'ebreak')
-  print_subtitle('Trap-Return Instructions')
-  print_insts('uret', 'sret', 'mret')
-  print_subtitle('Interrupt-Management Instructions')
-  print_insts('wfi')
-  print_subtitle('Memory-Management Instructions')
-  print_insts('sfence.vma')
-  print_footer('\\caption{RISC-V Privileged Instructions}')
-
 def make_latex_table():
-  print_header('r','i','s','sb','u','uj')
-  print_subtitle('RV32I Base Instruction Set')
-  print_insts('lui', 'auipc')
-  print_insts('jal', 'jalr', 'beq', 'bne', 'blt', 'bge', 'bltu', 'bgeu')
-  print_insts('lb', 'lh', 'lw', 'lbu', 'lhu', 'sb', 'sh', 'sw')
-  print_insts('addi', 'slti', 'sltiu', 'xori', 'ori', 'andi', 'slli.rv32', 'srli.rv32', 'srai.rv32')
-  print_insts('add', 'sub', 'sll', 'slt', 'sltu', 'xor', 'srl', 'sra', 'or', 'and')
-  print_insts('fence', 'fence.i')
-  print_insts('ecall', 'ebreak')
-  print_insts('csrrw', 'csrrs', 'csrrc')
-  print_insts('csrrwi', 'csrrsi', 'csrrci')
-  print_footer()
+ 
+  used   = []
 
-  print_header('r','a','i','s')
-  print_subtitle('RV64I Base Instruction Set (in addition to RV32I)')
-  print_insts('lwu', 'ld', 'sd')
-  print_insts('slli', 'srli', 'srai')
-  print_insts('addiw', 'slliw', 'srliw', 'sraiw')
-  print_insts('addw', 'subw', 'sllw', 'srlw', 'sraw')
-  print_subtitle('RV32M Standard Extension')
-  print_insts('mul', 'mulh', 'mulhsu', 'mulhu')
-  print_insts('div', 'divu', 'rem', 'remu')
-  print_subtitle('RV64M Standard Extension (in addition to RV32M)')
-  print_insts('mulw', 'divw', 'divuw', 'remw', 'remuw')
-  print_subtitle('RV32A Standard Extension')
-  print_insts('lr.w', 'sc.w')
-  print_insts('amoswap.w')
-  print_insts('amoadd.w', 'amoxor.w', 'amoand.w', 'amoor.w')
-  print_insts('amomin.w', 'amomax.w', 'amominu.w', 'amomaxu.w')
-  print_footer()
+  mplist = [n for n in namelist if ".mp" in n]
+  used   += mplist
 
-  print_header('r','r4','i','s')
-  print_subtitle('RV64A Standard Extension (in addition to RV32A)')
-  print_insts('lr.d', 'sc.d')
-  print_insts('amoswap.d')
-  print_insts('amoadd.d', 'amoxor.d', 'amoand.d', 'amoor.d')
-  print_insts('amomin.d', 'amomax.d', 'amominu.d', 'amomaxu.d')
-  print_subtitle('RV32F Standard Extension')
-  print_insts('flw', 'fsw')
-  print_insts('fmadd.s', 'fmsub.s', 'fnmsub.s', 'fnmadd.s')
-  print_insts('fadd.s', 'fsub.s', 'fmul.s', 'fdiv.s', 'fsqrt.s')
-  print_insts('fsgnj.s', 'fsgnjn.s', 'fsgnjx.s', 'fmin.s', 'fmax.s')
-  print_insts('fcvt.w.s', 'fcvt.wu.s', 'fmv.x.w')
-  print_insts('feq.s', 'flt.s', 'fle.s', 'fclass.s')
-  print_insts('fcvt.s.w', 'fcvt.s.wu', 'fmv.w.x')
-  print_footer()
+  pxlist = [n for n in namelist if not n in used and (
+                                    ".px" in n or \
+                                    "scatter" in n or
+                                    "gather" in n or
+                                    "bop" in n)]
+  used   += pxlist
+  
+  ellist = [n for n in namelist if not n in used]
 
-  print_header('r','r4','i','s')
-  print_subtitle('RV64F Standard Extension (in addition to RV32F)')
-  print_insts('fcvt.l.s', 'fcvt.lu.s')
-  print_insts('fcvt.s.l', 'fcvt.s.lu')
-  print_subtitle('RV32D Standard Extension')
-  print_insts('fld', 'fsd')
-  print_insts('fmadd.d', 'fmsub.d', 'fnmsub.d', 'fnmadd.d')
-  print_insts('fadd.d', 'fsub.d', 'fmul.d', 'fdiv.d', 'fsqrt.d')
-  print_insts('fsgnj.d', 'fsgnjn.d', 'fsgnjx.d', 'fmin.d', 'fmax.d')
-  print_insts('fcvt.s.d', 'fcvt.d.s')
-  print_insts('feq.d', 'flt.d', 'fle.d', 'fclass.d')
-  print_insts('fcvt.w.d', 'fcvt.wu.d')
-  print_insts('fcvt.d.w', 'fcvt.d.wu')
-  print_subtitle('RV64D Standard Extension (in addition to RV32D)')
-  print_insts('fcvt.l.d', 'fcvt.lu.d', 'fmv.x.d')
-  print_insts('fcvt.d.l', 'fcvt.d.lu', 'fmv.d.x')
-  print_footer('\\caption{Instruction listing for RISC-V}')
+  print_header("\\encodingspx")
+  print_insts(pxlist)
+  print_footer('Instruction listing for RISC-V')
+  
+  print_header("\\encodingsmp")
+  print_insts(mplist)
+  print_footer('Instruction listing for RISC-V')
+  
+  print_header("\\encodingsel")
+  print_insts(ellist)
+  print_footer('Instruction listing for RISC-V')
 
 def print_chisel_insn(name):
   s = "  def %-18s = BitPat(\"b" % name.replace('.', '_').upper()
@@ -709,38 +316,6 @@ def print_chisel_insn(name):
       s = s + '?'
   print s + "\")"
 
-def make_chisel():
-  print '/* Automatically generated by parse-opcodes */'
-  print 'object Instructions {'
-  for name in namelist:
-    print_chisel_insn(name)
-  print '}'
-  print 'object Causes {'
-  for num, name in causes:
-    print '  val %s = %s' % (name.lower().replace(' ', '_'), hex(num))
-  print '  val all = {'
-  print '    val res = collection.mutable.ArrayBuffer[Int]()'
-  for num, name in causes:
-    print '    res += %s' % (name.lower().replace(' ', '_'))
-  print '    res.toArray'
-  print '  }'
-  print '}'
-  print 'object CSRs {'
-  for num, name in csrs+csrs32:
-    print '  val %s = %s' % (name, hex(num))
-  print '  val all = {'
-  print '    val res = collection.mutable.ArrayBuffer[Int]()'
-  for num, name in csrs:
-    print '    res += %s' % (name)
-  print '    res.toArray'
-  print '  }'
-  print '  val all32 = {'
-  print '    val res = collection.mutable.ArrayBuffer(all:_*)'
-  for num, name in csrs32:
-    print '    res += %s' % (name)
-  print '    res.toArray'
-  print '  }'
-  print '}'
 
 def signed(value, width):
   if 0 <= value < (1<<(width-1)):
@@ -748,38 +323,7 @@ def signed(value, width):
   else:
     return value - (1<<width)
 
-def print_go_insn(name):
-  print '\tcase A%s:' % name.upper().replace('.', '')
-  m = match[name]
-  opcode = yank(m, 0, 7)
-  funct3 = yank(m, 12, 3)
-  rs2 = yank(m, 20, 5)
-  csr = yank(m, 20, 12)
-  funct7 = yank(m, 25, 7)
-  print '\t\treturn &inst{0x%x, 0x%x, 0x%x, %d, 0x%x}, true' % (opcode, funct3, rs2, signed(csr, 12), funct7)
-
-def make_go():
-  print '// Automatically generated by parse-opcodes'
-  print
-  print 'package riscv'
-  print
-  print 'import "cmd/internal/obj"'
-  print
-  print 'type inst struct {'
-  print '\topcode uint32'
-  print '\tfunct3 uint32'
-  print '\trs2    uint32'
-  print '\tcsr    int64'
-  print '\tfunct7 uint32'
-  print '}'
-  print
-  print 'func encode(a obj.As) (i *inst, ok bool) {'
-  print '\tswitch a {'
-  for name in namelist:
-    print_go_insn(name)
-  print '\t}'
-  print '\treturn nil, false'
-  print '}'
+##################################
 
 for line in sys.stdin:
   line = line.partition('#')
@@ -799,6 +343,7 @@ for line in sys.stdin:
 
   if not name in arguments.keys():
     arguments[name] = []
+    opcodebits[name] = []
 
   for token in tokens[1:]:
     if len(token.split('=')) == 2:
@@ -816,6 +361,7 @@ for line in sys.stdin:
         val = int(tokens[1], 0)
         if val >= (1 << (hi-lo+1)):
           sys.exit("%s: bad value %d for range %d..%d" % (name,val,hi,lo))
+        opcodebits[name].append((hi,lo,val))
         mymatch = mymatch | (val << lo)
         mymask = mymask | ((1<<(hi+1))-(1<<lo))
 
