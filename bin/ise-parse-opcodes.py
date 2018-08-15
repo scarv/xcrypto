@@ -156,7 +156,7 @@ def make_c_extra(match,mask):
     # Generate instruction assembly logic
     print("")
     print("case 'X': /* SCARV Crypto ISE */ ")
-    print("  switch (*++args){")
+    print("  switch (c = *++args){")
 
     avals = sorted([(a,acodes[a]) for a in acodes])
     for argtype,argsig in avals:
@@ -166,7 +166,8 @@ def make_c_extra(match,mask):
         else:
             l = l[1:]
         print("    case '%s': /* %s */"%(l,argtype))
-        print("      //break;")
+        print("      printf(\"  BEN: "+l+"\\n\");")
+        print("      break;")
     print("""
     default:
         as_bad (_(\"bad Crypto ISE field specifier 'X%c'\"), *args);

@@ -25,8 +25,8 @@
 .section .text
 
 _start:
-
+    
     mv2cop  c1, a0
-    lw.cr   c2, a1, 16
-    add.px  0,0,0,c3,c1,c2
-    mv2gpr  a0, c3
+    #lw.cr   c2, a1, 16
+    #add.px  0,0,0,c3,c1,c2
+    #mv2gpr  a0, c3
