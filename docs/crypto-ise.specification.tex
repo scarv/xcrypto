@@ -137,7 +137,7 @@ lower half of a $\CPR$ register.
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
 packed operations on multiple independent values. They operate on words, and
-chunk them into 1, 2, 4, 8, 16 or 32 separate values as shown in the table
+chunk them into 1, 2, 4, 8, or 16 separate values as shown in the table
 below.
 
 These instructions are designed to allow fast and efficient implementations
@@ -161,8 +161,8 @@ $b \ASN b + pw$\;
 $\CPR$ register file. Here, ${\bf W}$ is the word-width in bits of the
 registers, assumed to be $32$. For example, if $pw$ is 32, then the loop
 will execute once, applying the function to the full 32-bit word. If $pw$
-were $8$, then the function would be applied $8$, once to each corresponding
-pair of nibbles in the word.}
+were $8$, then the function would be applied $8$ times, once to each
+corresponding pair of nibbles in each word.}
 \end{algorithm}
 
 When coding these instructions as assembly mnemonics, the {\tt x} in the
@@ -172,7 +172,7 @@ for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
 \paragraph{ADD.px}
 
 The instruction \ASM{ADD.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned packed fields, and adds corresponding fields
+1,2,4,8 or 16 unsigned packed fields, and adds corresponding fields
 together ignoring any carry bits.
 
 No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
@@ -180,7 +180,7 @@ No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
 \paragraph{SUB.px}
 
 The instruction \ASM{SUB.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and subtracts the {\tt rs2} fields
+1,2,4,8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
 from the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
@@ -188,7 +188,7 @@ No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
 \paragraph{MUL.px}
 
 The instruction \ASM{MUL.px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and multiplies the {\tt rs2} fields
+1,2,4,8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
 by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
@@ -196,7 +196,7 @@ No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 \paragraph{SLL[I].px}
 
 The instruction \ASM{SLL[I].px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs1} fields
+1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
 left by the value in {\tt SHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
 (for \ASM{SLL.px}).
 
@@ -207,7 +207,7 @@ packed field, then the result of the \ASM{SLL[I].px} instruction is
 \paragraph{SRL[I].px}
 
 The instruction \ASM{SRL[I].px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and shifts the {\tt rs1} fields
+1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
 right by the value in {\tt SHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
 (for \ASM{SRL.px}).
 
@@ -218,11 +218,67 @@ packed field, then the result of the \ASM{SRL[I].px} instruction is
 \paragraph{ROT[I].px}
 
 The instruction \ASM{ROT[I].px} treats the source and destination registers as
-1,2,4,8,16 or 32 unsigned, packed fields, and rotates the {\tt rs1} fields
+1,2,4,8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
 left by the value in {\tt SHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 (for \ASM{ROT.px}).
 
-\subsubsection{Bitwise and Twiddle Instructions}
+\subsubsection{Packed Field Manipulation}
+
+
+\paragraph{TWID.B, TWID.Hx, TWID.Cx}
+
+These instructions allow permutation of different packed field widths.
+
+The \ASM{TWID.B} instruction is used to {\em twiddle} bytes within words.
+It arbitrarily maps the bytes of a source word onto the bytes of a
+destination word.
+
+The \ASM{TWID.[Hx]} instruction is used to {\em twiddle} nibbles within
+the high or low half-words of a word respectively.
+It works on the {\tt x}'th halfword of a register word where
+$x\in{0,1}.$.
+
+The \ASM{TWID.[Cx]} instruction is used to {\em twiddle} pairs of bits
+\footnote{A {\em crumb}, if you will.}
+within a byte. It works on the {\tt x}'th byte of a register word where
+$x\in{0,1,2,3}.$.
+
+\begin{itemize}
+\item \INST{TWID.B rd, rs1, b0, b1, b2, b3}{
+    $ \CPR[*][\OPER{rd}][0] \ASN \CPR[*][\OPER{rs1}][\OPER{b0}] $ \\
+    $ \CPR[*][\OPER{rd}][1] \ASN \CPR[*][\OPER{rs1}][\OPER{b1}] $ \\
+    $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
+    $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
+}
+\item \INST{TWID.H0 rd, rs1, n0, n1, n2, n3}{
+    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [15:12],
+                          \CPR[*][\OPER{rd}] [11: 8],
+                          \CPR[*][\OPER{rd}] [ 7: 4],
+                          \CPR[*][\OPER{rd}] [ 3: 0]} $ \\
+    $ \CPR[*][\OPER{rd}] [ 3: 0] \ASN nibbles[\OPER{n0}] $ \\
+    $ \CPR[*][\OPER{rd}] [ 7: 4] \ASN nibbles[\OPER{n1}] $ \\
+    $ \CPR[*][\OPER{rd}] [11: 8] \ASN nibbles[\OPER{n2}] $ \\
+    $ \CPR[*][\OPER{rd}] [15:12] \ASN nibbles[\OPER{n3}] $ \\
+    $ \CPR[*][\OPER{rd}] [31:16] \ASN \CPR[*][\OPER{rs1}] [31:16] $
+}
+\item \INST{TWID.H1 rd, rs1, n0, n1, n2, n3}{
+    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [31:28],
+                          \CPR[*][\OPER{rd}] [27:24],
+                          \CPR[*][\OPER{rd}] [23:20],
+                          \CPR[*][\OPER{rd}] [19:16]} $ \\
+    $ \CPR[*][\OPER{rd}] [19:16] \ASN nibbles[\OPER{n0}] $ \\
+    $ \CPR[*][\OPER{rd}] [23:20] \ASN nibbles[\OPER{n1}] $ \\
+    $ \CPR[*][\OPER{rd}] [27:24] \ASN nibbles[\OPER{n2}] $ \\
+    $ \CPR[*][\OPER{rd}] [31:28] \ASN nibbles[\OPER{n3}] $ \\
+    $ \CPR[*][\OPER{rd}] [15: 0] \ASN \CPR[*][\OPER{rs1}] [15: 0] $
+}
+\item \fixme{TWID.Cx example}.
+\end{itemize}
+
+Twiddle can be used to broadcast and re-order bit-pairs, nibbles and
+bytes within words.
+
+\subsubsection{Bitwise Instructions}
 
 \paragraph{BOP.cr}
 
@@ -246,75 +302,6 @@ destination register.
     implementation will end up with a 32-port LUT, with correspondingly
     poor timing performance.
 }
-
-\paragraph{XOR.cr, AND.cr, OR.cr}
-
-The \ASM{XOR.cr}, \ASM{AND.cr}, and \ASM{OR.cr} instructions compute the
-appropriate bitwise result of their operation between the {\tt rs1} and
-{\tt rs2} operands. The result is then written into {\tt rd}.
-
-\note{
-    These instructions are simply aliases of {\ASM BOP.cr}, and are
-    encoded as such in Figure \ref{fig:encodings-rtype}.
-}
-
-The only difference between these instructions and their standard RISC-V
-counterparts is that they operate on the $\CPR$ register file.
-
-\begin{itemize}
-\item \INST{XOR.cr rd, rs1, rs2}{
-    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \XOR \CPR[*][rs2] $ \\
-}
-\item \INST{AND.cr rd, rs1, rs2}{
-    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \AND \CPR[*][rs2] $ \\
-}
-\item \INST{OR.cr rd, rs1, rs2}{
-    $ \CPR[*][\OPER{rd}] \ASN \CPR[*][rs1] \IOR \CPR[*][rs2] $ \\
-}
-\end{itemize}
-
-\paragraph{TWID.B, TWID.HN, TWID.LN}
-
-The \ASM{TWID.B} instruction is used to {\em twiddle} bytes within words.
-It arbitrarily maps the bytes of a source word onto the bytes of a
-destination word.
-
-The \ASM{TWID.[HN,LN]} instruction is used to {\em twiddle} nibbles within
-the high and low half-words of a word respectively.
-
-\begin{itemize}
-\item \INST{TWID.B rd, rs1, b0, b1, b2, b3}{
-    $ \CPR[*][\OPER{rd}][0] \ASN \CPR[*][\OPER{rs1}][\OPER{b0}] $ \\
-    $ \CPR[*][\OPER{rd}][1] \ASN \CPR[*][\OPER{rs1}][\OPER{b1}] $ \\
-    $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
-    $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
-}
-\item \INST{TWID.LN rd, rs1, n0, n1, n2, n3}{
-    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [15:12],
-                          \CPR[*][\OPER{rd}] [11: 8],
-                          \CPR[*][\OPER{rd}] [ 7: 4],
-                          \CPR[*][\OPER{rd}] [ 3: 0]} $ \\
-    $ \CPR[*][\OPER{rd}] [ 3: 0] \ASN nibbles[\OPER{n0}] $ \\
-    $ \CPR[*][\OPER{rd}] [ 7: 4] \ASN nibbles[\OPER{n1}] $ \\
-    $ \CPR[*][\OPER{rd}] [11: 8] \ASN nibbles[\OPER{n2}] $ \\
-    $ \CPR[*][\OPER{rd}] [15:12] \ASN nibbles[\OPER{n3}] $ \\
-    $ \CPR[*][\OPER{rd}] [31:16] \ASN \CPR[*][\OPER{rs1}] [31:16] $
-}
-\item \INST{TWID.HN rd, rs1, n0, n1, n2, n3}{
-    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [31:28],
-                          \CPR[*][\OPER{rd}] [27:24],
-                          \CPR[*][\OPER{rd}] [23:20],
-                          \CPR[*][\OPER{rd}] [19:16]} $ \\
-    $ \CPR[*][\OPER{rd}] [19:16] \ASN nibbles[\OPER{n0}] $ \\
-    $ \CPR[*][\OPER{rd}] [23:20] \ASN nibbles[\OPER{n1}] $ \\
-    $ \CPR[*][\OPER{rd}] [27:24] \ASN nibbles[\OPER{n2}] $ \\
-    $ \CPR[*][\OPER{rd}] [31:28] \ASN nibbles[\OPER{n3}] $ \\
-    $ \CPR[*][\OPER{rd}] [15: 0] \ASN \CPR[*][\OPER{rs1}] [15: 0] $
-}
-\end{itemize}
-
-Twiddle can be used to broadcast and re-order bytes within words.
-
 
 \subsubsection{Multi-precision Arithmetic}
 
@@ -767,9 +754,9 @@ using the following lookup table. \\
 \item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$
 \item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$
 \item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$
-\item $ca,cb,cc = 101 \Rightarrow $ Pack width $32$
-\item $ca,cb,cc = 110 $ - Reserved. Should be treated as a NOP.
-\item $ca,cb,cc = 111 $ - Reserved. Should be treated as a NOP.
+\item $ca,cb,cc = 101 $ - Reserved. Should be treated as an invalid opcode.
+\item $ca,cb,cc = 110 $ - Reserved. Should be treated as an invalid opcode.
+\item $ca,cb,cc = 111 $ - Reserved. Should be treated as an invalid opcode.
 \end{itemize}
 }{
 fig:encodings-rtype
