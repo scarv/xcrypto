@@ -331,7 +331,7 @@ the rotated value and the source value according to the mask value in
 {\tt rs2}.
 
 \ASM{LMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
-while \ASM{HMIX.cr} will rotate to the left by $16..31$. 
+while \ASM{HMIX.cr} will rotate to the right by $16..31$. 
 \designnote{This decision was made simply to make the encoding space
 easier to manage. Rather than adding another 5-bit immediate field, it was
 more efficient to re-use the 4-bit lut field of the \instref{BOP.cr}
