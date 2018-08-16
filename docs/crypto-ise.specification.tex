@@ -109,6 +109,24 @@ Move a $\GPR$ register to a $\CPR$ register.
 }
 \end{itemize}
 
+\subsubsection{Randomness}
+
+Randomness is crucial to many parts of cryptography. Here we define an 
+{\em interface} to a random source, which can be seeded and sampled using
+the \ASM{RSEED.cr} and \ASM{RSAMP.cr} instructions respectivley.
+
+\begin{itemize}
+\item \INST{RSEED.cr rs1}{
+    $RNG \ASN \CPR[*][rs1]$
+}
+\item \INST{RSAMP.cr rd}{
+    $\CPR[*][rd] \ASN RNG$
+}
+\end{itemize}
+
+We leave the exact random number generator function to the implementor,
+but require that the algorithm used is cryptographically appropriate.
+
 \subsubsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
