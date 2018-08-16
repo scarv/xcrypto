@@ -145,6 +145,11 @@ the \ASM{RSEED.cr} and \ASM{RSAMP.cr} instructions respectivley.
 We leave the exact random number generator function to the implementor,
 but require that the algorithm used is cryptographically appropriate.
 
+\ASM{RSEED.cr} writes a 32-bit register value into the RNG, which should
+then act as a seed value.
+
+\ASM{RSAMP.cr} reads a random 32-bit value from the RNG into a register.
+
 \subsubsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
