@@ -312,6 +312,16 @@ destination register.
     poor timing performance.
 }
 
+The following examples of \instref{BOP.cr} show how to encode the existing
+bitwise operation instructions found in the base RISC-V architecture.
+
+\begin{lstlisting}[style=float]
+bop.cr  c1, c2, c3, 0001    // AND
+bop.cr  c1, c2, c3, 0111    // OR 
+bop.cr  c1, c2, c3, 0110    // XOR
+\end{lstlisting}
+
+
 \instdesc{MIX.cr}
 
 The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
