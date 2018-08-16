@@ -330,21 +330,21 @@ the source register value in {\tt rs1} by the ammount in shamt, and then mixes
 the rotated value and the source value according to the mask value in
 {\tt rs2}.
 
-\ASM{RMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
-while \ASM{LMIX.cr} will rotate to the left by the same amounts.
+\ASM{LMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
+while \ASM{HMIX.cr} will rotate to the left by $16..31$. 
 \designnote{This decision was made simply to make the encoding space
 easier to manage. Rather than adding another 5-bit immediate field, it was
 more efficient to re-use the 4-bit lut field of the \instref{BOP.cr}
 instruction.}
 
 \begin{itemize}
-\item \INST{RMIX.cr rd, rs1, rs2,shamt}{
+\item \INST{LMIX.cr rd, rs1, rs2,shamt}{
     $t_0 \ASN \CPR[*][rs1] \RRT shamt $\\
     $\forall i \in {0..31}$
     $    \CPR[*][rd][i] \ASN \CPR[*][rs2][i] ? t_0[i] : \CPR[*][rd][i]$
 }
-\item \INST{LMIX.cr rd, rs1, rs2,shamt}{
-    $t_0 \ASN \CPR[*][rs1] \LRT shamt $\\
+\item \INST{HMIX.cr rd, rs1, rs2,shamt}{
+    $t_0 \ASN \CPR[*][rs1] \RRT (16 + shamt) $\\
     $\forall i \in {0..31}$
     $    \CPR[*][rd][i] \ASN \CPR[*][rs2][i] ? t_0[i] : \CPR[*][rd][i]$
 }
@@ -358,7 +358,7 @@ LUI.cr   c0, 0xF0F0     // Load a mask into c0 which will select
 LLI.cr   c0, 0xF0F0     // alternate nibbles from each register
 LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.
 LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
-RMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
+LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
 \end{lstlisting}
 
 We can also use it to create insert and deposit style instruction
@@ -383,10 +383,10 @@ sequences. \designnote{
 \begin{lstlisting}[style=float]
 LUI.cr   c0, 0x0000     // Load a mask into c0 to select
 LLI.cr   c0, 0x7800     // bits 10:7 from a register
-RMIX.cr  c2, c1, c0, 8  // c2[10:7] <- c1[19:15]
+LMIX.cr  c2, c1, c0, 8  // c2[10:7] <- c1[19:15]
 
 LLI.cr   c0, 0x000E     // byte 0
-LMIX.cr  c2, c1, c0, 16 // c2[7:1] <- c1[23:17]
+HMIX.cr  c2, c1, c0, 0  // c2[7:1] <- c1[23:17]
 \end{lstlisting}
 
 \subsubsection{Multi-precision Arithmetic}
