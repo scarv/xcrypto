@@ -362,7 +362,23 @@ RMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
 \end{lstlisting}
 
 We can also use it to create insert and deposit style instruction
-sequences.
+sequences. \designnote{
+    The rationale for rejecting actual bitfield insert/extract/deposit
+    instructions was two fold. 1) These sorts of instructions are very
+    expensive to encode if they are to be completely flexible. 
+    2) Given that we already have a very capable set of 
+    permutation instruction (\ASM{TWID.*}), and can speedily load
+    large immediates (\ASM{LUI/LLI}), it was more efficient and
+    flexible to add a more generic instruction which would
+    complement their functionality and potentially be more flexible
+    still. While it would be nice to have a completely orthogonal
+    set of instructions for extracting/depositing each pack width,
+    constraints on encoding space and instruction flexibility
+    make it more expensive to implement than it is worth.
+    Implementation wise, it is also easier to re-use existing
+    rotate logic than the dedicated muxing logic needed by generic
+    insert/extract/deposit instructions.
+}
 
 \begin{lstlisting}[style=float]
 LUI.cr   c0, 0x0000     // Load a mask into c0 to select
