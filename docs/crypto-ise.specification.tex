@@ -86,7 +86,7 @@ All instructions occupy the \encspace encoding space of the RISC-V opcode
 map, using the associated \encopcode prefix for bits $6:0$ of each 
 instruction.
 
-\subsubsection{Move \& Immediate Instructions}
+\subsubsection{Move Instructions}
 \paragraph{MV2GPR}
 
 Move a $\CPR$ register to a $\GPR$ register.
@@ -106,30 +106,6 @@ Move a $\GPR$ register to a $\CPR$ register.
 \begin{itemize}
 \item \INST{MV2COP cpr, gpr}{
     $\CPR[*][\OPER{cpr}] \ASN \GPR[*][\OPER{gpr}]$
-}
-\end{itemize}
-
-\paragraph{LUI.cr}
-
-The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
-upper half of a $\CPR$ register. The other half of the
-destination register is set to zero.
-
-\begin{itemize}
-\item \INST{LUI.cr rd, imm16 }{
-    $\CPR[*][\OPER{rd}][31:16] \ASN imm16$ \\
-    $\CPR[*][\OPER{rd}][15: 0] \ASN 0x0$
-}
-\end{itemize}
-
-\paragraph{ORI.cr}
-
-The \ASM{ORI.cr} instruction bitwise or's a 16 bit immediate into the
-lower half of a $\CPR$ register. 
-
-\begin{itemize}
-\item \INST{ORI.cr rd, imm16 }{
-    $\CPR[*][\OPER{rd}] \ASN \CPR[*][\OPER{rd}] \IOR imm16$ \\
 }
 \end{itemize}
 
@@ -280,6 +256,39 @@ bytes within words.
 
 \subsubsection{Bitwise Instructions}
 
+These instructions are designed to operate on bits within words, or
+create masks which make operating on bits within words easy.
+
+\paragraph{LUI.cr, LLI.cr}
+
+The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
+upper half of a $\CPR$ register.
+
+The \ASM{LLI.cr} instruction bitwise loads a 16 bit immediate into the
+lower half of a $\CPR$ register. 
+
+\begin{itemize}
+\item \INST{LUI.cr rd, imm16 }{
+    $\CPR[*][\OPER{rd}][31:16] \ASN imm16$ \\
+}
+\item \INST{LLI.cr rd, imm16 }{
+    $\CPR[*][\OPER{rd}][15: 0] \ASN imm16$ \\
+}
+\end{itemize}
+
+These instructions are designed to be used for mask creation and constant
+loading. The \ASM{LUI.cr} instruction mirrors the RISC-V counterpart, but
+does not zero the lower half of the register.
+\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
+(in tandem with \ASM{ORI} and loading addresses. Since the zeroing of
+the low 12 bits by \ASM{LUI} is mainly useful for addresses, we remove
+this functionality in favour of leaving the low half of the register
+unmodified. The rationale being that two instructions can still create
+and 32-bit immediate, but that if we know a register is zero to begin
+with, we can then use only one instruction to create masks which fit
+into only a single halfword.}
+
+
 \instdesc{BOP.cr}
 
 The \instref{BOP.cr} is designed to express all bitwise logic functions, and be
@@ -336,7 +345,7 @@ using a single 3-instruction sequence:
 
 \begin{lstlisting}[style=float]
 LUI.cr   c0, 0xF0F0     // Load a mask into c0 which will select
-ORI.cr   c0, 0xF0F0     // alternate nibbles from each register
+LLI.cr   c0, 0xF0F0     // alternate nibbles from each register
 LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.
 LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
 RMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
@@ -347,11 +356,10 @@ sequences.
 
 \begin{lstlisting}[style=float]
 LUI.cr   c0, 0x0000     // Load a mask into c0 to select
-ORI.cr   c0, 0x7800     // bits 10:7 from a register
+LLI.cr   c0, 0x7800     // bits 10:7 from a register
 RMIX.cr  c2, c1, c0, 8  // c2[10:7] <- c1[19:15]
 
-LUI.cr   c0, 0x0000     // Mask to select top 7 bits of 
-ORI.cr   c0, 0x000E     // byte 0
+LLI.cr   c0, 0x000E     // byte 0
 LMIX.cr  c2, c1, c0, 16 // c2[7:1] <- c1[23:17]
 \end{lstlisting}
 
@@ -774,7 +782,7 @@ LBU.cr      rd , imm(rs1)           \\
 LHU.cr      rd , imm(rs1)           \\
 LW.cr       rd , imm(rs1)           \\
 LUI.cr      rd,  imm16              \\
-ORI.cr      rd,  imm16              \\
+LLI.cr      rd,  imm16              \\
 SB.cr       rs2, imm(rs1)           \\
 SH.cr       rs2, imm(rs1)           \\
 SW.cr       rs2, imm(rs1)           \\
