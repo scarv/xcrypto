@@ -23,7 +23,7 @@ cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 'b2'      , 'b3'      , 'ca'      , 'cb'      ,
 'cc'      , 'cd'      , 'crs1'    , 'crs2'    ,
 'crs3'    , 'crs4'    , 'crd'     , 'crdm'    ,
-'lut4'   ]
+'lut4',    'cs', 'cl']
 
 acodes = {}
 acodes['imm11'  ] = "Xl"
@@ -47,6 +47,8 @@ acodes['crs4'   ] = "XT"
 acodes['crd'    ] = "XD"
 acodes['crdm'   ] = "XM"
 acodes['lut4'   ] = "X4"
+acodes['cs'     ] = "XS"
+acodes['cl'     ] = "XL"
 acodes['rd'     ] = "d"
 acodes['rs1'    ] = "s"
 
@@ -57,6 +59,8 @@ arglut['imm11lo'] = (10, 7)
 arglut['imm5'   ] = (19,15)
 arglut['cshamt' ] = (23,20)
 arglut['cmshamt'] = (27,24)
+arglut['cs'     ] = (31,28)
+arglut['cl'     ] = (27,24)
 arglut['b0'     ] = (31,30)
 arglut['b1'     ] = (29,28)
 arglut['b2'     ] = (27,26)

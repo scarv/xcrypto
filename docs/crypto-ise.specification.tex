@@ -340,6 +340,35 @@ bop.cr  c1, c2, c3, 0110    // XOR
 \end{lstlisting}
 
 
+\instdesc{EXT.cr}
+
+This instruction allows for extraction of contiguous sequences of two-bit
+pairs from words. It takes a two bit aligned start index {\tt s}, and a length
+{\tt l}, and extracts bits from $2*s$ to $(2*s)+(2*l)$, depositing them in
+the destination register.
+
+\begin{itemize}
+\item \INST{EXT.cr rd, rs, s, l}{
+    $b \ASN 2*s$\\
+    $e \ASN 2*l + b$\\
+    $\CPR[*][rd][e:0] \ASN \CPR[*][rs][e:b]$
+}
+\end{itemize}
+
+\instdesc{INS.cr rd, rs, s, l}
+
+This instruction allows for insertion of a contiguous sequences of two-bit
+pairs into words. It takes the low $2*l$ bits of $\CPR[*][rs]$ and inserts them
+into $\CPR[*][rd]$, starting at bit position $2*s$.
+
+\begin{itemize}
+\item \INST{INS.cr rd, rs, s, l}{
+    $b \ASN 2*s$\\
+    $e \ASN 2*l + b$\\
+    $\CPR[*][rd][e:b] \ASN \CPR[*][rs][e:0]$
+}
+\end{itemize}
+
 \instdesc{MIX.cr}
 
 The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
@@ -377,34 +406,6 @@ LLI.cr   c0, 0xF0F0     // alternate nibbles from each register
 LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.
 LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
 LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
-\end{lstlisting}
-
-We can also use it to create insert and deposit style instruction
-sequences. \designnote{
-    The rationale for rejecting actual bitfield insert/extract/deposit
-    instructions was two fold. 1) These sorts of instructions are very
-    expensive to encode if they are to be completely flexible. 
-    2) Given that we already have a very capable set of 
-    permutation instruction (\ASM{TWID.*}), and can speedily load
-    large immediates (\ASM{LUI/LLI}), it was more efficient and
-    flexible to add a more generic instruction which would
-    complement their functionality and potentially be more flexible
-    still. While it would be nice to have a completely orthogonal
-    set of instructions for extracting/depositing each pack width,
-    constraints on encoding space and instruction flexibility
-    make it more expensive to implement than it is worth.
-    Implementation wise, it is also easier to re-use existing
-    rotate logic than the dedicated muxing logic needed by generic
-    insert/extract/deposit instructions.
-}
-
-\begin{lstlisting}[style=float]
-LUI.cr   c0, 0x0000     // Load a mask into c0 to select
-LLI.cr   c0, 0x7800     // bits 10:7 from a register
-LMIX.cr  c2, c1, c0, 8  // c2[10:7] <- c1[19:15]
-
-LLI.cr   c0, 0x000E     // byte 0
-HMIX.cr  c2, c1, c0, 0  // c2[7:1] <- c1[23:17]
 \end{lstlisting}
 
 \subsubsection{Multi-precision Arithmetic}
