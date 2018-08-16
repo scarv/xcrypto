@@ -109,6 +109,24 @@ Move a $\GPR$ register to a $\CPR$ register.
 }
 \end{itemize}
 
+\instdesc{CMOV.cr}
+
+This instruction implements a conditional move, and is used to implement
+constant-time instruction sequences.
+
+\begin{itemize}
+\item \INST{CMOV.cr rd, rs1, rs2}{
+    $\CPR[*][rd] \ASN (\CPR[*][rs2] == 0) ? \CPR[*][rs1] : \CPR[*][rd]$
+}
+\item \INST{CMOVN.cr rd, rs1, rs2}{
+    $\CPR[*][rd] \ASN (\CPR[*][rs2] != 0) ? \CPR[*][rs1] : \CPR[*][rd]$
+}
+\end{itemize}
+
+If the value in the $\CPR$ register addressed by {\tt rs2} is
+zero / non-zero, then the value in register {\tt rs1} is moved
+into register {\tt rd}.
+
 \subsubsection{Randomness}
 
 Randomness is crucial to many parts of cryptography. Here we define an 
