@@ -286,10 +286,13 @@ def make_latex_table():
   mplist = [n for n in namelist if ".mp" in n]
   used   += mplist
 
-  pxlist = [n for n in namelist if not n in used and (
+  pxlist = [n for n in namelist if not n in used and
+                                   n != "ext.px" and
+                                   n != "dep.px" and (
                                     ".px" in n or \
                                     "scatter" in n or
                                     "gather" in n or
+                                    "mix" in n or
                                     "bop" in n)]
   used   += pxlist
   
