@@ -47,8 +47,9 @@
 \newcommand{\encopcode}{$0101011$}
 
 \newcommandx{\ASM}[1]{{\tt #1}}
+\newcommandx{\instlab}[1]{\label{sec:#1}}
 \newcommandx{\instref}[1]{{\tt \nameref{sec:#1}}}
-\newcommandx{\instdesc}[1]{\paragraph{#1}\label{sec:#1}}
+\newcommandx{\instdesc}[1]{\subsubsection{#1}\label{sec:#1}}
 
 % Shorter bit box commands for encoding description
 \newcommandx{\BB}[2]{\bitbox{#1}{{\tt #2}}}
@@ -62,6 +63,16 @@
   #2
   \end{algorithm}
 }
+
+\newcommand{\ienc}[1]{
+\begin{figure}[H]
+\centering
+\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\bitheader{0-31}\\
+#1
+\end{bytefield}
+\end{figure}}
+
 
 % -----------------------------------------
 

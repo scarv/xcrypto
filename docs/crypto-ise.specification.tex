@@ -1,13 +1,10 @@
 
-This section specifies the ISE in terms of it's state and the instructions
-which operate on that state.
-
-\subsection{Notation}
+\section{Notation}
 
 Lorem ipsum doler set amet.
 
 
-\subsection{State}
+\section{State}
 
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE. It is to the
@@ -69,7 +66,7 @@ for the crypto ISE.
 normally have been needed for register addresses.
 \end{itemize}
 
-\subsubsection{ABI Standards}
+\subsection{ABI Standards}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
 for the purposes of the ABI. That is, if {\tt function1} calls 
@@ -80,14 +77,15 @@ The $\CPR$ registers $0..4$ are considered as function arguments
 and/or return values. 
 All other $\CPR$ registers are considered temporaries.
 
-\subsection{Instructions}
+\section{Instructions}
 
 All instructions occupy the \encspace encoding space of the RISC-V opcode
 map, using the associated \encopcode prefix for bits $6:0$ of each 
 instruction.
 
-\subsubsection{Move Instructions}
-\paragraph{MV2GPR}
+\subsection{Move Instructions}
+
+\instdesc{MV2GPR}
 
 Move a $\CPR$ register to a $\GPR$ register.
 
@@ -98,7 +96,7 @@ Move a $\CPR$ register to a $\GPR$ register.
 \end{itemize}
 
 
-\paragraph{MV2COP}
+\instdesc{MV2COP}
 
 The complement of \ASM{MV2GPR}.
 Move a $\GPR$ register to a $\CPR$ register.
@@ -127,7 +125,7 @@ If the value in the $\CPR$ register addressed by {\tt rs2} is
 zero / non-zero, then the value in register {\tt rs1} is moved
 into register {\tt rd}.
 
-\subsubsection{Randomness}
+\subsection{Randomness}
 
 Randomness is crucial to many parts of cryptography. Here we define an 
 {\em interface} to a random source, which can be seeded and sampled using
@@ -150,7 +148,7 @@ then act as a seed value.
 
 \ASM{RSAMP.cr} reads a random 32-bit value from the RNG into a register.
 
-\subsubsection{Packed Arithmetic}
+\subsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
 packed operations on multiple independent values. They operate on words, and
@@ -186,7 +184,7 @@ When coding these instructions as assembly mnemonics, the {\tt x} in the
 instruction names below should be replaced with the pack width. Hence
 for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
 
-\paragraph{ADD.px}
+\instdesc{ADD.px}
 
 The instruction \ASM{ADD.px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned packed fields, and adds corresponding fields
@@ -194,7 +192,7 @@ together ignoring any carry bits.
 
 No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
 
-\paragraph{SUB.px}
+\instdesc{SUB.px}
 
 The instruction \ASM{SUB.px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
@@ -202,7 +200,7 @@ from the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
 
-\paragraph{MUL.px}
+\instdesc{MUL.px}
 
 The instruction \ASM{MUL.px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
@@ -210,7 +208,7 @@ by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 
-\paragraph{SLL[I].px}
+\instdesc{SLL[I].px}
 
 The instruction \ASM{SLL[I].px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
@@ -221,7 +219,7 @@ If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SLL[I].px} instruction is
 {\em implementation dependent}.
 
-\paragraph{SRL[I].px}
+\instdesc{SRL[I].px}
 
 The instruction \ASM{SRL[I].px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
@@ -232,17 +230,17 @@ If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SRL[I].px} instruction is
 {\em implementation dependent}.
 
-\paragraph{ROT[I].px}
+\instdesc{ROT[I].px}
 
 The instruction \ASM{ROT[I].px} treats the source and destination registers as
 1,2,4,8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
 left by the value in {\tt SHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 (for \ASM{ROT.px}).
 
-\subsubsection{Packed Field Manipulation}
+\subsection{Packed Field Manipulation}
 
 
-\paragraph{TWID.B, TWID.Hx, TWID.Cx}
+\instdesc{TWID.B, TWID.Hx, TWID.Cx}
 
 These instructions allow permutation of different packed field widths.
 
@@ -295,12 +293,12 @@ $x\in{0,1,2,3}.$.
 Twiddle can be used to broadcast and re-order bit-pairs, nibbles and
 bytes within words.
 
-\subsubsection{Bitwise Instructions}
+\subsection{Bitwise Instructions}
 
 These instructions are designed to operate on bits within words, or
 create masks which make operating on bits within words easy.
 
-\paragraph{LUI.cr, LLI.cr}
+\instdesc{LUI.cr, LLI.cr}
 
 The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
 upper half of a $\CPR$ register.
@@ -431,7 +429,7 @@ LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
 LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
 \end{lstlisting}
 
-\subsubsection{Multi-precision Arithmetic}
+\subsection{Multi-precision Arithmetic}
 
 Public key cryptography relies heavily on modular arithmetic over very
 large integers. The following instructions are designed to allow
@@ -460,7 +458,7 @@ is an odd number. $(6,5)$ is not valid because $6 > 5$. The pair $(6,9)$
 is not valid because $6$ and $9$ are not adjacent.
 \end{itemize}
 
-\paragraph{ADD2.mp, ADD3.mp}
+\instdesc{ADD2.mp, ADD3.mp}
 
 \begin{itemize}
 \item \INST{ADD3.mp (rd2, rd1), rs1, rs2, rs3     }{
@@ -475,7 +473,7 @@ $\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
-\paragraph{SUB2.mp, SUB3.mp}
+\instdesc{SUB2.mp, SUB3.mp}
 
 \fixme{I'm not sure I understand this instruction. Why is rs3
 subtracted from the sum of rs1 and rs2? - Ben}
@@ -493,7 +491,7 @@ $\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
 }
 \end{itemize}
 
-\paragraph{ACC2.mp, ACC1.mp}
+\instdesc{ACC2.mp, ACC1.mp}
 
 \begin{itemize}
 \item \INST{ACC2.mp (rd2, rd1), rs1, rs2}{
@@ -508,7 +506,7 @@ $\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
 }
 \end{itemize}
 
-\paragraph{MAC.mp}
+\instdesc{MAC.mp}
 
 \begin{itemize}
 \item \INST{MAC.mp (rd1, rd2), rs1, rs2, rs3}{
@@ -518,7 +516,7 @@ $\CPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
 }
 \end{itemize}
 
-\paragraph{SLLI.mp, SLLR.mp}
+\instdesc{SLLI.mp, SLLR.mp}
 
 \begin{itemize}
 \item \INST{SLLI.mp (rd2, rd1), rs1, rs2, shamt   }{
@@ -533,7 +531,7 @@ $\CPR[*][rd1] \ASN t[31:0]$
 }
 \end{itemize}
 
-\paragraph{SRLI.mp,SRL.mp}
+\instdesc{SRLI.mp,SRL.mp}
 
 \begin{itemize}
 \item \INST{SRLI.mp (rd2, rd1), rs1, rs2, shamt   }{
@@ -548,7 +546,7 @@ $\CPR[*][rd1] \ASN t[31:0]$
 }
 \end{itemize}
 
-\paragraph{EQU.mp}
+\instdesc{EQU.mp}
 
 \begin{itemize}
 \item \INST{EQU.mp rd1,      rs1, rs2, rs3     }{
@@ -556,7 +554,7 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND 
 }
 \end{itemize}
 
-\paragraph{LTU.mp}
+\instdesc{LTU.mp}
 
 \begin{itemize}
 \item \INST{LTU.mp rd1,      rs1, rs2, rs3     }{
@@ -564,7 +562,7 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] < \CPR[*][\OPER{rs}_2] ) \IOR 
 }
 \end{itemize}
 
-\paragraph{GTU.mp}
+\instdesc{GTU.mp}
 
 \begin{itemize}
 \item \INST{GTU.mp rd1,      rs1, rs2, rs3     }{
@@ -572,7 +570,7 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR 
 }
 \end{itemize}
 
-\subsubsection{Memory Access}
+\subsection{Memory Access}
 
 The ISE contains several instructions listed below which allow memory
 accesses to directly address the $\CPR$ register file. This means we do
@@ -593,7 +591,7 @@ program exist in standard RAM/Flash.
 }
 
 
-\paragraph{LBU.cr, LHU.cr, LW.cr}
+\instdesc{LBU.cr, LHU.cr, LW.cr}
 
 The \ASM{LBU.cr}, \ASM{LHU.cr} and \ASM{LW.cr} instructions are analogous to
 the standard RISC-V variants but with the following differences:
@@ -640,7 +638,7 @@ interrupt behaviour and atomicity rules.
     is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
-\paragraph{SB.cr, SH.cr, SW.cr}
+\instdesc{SB.cr, SH.cr, SW.cr}
 
 The \ASM{SB.cr}, \ASM{SH.cr} and \ASM{SW.cr} instructions are analogous to
 the standard RISC-V variants but with the following differences:
@@ -696,7 +694,7 @@ interrupt behaviour and atomicity rules.
     is a two bit byte address and {\tt h} is a one bit halfword address.
 }
 
-\paragraph{SCATTER.[b,h], GATHER[.b,h]}
+\instdesc{SCATTER.[b,h], GATHER[.b,h]}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
 s-box lookup instructions. The {\tt .b} variants allow four separate lookups
@@ -807,7 +805,7 @@ order to achieve the same goal. They are not designed to enhance performance
 of some implementations.
 
 \newpage
-\subsection{Instruction Listings}
+\section{Instruction Assembly Listings}
 
 This section lists the assembly notation for the instructions, as well as
 their encodings.
@@ -861,7 +859,7 @@ GATHER.h    rd, base, offsets       \\
 }
 
 \newpage
-\subsection{Instruction Encodings}
+\section{Instruction Encodings}
 
 The following tables show the encodings for all instructions in the ISE,
 grouped by their layout.

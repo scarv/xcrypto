@@ -18,6 +18,13 @@ pseudos = {}
 arguments = {}
 opcodebits ={}
 
+digits = {
+"0":"zero",
+"1":"one",
+"2":"two",
+"3":"three"
+}
+
 cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 , 'cshamt'  , 'cmshamt' , 'b0'      , 'b1'      ,
 'b2'      , 'b3'      , 'ca'      , 'cb'      ,
@@ -313,6 +320,17 @@ def make_latex_table():
   print_header("\\encodingsel")
   print_insts(ellist)
   print_footer('Instruction listing for RISC-V')
+
+  # Per-instruction encoding table commands.
+  for n in namelist:
+      sn = n.replace(".","")
+      for d in digits:
+          sn = sn.replace(d,digits[d])
+      print("\\newcommand{\\ienc%s}[0]{"%(sn))
+      print_inst(n)
+      print("}")
+      print
+
 
 def print_chisel_insn(name):
   s = "  def %-18s = BitPat(\"b" % name.replace('.', '_').upper()
