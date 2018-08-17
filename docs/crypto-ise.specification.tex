@@ -252,61 +252,100 @@ left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2}
 
 
 % ------------------------------------------------------------------------
-\subsection{Packed Field Manipulation}
-
-
-\instdesc{TWID.B, TWID.Hx, TWID.Cx}
+\subsection{Packed Field Permutation}
 
 These instructions allow permutation of different packed field widths.
 
-The \ASM{TWID.B} instruction is used to {\em twiddle} bytes within words.
+Twiddle can be used to broadcast and re-order bit-pairs, nibbles, bytes
+and half-words within words.
+
+\instdesc{TWID.B}
+\ienc{\ienctwidb}
+
+The \ASM{TWID.B} instruction is used to twiddle {\em bytes within words.}
 It arbitrarily maps the bytes of a source word onto the bytes of a
 destination word.
+This instruction doubles as a halfword permutation instruction.
 
-The \ASM{TWID.[Hx]} instruction is used to {\em twiddle} nibbles within
-the high or low half-words of a word respectively.
+\begin{itemize}
+\item \INST{TWID.B crd, crs1, b0, b1, b2, b3}{
+    $bytes \ASN \LIST{\CPR[*][crs1][31:24],
+                      \CPR[*][crs1][23:16],
+                      \CPR[*][crs1][15: 8],
+                      \CPR[*][crs1][ 7: 0]}$\\
+    $ \CPR[*][\OPER{crd}] \ASN bytes[\OPER{b3}] \CONS
+                               bytes[\OPER{b2}] \CONS
+                               bytes[\OPER{b1}] \CONS
+                               bytes[\OPER{b0}] $ 
+}
+\end{itemize}
+
+\instdesc{TWID.Nx}
+\ienc{\ienctwidnzero\ienctwidnone}
+
+The \ASM{TWID.Nx} instruction is used to twiddle {\em nibbles within 
+half-words}.
 It works on the {\tt x}'th halfword of a register word where
 $x\in{0,1}.$.
 
-The \ASM{TWID.[Cx]} instruction is used to {\em twiddle} pairs of bits
+\begin{itemize}
+\item \INST{TWID.N0 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][15: 0] \ASN nibbles[\OPER{b3}] \CONS
+                               nibbles[\OPER{b2}] \CONS
+                               nibbles[\OPER{b1}] \CONS
+                               nibbles[\OPER{b0}] $ \\
+$ \CPR[*][\OPER{crd}][31:16] \ASN \CPR[*][\OPER{crs1}][31:16]$ \\
+}
+\item \INST{TWID.N1 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][15: 0] \ASN \CPR[*][\OPER{crs1}][15: 0]$ \\
+$ \CPR[*][\OPER{crd}][31:16] \ASN nibbles[\OPER{b3}] \CONS
+                               nibbles[\OPER{b2}] \CONS
+                               nibbles[\OPER{b1}] \CONS
+                               nibbles[\OPER{b0}] $ \\
+}
+\end{itemize}
+
+\instdesc{TWID.Cx}
+\ienc{\ienctwidczero\ienctwidcone\ienctwidctwo\ienctwidcthree}
+
+The \ASM{TWID.[Cx]} instruction is used to twiddle {\em pairs of bits
 \footnote{A {\em crumb}, if you will.}
-within a byte. It works on the {\tt x}'th byte of a register word where
+within bytes}.
+It works on the {\tt x}'th byte of a register word where
 $x\in{0,1,2,3}.$.
 
 \begin{itemize}
-\item \INST{TWID.B rd, rs1, b0, b1, b2, b3}{
-    $ \CPR[*][\OPER{rd}][0] \ASN \CPR[*][\OPER{rs1}][\OPER{b0}] $ \\
-    $ \CPR[*][\OPER{rd}][1] \ASN \CPR[*][\OPER{rs1}][\OPER{b1}] $ \\
-    $ \CPR[*][\OPER{rd}][2] \ASN \CPR[*][\OPER{rs1}][\OPER{b2}] $ \\
-    $ \CPR[*][\OPER{rd}][3] \ASN \CPR[*][\OPER{rs1}][\OPER{b3}] $ 
+\item \INST{TWID.C0 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][ 7: 0] \ASN crumbs[\OPER{b3}] \CONS
+                                  crumbs[\OPER{b2}] \CONS
+                                  crumbs[\OPER{b1}] \CONS
+                                  crumbs[\OPER{b0}] $ \\
+$ \CPR[*][\OPER{crd}][31: 8] \ASN \CPR[*][\OPER{crs1}][31: 8]$\\
 }
-\item \INST{TWID.H0 rd, rs1, n0, n1, n2, n3}{
-    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [15:12],
-                          \CPR[*][\OPER{rd}] [11: 8],
-                          \CPR[*][\OPER{rd}] [ 7: 4],
-                          \CPR[*][\OPER{rd}] [ 3: 0]} $ \\
-    $ \CPR[*][\OPER{rd}] [ 3: 0] \ASN nibbles[\OPER{n0}] $ \\
-    $ \CPR[*][\OPER{rd}] [ 7: 4] \ASN nibbles[\OPER{n1}] $ \\
-    $ \CPR[*][\OPER{rd}] [11: 8] \ASN nibbles[\OPER{n2}] $ \\
-    $ \CPR[*][\OPER{rd}] [15:12] \ASN nibbles[\OPER{n3}] $ \\
-    $ \CPR[*][\OPER{rd}] [31:16] \ASN \CPR[*][\OPER{rs1}] [31:16] $
+\item \INST{TWID.C1 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][ 7: 0] \ASN \CPR[*][\OPER{crs1}][ 7: 0]$\\
+$ \CPR[*][\OPER{crd}][15: 8] \ASN crumbs[\OPER{b3}] \CONS
+                                  crumbs[\OPER{b2}] \CONS
+                                  crumbs[\OPER{b1}] \CONS
+                                  crumbs[\OPER{b0}] $ \\
+$ \CPR[*][\OPER{crd}][31:16] \ASN \CPR[*][\OPER{crs1}][31:16]$\\
 }
-\item \INST{TWID.H1 rd, rs1, n0, n1, n2, n3}{
-    $ nibbles \ASN \TUPLE{\CPR[*][\OPER{rd}] [31:28],
-                          \CPR[*][\OPER{rd}] [27:24],
-                          \CPR[*][\OPER{rd}] [23:20],
-                          \CPR[*][\OPER{rd}] [19:16]} $ \\
-    $ \CPR[*][\OPER{rd}] [19:16] \ASN nibbles[\OPER{n0}] $ \\
-    $ \CPR[*][\OPER{rd}] [23:20] \ASN nibbles[\OPER{n1}] $ \\
-    $ \CPR[*][\OPER{rd}] [27:24] \ASN nibbles[\OPER{n2}] $ \\
-    $ \CPR[*][\OPER{rd}] [31:28] \ASN nibbles[\OPER{n3}] $ \\
-    $ \CPR[*][\OPER{rd}] [15: 0] \ASN \CPR[*][\OPER{rs1}] [15: 0] $
+\item \INST{TWID.C2 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][15: 0] \ASN \CPR[*][\OPER{crs1}][15: 0]$\\
+$ \CPR[*][\OPER{crd}][23:16] \ASN crumbs[\OPER{b3}] \CONS
+                                  crumbs[\OPER{b2}] \CONS
+                                  crumbs[\OPER{b1}] \CONS
+                                  crumbs[\OPER{b0}] $ \\
+$ \CPR[*][\OPER{crd}][31:24] \ASN \CPR[*][\OPER{crs1}][31:24]$\\
 }
-\item \fixme{TWID.Cx example}.
+\item \INST{TWID.C3 crd, crs1, b0, b1, b2, b3}{
+$ \CPR[*][\OPER{crd}][23: 0] \ASN \CPR[*][\OPER{crs1}][23: 0]$\\
+$ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
+                                  crumbs[\OPER{b2}] \CONS
+                                  crumbs[\OPER{b1}] \CONS
+                                  crumbs[\OPER{b0}] $ \\
+}
 \end{itemize}
-
-Twiddle can be used to broadcast and re-order bit-pairs, nibbles and
-bytes within words.
 
 
 % ------------------------------------------------------------------------
