@@ -3,71 +3,95 @@ All instructions occupy the \encspace encoding space of the RISC-V opcode
 map, using the associated \encopcode prefix for bits $6:0$ of each 
 instruction.
 
+% ------------------------------------------------------------------------
 \subsection{Move Instructions}
 
+These instructions are used to either move words between the RISC-V $\GPR$s
+and the ISE $\CPR$s, or to conditionally move words within the $\CPR$
+register file.
+
 \instdesc{MV2GPR}
+
+\ienc{\iencmvtwogpr}
 
 Move a $\CPR$ register to a $\GPR$ register.
 
 \begin{itemize}
-\item \INST{MV2GPR gpr, cpr}{
-    $\GPR[*][\OPER{gpr}] \ASN \CPR[*][\OPER{cpr}]$
+\item \INST{MV2GPR rd, crs1}{
+    $\GPR[*][\OPER{rd}] \ASN \CPR[*][\OPER{crs1}]$
 }
 \end{itemize}
 
 
 \instdesc{MV2COP}
+\ienc{\iencmvtwocop}
 
 The complement of \ASM{MV2GPR}.
 Move a $\GPR$ register to a $\CPR$ register.
 
 \begin{itemize}
-\item \INST{MV2COP cpr, gpr}{
-    $\CPR[*][\OPER{cpr}] \ASN \GPR[*][\OPER{gpr}]$
+\item \INST{MV2COP crd, rs1}{
+    $\CPR[*][\OPER{crd}] \ASN \GPR[*][\OPER{rs1}]$
 }
 \end{itemize}
 
-\instdesc{CMOV.cr}
+\instdesc{CMOV.cr, CMOVN.cr}
 
-This instruction implements a conditional move, and is used to implement
+\ienc{\ienccmovcr\ienccmovncr}
+
+These instructions implement conditional moves, and are used to implement
 constant-time instruction sequences.
-
-\begin{itemize}
-\item \INST{CMOV.cr rd, rs1, rs2}{
-    $\CPR[*][rd] \ASN (\CPR[*][rs2] == 0) ? \CPR[*][rs1] : \CPR[*][rd]$
-}
-\item \INST{CMOVN.cr rd, rs1, rs2}{
-    $\CPR[*][rd] \ASN (\CPR[*][rs2] != 0) ? \CPR[*][rs1] : \CPR[*][rd]$
-}
-\end{itemize}
-
 If the value in the $\CPR$ register addressed by {\tt rs2} is
 zero / non-zero, then the value in register {\tt rs1} is moved
 into register {\tt rd}.
 
+\begin{itemize}
+\item \INST{CMOV.cr crd, crs1, crs2}{
+    \If{$ \CPR[*][crs2] == 0$ }{
+    $\CPR[*][crd] \ASN  \CPR[*][crs1]$
+    }
+}
+\item \INST{CMOVN.cr crd, crs1, crs2}{
+    \If{$ \CPR[*][crs2] != 0$ }{
+    $\CPR[*][crd] \ASN  \CPR[*][crs1]$
+    }
+}
+\end{itemize}
+
+% ------------------------------------------------------------------------
 \subsection{Randomness}
 
 Randomness is crucial to many parts of cryptography. Here we define an 
 {\em interface} to a random source, which can be seeded and sampled using
 the \ASM{RSEED.cr} and \ASM{RSAMP.cr} instructions respectivley.
 
-\begin{itemize}
-\item \INST{RSEED.cr rs1}{
-    $RNG \ASN \CPR[*][rs1]$
-}
-\item \INST{RSAMP.cr rd}{
-    $\CPR[*][rd] \ASN RNG$
-}
-\end{itemize}
-
 We leave the exact random number generator function to the implementor,
 but require that the algorithm used is cryptographically appropriate.
+
+\instdesc{RSEED.cr}
+\ienc{\iencrseedcr}
 
 \ASM{RSEED.cr} writes a 32-bit register value into the RNG, which should
 then act as a seed value.
 
+\begin{itemize}
+\item \INST{RSEED.cr crs1}{
+    $RNG \ASN \CPR[*][crs1]$
+}
+\end{itemize}
+
+\instdesc{RSAMP.cr}
+\ienc{\iencrsampcr}
+
 \ASM{RSAMP.cr} reads a random 32-bit value from the RNG into a register.
 
+\begin{itemize}
+\item \INST{RSAMP.cr crd}{
+    $\CPR[*][crd] \ASN RNG$
+}
+\end{itemize}
+
+% ------------------------------------------------------------------------
 \subsection{Packed Arithmetic}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
@@ -83,13 +107,15 @@ used to represent the specific functionality of each instruction.
 
 \medskip
 
-\begin{algorithm}[H]
-    \KwIn{rs1, rs2 - Source registers 1 and 2}
-    \KwIn{rd - destination register}
-    \KwIn{pw - Pack width, the bit width of each operation}
+\begin{algorithm}
+\TitleOfAlgo{PackedArith}
+    \KwIn{$crs1$, $crs2$ - Source registers 1 and 2}
+    \KwIn{$crd$ - destination register}
+    \KwIn{$pw$ - Pack width, the bit width of each operation}
+    \KwIn{$f$  - The function to perform on each pair of packed operands}
     $b   \ASN 0 $\;
 \While {$b < {\bf W}$}{
-$\CPR[*][rd][b+pw:b] \ASN f(\CPR[*][rs1][b+pw:b],\CPR[*][rs2][b+pw:b])$\;
+$\CPR[*][crd][b+pw:b] \ASN f(\CPR[*][crs1][b+pw:b],\CPR[*][crs2][b+pw:b])$\;
 $b \ASN b + pw$\;
     }
 \caption{Algorithm for performing packed arithmetic on words in the 
@@ -100,63 +126,132 @@ were $8$, then the function would be applied $8$ times, once to each
 corresponding pair of nibbles in each word.}
 \end{algorithm}
 
+\begin{algorithm}
+\TitleOfAlgo{PackedShift}
+    \KwIn{$crs1$ - Source register 1}
+    \KwIn{$shamt$ - Amount to shift/rotate by}
+    \KwIn{$crd$ - destination register}
+    \KwIn{$pw$ - Pack width, the bit width of each operation}
+    \KwIn{$f$  - The function to perform on each pair of packed operands}
+    $b   \ASN 0 $\;
+\While {$b < {\bf W}$}{
+$\CPR[*][crd][b+pw:b] \ASN f(\CPR[*][crs1][b+pw:b],shamt)$\;
+$b \ASN b + pw$\;
+    }
+\caption{Algorithm for performing packed shifts and rotates on words in the 
+$\CPR$ register file.}
+\end{algorithm}
+
 When coding these instructions as assembly mnemonics, the {\tt x} in the
 instruction names below should be replaced with the pack width. Hence
 for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
 
 \instdesc{ADD.px}
+\ienc{\iencaddpx}
 
 The instruction \ASM{ADD.px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned packed fields, and adds corresponding fields
+1, 2, 4, 8 or 16 unsigned packed fields, and adds corresponding fields
 together ignoring any carry bits.
 
 No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
 
+\begin{itemize}
+\item \INST{ADD.px pw, crd, crs1, crs2}{
+    $PackedArith(crs1,crs2,crd,pw, +)$
+}
+\end{itemize}
+
 \instdesc{SUB.px}
+\ienc{\iencsubpx}
 
 The instruction \ASM{SUB.px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
+1, 2, 4, 8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
 from the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
 
+\begin{itemize}
+\item \INST{SUB.px pw, crd, crs1, crs2}{
+    $PackedArith(crs1,crs2,crd,pw, -)$
+}
+\end{itemize}
+
 \instdesc{MUL.px}
+\ienc{\iencmulpx}
 
 The instruction \ASM{MUL.px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
+1, 2, 4, 8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
 by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
 
+\begin{itemize}
+\item \INST{MUL.px pw, crd, crs1, crs2}{
+    $PackedArith(crs1,crs2,crd,pw, *)$
+}
+\end{itemize}
+
 \instdesc{SLL[I].px}
+\ienc{\iencsllpx\iencsllipx}
 
 The instruction \ASM{SLL[I].px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-left by the value in {\tt SHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
+1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
+left by the value in {\tt CSHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
 (for \ASM{SLL.px}).
 
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SLL[I].px} instruction is
 {\em implementation dependent}.
 
+\begin{itemize}
+\item \INST{SLL.px pw, crd, crs1, crs2}{
+    $PackedShift(crs1,\CPR[*][crs2],crd,pw, <<)$
+}
+\item \INST{SLLI.px pw, crd, crs1, cshamt}{
+    $PackedShift(crs1,cshamt,crd,pw, <<)$
+}
+\end{itemize}
+
 \instdesc{SRL[I].px}
+\ienc{\iencsrlpx\iencsrlipx}
 
 The instruction \ASM{SRL[I].px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-right by the value in {\tt SHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
+1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
+right by the value in {\tt CSHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
 (for \ASM{SRL.px}).
 
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SRL[I].px} instruction is
 {\em implementation dependent}.
 
+\begin{itemize}
+\item \INST{SRL.px pw, crd, crs1, crs2}{
+    $PackedShift(crs1,\CPR[*][crs2],crd,pw, >>)$
+}
+\item \INST{SRLI.px pw, crd, crs1, cshamt}{
+    $PackedShift(crs1,cshamt,crd,pw, >>)$
+}
+\end{itemize}
+
 \instdesc{ROT[I].px}
+\ienc{\iencrotpx\iencrotipx}
 
 The instruction \ASM{ROT[I].px} treats the source and destination registers as
-1,2,4,8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
-left by the value in {\tt SHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
+1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
+left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 (for \ASM{ROT.px}).
 
+\begin{itemize}
+\item \INST{ROT.px pw, crd, crs1, crs2}{
+    $PackedShift(crs1,\CPR[*][crs2],crd,pw, <<<)$
+}
+\item \INST{ROTI.px pw, crd, crs1, cshamt}{
+    $PackedShift(crs1,cshamt,crd,pw, <<<)$
+}
+\end{itemize}
+
+
+% ------------------------------------------------------------------------
 \subsection{Packed Field Manipulation}
 
 
@@ -213,6 +308,8 @@ $x\in{0,1,2,3}.$.
 Twiddle can be used to broadcast and re-order bit-pairs, nibbles and
 bytes within words.
 
+
+% ------------------------------------------------------------------------
 \subsection{Bitwise Instructions}
 
 These instructions are designed to operate on bits within words, or
@@ -349,6 +446,8 @@ LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
 LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
 \end{lstlisting}
 
+
+% ------------------------------------------------------------------------
 \subsection{Multi-precision Arithmetic}
 
 Public key cryptography relies heavily on modular arithmetic over very
@@ -490,6 +589,8 @@ $\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR 
 }
 \end{itemize}
 
+
+% ------------------------------------------------------------------------
 \subsection{Memory Access}
 
 The ISE contains several instructions listed below which allow memory
