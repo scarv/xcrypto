@@ -634,7 +634,7 @@ $\CPR[*][crd2] \ASN t[64:32]$\\
 \ienc{\iencmacmp}
 
 \begin{itemize}
-\item \INST{MAC.mp (crd1, crd2), crs1, crs2, crs3}{
+\item \INST{MAC.mp (crd2, crd1), crs1, crs2, crs3}{
 $t \ASN ( \CPR[*][crs1] \SOP{\cdot}{u} \CPR[*][crs2] ) + \CPR[*][crs3] $\\
 $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
@@ -645,7 +645,7 @@ $\CPR[*][crd2] \ASN t[64:32]$\\
 \ienc{\iencsllmp}
 
 \begin{itemize}
-\item \INST{SLL.mp (crd1, crd2), crs1, crs2, crs3     }{
+\item \INST{SLL.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \LSH \CPR[*][crs3][5:0]$\\
 $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
@@ -667,7 +667,7 @@ $\CPR[*][crd1] \ASN t[31:0]$
 \ienc{\iencsrlmp}
 
 \begin{itemize}
-\item \INST{SRL.mp (crd1, crd2), crs1, crs2, crs3     }{
+\item \INST{SRL.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \RSH \CPR[*][crs3][5:0]$\\
 $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
