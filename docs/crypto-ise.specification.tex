@@ -725,6 +725,17 @@ All ISE memory access instructions source their base address from the
 $\GPR$ register file, but read and write data in the $\CPR$s. This
 prevents address manipulation needing to be done in the $\CPR$s.
 \designnote{
+The decision to source the base address from the $\GPR$ set rather
+than a $\CPR$ was because all of the RISC-V address calculation
+instructions work perfectly well on the $\GPR$s and there is no sense
+in duplicating that functionality for this ISE. This free's up
+encoding space, and lets the $\CPR$ state be used for the compute
+work it was designed for rather than mundane address calculation.
+While care must be
+taken to avoid hazards between the different register sets, we
+believe this decision makes sense overall.
+}
+
 There is no requirement for the ISE memory instructions to share the same
 address space as the standard ISA. One may wish to completely separate
 the physical memory used to store cryptographic secrets from the rest of
@@ -732,7 +743,6 @@ the virtual / logical memory space, and the ISE does not stop implementers
 from doing so. This allows for hardware root-of-trust type devices to keep
 their keys in tamper-proof memory, while still letting the rest of the
 program exist in standard RAM/Flash.
-}
 
 Generally, the memory access instructions are analogous to
 the standard RISC-V variants but with the following differences:
