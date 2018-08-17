@@ -354,51 +354,64 @@ $ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
 These instructions are designed to operate on bits within words, or
 create masks which make operating on bits within words easy.
 
-\instdesc{LUI.cr, LLI.cr}
+\instdesc{LUI.cr}
+\ienc{\iencluicr}
 
 The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
 upper half of a $\CPR$ register.
-
-The \ASM{LLI.cr} instruction bitwise loads a 16 bit immediate into the
-lower half of a $\CPR$ register. 
+\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
+(in tandem with \ASM{ORI} and loading addresses.
+Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
+for addresses, we remove this functionality in favour of leaving the
+low half of the register unmodified.
+The rationale being that two instructions can still create and 32-bit
+immediate, but that if we know a register is zero to begin
+with, we can then use only one instruction to create masks which fit
+into only a single halfword.}
+The high 11 bits of the 16-bit immediate are stored in the {\tt imm11}
+field of the instruction encoding. The remaining 5 bits are stored
+in the {\tt imm5} field.
 
 \begin{itemize}
-\item \INST{LUI.cr rd, imm16 }{
-    $\CPR[*][\OPER{rd}][31:16] \ASN imm16$ \\
-}
-\item \INST{LLI.cr rd, imm16 }{
-    $\CPR[*][\OPER{rd}][15: 0] \ASN imm16$ \\
+\item \INST{LUI.cr crd, imm16 }{
+    $\CPR[*][\OPER{crd}][31:16] \ASN imm16$ \\
+    $\CPR[*][\OPER{crd}][15: 0] \ASN \CPR[*][\OPER{crd}][15: 0]$ \\
 }
 \end{itemize}
 
-These instructions are designed to be used for mask creation and constant
-loading. The \ASM{LUI.cr} instruction mirrors the RISC-V counterpart, but
-does not zero the lower half of the register.
-\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-(in tandem with \ASM{ORI} and loading addresses. Since the zeroing of
-the low 12 bits by \ASM{LUI} is mainly useful for addresses, we remove
-this functionality in favour of leaving the low half of the register
-unmodified. The rationale being that two instructions can still create
-and 32-bit immediate, but that if we know a register is zero to begin
-with, we can then use only one instruction to create masks which fit
-into only a single halfword.}
+\instdesc{LLI.cr}
+\ienc{\iencllicr}
+
+The \ASM{LLI.cr} instruction bitwise loads a 16 bit immediate into the
+lower half of a $\CPR$ register. 
+The high 11 bits of the 16-bit immediate are stored in the {\tt imm11}
+field of the instruction encoding. The remaining 5 bits are stored
+in the {\tt imm5} field.
+
+\begin{itemize}
+\item \INST{LLI.cr crd, imm16 }{
+    $\CPR[*][\OPER{crd}][31:16] \ASN \CPR[*][\OPER{crd}][31:16]$ \\
+    $\CPR[*][\OPER{crd}][15: 0] \ASN imm16$ \\
+}
+\end{itemize}
 
 
 \instdesc{BOP.cr}
+\ienc{\iencbopcr}
 
-The \instref{BOP.cr} is designed to express all bitwise logic functions, and be
+The \instref{BOP.cr} instruction is designed to express all bitwise logic functions, and be
 amenable to bit-sliced implementations of cryptographic functions.
 
 \begin{itemize}
-\item \INST{BOP.cr rd, rs1, rs2, lut4}{
+\item \INST{BOP.cr crd, crs1, crs2, lut4}{
     $\forall i \in \{0..31\}$
-    $ \CPR[*][\OPER{rd}][i] \ASN $
-    $ \OPER{lut4}[\CPR[*][rs1][i] \CONS \CPR[*][rs2][i]] $ \\
+    $ \CPR[*][\OPER{crd}][i] \ASN $
+    $ \OPER{lut4}[\CPR[*][crs1][i] \CONS \CPR[*][crs2][i]] $ \\
 }
 \end{itemize}
 
 \instref{BOP.cr} takes a 4-bit immediate {\tt lut4}, and uses the concatenated
-$i$'th bits of register inputs $\GPR[*][rs1]$ and  $\GPR[*][rs2]$
+$i$'th bits of register inputs $\CPR[*][crs1]$ and  $\CPR[*][crs2]$
 as the inputs, writing the output bit of the lut to the $i$'th bit of the
 destination register.
 \designnote{
@@ -418,9 +431,11 @@ bop.cr  c1, c2, c3, 0110    // XOR
 
 
 \instdesc{EXT.cr}
+\ienc{\iencextcr}
 
 This instruction allows for extraction of contiguous sequences of two-bit
-pairs from words. It takes a two bit aligned start index {\tt s}, and a length
+pairs from words.
+It takes a two bit aligned start index {\tt s}, and a length
 {\tt l}, and extracts bits from $2*s$ to $(2*s)+(2*l)$, depositing them in
 the destination register.
 
@@ -433,9 +448,11 @@ the destination register.
 \end{itemize}
 
 \instdesc{INS.cr}
+\ienc{\iencinscr}
 
 This instruction allows for insertion of a contiguous sequences of two-bit
-pairs into words. It takes the low $2*l$ bits of $\CPR[*][rs]$ and inserts them
+pairs into words.
+It takes the low $2*l$ bits of $\CPR[*][rs]$ and inserts them
 into $\CPR[*][rd]$, starting at bit position $2*s$.
 
 \begin{itemize}
@@ -447,12 +464,13 @@ into $\CPR[*][rd]$, starting at bit position $2*s$.
 \end{itemize}
 
 \instdesc{MIX.cr}
+\ienc{\ienclmixcr\ienchmixcr}
 
 The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
-register values, using a mask stored in a third register. It first rotates 
-the source register value in {\tt rs1} by the ammount in shamt, and then mixes
-the rotated value and the source value according to the mask value in
-{\tt rs2}.
+register values, using a mask stored in a third register.
+It first rotates  the source register value in {\tt rs1} by the ammount in
+{\tt shamt}, and then mixes the rotated value and the source value according
+to the mask value in {\tt rs2}.
 
 \ASM{LMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
 while \ASM{HMIX.cr} will rotate to the right by $16..31$. 
