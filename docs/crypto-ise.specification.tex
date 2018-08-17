@@ -518,131 +518,197 @@ and four source registers. Hence, some restrictions are placed on how
 registers can be addressed.
 
 \begin{itemize}
-\item Destination registers are referred too as contiguous, even-odd
-pairs. This means any two adjacently addressed registers, where the
+\item
+Destination registers are referred too as contiguous, even-odd pairs.
+This means any two adjacently addressed registers, where the
 first register address is even (zero being considered even for this
 discussion) and the second address is one more than the first can be
-used as the destination for a multi-precision instructions. \designnote{
+used as the destination for a multi-precision instructions.
+\designnote{
     This scheme means the function to compute the actual source registers
     from the minimum 3-bit encoding is simply to append either {\tt 00}
     or {\tt 01} depending on the even or odd address respectively.
 }
 
 For example, $(0,1), (2,3)$ and $(10,11)$ are all valid
-pairs of destination registers. $(5,6)$ is not valid because the first
-is an odd number. $(6,5)$ is not valid because $6 > 5$. The pair $(6,9)$
+pairs of destination registers.
+$(5,6)$ is not valid because the first
+is an odd number. $(6,5)$ is not valid because $6 > 5$.
+The pair $(6,9)$
 is not valid because $6$ and $9$ are not adjacent.
+
+\item
+The 3-bit encoding of pairs of registers is given in table 
+\ref{tab:rdm-encodings}.
 \end{itemize}
 
-\instdesc{ADD2.mp, ADD3.mp}
+\begin{table}
+\centering
+\begin{tabular}{lll}
+\hline
+Encoding & crd2 & crd1 \\ \hline
+0b000      & 1    & 0    \\
+0b001      & 3    & 2    \\
+0b010      & 5    & 4    \\
+0b011      & 7    & 8    \\
+0b100      & 9    & 10   \\
+0b101      & 11   & 12   \\
+0b110      & 13   & 14   \\
+0b111      & 15   & 16   \\ \hline
+\end{tabular}
+\caption{
+    Table showing how the {\tt rdm} field of multi-precision instructions
+    is decoded into pairs of registers.
+}
+\label{tab:rdm-encodings}
+\end{table}
+
+\instdesc{ADD2.mp}
+\ienc{\iencaddtwomp}
 
 \begin{itemize}
-\item \INST{ADD3.mp (rd2, rd1), rs1, rs2, rs3     }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3] $\\
-$\CPR[*][\OPER{rd}_1] \ASN t[31: 0]$\\
-$\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
-}
-\item \INST{ADD2.mp (rd2, rd1), rs1, rs2          }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] ) $\\
-$\CPR[*][\OPER{rd}_1] \ASN t[31: 0]$\\
-$\CPR[*][\OPER{rd}_2] \ASN t[64:32]$\\
+\item \INST{ADD2.mp (crd2, crd1), crs1, crs2          }{
+$t \ASN ( \CPR[*][crs1] + \CPR[*][crs2] ) $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
-\instdesc{SUB2.mp, SUB3.mp}
-
-\fixme{I'm not sure I understand this instruction. Why is rs3
-subtracted from the sum of rs1 and rs2? - Ben}
+\instdesc{ADD3.mp}
+\ienc{\iencaddthreemp}
 
 \begin{itemize}
-\item \INST{SUB3.mp (rd2, rd1), rs1, rs2, rs3     }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{+}{u}     \CPR[*][\OPER{rs}_2] ) - \CPR[*][\OPER{rs}_3]$\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
-}
-\item \INST{SUB2.mp (rd2, rd1), rs1, rs2          }{
-$t \ASN ( \CPR[*][\OPER{rs}_1] -   \CPR[*][\OPER{rs}_2] ) $\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\CPR[*][\OPER{rd}_2] \ASN t_{        \W                }$\\
+\item \INST{ADD3.mp (crd2, crd1), crs1, crs2, crs3     }{
+$t \ASN ( \CPR[*][crs1] + \CPR[*][crs2] ) + \CPR[*][crs3] $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
-\instdesc{ACC2.mp, ACC1.mp}
+\instdesc{SUB2.mp}
+\ienc{\iencsubtwomp}
 
 \begin{itemize}
-\item \INST{ACC2.mp (rd2, rd1), rs1, rs2}{
-$t \ASN ( \CPR[*][\OPER{rd}_2] \CONS \CPR[*][\OPER{rd}_1] ) + \CPR[*][\OPER{rs}_1] + \CPR[*][\OPER{rs}_2] $\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
-$\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
+\item \INST{SUB2.mp (crd2, crd1), crs1, crs2          }{
+$t \ASN ( \CPR[*][crs1] - \CPR[*][crs2] ) $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
 }
-\item \INST{ACC1.mp (rd2, rd1), rs1}{
-$t \ASN ( \CPR[*][\OPER{rd}_2] \CONS \CPR[*][\OPER{rd}_1] ) + \CPR[*][\OPER{rs}_1]$\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{1 \cdot \W - 1, \ldots,  0} $\\
-$\CPR[*][\OPER{rd}_2] \ASN t_{2 \cdot \W - 1, \ldots, \W} $\\
+\end{itemize}
+
+
+\instdesc{SUB3.mp}
+\ienc{\iencsubthreemp}
+
+\begin{itemize}
+\item \INST{SUB3.mp (crd2, crd1), crs1, crs2, crs3     }{
+$t \ASN ( \CPR[*][crs1] - \CPR[*][crs2] ) - \CPR[*][crs3] $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
+}
+\end{itemize}
+
+\instdesc{ACC1.mp}
+\ienc{\iencacconemp}
+
+\begin{itemize}
+\item \INST{ACC1.mp (crd2, crd1), crs1}{
+$t \ASN ( \CPR[*][crd2] \CONS \CPR[*][crd1] ) + \CPR[*][crs1] $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
+}
+\end{itemize}
+
+\instdesc{ACC2.mp}
+\ienc{\iencacctwomp}
+
+\begin{itemize}
+\item \INST{ACC2.mp (crd2, crd1), crs1, crs2}{
+$t \ASN ( \CPR[*][crd2] \CONS \CPR[*][crd1] ) + \CPR[*][crs1] + \CPR[*][crs2] $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
 \instdesc{MAC.mp}
+\ienc{\iencmacmp}
 
 \begin{itemize}
-\item \INST{MAC.mp (rd1, rd2), rs1, rs2, rs3}{
-$t \ASN ( \CPR[*][\OPER{rs}_1] \SOP{\cdot}{u} \CPR[*][\OPER{rs}_2] ) + \CPR[*][\OPER{rs}_3]$\\
-$\CPR[*][\OPER{rd}_0] \ASN t_{1 \cdot \W - 1, \ldots,  0}$\\
-$\CPR[*][\OPER{rd}_1] \ASN t_{2 \cdot \W - 1, \ldots, \W}$\\
+\item \INST{MAC.mp (crd1, crd2), crs1, crs2, crs3}{
+$t \ASN ( \CPR[*][crs1] \SOP{\cdot}{u} \CPR[*][crs2] ) + \CPR[*][crs3] $\\
+$\CPR[*][crd1] \ASN t[31: 0]$\\
+$\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
 
-\instdesc{SLLI.mp, SLLR.mp}
+\instdesc{SLL.mp}
+\ienc{\iencsllmp}
 
 \begin{itemize}
-\item \INST{SLLI.mp (rd2, rd1), rs1, rs2, shamt   }{
-$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \LSH shamt$\\
-$\CPR[*][rd2] \ASN t[63:32]$ \\
-$\CPR[*][rd1] \ASN t[31:0]$
-}
-\item \INST{SLLR.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \LSH \CPR[*][rs3][5:0]$\\
-$\CPR[*][rd2] \ASN t[63:32]$ \\
-$\CPR[*][rd1] \ASN t[31:0]$
+\item \INST{SLL.mp (crd1, crd2), crs1, crs2, crs3     }{
+$t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \LSH \CPR[*][crs3][5:0]$\\
+$\CPR[*][crd2] \ASN t[63:32]$ \\
+$\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
 
-\instdesc{SRLI.mp,SRL.mp}
+\instdesc{SLLI.mp}
+\ienc{\iencsllimp}
 
 \begin{itemize}
-\item \INST{SRLI.mp (rd2, rd1), rs1, rs2, shamt   }{
-$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \RSH shamt$\\
-$\CPR[*][rd2] \ASN t[63:32]$ \\
-$\CPR[*][rd1] \ASN t[31:0]$
+\item \INST{SLLI.mp (crd2, rd1), crs1, crs2, shamt   }{
+$t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \LSH shamt$\\
+$\CPR[*][crd2] \ASN t[63:32]$ \\
+$\CPR[*][crd1] \ASN t[31:0]$
 }
-\item \INST{SRLR.mp (rd1, rd2), rs1, rs2, rs3     }{
-$t \ASN {\CPR[*][rs1] \CONS \CPR[*][rs2]} \RSH \CPR[*][rs3][5:0]$\\
-$\CPR[*][rd2] \ASN t[63:32]$ \\
-$\CPR[*][rd1] \ASN t[31:0]$
+\end{itemize}
+
+\instdesc{SRL.mp}
+\ienc{\iencsrlmp}
+
+\begin{itemize}
+\item \INST{SRL.mp (crd1, crd2), crs1, crs2, crs3     }{
+$t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \RSH \CPR[*][crs3][5:0]$\\
+$\CPR[*][crd2] \ASN t[63:32]$ \\
+$\CPR[*][crd1] \ASN t[31:0]$
+}
+\end{itemize}
+
+\instdesc{SRLI.mp}
+\ienc{\iencsrlimp}
+
+\begin{itemize}
+\item \INST{SRLI.mp (crd2, crd1), crs1, crs2, shamt   }{
+$t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \RSH shamt$\\
+$\CPR[*][crd2] \ASN t[63:32]$ \\
+$\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
 
 \instdesc{EQU.mp}
+\ienc{\ienceqump}
 
 \begin{itemize}
-\item \INST{EQU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3]  $\\
+\item \INST{EQU.mp rd,      crs1, crs2, crs3     }{
+$\GPR[*][rd] \ASN ( \CPR[*][crs1] = \CPR[*][crs2]) \AND \CPR[*][crs3]  $\\
 }
 \end{itemize}
 
 \instdesc{LTU.mp}
+\ienc{\iencltump}
 
 \begin{itemize}
-\item \INST{LTU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] < \CPR[*][\OPER{rs}_2] ) \IOR ( ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3] )$
+\item \INST{LTU.mp rd,      crs1, crs2, crs3     }{
+$\GPR[*][rd] \ASN ( \CPR[*][crs1] < \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CPR[*][crs2] ) \AND \CPR[*][crs3] )$
 }
 \end{itemize}
 
 \instdesc{GTU.mp}
+\ienc{\iencgtump}
 
 \begin{itemize}
-\item \INST{GTU.mp rd1,      rs1, rs2, rs3     }{
-$\GPR[*][\OPER{rd}_1] \ASN ( \CPR[*][\OPER{rs}_1] > \CPR[*][\OPER{rs}_2] ) \IOR ( ( \CPR[*][\OPER{rs}_1] = \CPR[*][\OPER{rs}_2] ) \AND \CPR[*][\OPER{rs}_3] )$
+\item \INST{GTU.mp rd,      crs1, crs2, crs3     }{
+$\GPR[*][rd] \ASN ( \CPR[*][crs1] > \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CPR[*][crs2] ) \AND \CPR[*][crs3] )$
 }
 \end{itemize}
 
