@@ -1,3 +1,32 @@
+\paragraph{Draft-4}
+\begin{itemize}
+\item Add MIX.cr instruction.
+\item Add CMOV.cr / CMOVN.cr instructions.
+\item Add INS.cr / EXT.cr instructions.
+\item Add RSEED.cr / RSAMP.cr instructions.
+\item Remove MAA.cr instruction.
+\item Move to automatically generated instruction encoding tables.
+\item Remove support for pack widths of 1.
+\item Add support for twiddling 2-bit values (crumbs) within bytes.
+\item Revise all notation for consistency \& correctness.
+\end{itemize}
+
+\paragraph{Draft-3}
+\begin{itemize}
+\item Add halfword varient of the SCATTER and GATHER instruction.
+\item Update table of encoding layouts with all different varients.
+\item Fixed encoding widths of {\tt RS1} fields for load/store
+    instructions. They are now 5 bits so they can source any of the
+    RISC-V GPR registers.
+\item Added some more explanations / justifications in introduction,
+    concepts and state sections.
+\item Make field names consistent: If they occupy the same part of
+    the instruction, then they are called the same thing.
+\item Add BOP.cr instruction, and make XOR/AND/OR.cr instructions
+    alias specific encodings of this BOP.cr.
+\item Add shift/rotate by immediate versions of the packed
+    shift and rotate instructions.
+\end{itemize}
 
 \paragraph{Draft-2}
 \begin{itemize}

@@ -5,6 +5,8 @@
 \usepackage{biblatex}
 \addbibresource{references.bib}
 
+\import{../work/}{crypto-ise.encodings.tex}
+
 \title{SCARV: RISC-V Crypto ISE \\ Specification}
 
 \begin{document}
@@ -23,7 +25,13 @@ Instruction Set Extension for the RISC-V Instruction Set Architecture.
 \section{Concepts \& Ideas}
 \import{./}{crypto-ise.concepts.tex}
 
-\section{ISE Specification}
+\section{Notation}
+\import{./}{crypto-ise.notation.tex}
+
+\section{ISE State}
+\import{./}{crypto-ise.state.tex}
+
+\section{Instruction Specifications}
 \import{./}{crypto-ise.specification.tex}
 
 

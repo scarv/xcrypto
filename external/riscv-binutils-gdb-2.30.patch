@@ -1,0 +1,724 @@
+diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
+index f60bea15c8..2336a39b2f 100644
+--- a/gas/config/tc-riscv.c
++++ b/gas/config/tc-riscv.c
+@@ -401,6 +401,7 @@ enum reg_class
+ {
+   RCLASS_GPR,
+   RCLASS_FPR,
++  RCLASS_CPR,   // SCARV Crypto ISE extension registers
+   RCLASS_CSR,
+   RCLASS_MAX
+ };
+@@ -448,6 +449,7 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
+   char save_c;
+   int reg = -1;
+ 
++
+   /* Find end of name.  */
+   e = *s;
+   if (is_name_beginner (*e))
+@@ -458,7 +460,7 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
+   /* Terminate name.  */
+   save_c = *e;
+   *e = '\0';
+-
++  
+   /* Look for the register.  Advance to next token if one was recognized.  */
+   if ((reg = reg_lookup_internal (*s, class)) >= 0)
+     *s = e;
+@@ -505,10 +507,58 @@ validate_riscv_insn (const struct riscv_opcode *opc)
+       return FALSE;
+     }
+ 
++// Used by Crypto ISE to eat arg specifier and argument strings as we
++// assemble each token.
++#define EAT_ARG_TOKENS while(*s != ',' && *s != '\0'){s++;} \
++                       while(*args != ',' && *args != '\0'){args++;} \
++                       if(*s != '\0')s++;  \
++                       if(*args == '\0') args --;
++
+ #define USE_BITS(mask,shift)	(used_bits |= ((insn_t)(mask) << (shift)))
+   while (*p)
+     switch (c = *p++)
+       {
++// ----- Crypto ISE BEGIN -----
++case 'X':
++  switch (c = *p++){
++    case 'w': used_bits |= ENCODE_X_B0(-1U) ;break;/* b0 */
++    case 'x': used_bits |= ENCODE_X_B1(-1U) ;break;/* b1 */
++    case 'y': used_bits |= ENCODE_X_B2(-1U) ;break;/* b2 */
++    case 'z': used_bits |= ENCODE_X_B3(-1U) ;break;/* b3 */
++    case 'p': used_bits |= ENCODE_X_CA(-1U) ;      /* ca */
++              used_bits |= ENCODE_X_CB(-1U) ;      /* cb */
++              used_bits |= ENCODE_X_CC(-1U) ;      /* cc */
++              break;
++    case 'a': used_bits |= ENCODE_X_CA(-1U) ;break;/* ca */
++    case 'b': used_bits |= ENCODE_X_CB(-1U) ;break;/* cb */
++    case 'c': used_bits |= ENCODE_X_CC(-1U) ;break;/* cc */
++    case 'd': used_bits |= ENCODE_X_CD(-1U) ;break;/* cd */
++    case 'L': used_bits |= ENCODE_X_CL(-1U) ;break;/* cl */
++    case 'r': used_bits |= ENCODE_X_CMSHAMT(-1U) ;break;/* cmshamt */
++    case 'D': used_bits |= ENCODE_X_CRD(-1U) ;break;/* crd */
++    case 'M': used_bits |= ENCODE_X_CRDM(-1U) ;break;/* crdm */
++    case 's': used_bits |= ENCODE_X_CRS1(-1U) ;break;/* crs1 */
++    case 't': used_bits |= ENCODE_X_CRS2(-1U) ;break;/* crs2 */
++    case 'S': used_bits |= ENCODE_X_CRS3(-1U) ;break;/* crs3 */
++    case 'k': used_bits |= ENCODE_X_CS(-1U) ;break;/* cs */
++    case 'R': used_bits |= ENCODE_X_CSHAMT(-1U) ;break;/* cshamt */
++    case 'h': used_bits |= ENCODE_X_CC(-1U) ;break;/* halfword specifier */
++    case 'B': used_bits |= ENCODE_X_CA(-1U) ;break;/* byte-in-halfword specifier (stores) */
++    case 'l': used_bits |= ENCODE_X_IMM11(-1U) ;break;/* imm11 */
++    case 'm': used_bits |= ENCODE_X_IMM11HI(-1U) ;      /* imm11hi */
++              used_bits |= ENCODE_X_IMM11LO(-1U) ;break;/* imm11lo */
++    case 'n': used_bits |= ENCODE_X_IMM11LO(-1U) ;break;/* imm11lo */
++    case '5': used_bits |= ENCODE_X_IMM11(-1U)       ;/* imm11*/
++              used_bits |= ENCODE_X_IMM5(-1U) ;break;/* imm5 */
++    case '4': used_bits |= ENCODE_X_LUT4(-1U) ;break;/* lut4 */
++
++    default:
++    as_bad (_("internal: bad RISC-V Crypto opcode (unknown operand type `X%c'): %s %s"),
++    c, opc->name, opc->args);
++return FALSE;
++   }
++   break;
++// ----- Crypto ISE END -------
+       case 'C': /* RVC */
+ 	switch (c = *p++)
+ 	  {
+@@ -641,6 +691,7 @@ md_begin (void)
+   hash_reg_names (RCLASS_GPR, riscv_gpr_names_abi, NGPR);
+   hash_reg_names (RCLASS_FPR, riscv_fpr_names_numeric, NFPR);
+   hash_reg_names (RCLASS_FPR, riscv_fpr_names_abi, NFPR);
++  hash_reg_names (RCLASS_CPR, riscv_cpr_names_numeric, NCPR);
+ 
+ #define DECLARE_CSR(name, num) hash_reg_name (RCLASS_CSR, #name, num);
+ #define DECLARE_CSR_ALIAS(name, num) DECLARE_CSR(name, num);
+@@ -1218,11 +1269,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+   struct riscv_opcode *insn;
+   char *argsStart;
+   unsigned int regno;
++  unsigned int regno2;
+   char save_c = 0;
+   int argnum;
+   const struct percent_op_match *p;
+   const char *error = "unrecognized opcode";
+ 
++  int crypto_i;
++
+   /* Parse the name of the instruction.  Terminate the string if whitespace
+      is found so that hash_find only sees the name part of the string.  */
+   for (s = str; *s != '\0'; ++s)
+@@ -1267,6 +1321,267 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+ 	      error = NULL;
+ 	      goto out;
+ 
++// ----- Crypto ISE BEGIN -----
++case 'X': /* SCARV Crypto ISE */ 
++  switch (c = *++args){
++    case 'w': /* b0 */
++    case 'x': /* b1 */
++    case 'y': /* b2 */
++    case 'z': /* b3 */
++        crypto_i = (s[0] - 48) & 0xf;
++        if(crypto_i >= 0 && crypto_i <= 3){
++            if(c == 'w') INSERT_OPERAND(XB0,*ip, crypto_i);
++            if(c == 'x') INSERT_OPERAND(XB1,*ip, crypto_i);
++            if(c == 'y') INSERT_OPERAND(XB2,*ip, crypto_i);
++            if(c == 'z') INSERT_OPERAND(XB3,*ip, crypto_i);
++            EAT_ARG_TOKENS;
++        } else {
++            as_bad (_("Crypto ISE: Bad twiddle source. Should be {0,1,2,3} but got '%d')\n"),crypto_i);
++            break;
++        }
++        continue;
++    case 'p': /* pack width */
++        if(s[0] == 'w'){ /* Pack word */
++            INSERT_OPERAND(XCA,*ip, 0);
++            INSERT_OPERAND(XCB,*ip, 0);
++            INSERT_OPERAND(XCC,*ip, 0);
++        }
++        else if(s[0] == 'h'){ /* Pack halfwords */
++            INSERT_OPERAND(XCA,*ip, 0);
++            INSERT_OPERAND(XCB,*ip, 0);
++            INSERT_OPERAND(XCC,*ip, 1);
++        }
++        else if(s[0] == 'b'){ /* Pack bytes */
++            INSERT_OPERAND(XCA,*ip, 0);
++            INSERT_OPERAND(XCB,*ip, 1);
++            INSERT_OPERAND(XCC,*ip, 0);
++        }
++        else if(s[0] == 'n'){ /* Pack nibbles */
++            INSERT_OPERAND(XCA,*ip, 0);
++            INSERT_OPERAND(XCB,*ip, 1);
++            INSERT_OPERAND(XCC,*ip, 1);
++        }
++        else if(s[0] == 'c'){ /* Pack crumbs */
++            INSERT_OPERAND(XCA,*ip, 1);
++            INSERT_OPERAND(XCB,*ip, 0);
++            INSERT_OPERAND(XCC,*ip, 0);
++        }
++        else {
++            as_bad(_("Crypto ISE: Bad pack width specifier. Should be {w,h,b,n,c}. Got %c\n"),s[0]);
++            break;
++        }
++        EAT_ARG_TOKENS;
++        continue;
++    case 'L': /* cl */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number >= 16) {
++          as_bad (_("Crypto ISE Improper multi-precision shift length (%lu). Should be 0 <= x <= 16."),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XCMSHAMT, *ip, imm_expr->X_add_number);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++      break;
++    case 'r': /* cmshamt */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number >= 30 && !(imm_expr->X_add_number&0x1)) {
++          as_bad (_("Crypto ISE Improper insert/extract length (%lu). Should be 0 <= x <= 30 and even."),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XCL, *ip, imm_expr->X_add_number >> 1);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++    case 'D': /* crd */
++        if(reg_lookup(&s,RCLASS_CPR,&regno)){
++            INSERT_OPERAND(XCRD,*ip,regno);
++            EAT_ARG_TOKENS;
++            continue;
++        } else {
++            as_bad(_("Couldn't identify crypto destination register: '%s'"),s);
++            break;
++        }
++    case 'M': /* crdm */
++        /* CRDM takes a *pair* of explicitly specified adjacent registers */
++        if(!reg_lookup(&s,RCLASS_CPR,&regno)) {
++            as_bad(_("Couldn't identify crypto multi-destination register: '%s'"),str);
++        }
++        
++        s++;
++
++        if(reg_lookup(&s,RCLASS_CPR,&regno2)){
++            if((regno | 0x1) == regno2 &&
++                regno != regno2) {
++                INSERT_OPERAND(XCRDM,*ip,regno>>2);
++                EAT_ARG_TOKENS;
++                continue;
++            }
++            else {
++                as_bad(_("Bad crypto multi-destination register pair: '%s'"),str);
++            }
++        } else {
++            as_bad(_("Couldn't identify crypto multi-destination register: '%s'"),str);
++            break;
++        }
++      break;
++    case 's': /* crs1 */
++        if(reg_lookup(&s,RCLASS_CPR,&regno)){
++            INSERT_OPERAND(XCRS1,*ip,regno);
++            EAT_ARG_TOKENS;
++            continue;
++        } else {
++            as_bad(_("Couldn't identify crypto source register 1: '%s'"),s);
++            break;
++        }
++    case 't': /* crs2 */
++        if(reg_lookup(&s,RCLASS_CPR,&regno)){
++            INSERT_OPERAND(XCRS2,*ip,regno);
++            EAT_ARG_TOKENS;
++            continue;
++        } else {
++            as_bad(_("Couldn't identify crypto source register 2: '%s'"),s);
++            break;
++        }
++    case 'S': /* crs3 */
++        if(reg_lookup(&s,RCLASS_CPR,&regno)){
++            INSERT_OPERAND(XCRS3,*ip,regno);
++            EAT_ARG_TOKENS;
++            continue;
++        } else {
++            as_bad(_("Couldn't identify crypto source register 3: '%s'"),s);
++            break;
++        }
++      break;
++    case 'k': /* cs - Insert / Extract start */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number >= 30 && !(imm_expr->X_add_number&0x1)) {
++          as_bad (_("Crypto ISE Improper insert/extract start (%lu). Should be 0 <= x <= 30 and even."),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XCS, *ip, imm_expr->X_add_number >> 1);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++      break;
++    case 'R': /* cshamt */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 15) {
++          as_bad (_("Crypto ISE Improper shift amount (%lu). Should be 0 <= x <= 15"),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XCSHAMT, *ip, imm_expr->X_add_number);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++    case 'h': /* Halfword specifier */
++        if(s[0] == '0'){
++            INSERT_OPERAND(XCC, *ip, 0);
++        } else if (s[0] == '1') {
++            INSERT_OPERAND(XCC, *ip, 1);
++        } else {
++          as_bad (_("Crypto ISE Improper halfword specifieer (%c). Should be 0 (low) or 1 (high)."),
++            s[0]);
++          break;
++        }
++        EAT_ARG_TOKENS;
++        continue;
++    case 'B': /* Byte of halfword specifier for stores*/
++        if(s[0] == '0'){
++            INSERT_OPERAND(XCA, *ip, 0);
++        } else if (s[0] == '1') {
++            INSERT_OPERAND(XCA, *ip, 1);
++        } else {
++          as_bad (_("Crypto ISE Improper byte-of-halfword specifieer (%c). Should be 0 (low) or 1 (high)."),
++            s[0]);
++          break;
++        }
++        EAT_ARG_TOKENS;
++        continue;
++    case 'd': /* Byte of halfword specifier for loads */
++        if(s[0] == '0'){
++            INSERT_OPERAND(XCD, *ip, 0);
++        } else if (s[0] == '1') {
++            INSERT_OPERAND(XCD, *ip, 1);
++        } else {
++          as_bad (_("Crypto ISE Improper byte-of-halfword specifieer (%c). Should be 0 (low) or 1 (high)."),
++            s[0]);
++          break;
++        }
++        EAT_ARG_TOKENS;
++        continue;
++    case 'l': /* imm11 */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 1023) {
++          as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
++          (unsigned long) imm_expr->X_add_number,1023);
++          break;
++        }
++        INSERT_OPERAND (XIMM11, *ip, imm_expr->X_add_number);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++    case 'm': /* imm11hi */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 1023) {
++          as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
++          (unsigned long) imm_expr->X_add_number,1023);
++          break;
++        }
++        INSERT_OPERAND (XIMM11HI, *ip, imm_expr->X_add_number>>3);
++        INSERT_OPERAND (XIMM11LO, *ip, imm_expr->X_add_number & 0x7);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++    case 'n': /* imm11lo */
++      as_bad (_("Crypto ISE - We should never reach this line! %c"),'n');
++      break;
++    case '5': /* imm5 */
++        // 16 bit immediate split across imm11 and imm5 opcode fields.
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 65535) {
++          as_bad (_("Crypto ISE Improper 16 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
++          (unsigned long) imm_expr->X_add_number,65535);
++          break;
++        }
++        INSERT_OPERAND (XIMM11, *ip, imm_expr->X_add_number>>5);
++        INSERT_OPERAND (XIMM5, *ip, imm_expr->X_add_number & 0x1f);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++      break;
++    case '4': /* lut4 */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 15) {
++          as_bad (_("Crypto ISE Improper 4-bit immediate (%lu). Should be 0 <= x <= 15"),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XLUT4, *ip, imm_expr->X_add_number);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
++
++    default:
++        as_bad (_("bad Crypto ISE field specifier 'X%c'"), *args);
++        break;
++    
++}
++break;
++// ----- Crypto ISE END -------
++
+ 	    case 'C': /* RVC */
+ 	      switch (*++args)
+ 		{
+@@ -1562,6 +1877,7 @@ rvc_lui:
+ 	    case 't':		/* Target register.  */
+ 	      if (reg_lookup (&s, RCLASS_GPR, &regno))
+ 		{
++
+ 		  c = *args;
+ 		  if (*s == ' ')
+ 		    ++s;
+diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
+index f966fb6a50..4e8ed7078f 100644
+--- a/include/opcode/riscv-opc.h
++++ b/include/opcode/riscv-opc.h
+@@ -1,6 +1,114 @@
+ /* Automatically generated by parse-opcodes.  */
+ #ifndef RISCV_ENCODING_H
+ #define RISCV_ENCODING_H
++// ----- Crypto ISE BEGIN -----
++#define MATCH_MV2GPR 0x2b
++#define MASK_MV2GPR  0xfff8707f
++#define MATCH_MV2COP 0x100002b
++#define MASK_MV2COP  0xfff0787f
++#define MATCH_ADD_PX 0x200002b
++#define MASK_ADD_PX  0xfe00707f
++#define MATCH_SUB_PX 0x400002b
++#define MASK_SUB_PX  0xfe00707f
++#define MATCH_MUL_PX 0x600002b
++#define MASK_MUL_PX  0xfe00707f
++#define MATCH_SLL_PX 0x800002b
++#define MASK_SLL_PX  0xfe00707f
++#define MATCH_SRL_PX 0xa00002b
++#define MASK_SRL_PX  0xfe00707f
++#define MATCH_ROT_PX 0xc00002b
++#define MASK_ROT_PX  0xfe00707f
++#define MATCH_SLLI_PX 0xe00002b
++#define MASK_SLLI_PX  0xfe00707f
++#define MATCH_SRLI_PX 0x1000002b
++#define MASK_SRLI_PX  0xfe00707f
++#define MATCH_ROTI_PX 0x1200002b
++#define MASK_ROTI_PX  0xfe00707f
++#define MATCH_RSEED_CR 0x1400002b
++#define MASK_RSEED_CR  0xfff87fff
++#define MATCH_RSAMP_CR 0x1600002b
++#define MASK_RSAMP_CR  0xfffff87f
++#define MATCH_CMOV_CR 0x1800002b
++#define MASK_CMOV_CR  0xff08787f
++#define MATCH_CMOVN_CR 0x1a00002b
++#define MASK_CMOVN_CR  0xff08787f
++#define MATCH_SCATTER_B 0x2400002b
++#define MASK_SCATTER_B  0xff00787f
++#define MATCH_GATHER_B 0x2600002b
++#define MASK_GATHER_B  0xff00787f
++#define MATCH_SCATTER_H 0x2c00002b
++#define MASK_SCATTER_H  0xff00787f
++#define MATCH_GATHER_H 0x2e00002b
++#define MASK_GATHER_H  0xff00787f
++#define MATCH_LMIX_CR 0x8000002b
++#define MASK_LMIX_CR  0xe108787f
++#define MATCH_HMIX_CR 0xa000002b
++#define MASK_HMIX_CR  0xe108787f
++#define MATCH_BOP_CR 0xc000002b
++#define MASK_BOP_CR  0xe108787f
++#define MATCH_EQU_MP 0x8702b
++#define MASK_EQU_MP  0xf008707f
++#define MATCH_LTU_MP 0x1008702b
++#define MASK_LTU_MP  0xf008707f
++#define MATCH_GTU_MP 0x2008702b
++#define MASK_GTU_MP  0xf008707f
++#define MATCH_ADD3_MP 0x702b
++#define MASK_ADD3_MP  0xf0087c7f
++#define MATCH_ADD2_MP 0x1000702b
++#define MASK_ADD2_MP  0xff087c7f
++#define MATCH_SUB3_MP 0x2000702b
++#define MASK_SUB3_MP  0xf0087c7f
++#define MATCH_SUB2_MP 0x3000702b
++#define MASK_SUB2_MP  0xff087c7f
++#define MATCH_SLLI_MP 0x742b
++#define MASK_SLLI_MP  0xf0087c7f
++#define MATCH_SLL_MP 0x1000742b
++#define MASK_SLL_MP  0xf0087c7f
++#define MATCH_SRLI_MP 0x2000742b
++#define MASK_SRLI_MP  0xf0087c7f
++#define MATCH_SRL_MP 0x3000742b
++#define MASK_SRL_MP  0xf0087c7f
++#define MATCH_ACC2_MP 0x782b
++#define MASK_ACC2_MP  0xff087c7f
++#define MATCH_ACC1_MP 0x1000782b
++#define MASK_ACC1_MP  0xfff87c7f
++#define MATCH_MAC_MP 0x2000782b
++#define MASK_MAC_MP  0xf0087c7f
++#define MATCH_LBU_CR 0x102b
++#define MASK_LBU_CR  0x707f
++#define MATCH_LHU_CR 0x202b
++#define MASK_LHU_CR  0x10707f
++#define MATCH_LW_CR 0x302b
++#define MASK_LW_CR  0x10787f
++#define MATCH_LUI_CR 0x10302b
++#define MASK_LUI_CR  0x10787f
++#define MATCH_LLI_CR 0x10382b
++#define MASK_LLI_CR  0x10787f
++#define MATCH_TWID_B 0x10282b
++#define MASK_TWID_B  0xf8787f
++#define MATCH_TWID_N0 0x50282b
++#define MASK_TWID_N0  0xf8787f
++#define MATCH_TWID_N1 0x70282b
++#define MASK_TWID_N1  0xf8787f
++#define MATCH_TWID_C0 0x90282b
++#define MASK_TWID_C0  0xf8787f
++#define MATCH_TWID_C1 0xb0282b
++#define MASK_TWID_C1  0xf8787f
++#define MATCH_TWID_C2 0xd0282b
++#define MASK_TWID_C2  0xf8787f
++#define MATCH_TWID_C3 0xf0282b
++#define MASK_TWID_C3  0xf8787f
++#define MATCH_INS_CR 0x18282b
++#define MASK_INS_CR  0xf8787f
++#define MATCH_EXT_CR 0x38282b
++#define MASK_EXT_CR  0xf8787f
++#define MATCH_SB_CR 0x402b
++#define MASK_SB_CR  0x707f
++#define MATCH_SH_CR 0x502b
++#define MASK_SH_CR  0x100707f
++#define MATCH_SW_CR 0x602b
++#define MASK_SW_CR  0x100787f
++// ----- Crypto ISE END -------
+ #define MATCH_SLLI_RV32 0x1013
+ #define MASK_SLLI_RV32  0xfe00707f
+ #define MATCH_SRLI_RV32 0x5013
+diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
+index b87c719626..71f37b47ef 100644
+--- a/include/opcode/riscv.h
++++ b/include/opcode/riscv.h
+@@ -191,6 +191,119 @@ static const char * const riscv_pred_succ[16] =
+ #define RISCV_BRANCH_ALIGN (1 << RISCV_BRANCH_ALIGN_BITS)
+ #define RISCV_BRANCH_REACH (RISCV_IMM_REACH * RISCV_BRANCH_ALIGN)
+ 
++// ----- Crypto ISE BEGIN -----
++#define ENCODE_X_B0(X)  ((X &  OP_MASK_XB0) << OP_SH_XB0)
++#define ENCODE_X_B1(X)  ((X &  OP_MASK_XB1) << OP_SH_XB1)
++#define ENCODE_X_B2(X)  ((X &  OP_MASK_XB2) << OP_SH_XB2)
++#define ENCODE_X_B3(X)  ((X &  OP_MASK_XB3) << OP_SH_XB3)
++#define ENCODE_X_CA(X)  ((X &  OP_MASK_XCA) << OP_SH_XCA)
++#define ENCODE_X_CB(X)  ((X &  OP_MASK_XCB) << OP_SH_XCB)
++#define ENCODE_X_CC(X)  ((X &  OP_MASK_XCC) << OP_SH_XCC)
++#define ENCODE_X_CD(X)  ((X &  OP_MASK_XCD) << OP_SH_XCD)
++#define ENCODE_X_CL(X)  ((X &  OP_MASK_XCL) << OP_SH_XCL)
++#define ENCODE_X_CMSHAMT(X)  ((X &  OP_MASK_XCMSHAMT) << OP_SH_XCMSHAMT)
++#define ENCODE_X_CRD(X)  ((X &  OP_MASK_XCRD) << OP_SH_XCRD)
++#define ENCODE_X_CRDM(X)  ((X &  OP_MASK_XCRDM) << OP_SH_XCRDM)
++#define ENCODE_X_CRS1(X)  ((X &  OP_MASK_XCRS1) << OP_SH_XCRS1)
++#define ENCODE_X_CRS2(X)  ((X &  OP_MASK_XCRS2) << OP_SH_XCRS2)
++#define ENCODE_X_CRS3(X)  ((X &  OP_MASK_XCRS3) << OP_SH_XCRS3)
++#define ENCODE_X_CS(X)  ((X &  OP_MASK_XCS) << OP_SH_XCS)
++#define ENCODE_X_CSHAMT(X)  ((X &  OP_MASK_XCSHAMT) << OP_SH_XCSHAMT)
++#define ENCODE_X_IMM11(X)  ((X &  OP_MASK_XIMM11) << OP_SH_XIMM11)
++#define ENCODE_X_IMM11HI(X)  ((X &  OP_MASK_XIMM11HI) << OP_SH_XIMM11HI)
++#define ENCODE_X_IMM11LO(X)  ((X &  OP_MASK_XIMM11LO) << OP_SH_XIMM11LO)
++#define ENCODE_X_IMM5(X)  ((X &  OP_MASK_XIMM5) << OP_SH_XIMM5)
++#define ENCODE_X_LUT4(X)  ((X &  OP_MASK_XLUT4) << OP_SH_XLUT4)
++#define EXTRACT_X_B0(X) ((X >> OP_SH_XOP_SH_XB0)  & OP_MASK_XOP_MASK_XB0)
++#define EXTRACT_X_B1(X) ((X >> OP_SH_XOP_SH_XB1)  & OP_MASK_XOP_MASK_XB1)
++#define EXTRACT_X_B2(X) ((X >> OP_SH_XOP_SH_XB2)  & OP_MASK_XOP_MASK_XB2)
++#define EXTRACT_X_B3(X) ((X >> OP_SH_XOP_SH_XB3)  & OP_MASK_XOP_MASK_XB3)
++#define EXTRACT_X_CA(X) ((X >> OP_SH_XOP_SH_XCA)  & OP_MASK_XOP_MASK_XCA)
++#define EXTRACT_X_CB(X) ((X >> OP_SH_XOP_SH_XCB)  & OP_MASK_XOP_MASK_XCB)
++#define EXTRACT_X_CC(X) ((X >> OP_SH_XOP_SH_XCC)  & OP_MASK_XOP_MASK_XCC)
++#define EXTRACT_X_CD(X) ((X >> OP_SH_XOP_SH_XCD)  & OP_MASK_XOP_MASK_XCD)
++#define EXTRACT_X_CL(X) ((X >> OP_SH_XOP_SH_XCL)  & OP_MASK_XOP_MASK_XCL)
++#define EXTRACT_X_CMSHAMT(X) ((X >> OP_SH_XOP_SH_XCMSHAMT)  & OP_MASK_XOP_MASK_XCMSHAMT)
++#define EXTRACT_X_CRD(X) ((X >> OP_SH_XOP_SH_XCRD)  & OP_MASK_XOP_MASK_XCRD)
++#define EXTRACT_X_CRDM(X) ((X >> OP_SH_XOP_SH_XCRDM)  & OP_MASK_XOP_MASK_XCRDM)
++#define EXTRACT_X_CRS1(X) ((X >> OP_SH_XOP_SH_XCRS1)  & OP_MASK_XOP_MASK_XCRS1)
++#define EXTRACT_X_CRS2(X) ((X >> OP_SH_XOP_SH_XCRS2)  & OP_MASK_XOP_MASK_XCRS2)
++#define EXTRACT_X_CRS3(X) ((X >> OP_SH_XOP_SH_XCRS3)  & OP_MASK_XOP_MASK_XCRS3)
++#define EXTRACT_X_CS(X) ((X >> OP_SH_XOP_SH_XCS)  & OP_MASK_XOP_MASK_XCS)
++#define EXTRACT_X_CSHAMT(X) ((X >> OP_SH_XOP_SH_XCSHAMT)  & OP_MASK_XOP_MASK_XCSHAMT)
++#define EXTRACT_X_IMM11(X) ((X >> OP_SH_XOP_SH_XIMM11)  & OP_MASK_XOP_MASK_XIMM11)
++#define EXTRACT_X_IMM11HI(X) ((X >> OP_SH_XOP_SH_XIMM11HI)  & OP_MASK_XOP_MASK_XIMM11HI)
++#define EXTRACT_X_IMM11LO(X) ((X >> OP_SH_XOP_SH_XIMM11LO)  & OP_MASK_XOP_MASK_XIMM11LO)
++#define EXTRACT_X_IMM5(X) ((X >> OP_SH_XOP_SH_XIMM5)  & OP_MASK_XOP_MASK_XIMM5)
++#define EXTRACT_X_LUT4(X) ((X >> OP_SH_XOP_SH_XLUT4)  & OP_MASK_XOP_MASK_XLUT4)
++#define OP_MASK_XB0 0b11
++#define OP_MASK_XB1 0b11
++#define OP_MASK_XB2 0b11
++#define OP_MASK_XB3 0b11
++#define OP_MASK_XCA 0b1
++#define OP_MASK_XCB 0b1
++#define OP_MASK_XCC 0b1
++#define OP_MASK_XCD 0b1
++#define OP_MASK_XCL 0b1111
++#define OP_MASK_XCMSHAMT 0b1111
++#define OP_MASK_XCRD 0b1111
++#define OP_MASK_XCRDM 0b111
++#define OP_MASK_XCRS1 0b1111
++#define OP_MASK_XCRS2 0b1111
++#define OP_MASK_XCRS3 0b1111
++#define OP_MASK_XCS 0b1111
++#define OP_MASK_XCSHAMT 0b1111
++#define OP_MASK_XIMM11 0b11111111111
++#define OP_MASK_XIMM11HI 0b1111111
++#define OP_MASK_XIMM11LO 0b1111
++#define OP_MASK_XIMM5 0b11111
++#define OP_MASK_XLUT4 0b1111
++#define OP_SH_XB0 30
++#define OP_SH_XB1 28
++#define OP_SH_XB2 26
++#define OP_SH_XB3 24
++#define OP_SH_XCA 24
++#define OP_SH_XCB 19
++#define OP_SH_XCC 11
++#define OP_SH_XCD 20
++#define OP_SH_XCL 24
++#define OP_SH_XCMSHAMT 24
++#define OP_SH_XCRD 7
++#define OP_SH_XCRDM 7
++#define OP_SH_XCRS1 15
++#define OP_SH_XCRS2 20
++#define OP_SH_XCRS3 24
++#define OP_SH_XCS 28
++#define OP_SH_XCSHAMT 20
++#define OP_SH_XIMM11 21
++#define OP_SH_XIMM11HI 25
++#define OP_SH_XIMM11LO 7
++#define OP_SH_XIMM5 15
++#define OP_SH_XLUT4 25
++#define VALIDATE_X_B0(X) ((ENCODE_X_B0(X)) == (EXTRACT_X_B0(X)))
++#define VALIDATE_X_B1(X) ((ENCODE_X_B1(X)) == (EXTRACT_X_B1(X)))
++#define VALIDATE_X_B2(X) ((ENCODE_X_B2(X)) == (EXTRACT_X_B2(X)))
++#define VALIDATE_X_B3(X) ((ENCODE_X_B3(X)) == (EXTRACT_X_B3(X)))
++#define VALIDATE_X_CA(X) ((ENCODE_X_CA(X)) == (EXTRACT_X_CA(X)))
++#define VALIDATE_X_CB(X) ((ENCODE_X_CB(X)) == (EXTRACT_X_CB(X)))
++#define VALIDATE_X_CC(X) ((ENCODE_X_CC(X)) == (EXTRACT_X_CC(X)))
++#define VALIDATE_X_CD(X) ((ENCODE_X_CD(X)) == (EXTRACT_X_CD(X)))
++#define VALIDATE_X_CL(X) ((ENCODE_X_CL(X)) == (EXTRACT_X_CL(X)))
++#define VALIDATE_X_CMSHAMT(X) ((ENCODE_X_CMSHAMT(X)) == (EXTRACT_X_CMSHAMT(X)))
++#define VALIDATE_X_CRD(X) ((ENCODE_X_CRD(X)) == (EXTRACT_X_CRD(X)))
++#define VALIDATE_X_CRDM(X) ((ENCODE_X_CRDM(X)) == (EXTRACT_X_CRDM(X)))
++#define VALIDATE_X_CRS1(X) ((ENCODE_X_CRS1(X)) == (EXTRACT_X_CRS1(X)))
++#define VALIDATE_X_CRS2(X) ((ENCODE_X_CRS2(X)) == (EXTRACT_X_CRS2(X)))
++#define VALIDATE_X_CRS3(X) ((ENCODE_X_CRS3(X)) == (EXTRACT_X_CRS3(X)))
++#define VALIDATE_X_CS(X) ((ENCODE_X_CS(X)) == (EXTRACT_X_CS(X)))
++#define VALIDATE_X_CSHAMT(X) ((ENCODE_X_CSHAMT(X)) == (EXTRACT_X_CSHAMT(X)))
++#define VALIDATE_X_IMM11(X) ((ENCODE_X_IMM11(X)) == (EXTRACT_X_IMM11(X)))
++#define VALIDATE_X_IMM11HI(X) ((ENCODE_X_IMM11HI(X)) == (EXTRACT_X_IMM11HI(X)))
++#define VALIDATE_X_IMM11LO(X) ((ENCODE_X_IMM11LO(X)) == (EXTRACT_X_IMM11LO(X)))
++#define VALIDATE_X_IMM5(X) ((ENCODE_X_IMM5(X)) == (EXTRACT_X_IMM5(X)))
++#define VALIDATE_X_LUT4(X) ((ENCODE_X_LUT4(X)) == (EXTRACT_X_LUT4(X)))
++// ----- Crypto ISE END -------
++
+ /* RV fields.  */
+ 
+ #define OP_MASK_OP		0x7f
+@@ -245,6 +358,7 @@ static const char * const riscv_pred_succ[16] =
+ 
+ #define NGPR 32
+ #define NFPR 32
++#define NCPR 16
+ 
+ /* Replace bits MASK << SHIFT of STRUCT with the equivalent bits in
+    VALUE << SHIFT.  VALUE is evaluated exactly once.  */
+@@ -338,6 +452,7 @@ extern const char * const riscv_gpr_names_numeric[NGPR];
+ extern const char * const riscv_gpr_names_abi[NGPR];
+ extern const char * const riscv_fpr_names_numeric[NFPR];
+ extern const char * const riscv_fpr_names_abi[NFPR];
++extern const char * const riscv_cpr_names_numeric[NCPR];
+ 
+ extern const struct riscv_opcode riscv_opcodes[];
+ 
+diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
+index 79e7214835..4a58f5c15d 100644
+--- a/opcodes/riscv-opc.c
++++ b/opcodes/riscv-opc.c
+@@ -56,6 +56,11 @@ const char * const riscv_fpr_names_abi[NFPR] = {
+   "fs8", "fs9", "fs10", "fs11", "ft8", "ft9", "ft10", "ft11"
+ };
+ 
++const char * const riscv_cpr_names_numeric[NCPR] = {
++  "c0",   "c1",   "c2",   "c3",   "c4",   "c5",   "c6",   "c7",
++  "c8",   "c9",   "c10",  "c11",  "c12",  "c13",  "c14",  "c15",
++};
++
+ /* The order of overloaded instructions matters.  Label arguments and
+    register arguments look the same. Instructions that can have either
+    for arguments must apear in the correct order in this table for the
+@@ -158,6 +163,61 @@ match_c_addi4spn (const struct riscv_opcode *op, insn_t insn)
+ const struct riscv_opcode riscv_opcodes[] =
+ {
+ /* name,      isa,   operands, match, mask, match_func, pinfo.  */
++// ----- Crypto ISE BEGIN -----
++{"mv2gpr",     "x", "d,Xs",               MATCH_MV2GPR, MASK_MV2GPR, match_opcode, 0},
++{"mv2cop",     "x", "XD,s",               MATCH_MV2COP, MASK_MV2COP, match_opcode, 0},
++{"add.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ADD_PX, MASK_ADD_PX, match_opcode, 0},
++{"sub.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SUB_PX, MASK_SUB_PX, match_opcode, 0},
++{"mul.px",     "x", "Xp,XD,Xs,Xt",  MATCH_MUL_PX, MASK_MUL_PX, match_opcode, 0},
++{"sll.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SLL_PX, MASK_SLL_PX, match_opcode, 0},
++{"srl.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SRL_PX, MASK_SRL_PX, match_opcode, 0},
++{"rot.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ROT_PX, MASK_ROT_PX, match_opcode, 0},
++{"slli.px",    "x", "Xp,XD,Xs,XR",  MATCH_SLLI_PX, MASK_SLLI_PX, match_opcode, 0},
++{"srli.px",    "x", "Xp,XD,Xs,XR",  MATCH_SRLI_PX, MASK_SRLI_PX, match_opcode, 0},
++{"roti.px",    "x", "Xp,XD,Xs,XR",  MATCH_ROTI_PX, MASK_ROTI_PX, match_opcode, 0},
++{"rseed.cr",   "x", "Xs",                 MATCH_RSEED_CR, MASK_RSEED_CR, match_opcode, 0},
++{"rsamp.cr",   "x", "XD",                 MATCH_RSAMP_CR, MASK_RSAMP_CR, match_opcode, 0},
++{"cmov.cr",    "x", "XD,Xs,Xt",           MATCH_CMOV_CR, MASK_CMOV_CR, match_opcode, 0},
++{"cmovn.cr",   "x", "XD,Xs,Xt",           MATCH_CMOVN_CR, MASK_CMOVN_CR, match_opcode, 0},
++{"scatter.b",  "x", "XD,Xt,s",            MATCH_SCATTER_B, MASK_SCATTER_B, match_opcode, 0},
++{"gather.b",   "x", "XD,Xt,s",            MATCH_GATHER_B, MASK_GATHER_B, match_opcode, 0},
++{"scatter.h",  "x", "XD,Xt,s",            MATCH_SCATTER_H, MASK_SCATTER_H, match_opcode, 0},
++{"gather.h",   "x", "XD,Xt,s",            MATCH_GATHER_H, MASK_GATHER_H, match_opcode, 0},
++{"lmix.cr",    "x", "XD,Xs,Xt,X4",        MATCH_LMIX_CR, MASK_LMIX_CR, match_opcode, 0},
++{"hmix.cr",    "x", "XD,Xs,Xt,X4",        MATCH_HMIX_CR, MASK_HMIX_CR, match_opcode, 0},
++{"bop.cr",     "x", "XD,Xs,Xt,X4",        MATCH_BOP_CR, MASK_BOP_CR, match_opcode, 0},
++{"equ.mp",     "x", "Xs,Xt,XS,d",         MATCH_EQU_MP, MASK_EQU_MP, match_opcode, 0},
++{"ltu.mp",     "x", "Xs,Xt,XS,d",         MATCH_LTU_MP, MASK_LTU_MP, match_opcode, 0},
++{"gtu.mp",     "x", "Xs,Xt,XS,d",         MATCH_GTU_MP, MASK_GTU_MP, match_opcode, 0},
++{"add3.mp",    "x", "(XM),Xs,Xt,XS",        MATCH_ADD3_MP, MASK_ADD3_MP, match_opcode, 0},
++{"add2.mp",    "x", "(XM),Xs,Xt",           MATCH_ADD2_MP, MASK_ADD2_MP, match_opcode, 0},
++{"sub3.mp",    "x", "(XM),Xs,Xt,XS",        MATCH_SUB3_MP, MASK_SUB3_MP, match_opcode, 0},
++{"sub2.mp",    "x", "(XM),Xs,Xt",           MATCH_SUB2_MP, MASK_SUB2_MP, match_opcode, 0},
++{"slli.mp",    "x", "(XM),Xs,Xt,Xr",        MATCH_SLLI_MP, MASK_SLLI_MP, match_opcode, 0},
++{"sll.mp",     "x", "(XM),Xs,Xt,XS",        MATCH_SLL_MP, MASK_SLL_MP, match_opcode, 0},
++{"srli.mp",    "x", "(XM),Xs,Xt,Xr",        MATCH_SRLI_MP, MASK_SRLI_MP, match_opcode, 0},
++{"srl.mp",     "x", "(XM),Xs,Xt,XS",        MATCH_SRL_MP, MASK_SRL_MP, match_opcode, 0},
++{"acc2.mp",    "x", "(XM),Xs,Xt",           MATCH_ACC2_MP, MASK_ACC2_MP, match_opcode, 0},
++{"acc1.mp",    "x", "(XM),Xs",              MATCH_ACC1_MP, MASK_ACC1_MP, match_opcode, 0},
++{"mac.mp",     "x", "(XM),Xs,Xt,XS",        MATCH_MAC_MP, MASK_MAC_MP, match_opcode, 0},
++{"lbu.cr",     "x", "XD,(Xh,Xd),Xl(s)",      MATCH_LBU_CR, MASK_LBU_CR, match_opcode, 0},
++{"lhu.cr",     "x", "XD,(Xh),Xl(s)",         MATCH_LHU_CR, MASK_LHU_CR, match_opcode, 0},
++{"lw.cr",      "x", "XD,Xl(s)",            MATCH_LW_CR, MASK_LW_CR, match_opcode, 0},
++{"lui.cr",     "x", "XD,X5",           MATCH_LUI_CR, MASK_LUI_CR, match_opcode, 0},
++{"lli.cr",     "x", "XD,X5",           MATCH_LLI_CR, MASK_LLI_CR, match_opcode, 0},
++{"twid.b",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_B, MASK_TWID_B, match_opcode, 0},
++{"twid.n0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_N0, MASK_TWID_N0, match_opcode, 0},
++{"twid.n1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_N1, MASK_TWID_N1, match_opcode, 0},
++{"twid.c0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C0, MASK_TWID_C0, match_opcode, 0},
++{"twid.c1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C1, MASK_TWID_C1, match_opcode, 0},
++{"twid.c2",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C2, MASK_TWID_C2, match_opcode, 0},
++{"twid.c3",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C3, MASK_TWID_C3, match_opcode, 0},
++{"ins.cr",     "x", "XD,Xs,XL,Xk",        MATCH_INS_CR, MASK_INS_CR, match_opcode, 0},
++{"ext.cr",     "x", "XD,Xs,XL,Xk",        MATCH_EXT_CR, MASK_EXT_CR, match_opcode, 0},
++{"sb.cr",      "x", "Xt,(Xh,XB),Xm(s)",   MATCH_SB_CR, MASK_SB_CR, match_opcode, 0},
++{"sh.cr",      "x", "Xt,(Xh),Xm(s)",      MATCH_SH_CR, MASK_SH_CR, match_opcode, 0},
++{"sw.cr",      "x", "Xt,Xm(s)",         MATCH_SW_CR, MASK_SW_CR, match_opcode, 0},
++// ----- Crypto ISE END -------
+ {"unimp",     "C",   "",  0, 0xffffU,  match_opcode, 0 },
+ {"unimp",     "I",   "",  MATCH_CSRRW | (CSR_CYCLE << OP_SH_CSR), 0xffffffffU,  match_opcode, 0 }, /* csrw cycle, x0 */
+ {"ebreak",    "C",   "",  MATCH_C_EBREAK, MASK_C_EBREAK, match_opcode, INSN_ALIAS },

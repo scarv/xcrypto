@@ -3,29 +3,38 @@
 The aim of this project is to
 extend the RISC-V RV32I or RV32E base architectures \footnote{
  There is no reason that the ISE would not work with the
- RV64I and RV128I base instruction sets. Though the ISE state
- uses only 32-bit words, and would not take advantage of a
- larger word size without further modification.
-} to accelerate common cryptographic
+ RV64I and RV128I base instruction sets.
+ Though the ISE state uses only 32-bit words,
+ and would not take advantage of a larger word size without
+ further modification.
+} 
+to accelerate common cryptographic
 operations associated with block ciphers and public key cryptography.
 It proposes a new Instruction Set Extension (ISE)
 which acts analogously to a floating-point co-processor,
 but targeted at cryptographic operations.
-The aim is for the ISE to be applicable to a wide range of algorithms
-which work on different bit-widths and with different block sizes.
 
-The key pieces of functionality the ISE aims to provide are:
+The ISE is designed to be applicable to a wide range of algorithms
+which work on different bit-widths and with different block sizes.
+The key pieces of functionality the ISE provides are:
 
 \begin{itemize}
-\item Flexible {\em packed arithmetic}, where multiple values of varying
-    lengths can be operated on inside a register in parallel.
+\item Flexible {\em packed arithmetic},
+    where multiple values of varying lengths can
+    be operated on inside a register in parallel.
 \item Memory Scatter/Gather functionality for bytes.
-\item Flexible support for intra-word byte, halfword and nibble
-      permutation.
+\item Flexible support for word, halfword, byte and nibble permutation.
 \item Multi-precision integer arithmetic.
+\item Support for accelerating Bit-sliced implementations of cryptographic
+    algorithms.
 \end{itemize}
 
-This document {\em is} a specification for an ISE. It {\em is not} an
-implementation guide \footnote{In fact, we go out of our way to make sure this
-ISE is applicable to as many sizes and styles of implementation as possible.},
-nor is it a standalone ISA.
+We hope that by providing flexible ways to accelerate cryptographic functions,
+we can also make implementation of side-channel countermeasures
+more efficient.
+
+This document {\em is} a specification for an ISE.
+It {\em is not} an implementation guide
+\footnote{In fact, we go out of our way to make sure this
+ISE is applicable to as many sizes and styles of implementation as possible.}
+or a standalone ISA.

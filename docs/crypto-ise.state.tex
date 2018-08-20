@@ -1,0 +1,81 @@
+
+The ISE introduces an additional $16$ by $32$-bit register file which
+is used exclusively by the instructions in this ISE.
+It is to the crypto ISE what the floating-point register file is to the
+RISC-V F extension.
+
+Unlike the RISC-V $\GPR$s, the zeroth $\CPR$ is not tied to zero.
+
+The register file addressing is shown in table \ref{tab:state-addr}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l l l l|}
+\hline
+\multicolumn{1}{|l|}{3:0} & \textbf{31:24} & \textbf{23:16} & \textbf{15:8} & \textbf{7:0} \\ \hline
+{\tt cpr0  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr1  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr2  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr3  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr4  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr5  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr6  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr7  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr8  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr9  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr10 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr11 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr12 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr13 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr14 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt cpr15 } & 3 & 2 & 1 & 0      \\ \hline
+\end{tabular}
+\caption{This table shows the per-byte layout of the register file.
+Note that there is no {\em zero} register in the ISE.
+The register with address $0$ will preserve writes.}
+\label{tab:state-addr}
+\end{table}
+
+\note{
+A smart programmer will remember to clear their $\CPR$s of any secret data
+before returning execution to some part of the system they did not write.
+}
+
+The number of general purpose registers to put into any ISA and ISE is
+always contentious.
+We chose 16 general purpose registers for this ISE for the following reasons:
+
+\begin{itemize}
+\item As demonstrated by ARM, 16 GPRs is plenty for most computation.
+Indeed ARM actually has fewer GPRs due to the special nature of some of their
+{\em high} registers.
+We believe mirroring the base RISC-V ISA and having
+32 GPRs would have been overkill for an ISE such as this, even when the
+{\tt F} extension adds 32 registers itself.
+\item In area-optimised implementations such as micro-controllers, the
+total area of a core is often dominated by the register-file.
+For embedded applications which do not need all 32 GPRs, one could use the 
+{\tt E} extension, and use the area saved by having 16 GPRs to make room
+on the die for the crypto ISE.
+\item Fewer registers frees up instruction encoding space which would
+normally have been needed for register addresses.
+\end{itemize}
+
+This is the only extra architectural state required by the ISE.
+We followed the RISC-V principles of avoiding implicit or otherwise
+hidden state.
+
+\subsection{ABI Standards}
+
+All of the state added in the Crypto ISE is considered {\em callee save}
+for the purposes of the ABI.
+That is, if {\tt function1} calls 
+{\tt function2}, then {\tt function2} is responsible for saving to the
+stack any $\CPR$ registers it needs, and popping them off before returning.
+
+The $\CPR$ registers $0..8$ are considered as function arguments
+and/or return values. 
+All other $\CPR$ registers are considered temporaries.
+
+Any registers pushed to the stack should be written in ascending order.
+
