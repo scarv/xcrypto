@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index f60bea15c8..3b8f57c68d 100644
+index f60bea15c8..2336a39b2f 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -401,6 +401,7 @@ enum reg_class
@@ -18,24 +18,16 @@ index f60bea15c8..3b8f57c68d 100644
    /* Find end of name.  */
    e = *s;
    if (is_name_beginner (*e))
-@@ -458,6 +460,8 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
+@@ -458,7 +460,7 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
    /* Terminate name.  */
    save_c = *e;
    *e = '\0';
+-
 +  
-+  printf("BEN: >>> Looking for %s...", *s);
- 
    /* Look for the register.  Advance to next token if one was recognized.  */
    if ((reg = reg_lookup_internal (*s, class)) >= 0)
-@@ -466,6 +470,7 @@ reg_lookup (char **s, enum reg_class class, unsigned int *regnop)
-   *e = save_c;
-   if (regnop)
-     *regnop = reg;
-+  printf(" -> %d\n", *regnop);
-   return reg >= 0;
- }
- 
-@@ -505,10 +510,58 @@ validate_riscv_insn (const struct riscv_opcode *opc)
+     *s = e;
+@@ -505,10 +507,58 @@ validate_riscv_insn (const struct riscv_opcode *opc)
        return FALSE;
      }
  
@@ -94,7 +86,7 @@ index f60bea15c8..3b8f57c68d 100644
        case 'C': /* RVC */
  	switch (c = *p++)
  	  {
-@@ -641,6 +694,7 @@ md_begin (void)
+@@ -641,6 +691,7 @@ md_begin (void)
    hash_reg_names (RCLASS_GPR, riscv_gpr_names_abi, NGPR);
    hash_reg_names (RCLASS_FPR, riscv_fpr_names_numeric, NFPR);
    hash_reg_names (RCLASS_FPR, riscv_fpr_names_abi, NFPR);
@@ -102,7 +94,7 @@ index f60bea15c8..3b8f57c68d 100644
  
  #define DECLARE_CSR(name, num) hash_reg_name (RCLASS_CSR, #name, num);
  #define DECLARE_CSR_ALIAS(name, num) DECLARE_CSR(name, num);
-@@ -1218,11 +1272,15 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1218,11 +1269,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    struct riscv_opcode *insn;
    char *argsStart;
    unsigned int regno;
@@ -113,22 +105,11 @@ index f60bea15c8..3b8f57c68d 100644
    const char *error = "unrecognized opcode";
  
 +  int crypto_i;
-+  printf("-------------------------------------------\n");
 +
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
    for (s = str; *s != '\0'; ++s)
-@@ -1251,6 +1309,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
-       for (args = insn->args;; ++args)
- 	{
- 	  s += strspn (s, " \t");
-+      printf("------\nBEN: %s\n", insn->name);
-+      printf("BEN: s: %s\n", s);
-+      printf("BEN: args: %s\n", args);
- 	  switch (*args)
- 	    {
- 	    case '\0': 	/* End of args.  */
-@@ -1267,6 +1328,267 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1267,6 +1321,267 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -396,7 +377,7 @@ index f60bea15c8..3b8f57c68d 100644
  	    case 'C': /* RVC */
  	      switch (*++args)
  		{
-@@ -1562,6 +1884,7 @@ rvc_lui:
+@@ -1562,6 +1877,7 @@ rvc_lui:
  	    case 't':		/* Target register.  */
  	      if (reg_lookup (&s, RCLASS_GPR, &regno))
  		{
@@ -404,27 +385,6 @@ index f60bea15c8..3b8f57c68d 100644
  		  c = *args;
  		  if (*s == ' ')
  		    ++s;
-@@ -1572,16 +1895,20 @@ rvc_lui:
- 		    {
- 		    case 's':
- 		      INSERT_OPERAND (RS1, *ip, regno);
-+              printf("BEN: Insert RS1: %d\n",regno);
- 		      break;
- 		    case 'd':
- 		      INSERT_OPERAND (RD, *ip, regno);
-+              printf("BEN: Insert RD: %d\n",regno);
- 		      break;
- 		    case 't':
- 		      INSERT_OPERAND (RS2, *ip, regno);
-+              printf("BEN: Insert RS2: %d\n",regno);
- 		      break;
- 		    }
- 		  continue;
- 		}
-+          printf("BEN: Bad register lookup for %s\n", s);
- 	      break;
- 
- 	    case 'D':		/* Floating point rd.  */
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
 index f966fb6a50..4e8ed7078f 100644
 --- a/include/opcode/riscv-opc.h
