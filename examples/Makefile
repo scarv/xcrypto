@@ -1,7 +1,7 @@
 
 
-AS      = ~/riscv/riscv-binutils-gdb/build/gas/as-new
-OBJDUMP = ~/riscv/riscv-binutils-gdb/build/binutils/objdump
+AS      = $(COP_HOME)/work/riscv-binutils-gdb/build/gas/as-new
+OBJDUMP = $(COP_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
 
 ASFLAGS += -march=rv32imx -mabi=ilp32 -fpic
 
