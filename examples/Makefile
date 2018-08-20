@@ -15,7 +15,7 @@ ${COP_WORK}/%.o : %.S
 	$(AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
 
 ${COP_WORK}/%.dis : $(COP_WORK)/%.o
-	$(OBJDUMP) -Dt $< > $@
+	$(OBJDUMP) -j.text -dt $< > $@
 
 .PHONY: clean
 clean:

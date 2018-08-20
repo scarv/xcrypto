@@ -16,3 +16,7 @@ examples:
 clean:
 	$(MAKE) -C $(COP_HOME)/docs     clean
 	$(MAKE) -C $(COP_HOME)/examples clean
+
+binutils-gen: $(COP_WORK)/binutils-gen.h
+$(COP_WORK)/binutils-gen.h: ./bin/ise-parse-opcodes.py ./docs/ise-opcodes.txt
+	cat ./docs/ise-opcodes.txt | ./bin/ise-parse-opcodes.py -c > $@
