@@ -97,9 +97,11 @@ TBD
 \subsection{CPU/COP Interface}
 
 The CPU/COP interface is the channel through which the CPU can send
-instructions to the COP and recieve results. The three signals
-{\tt cpu\_insn\_req, cop\_insn\_ack} and {\tt cop\_insn\_rsp} control the
-rate of information flow between the CPU and the COP.
+instructions to the COP and recieve results.
+The four signals
+{\tt cpu\_insn\_req, cop\_insn\_ack, cpu\_insn\_ack} and
+{\tt cop\_insn\_rsp}
+control the rate of information flow between the CPU and the COP.
 
 \subsubsection{Signal List}
 
@@ -129,7 +131,7 @@ rate of information flow between the CPU and the COP.
     The value of $\GPR$ source 1 ({\tt rs1}), which is used as the source
     register for some ISE instructions. The CPU only needs to provide this
     for a very small subset of the ISE instructions: \ASM{SB.cr, SH.cr,
-        SW.cr} and \ASM{MV2CPR}.
+        SW.cr, SCATTER.x, GATHER.x} and \ASM{MV2CPR}.
 }
 \SIGNALO{1}{cop\_wen}{
     Co-processor write enable, indicates to the CPU that a value needs to
