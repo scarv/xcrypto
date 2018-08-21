@@ -13,7 +13,7 @@
 
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 
-\newcommand{\SIGNALS}[1]{
+\newcommand{\SIGNALS}[3]{
 \begin{table}[H]
 \begin{tabularx}{\textwidth}{@{} c c l Y @{}}
 \toprule
@@ -22,6 +22,8 @@
 #1
 \bottomrule
 \end{tabularx}
+\caption{#2}
+\label{#3}
 \end{table}
 }
 \newcommand{\SIGREF}[1]{{\tt #1}}
@@ -88,7 +90,7 @@ clock signal, and clears it when it does not. Used to indicate the COP
 is idle.
 }
 \SIGNALI{1}{g\_resetn}{Synchronous, active low reset signal.}
-}
+}{}{tab:sigs-clk-reset}
 
 \subsection{Status Interface}
 
@@ -164,7 +166,7 @@ control the rate of information flow between the CPU and the COP.
     Allows the CPU to signal to the co-processor it has recieved all
     information from the execution of an instruction.
 }
-}
+}{}{tab:sigs-cpu-cop}
 
 
 \begin{table}[h!]
@@ -268,7 +270,7 @@ section \ref{sec:if-clk-reset}.
     chip enable is high in the previous cycle. The chip enable must be
     cleared when the error signal is asserted.
 }
-}
+}{}{tab:sigs-mem}
 
 \subsubsection{Example Transactions}
 
@@ -296,14 +298,110 @@ where the bus is idle.}
 \section{COP Internal Micro-architecture}
 \label{sec:cop-microarch}
 
+This section describes the main internal blocks and interfaces of the COP.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{diagrams/cop-block-diagram.png}
+\caption{A block diagram of the main components and data paths of
+the COP.}
+\label{fig:cop-block-diageam}
+\end{figure}
+
 \subsection{COP Register File}
 
-\subsection{Packed Arithmetic Unit}
+We use a four port register file.
+Three ports are 32-bit dedicated read-ports {\tt a,b} and {\tt c}.
+One port is a 32-bit dedicated write port {\tt c}.
+The register file has extra signals which allow individual bytes and
+halfwords of each register word to be written in isolation.
 
-\subsection{Multi-precision Arithmetic Unit}
+\SIGNALS{
+\SIGNALI{ 1}{creg\_[a|b|c]\_ren  }{Register read port enable}
+\SIGNALI{ 4}{creg\_[a|b|c]\_addr }{Register read port address}
+\SIGNALO{32}{creg\_[a|b|c]\_rdata}{Register read data}
+}{
+Interface signals for the register file read ports.
+All signals are synchronous to \SIGREF{g\_clk}.
+}{tab:sigs-regfile-read}
 
-\subsection{Memory Unit}
+\SIGNALS{
+\SIGNALI{ 4}{creg\_d\_wen  }{Register byte write port enable}
+\SIGNALI{ 4}{creg\_d\_addr }{Register write port address}
+\SIGNALO{32}{creg\_d\_wdata}{Register write data}
+}{
+Interface signals for the register file write port.
+All signals are synchronous to \SIGREF{g\_clk}.
+The 4-bit \SIGREF{creg\_d\_wen} signal is a per-byte lane write enable
+signal. Byte $i$ of \SIGREF{creg\_d\_wdata} is only written back if
+bit $i$ of the write enable signal is set.
+}{tab:sigs-regfile-write}
 
+Though many of the COP instructions are implemented using micro-code
+they can still be issued to the COP back to back.
+This means the implementation must still handle {\em RAW} hazards
+with forwarding logic, or stall for a cycle to allow all writebacks
+to occur.
+
+\subsection{Packed Arithmetic Block}
+
+This block is responsible for implementing all of the packed arithmetic,
+twiddle, conditional move and bitwise instructions.
+
+It takes upto three 32-bit input words from the register file, and the sign
+extended immediate (if any) from the instruction decode block.
+It produces a single 32-bit result corresponding to the operation it
+performed.
+
+\SIGNALS{
+\SIGNALI{32}{palu\_rs1}{Register operand 1}
+\SIGNALI{32}{palu\_rs2}{Register operand 2}
+\SIGNALI{32}{palu\_rs3}{Register operand 3}
+\SIGNALI{32}{palu\_imm}{
+    Decoded instruction immediate. Includes the 16-bit operands for
+    {\tt LLI/LUI}, shift distances and the 4-bit LUT for {\tt BOP}.
+}
+\SIGNALI{ 3}{palu\_pw}{
+    The pack width of the operation to perform.
+    The encoding of this signal corresponds to the encoding of the pack
+    widths in the ISE specification document.
+}
+\SIGNALI{ 4}{palu\_op}{
+    The operation that the ALU should perform.
+}
+\SIGNALO{32}{palu\_out}{The 32-bit output result.}
+}{Interface signals for the packed arithmetic block. All signals are
+synchronous to \SIGREF{g\_clk}.}
+{tab:sigs-pack-arith-block}
+
+The operation performed is specified by the control FSM.
+This includes the pack width being operated on, and the LUT used for bitwise
+operations.
+
+\subsection{Multi-precision Arithmetic Block}
+
+This block is responsible for implementing all of the multi-precision
+arithmetic and comparison instructions.
+
+The block can source upto two registers at a time.
+It can write a single 32-bit value at a time.
+This puts a lower bound on the latency of most multi-precision instructions.
+The latency is acceptable in an area-optimised implementation and still
+makes the block more performant than the equivalent RISC-V instruction
+sequence.
+
+The block contains a single 64-bit scratch / accumulator register.
+This is used to store intermediate results during computation.
+
+The operation performed is specified by the control FSM.
+
+\subsection{Memory Block}
+
+The memory block is responsible for all instruction which access main
+memory.
+
+It contains it's own FSM for controlling the memory interface
+and particularly the {\tt SCATTER.x} and {\tt GATHER.x} instructions.
 
 \section{Integration Guide}
 \label{sec:integration}
