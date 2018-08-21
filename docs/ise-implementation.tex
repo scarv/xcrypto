@@ -390,8 +390,105 @@ The latency is acceptable in an area-optimised implementation and still
 makes the block more performant than the equivalent RISC-V instruction
 sequence.
 
-The block contains a single 64-bit scratch / accumulator register.
+\SIGNALS{
+\SIGNALI{32}{malu\_rs1}{Register operand 1}
+\SIGNALI{32}{malu\_rs2}{Register operand 2}
+\SIGNALI{32}{malu\_rs3}{Register operand 3}
+\SIGNALI{ 4}{malu\_op}{
+    The operation that the ALU should perform.
+}
+\SIGNALO{64}{malu\_out}{
+    The 64-bit result.
+    Results from the MP ALU are written back over two cycles.
+    This is controlled by the FSM block, which selects either the high
+    or low word to write back. It is possible to overlap writing back of
+    the low word with computing the high word value in some cases.
+}
+}{Interface signals for the multi-precision arithmetic block. All signals are
+synchronous to \SIGREF{g\_clk}.}
+{tab:sigs-multi-arith-block}
+
+The block contains a single 64-bit {\tt scratch} register.
 This is used to store intermediate results during computation.
+
+The table below shows roughly what the ALU does in each cycle during
+instruction execution.
+
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{l Y Y Y }
+\toprule
+\textbf{Instruction}& \textbf{Cycle 0}& \textbf{Cycle 1}& \textbf{Cycle 2} \\
+\midrule
+ADD2.mp&
+    $scratch \ASN rs1+rs2;$\newline 
+    $rdm0\ASN scratch[31:0]$ 
+ &  $rdm1\ASN scratch[32]$ 
+ & \\
+ADD3.mp&
+   $scratch \ASN rs1 + rs2$
+ & $scratch \ASN scratch + rs3;$\newline
+   $rdm0\ASN scratch[31:0]$ 
+ & $rdm1\ASN scratch[63:32]$ 
+\\
+SUB2.mp&
+ &
+ &
+\\
+SUB3.mp&
+ &
+ &
+\\
+ACC1.mp&
+ &
+ &
+\\
+ACC2.mp&
+ &
+ &
+\\
+MAC.mp &
+ &
+ &
+\\
+MAA.mp &
+ &
+ &
+\\
+SLLI.mp&
+ &
+ &
+\\
+SLLR.mp&
+ &
+ &
+\\
+SRLI.mp&
+ &
+ &
+\\
+SRLR.mp&
+ &
+ &
+\\
+EQU.mp &
+ &
+ &
+\\
+LTU.mp &
+ &
+ &
+\\
+GTU.mp &
+ &
+ &
+\\
+\bottomrule
+\end{tabularx}
+\caption{Table showing what the multi-precision ALU does in each cycle
+per instruction execution. Here, $rdm0$ refers to the low word of the
+destination register pair, and $rdm1$ to the high word.}
+\label{tab:mp-alu-exec}
+\end{table}
 
 The operation performed is specified by the control FSM.
 
@@ -402,6 +499,14 @@ memory.
 
 It contains it's own FSM for controlling the memory interface
 and particularly the {\tt SCATTER.x} and {\tt GATHER.x} instructions.
+
+\subsection{RNG Block}
+
+The RNG block acts as a random number source. It interacts with only the
+{\tt RSAMP.cr} and {\tt RSEED.cr} instructions.
+
+{\bf TBD:} {\em Decide what sort of random number source we will use in
+the implementation.}
 
 \section{Integration Guide}
 \label{sec:integration}
