@@ -11,8 +11,26 @@
 
 %% Custom Commands %%
 
-\newcommand{\SIGNALI}[3]{\paragraph{\bf Input :} {\tt #2} ($#1$) - {#3}}
-\newcommand{\SIGNALO}[3]{\paragraph{\bf Output:} {\tt #2} ($#1$) - {#3}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+\newcommand{\SIGNALS}[1]{
+\begin{table}[H]
+\begin{tabularx}{\textwidth}{@{} c c l Y @{}}
+\toprule
+\textbf{I/O} & \textbf{Size} & \textbf{Name} & \textbf{Description} \\
+\midrule
+#1
+\bottomrule
+\end{tabularx}
+\end{table}
+}
+\newcommand{\SIGREF}[1]{{\tt #1}}
+\newcommand{\SIGNALI}[3]{
+    {\bf I} & $#1$ &{\tt #2}& #3 \\ \addlinespace
+}
+\newcommand{\SIGNALO}[3]{
+    {\bf O} & $#1$ &{\tt #2}& #3 \\ \addlinespace
+}
 
 %% End Custom Commands %%
 
@@ -59,16 +77,18 @@ Here, we detail the interfaces to the COP. By defining this interface, we
 hope that others can modify the internals of the COP to suite their own
 design constraints, and still have a drop-in compatible design.
 
-\subsection{Clock \& Reset Interface}
+\subsection{Clock and Reset Interface}
 \label{sec:if-clk-reset}
 
+\SIGNALS{
 \SIGNALI{1}{g\_clk}{The global input clock signal.}
-
-\SIGNALO{1}{g\_clk\_req}{COP clock request signal. The COP sets this signal
-high when it needs a clock signal, and clears it when it does not. Used to
-indicate the COP is idle.}
-
+\SIGNALO{1}{g\_clk\_req}{
+COP clock request signal. The COP sets this signal high when it needs a
+clock signal, and clears it when it does not. Used to indicate the COP
+is idle.
+}
 \SIGNALI{1}{g\_resetn}{Synchronous, active low reset signal.}
+}
 
 \subsection{Status Interface}
 
@@ -83,9 +103,10 @@ rate of information flow between the CPU and the COP.
 
 \subsubsection{Signal List}
 
+\SIGNALS{
 \SIGNALI{1}{cpu\_insn\_req}{
     Set by the CPU to indicate a new instruction needs to be executed.
-    There must be no combinatorial path from {\tt cpu\_insn\_req} to
+    There must be no combinatorial path from {\tt cpu\_insn\_req} to  
     {\tt cop\_insn\_ack}.
 }
 \SIGNALO{1}{cop\_insn\_ack}{
@@ -128,24 +149,7 @@ rate of information flow between the CPU and the COP.
 \SIGNALO{3}{cop\_result}{
     This signal encodes the result of the executed instruction: whether
     it succeeded or, if it raised an exception, what kind. The encodings
-    are as follows:
-
-\begin{table}[h!]
-\begin{center}
-\begin{tabular}{ll}
-{\bf Result Code} & {\bf Meaning} \\
- {\tt 000}  & Success \\
- {\tt 001}  & Aborted \\
- {\tt 010}  & Instruction decode exception \\
- {\tt 100}  & Load address misaligned exception  \\
- {\tt 101}  & Store address misaligned exception \\
- {\tt 110}  & Load access fault                  \\
- {\tt 111}  & Store access fault                 \\
-\end{tabular}
-\end{center}
-\end{table}
-
-Other encodings are reserved and never appear.
+    are described in table \ref{tab:cop-result-encodings}.
 }
 \SIGNALO{1}{cop\_insn\_rsp}{
     Co-processor response. Used to indicate processing of the current
@@ -158,13 +162,35 @@ Other encodings are reserved and never appear.
     Allows the CPU to signal to the co-processor it has recieved all
     information from the execution of an instruction.
 }
+}
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+\toprule
+{\bf Result Code} & {\bf Meaning} \\
+\midrule
+ {\tt 0b000}  & Success \\
+ {\tt 0b001}  & Aborted \\
+ {\tt 0b010}  & Instruction decode exception \\
+ {\tt 0b100}  & Load address misaligned exception  \\
+ {\tt 0b101}  & Store address misaligned exception \\
+ {\tt 0b110}  & Load access fault                  \\
+ {\tt 0b111}  & Store access fault                 \\
+ \bottomrule
+\end{tabular}
+\caption{Encodings for the \SIGREF{cop\_result} signal. All other encoding
+values are reserved and should not be used.}
+\label{tab:cop-result-encodings}
+\end{table}
 
 \subsubsection{Example Transactions}
 
 This section gives a non-exhaustive list of timing diagrams for example
 transactions over the CPU/COP interface.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-1.png}
 \caption{Simple instruction request, acknowledge, result with delays.
@@ -177,7 +203,7 @@ stalls.}
 \label{fig:cpu-cop-if-waves-1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-2.png}
 \caption{This figure shows the same three transactions as in figure
@@ -206,6 +232,7 @@ a {\em misaligned load/store exception} via the CPU/COP interface.
 These signals are synchronous with the {\tt g\_clk} signal described in
 section \ref{sec:if-clk-reset}.
 
+\SIGNALS{
 \SIGNALO{1}{cop\_mem\_cen}{
     Memory chip enable, signaling an active transaction. When asserted this
     signal must stay set until the following cycle, where it can be cleared
@@ -239,10 +266,11 @@ section \ref{sec:if-clk-reset}.
     chip enable is high in the previous cycle. The chip enable must be
     cleared when the error signal is asserted.
 }
+}
 
 \subsubsection{Example Transactions}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{./diagrams/cop-mem-if-1.png}
 \caption{This timing diagram shows a read, followed by a stalled read,
