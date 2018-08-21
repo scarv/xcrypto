@@ -499,6 +499,15 @@ memory.
 
 It contains it's own FSM for controlling the memory interface
 and particularly the {\tt SCATTER.x} and {\tt GATHER.x} instructions.
+The states and transitions for the FSM are shown in figure 
+\ref{fig:mem-block-fsm}
+
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth]{diagrams/fsm-load-store.eps}
+\caption{State transition diagram for the memory interface block.}
+\label{fig:mem-block-fsm}
+\end{figure}
 
 \subsection{RNG Block}
 
