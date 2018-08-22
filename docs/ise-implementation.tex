@@ -351,6 +351,9 @@ decoded output fields will be valid for every instruction.
     Identifies the individual instruction within a particular class (as
     described by \SIGREF{id\_class}) so it can be executed.
 }
+\SIGNALO{ 3}{id\_pw}{
+    Decoded pack width for packed arithmetic instructions.
+}
 \SIGNALO{ 4}{id\_crs1}{Decoded crypto ISE source register 1.}
 \SIGNALO{ 4}{id\_crs2}{Decoded crypto ISE source register 2.}
 \SIGNALO{ 4}{id\_crs3}{Decoded crypto ISE source register 3.}
@@ -415,28 +418,28 @@ large impact on power expended decoding sequences of instructions.
 \subsection{COP Register File}
 
 We use a four port register file.
-Three ports are 32-bit dedicated read-ports {\tt a,b} and {\tt c}.
-One port is a 32-bit dedicated write port {\tt c}.
+Three ports are 32-bit dedicated read-ports.
+One port is a 32-bit dedicated write port.
 The register file has extra signals which allow individual bytes and
 halfwords of each register word to be written in isolation.
 
 \SIGNALS{
-\SIGNALI{ 1}{creg\_[a|b|c]\_ren  }{Register read port enable}
-\SIGNALI{ 4}{creg\_[a|b|c]\_addr }{Register read port address}
-\SIGNALO{32}{creg\_[a|b|c]\_rdata}{Register read data}
+\SIGNALI{ 1}{crs\_[1|2|3]\_ren  }{Register read port enable}
+\SIGNALI{ 4}{crs\_[1|2|3]\_addr }{Register read port address}
+\SIGNALO{32}{crs\_[1|2|3]\_rdata}{Register read data}
 }{
 Interface signals for the register file read ports.
 All signals are synchronous to \SIGREF{g\_clk}.
 }{tab:sigs-regfile-read}
 
 \SIGNALS{
-\SIGNALI{ 4}{creg\_d\_wen  }{Register byte write port enable}
-\SIGNALI{ 4}{creg\_d\_addr }{Register write port address}
-\SIGNALO{32}{creg\_d\_wdata}{Register write data}
+\SIGNALI{ 4}{crd\_wen  }{Register byte write port enable}
+\SIGNALI{ 4}{crd\_addr }{Register write port address}
+\SIGNALO{32}{crd\_wdata}{Register write data}
 }{
 Interface signals for the register file write port.
 All signals are synchronous to \SIGREF{g\_clk}.
-The 4-bit \SIGREF{creg\_d\_wen} signal is a per-byte lane write enable
+The 4-bit \SIGREF{crd\_wen} signal is a per-byte lane write enable
 signal. Byte $i$ of \SIGREF{creg\_d\_wdata} is only written back if
 bit $i$ of the write enable signal is set.
 }{tab:sigs-regfile-write}
@@ -458,22 +461,36 @@ It produces a single 32-bit result corresponding to the operation it
 performed.
 
 \SIGNALS{
+\SIGNALI{1}{palu\_ivalid}{
+    Indicates that the input instruction data is valid and that the 
+    block should execute the specified instruction.
+}
+\SIGNALO{1}{palu\_idone}{
+    Indicates that the block has finished executing an instruction
+    and is ready for another on the next cycle.
+}
 \SIGNALI{32}{palu\_rs1}{Register operand 1}
 \SIGNALI{32}{palu\_rs2}{Register operand 2}
 \SIGNALI{32}{palu\_rs3}{Register operand 3}
-\SIGNALI{32}{palu\_imm}{
+\SIGNALI{32}{id\_imm}{
     Decoded instruction immediate. Includes the 16-bit operands for
     {\tt LLI/LUI}, shift distances and the 4-bit LUT for {\tt BOP}.
 }
-\SIGNALI{ 3}{palu\_pw}{
-    The pack width of the operation to perform.
-    The encoding of this signal corresponds to the encoding of the pack
-    widths in the ISE specification document.
+\SIGNALI{4}{id\_class}{
+    Identifies which class of instruction the COP is executing.
 }
-\SIGNALI{ 4}{palu\_op}{
-    The operation that the ALU should perform.
+\SIGNALI{3}{id\_subclass}{
+    Identifies which instruction is being executed by the packed ALU block.
 }
-\SIGNALO{32}{palu\_out}{The 32-bit output result.}
+\SIGNALO{4}{palu\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for writeback data.
+}
+\SIGNALO{32}{palu\_cpr\_wdata}{
+    Data to be written to the $\CPR$ register file
+}
+\SIGNALO{32}{palu\_cpr\_wen}{
+    Packed ALU $\CPR$ write enable.
+}
 }{Interface signals for the packed arithmetic block. All signals are
 synchronous to \SIGREF{g\_clk}.}
 {tab:sigs-pack-arith-block}
@@ -495,18 +512,44 @@ makes the block more performant than the equivalent RISC-V instruction
 sequence.
 
 \SIGNALS{
-\SIGNALI{32}{malu\_rs1}{Register operand 1}
-\SIGNALI{32}{malu\_rs2}{Register operand 2}
-\SIGNALI{32}{malu\_rs3}{Register operand 3}
-\SIGNALI{ 4}{malu\_op}{
-    The operation that the ALU should perform.
+\SIGNALI{1}{malu\_ivalid}{
+    Indicates that the input instruction data is valid and that the MP ALU 
+    block should execute the specified instruction.
 }
-\SIGNALO{64}{malu\_out}{
-    The 64-bit result.
+\SIGNALO{1}{malu\_idone}{
+    Indicates that the MP ALU has finished executing an instruction
+    and is ready for another on the next cycle.
+}
+\SIGNALI{32}{cpr\_rs1}{Register operand 1}
+\SIGNALI{32}{cpr\_rs2}{Register operand 2}
+\SIGNALI{32}{cpr\_rs3}{Register operand 3}
+\SIGNALI{4}{id\_class}{
+    Identifies which class of instruction the COP is executing.
+    The MP ALU block only looks for the Multi-precision
+    class as per table \ref{tab:id-class-encodings}.
+    All others are ignored.
+}
+\SIGNALI{3}{id\_subclass}{
+    Identifies which instruction is being executed by the memory block.
+}
+\SIGNALI{32}{id\_imm}{
+    Decoded instruction immediates. Used by the MP ALU block for immediate
+    shift amounts.
+}
+\SIGNALO{4}{malu\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for writeback data.
+}
+\SIGNALO{32}{malu\_cpr\_wdata}{
+    Data to be written to the $\CPR$ register file
     Results from the MP ALU are written back over two cycles.
-    This is controlled by the FSM block, which selects either the high
-    or low word to write back. It is possible to overlap writing back of
-    the low word with computing the high word value in some cases.
+    The low-word of a result is always written back first.
+    The destination register is controlled by the FSM block.
+    It is possible to overlap writing back of the low word with computing
+    the high word value in some cases.
+}
+\SIGNALO{32}{malu\_cpr\_wen}{
+    MP ALU block $\CPR$ write enable. There may be multiple writes to
+    the $\CPR$ register file per instruction.
 }
 }{Interface signals for the multi-precision arithmetic block. All signals are
 synchronous to \SIGREF{g\_clk}.}
@@ -593,8 +636,6 @@ per instruction execution. Here, $rdm0$ refers to the low word of the
 destination register pair, and $rdm1$ to the high word.}
 \label{tab:mp-alu-exec}
 \end{table}
-
-The operation performed is specified by the control FSM.
 
 \subsection{Memory Block}
 
