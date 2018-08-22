@@ -749,6 +749,37 @@ listed in table \ref{tab:sigs-mem-block}.
 The RNG block acts as a random number source. It interacts with only the
 {\tt RSAMP.cr} and {\tt RSEED.cr} instructions.
 
+\SIGNALS{
+\SIGNALI{1}{rng\_ivalid}{
+    Indicates that the input instruction data is valid and that the 
+    block should execute the specified instruction.
+}
+\SIGNALO{1}{rng\_idone}{
+    Indicates that the block has finished executing an instruction
+    and is ready for another on the next cycle.
+}
+\SIGNALI{32}{rng\_rs1}{Register operand 1}
+\SIGNALO{ 3}{id\_class}{
+    Indicates which class the decoded instruction belongs too. This is used
+    to very quickly indicate which functional unit will be needed to execute
+    the instruction. Encodings for this signal are found in table
+    \ref{tab:id-class-encodings}.
+}
+\SIGNALO{ 4}{id\_subclass}{
+    Identifies the individual instruction within a particular class (as
+    described by \SIGREF{id\_class}) so it can be executed.
+}
+\SIGNALO{4}{rng\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for writeback data.
+}
+\SIGNALO{32}{rng\_cpr\_wdata}{
+    Data to be written to the $\CPR$ register file
+}
+\SIGNALO{32}{rng\_cpr\_wen}{
+    RNG $\CPR$ write enable.
+}
+}{Interface to the RNG block}{tab:sigs-rng-block}
+
 {\bf TBD:} {\em Decide what sort of random number source we will use in
 the implementation.}
 
