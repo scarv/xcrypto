@@ -34,6 +34,43 @@ The formal flow will use Yosys as a model checker to ensure that for any
 sequence of inputs, the outputs of the implementation and the GRM will remain
 the same.
 
+The following is a non-exhaustive list of checks which the formal flow
+will include.
+
+\subsubsection{CPU/COP Interface}
+
+\begin{itemize}
+\item Valid transitions for instruction request / acknowledge signals.
+\item Data signals stable during instruction request stall.
+\item Valid transitions for instruction response  / acknowledge signals.
+\item Data signals stable during instruction response stall.
+\item Response signal values match between model and DUT. Specificaly:
+    write address, write data, COP result.
+\item No exception response if instruction does not cause exception.
+\item Only get an exception response iff exception occured.
+\item No responses without corresponding request.
+\end{itemize}
+
+\subsubsection{COP Memory Interface}
+
+\begin{itemize}
+\item Correct number of memory transactions per instruction.
+\item Correct address per transaction.
+\item Correct write data per transaction.
+\item Write Data/Address/Byte enable lines all stable during a stall.
+\item Byte enable valid values / never all zeros during transaction.
+\item Memory error / stall never asserted when chip enable is low.
+\end{itemize}
+
+\subsubsection{CPR Register Writes}
+
+\begin{itemize}
+\item Only expected registers are written too.
+\item Only expected registers are read from.
+\item Correct values are written.
+\item Correct values are read.
+\end{itemize}
+
 \subsection{Constrained Random Flow}
 
 The CRT flow will re-use much of the same environment of the formal flow,

@@ -174,7 +174,7 @@ control the rate of information flow between the CPU and the COP.
     There must be no combinatorial path from {\tt cpu\_insn\_rsp} to
     {\tt cpu\_insn\_ack}.
 }
-\SIGNALO{1}{cpu\_insn\_ack}{
+\SIGNALI{1}{cpu\_insn\_ack}{
     Allows the CPU to signal to the co-processor it has recieved all
     information from the execution of an instruction.
 }
@@ -280,8 +280,7 @@ section \ref{sec:if-clk-reset}.
 \SIGNALI{1}{cop\_mem\_error}{
     Memory error. Indicates the COP has tried to access unmapped or otherwise
     invalid memory space. The error signal can only be asserted when the
-    chip enable is high in the previous cycle. The chip enable must be
-    cleared when the error signal is asserted.
+    chip enable is high in the previous cycle.
 }
 }{}{tab:sigs-mem}
 
