@@ -233,6 +233,7 @@ results always accepted in the next cycle.}
 
 
 \subsection{Memory Interface}
+\label{sec:mem-if}
 
 The COP uses a single extra memory interface in order to implement the
 load/store instructions. It is a simple SRAM-style interface which can be
@@ -392,13 +393,13 @@ decoded output fields will be valid for every instruction.
 \toprule
 {\bf \SIGREF{id\_class} code} & {\bf Instruction Class} \\
 \midrule
- {\tt 0b???}  & Packed Arithmetic   \\
- {\tt 0b???}  & Twiddle             \\
- {\tt 0b???}  & Load / Store        \\
- {\tt 0b???}  & Scatter / Gather    \\
- {\tt 0b???}  & Move                \\
- {\tt 0b???}  & Multi-precision     \\
- {\tt 0b???}  & Bitwise             \\
+ {\tt 0b???}  & Packed Arithmetic \\
+ {\tt 0b???}  & Twiddle           \\
+ {\tt 0b???}  & Load / Store      \\
+ {\tt 0b???}  & Random            \\
+ {\tt 0b???}  & Move              \\
+ {\tt 0b???}  & Multi-precision   \\
+ {\tt 0b???}  & Bitwise           \\
  \bottomrule
 \end{tabular}
 \caption{Encodings for the \SIGREF{id\_class} signal. All other encoding
@@ -603,14 +604,86 @@ memory.
 It contains it's own FSM for controlling the memory interface
 and particularly the {\tt SCATTER.x} and {\tt GATHER.x} instructions.
 The states and transitions for the FSM are shown in figure 
-\ref{fig:mem-block-fsm}
+\ref{fig:mem-block-fsm}. 
+In the figure, edges labled {\em launch} are
+where memory transactions are started.
+{\em Stall} edges are used to
+account for cycles where the memory interface does not respond immediately.
+{\em Finish} edges are when we assert that an instruction has finished
+execution.
+
+In order to launch a new transaction, both the \SIGREF{cop\_mem\_stall}
+and \SIGREF{cop\_mem\_error} signals must be clear on the
+\nameref{sec:mem-if}.
 
 \begin{figure}
 \centering
 \includegraphics[width=1.0\textwidth]{diagrams/fsm-load-store.eps}
-\caption{State transition diagram for the memory interface block.}
+\caption{State transition diagram for the memory interface block.
+Note that memory transactions will always be launched when exiting the
+{\tt IDLE} state. There is also an implicit edge from every state to
+{\tt IDLE} indicating an error and subsequent transaction abort.}
 \label{fig:mem-block-fsm}
 \end{figure}
+
+The memory block is responsible for driving the \nameref{sec:mem-if}.
+In addition to those siganls, the block also has the following signals
+listed in table \ref{tab:sigs-mem-block}.
+
+\SIGNALS{
+\SIGNALI{1}{mem\_ivalid}{
+    Indicates that the input instruction data is valid and that the memory
+    block should execute the specified instruction.
+}
+\SIGNALO{1}{mem\_idone}{
+    Indicates that the Memory Block has finished executing an instruction
+    and is ready for another on the next cycle.
+}
+\SIGNALO{1}{mem\_addr\_error}{
+    When set, indicates an address misalignment error on the bus.
+    Valid only when \SIGREF{mem\_idone} is set.
+}
+\SIGNALO{1}{mem\_bus\_error}{
+    When set, indicates a bus error / memory fault exception.
+    Valid only when \SIGREF{mem\_idone} is set.
+}
+\SIGNALI{4}{id\_class}{
+    Identifies which class of instruction the COP is executing.
+    The Memory block only looks for the Load/Store and Scatter/Gather
+    classes as per table \ref{tab:id-class-encodings}.
+    All others are ignored.
+}
+\SIGNALI{3}{id\_subclass}{
+    Identifies which instruction is being executed by the memory block.
+}
+\SIGNALI{32}{id\_imm}{
+    The decoded offset immediate. Used for load/store offsets.
+}
+\SIGNALI{32}{gpr\_rs1}{
+    Source register 1 from the RISC-V GPR file. Used as the base address
+    for all memory accesses.
+}
+\SIGNALI{32}{cpr\_rs1}{
+    Crypto source register 1.
+}
+\SIGNALI{32}{cpr\_rs2}{
+    Crypto source register 2.
+}
+\SIGNALO{4}{mem\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for writeback data.
+}
+\SIGNALO{32}{mem\_cpr\_wdata}{
+    Data to be written to the $\CPR$ register file
+}
+\SIGNALO{32}{mem\_cpr\_wen}{
+    Memory block $\CPR$ write enable. There may be multiple writes to
+    the $\CPR$ register file per instruction.
+}
+}{
+    IO signals for the Memory Block, excluding those from the 
+    \nameref{sec:mem-if}. All signals are synchronous to {\tt g\_clk}.
+}
+{tab:sigs-mem-block}
 
 \subsection{RNG Block}
 
