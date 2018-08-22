@@ -318,8 +318,26 @@ This section describes the main internal blocks and interfaces of the COP.
 \includegraphics[width=0.7\textwidth]{diagrams/cop-block-diagram.png}
 \caption{A block diagram of the main components and data paths of
 the COP.}
-\label{fig:cop-block-diageam}
+\label{fig:cop-block-diagram}
 \end{figure}
+
+Figure \ref{fig:cop-block-diagram} shows a block diagram of the COP,
+and how the main blocks connect.
+
+All of the main blocks use a set of common signals to communicate their
+input and output data, as well as control signals defining which operation
+to perform.
+
+Rules for signal naming are as follows:
+\begin{itemize}
+\item All signals are prefixed with a short mnemonic referring to the
+    block they are associated with.
+\item Input signal prefixes may refer not to the block they belong, but
+    to the block from which the input is sourced.
+\item Output signals always begin with the source block prefix.
+\item All signals are written in {\em lower case}, with underscores ({\tt \_})
+    to separate words.
+\end{itemize}
 
 \subsection{Instruction Decode Block}
 
