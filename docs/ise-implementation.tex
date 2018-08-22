@@ -11,8 +11,10 @@
 
 %% Custom Commands %%
 
+% For multi-line autoflowed table cells
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 
+% Table of interface signals.
 \newcommand{\SIGNALS}[3]{
 \begin{table}[H]
 \begin{tabularx}{\textwidth}{@{} c c l Y @{}}
@@ -26,13 +28,22 @@
 \label{#3}
 \end{table}
 }
+
+% Reference to a signal name
 \newcommand{\SIGREF}[1]{{\tt #1}}
+
+% Input interface signal
 \newcommand{\SIGNALI}[3]{
     {\bf I} & $#1$ &{\tt #2}& #3 \\ \addlinespace
 }
+
+% Output interface signal
 \newcommand{\SIGNALO}[3]{
     {\bf O} & $#1$ &{\tt #2}& #3 \\ \addlinespace
 }
+
+% Common section / name references
+\newcommand{\cpucopif}{\nameref{sec:cpu-cop-if} }
 
 %% End Custom Commands %%
 
@@ -97,6 +108,7 @@ is idle.
 TBD
 
 \subsection{CPU/COP Interface}
+\label{sec:cpu-cop-if}
 
 The CPU/COP interface is the channel through which the CPU can send
 instructions to the COP and recieve results.
@@ -307,6 +319,97 @@ This section describes the main internal blocks and interfaces of the COP.
 the COP.}
 \label{fig:cop-block-diageam}
 \end{figure}
+
+\subsection{Instruction Decode Block}
+
+This block is responsible for taking the 32-bit encoded instructions from
+the \cpucopif and extracting the relevent fields for each instruction. This
+will be a highly re-usable block.
+
+This block will be completely combinatorial. It will be up to the wider
+environment to register it's inputs and outputs as needed. Not all of the
+decoded output fields will be valid for every instruction.
+
+\SIGNALS{
+\SIGNALI{32}{id\_encoded}{
+    The encoded 32-bit instruction word. This signal should be kept as stable
+    as possible, as any toggling will affect a large amount of down-stream
+    logic.
+}
+\SIGNALO{ 1}{id\_exception}{
+    This signal is asserted iff the presented \SIGREF{id\_encoded} signal
+    does not represent a valid ISE instruction.
+}
+\SIGNALO{ 3}{id\_class}{
+    Indicates which class the decoded instruction belongs too. This is used
+    to very quickly indicate which functional unit will be needed to execute
+    the instruction. Encodings for this signal are found in table
+    \ref{tab:id-class-encodings}.
+}
+\SIGNALO{ 4}{id\_subclass}{
+    Identifies the individual instruction within a particular class (as
+    described by \SIGREF{id\_class}) so it can be executed.
+}
+\SIGNALO{ 4}{id\_crs1}{Decoded crypto ISE source register 1.}
+\SIGNALO{ 4}{id\_crs2}{Decoded crypto ISE source register 2.}
+\SIGNALO{ 4}{id\_crs3}{Decoded crypto ISE source register 3.}
+\SIGNALO{ 4}{id\_crd1}{Decoded crypto ISE desgination register 1.}
+\SIGNALO{ 4}{id\_crd2}{
+    Decoded crypto ISE desgination register 2. Only used by the
+    multi-precision instructions.
+}
+\SIGNALO{ 5}{id\_rd}{
+    Destination register for instructions which write to the RISC-V
+    GPRs.
+}
+\SIGNALO{ 5}{id\_rs1}{
+    Source register for instructions which source from the RISC-V
+    GPRs.
+}
+\SIGNALO{32}{id\_imm}{
+    The decoded immediate value for the instruction. This value encodes
+    all the kinds of immediate which are packed into the encoded instruction.
+    \begin{itemize}
+    \item Load/Store Offsets.
+    \item Shift amounts for packed and multi-precision instructions.
+    \item LUT values for {\tt BOP.cr}
+    \item Positions and sizes for bitfield instructions {\tt INS.cr}
+          and {\tt EXT.cr}.
+    \item {\tt LLI.cr} and {\tt LUI.cr} Immediates.
+    \item Twiddle positions.
+    \end{itemize}
+
+    For load and store offsets, the encoded immediates are also
+    sign-extended.
+}
+}{
+    Input and output signals to the crypto ISE instruction decode block.
+}{tab:sigs-decode-block}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+\toprule
+{\bf \SIGREF{id\_class} code} & {\bf Instruction Class} \\
+\midrule
+ {\tt 0b???}  & Packed Arithmetic   \\
+ {\tt 0b???}  & Twiddle             \\
+ {\tt 0b???}  & Load / Store        \\
+ {\tt 0b???}  & Scatter / Gather    \\
+ {\tt 0b???}  & Move                \\
+ {\tt 0b???}  & Multi-precision     \\
+ {\tt 0b???}  & Bitwise             \\
+ \bottomrule
+\end{tabular}
+\caption{Encodings for the \SIGREF{id\_class} signal. All other encoding
+values are reserved and should not be used.}
+\label{tab:id-class-encodings}
+\end{table}
+
+There is considerable scope in this block for optimisation in terms of
+energy efficiency. Gating the input wires to different parts of the decode
+tree and output signals depending on the decoded instruction will have a
+large impact on power expended decoding sequences of instructions.
 
 \subsection{COP Register File}
 
