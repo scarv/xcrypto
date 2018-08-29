@@ -11,41 +11,43 @@ These instructions are used to either move words between the RISC-V $\GPR$s
 and the ISE $\CPR$s, or to conditionally move words within the $\CPR$
 register file.
 
-\instdesc{MV2GPR}
-
-\ienc{\iencmvtwogpr}
-
-Move a $\CPR$ register to a $\GPR$ register.
-
+\instdescx{MV2GPR}
+{\iencmvtwogpr}
+{
+    Move a $\CPR$ register to a $\GPR$ register.
+}
+{
 \begin{itemize}
 \item \INST{MV2GPR rd, crs1}{
     $\GPR[*][\OPER{rd}] \ASN \CPR[*][\OPER{crs1}]$
 }
 \end{itemize}
+}{
+    }
 
-
-\instdesc{MV2COP}
-\ienc{\iencmvtwocop}
-
+\instdescx{MV2COP}
+{\iencmvtwocop}
+{
 The complement of \ASM{MV2GPR}.
 Move a $\GPR$ register to a $\CPR$ register.
-
+}{
 \begin{itemize}
 \item \INST{MV2COP crd, rs1}{
     $\CPR[*][\OPER{crd}] \ASN \GPR[*][\OPER{rs1}]$
 }
 \end{itemize}
+}{
+}
 
-\instdesc{CMOV.cr, CMOVN.cr}
-
-\ienc{\ienccmovcr\ienccmovncr}
-
+\instdescx{CMOV.cr, CMOVN.cr}
+{\ienccmovcr\ienccmovncr}
+{
 These instructions implement conditional moves, and are used to implement
 constant-time instruction sequences.
 If the value in the $\CPR$ register addressed by {\tt rs2} is
 zero / non-zero, then the value in register {\tt rs1} is moved
 into register {\tt rd}.
-
+}{
 \begin{itemize}
 \item \INST{CMOV.cr crd, crs1, crs2}{
     \If{$ \CPR[*][crs2] == 0$ }{
@@ -58,6 +60,9 @@ into register {\tt rd}.
     }
 }
 \end{itemize}
+}{
+}
+
 
 % ------------------------------------------------------------------------
 \subsection{Randomness}
@@ -77,28 +82,31 @@ but require that the algorithm used is cryptographically appropriate.
     secure.
 }
 
-\instdesc{RSEED.cr}
-\ienc{\iencrseedcr}
-
+\instdescx{RSEED.cr}
+{\iencrseedcr}
+{
 \ASM{RSEED.cr} writes a 32-bit register value into the RNG, which should
 then act as a seed value.
-
+}{
 \begin{itemize}
 \item \INST{RSEED.cr crs1}{
     $RNG \ASN \CPR[*][crs1]$
 }
 \end{itemize}
+}{}
 
-\instdesc{RSAMP.cr}
-\ienc{\iencrsampcr}
-
+\instdescx{RSAMP.cr}
+{\iencrsampcr}
+{
 \ASM{RSAMP.cr} reads a random 32-bit value from the RNG into a register.
-
+}{
 \begin{itemize}
 \item \INST{RSAMP.cr crd}{
     $\CPR[*][crd] \ASN RNG$
 }
 \end{itemize}
+}{}
+
 
 % ------------------------------------------------------------------------
 \subsection{Packed Arithmetic}
@@ -156,54 +164,60 @@ When coding these instructions as assembly mnemonics, the {\tt x} in the
 instruction names below should be replaced with the pack width. Hence
 for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
 
-\instdesc{ADD.px}
-\ienc{\iencaddpx}
-
+\instdescx{ADD.px}
+{\iencaddpx}
+{
 The instruction \ASM{ADD.px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned packed fields, and adds corresponding fields
 together ignoring any carry bits.
 
 No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
-
+}{
 \begin{itemize}
 \item \INST{ADD.px pw, crd, crs1, crs2}{
     $PackedArith(crs1,crs2,crd,pw, +)$
 }
 \end{itemize}
+}{}
 
-\instdesc{SUB.px}
-\ienc{\iencsubpx}
 
+\instdescx{SUB.px}
+{\iencsubpx}
+{
 The instruction \ASM{SUB.px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
 from the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
-
+}{
 \begin{itemize}
 \item \INST{SUB.px pw, crd, crs1, crs2}{
     $PackedArith(crs1,crs2,crd,pw, -)$
 }
 \end{itemize}
+}{}
 
-\instdesc{MUL.px}
-\ienc{\iencmulpx}
 
+\instdescx{MUL.px}
+{\iencmulpx}
+{
 The instruction \ASM{MUL.px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
 by the corresponding {\tt rs1} fields.
 
 No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
-
+}{
 \begin{itemize}
 \item \INST{MUL.px pw, crd, crs1, crs2}{
     $PackedArith(crs1,crs2,crd,pw, *)$
 }
 \end{itemize}
+}{}
 
-\instdesc{SLL[I].px}
-\ienc{\iencsllpx\iencsllipx}
 
+\instdescx{SLL[I].px}
+{\iencsllpx\iencsllipx}
+{
 The instruction \ASM{SLL[I].px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
 left by the value in {\tt CSHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
@@ -212,7 +226,7 @@ left by the value in {\tt CSHAMT} (for \ASM{SLLI.px}) or {\tt rs2}
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SLL[I].px} instruction is
 {\em implementation dependent}.
-
+}{
 \begin{itemize}
 \item \INST{SLL.px pw, crd, crs1, crs2}{
     $PackedShift(crs1,\CPR[*][crs2],crd,pw, <<)$
@@ -221,10 +235,12 @@ packed field, then the result of the \ASM{SLL[I].px} instruction is
     $PackedShift(crs1,cshamt,crd,pw, <<)$
 }
 \end{itemize}
+}{}
 
-\instdesc{SRL[I].px}
-\ienc{\iencsrlpx\iencsrlipx}
 
+\instdescx{SRL[I].px}
+{\iencsrlpx\iencsrlipx}
+{
 The instruction \ASM{SRL[I].px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
 right by the value in {\tt CSHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
@@ -233,7 +249,7 @@ right by the value in {\tt CSHAMT} (for \ASM{SRLI.px}) or {\tt rs2}
 If the distance to shift by is greater than or equal to the size of each
 packed field, then the result of the \ASM{SRL[I].px} instruction is
 {\em implementation dependent}.
-
+}{
 \begin{itemize}
 \item \INST{SRL.px pw, crd, crs1, crs2}{
     $PackedShift(crs1,\CPR[*][crs2],crd,pw, >>)$
@@ -242,15 +258,17 @@ packed field, then the result of the \ASM{SRL[I].px} instruction is
     $PackedShift(crs1,cshamt,crd,pw, >>)$
 }
 \end{itemize}
+}{}
 
-\instdesc{ROT[I].px}
-\ienc{\iencrotpx\iencrotipx}
 
+\instdescx{ROT[I].px}
+{\iencrotpx\iencrotipx}
+{
 The instruction \ASM{ROT[I].px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
 left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 (for \ASM{ROT.px}).
-
+}{
 \begin{itemize}
 \item \INST{ROT.px pw, crd, crs1, crs2}{
     $PackedShift(crs1,\CPR[*][crs2],crd,pw, <<<)$
@@ -259,7 +277,7 @@ left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2}
     $PackedShift(crs1,cshamt,crd,pw, <<<)$
 }
 \end{itemize}
-
+}{}
 
 % ------------------------------------------------------------------------
 \subsection{Packed Field Permutation}
@@ -270,14 +288,14 @@ These instructions allow permutation of different packed field widths.
 Twiddle can be used to broadcast and re-order bit-pairs, nibbles, bytes
 and half-words within words.
 
-\instdesc{TWID.B}
-\ienc{\ienctwidb}
-
+\instdescx{TWID.B}
+{\ienctwidb}
+{
 The \ASM{TWID.B} instruction is used to twiddle {\em bytes within words.}
 It arbitrarily maps the bytes of a source word onto the bytes of a
 destination word.
 This instruction doubles as a halfword permutation instruction.
-
+}{
 \begin{itemize}
 \item \INST{TWID.B crd, crs1, b0, b1, b2, b3}{
     $bytes \ASN \LIST{\CPR[*][crs1][31:24],
@@ -290,15 +308,16 @@ This instruction doubles as a halfword permutation instruction.
                                bytes[\OPER{b0}] $ 
 }
 \end{itemize}
+}{}
 
-\instdesc{TWID.Nx}
-\ienc{\ienctwidnzero\ienctwidnone}
-
+\instdescx{TWID.Nx}
+{\ienctwidnzero\ienctwidnone}
+{
 The \ASM{TWID.Nx} instruction is used to twiddle {\em nibbles within 
 half-words}.
 It works on the {\tt x}'th halfword of a register word where
 $x\in{0,1}.$.
-
+}{
 \begin{itemize}
 \item \INST{TWID.N0 crd, crs1, b0, b1, b2, b3}{
 $ \CPR[*][\OPER{crd}][15: 0] \ASN nibbles[\OPER{b3}] \CONS
@@ -315,16 +334,18 @@ $ \CPR[*][\OPER{crd}][31:16] \ASN nibbles[\OPER{b3}] \CONS
                                nibbles[\OPER{b0}] $ \\
 }
 \end{itemize}
+}{}
 
-\instdesc{TWID.Cx}
-\ienc{\ienctwidczero\ienctwidcone\ienctwidctwo\ienctwidcthree}
 
+\instdescx{TWID.Cx}
+{\ienctwidczero\ienctwidcone\ienctwidctwo\ienctwidcthree}
+{
 The \ASM{TWID.[Cx]} instruction is used to twiddle {\em pairs of bits
 \footnote{A {\em crumb}, if you will.}
 within bytes}.
 It works on the {\tt x}'th byte of a register word where
 $x\in{0,1,2,3}.$.
-
+}{
 \begin{itemize}
 \item \INST{TWID.C0 crd, crs1, b0, b1, b2, b3}{
 $ \CPR[*][\OPER{crd}][ 7: 0] \ASN crumbs[\OPER{b3}] \CONS
@@ -357,7 +378,7 @@ $ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
                                   crumbs[\OPER{b0}] $ \\
 }
 \end{itemize}
-
+}{}
 
 % ------------------------------------------------------------------------
 \subsection{Bitwise Instructions}
@@ -366,9 +387,9 @@ $ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
 These instructions are designed to operate on bits within words, or
 create masks which make operating on bits within words easy.
 
-\instdesc{LUI.cr}
-\ienc{\iencluicr}
-
+\instdescx{LUI.cr}
+{\iencluicr}
+{
 The \ASM{LUI.cr} instruction loads a 16 bit immediate into the
 upper half of a $\CPR$ register.
 \designnote{The RISC-V version of \ASM{LUI} is both for constant creation
@@ -383,44 +404,38 @@ into only a single halfword.}
 The high 11 bits of the 16-bit immediate are stored in the {\tt imm11}
 field of the instruction encoding. The remaining 5 bits are stored
 in the {\tt imm5} field.
-
+}{
 \begin{itemize}
 \item \INST{LUI.cr crd, imm16 }{
     $\CPR[*][\OPER{crd}][31:16] \ASN imm16$ \\
     $\CPR[*][\OPER{crd}][15: 0] \ASN \CPR[*][\OPER{crd}][15: 0]$ \\
 }
 \end{itemize}
+}{}
 
-\instdesc{LLI.cr}
-\ienc{\iencllicr}
 
+\instdescx{LLI.cr}
+{\iencllicr}
+{
 The \ASM{LLI.cr} instruction bitwise loads a 16 bit immediate into the
 lower half of a $\CPR$ register. 
 The high 11 bits of the 16-bit immediate are stored in the {\tt imm11}
 field of the instruction encoding. The remaining 5 bits are stored
 in the {\tt imm5} field.
-
+}{
 \begin{itemize}
 \item \INST{LLI.cr crd, imm16 }{
     $\CPR[*][\OPER{crd}][31:16] \ASN \CPR[*][\OPER{crd}][31:16]$ \\
     $\CPR[*][\OPER{crd}][15: 0] \ASN imm16$ \\
 }
 \end{itemize}
+}{}
 
-
-\instdesc{BOP.cr}
-\ienc{\iencbopcr}
-
+\instdescx{BOP.cr}
+{\iencbopcr}
+{
 The \instref{BOP.cr} instruction is designed to express all bitwise logic functions, and be
 amenable to bit-sliced implementations of cryptographic functions.
-
-\begin{itemize}
-\item \INST{BOP.cr crd, crs1, crs2, lut4}{
-    $\forall i \in \{0..31\}$
-    $ \CPR[*][\OPER{crd}][i] \ASN $
-    $ \OPER{lut4}[\CPR[*][crs1][i] \CONS \CPR[*][crs2][i]] $ \\
-}
-\end{itemize}
 
 \instref{BOP.cr} takes a 4-bit immediate {\tt lut4}, and uses the concatenated
 $i$'th bits of register inputs $\CPR[*][crs1]$ and  $\CPR[*][crs2]$
@@ -432,25 +447,34 @@ destination register.
     poor timing performance.
 }
 
-The following examples of \instref{BOP.cr} show how to encode the existing
+}{
+\begin{itemize}
+\item \INST{BOP.cr crd, crs1, crs2, lut4}{
+    $\forall i \in \{0..31\}$
+    $ \CPR[*][\OPER{crd}][i] \ASN $
+    $ \OPER{lut4}[\CPR[*][crs1][i] \CONS \CPR[*][crs2][i]] $ \\
+}
+\end{itemize}
+}{
+\paragraph{Examples:}
+\begin{itemize}
+\item {\tt bop.cr  c1, c2, c3, 0001    // AND}
+\item {\tt bop.cr  c1, c2, c3, 0111    // OR }
+\item {\tt bop.cr  c1, c2, c3, 0110    // XOR}
+\end{itemize}
+These examples of \instref{BOP.cr} show how to encode the existing
 bitwise operation instructions found in the base RISC-V architecture.
+}
 
-\begin{lstlisting}[style=float]
-bop.cr  c1, c2, c3, 0001    // AND
-bop.cr  c1, c2, c3, 0111    // OR 
-bop.cr  c1, c2, c3, 0110    // XOR
-\end{lstlisting}
-
-
-\instdesc{EXT.cr}
-\ienc{\iencextcr}
-
+\instdescx{EXT.cr}
+{\iencextcr}
+{
 This instruction allows for extraction of contiguous sequences of two-bit
 pairs from words.
 It takes a two bit aligned start index {\tt s}, and a length
 {\tt l}, and extracts bits from $2*s$ to $(2*s)+(2*l)$, depositing them in
 the destination register.
-
+}{
 \begin{itemize}
 \item \INST{EXT.cr rd, rs, s, l}{
     $b \ASN 2*s$\\
@@ -458,15 +482,17 @@ the destination register.
     $\CPR[*][rd][e:0] \ASN \CPR[*][rs][e:b]$
 }
 \end{itemize}
+}{}
 
-\instdesc{INS.cr}
-\ienc{\iencinscr}
 
+\instdescx{INS.cr}
+{\iencinscr}
+{
 This instruction allows for insertion of a contiguous sequences of two-bit
 pairs into words.
 It takes the low $2*l$ bits of $\CPR[*][rs]$ and inserts them
 into $\CPR[*][rd]$, starting at bit position $2*s$.
-
+}{
 \begin{itemize}
 \item \INST{INS.cr rd, rs, s, l}{
     $b \ASN 2*s$\\
@@ -474,10 +500,11 @@ into $\CPR[*][rd]$, starting at bit position $2*s$.
     $\CPR[*][rd][e:b] \ASN \CPR[*][rs][e:0]$
 }
 \end{itemize}
+}{}
 
-\instdesc{MIX.cr}
-\ienc{\ienclmixcr\ienchmixcr}
-
+\instdescx{MIX.cr}
+{\ienclmixcr\ienchmixcr}
+{
 The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
 register values, using a mask stored in a third register.
 It first rotates  the source register value in {\tt rs1} by the amount in
@@ -490,7 +517,7 @@ while \ASM{HMIX.cr} will rotate to the right by $16..31$.
 easier to manage. Rather than adding another 5-bit immediate field, it was
 more efficient to re-use the 4-bit lut field of the \instref{BOP.cr}
 instruction.}
-
+}{
 \begin{itemize}
 \item \INST{LMIX.cr rd, rs1, rs2,shamt}{
     $t_0 \ASN \CPR[*][rs1] \RRT shamt $\\
@@ -503,18 +530,19 @@ instruction.}
     $    \CPR[*][rd][i] \ASN \CPR[*][rs2][i] ? t_0[i] : \CPR[*][rd][i]$
 }
 \end{itemize}
-
+}{
+\paragraph{Examples:}
 \ASM{MIX.cr} allows us to create any mix of bits from two registers
 using a single 3-instruction sequence:
 
-\begin{lstlisting}[style=float]
-LUI.cr   c0, 0xF0F0     // Load a mask into c0 which will select
-LLI.cr   c0, 0xF0F0     // alternate nibbles from each register
-LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.
-LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.
-LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
-\end{lstlisting}
-
+\begin{itemize}
+\item{\tt LUI.cr   c0, 0xF0F0     // Load a mask into c0 which will select}
+\item{\tt LLI.cr   c0, 0xF0F0     // alternate nibbles from each register}
+\item{\tt LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.}
+\item{\tt LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.}
+\item{\tt LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.}
+\end{itemize}
+}
 
 % ------------------------------------------------------------------------
 \subsection{Multi-precision Arithmetic}
@@ -576,9 +604,10 @@ Encoding & crd2 & crd1 \\ \hline
 \label{tab:rdm-encodings}
 \end{table}
 
-\instdesc{ADD2.mp}
-\ienc{\iencaddtwomp}
-
+\instdescx{ADD2.mp}
+{\iencaddtwomp}
+{
+}{
 \begin{itemize}
 \item \INST{ADD2.mp (crd2, crd1), crs1, crs2          }{
 $t \ASN ( \CPR[*][crs1] + \CPR[*][crs2] ) $\\
@@ -586,10 +615,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{ADD3.mp}
-\ienc{\iencaddthreemp}
 
+\instdescx{ADD3.mp}
+{\iencaddthreemp}
+{
+}{
 \begin{itemize}
 \item \INST{ADD3.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN ( \CPR[*][crs1] + \CPR[*][crs2] ) + \CPR[*][crs3] $\\
@@ -597,10 +629,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{SUB2.mp}
-\ienc{\iencsubtwomp}
 
+\instdescx{SUB2.mp}
+{\iencsubtwomp}
+{
+}{
 \begin{itemize}
 \item \INST{SUB2.mp (crd2, crd1), crs1, crs2          }{
 $t \ASN ( \CPR[*][crs1] - \CPR[*][crs2] ) $\\
@@ -608,11 +643,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
 
-\instdesc{SUB3.mp}
-\ienc{\iencsubthreemp}
-
+\instdescx{SUB3.mp}
+{\iencsubthreemp}
+{
+}{
 \begin{itemize}
 \item \INST{SUB3.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN ( \CPR[*][crs1] - \CPR[*][crs2] ) - \CPR[*][crs3] $\\
@@ -620,10 +657,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{ACC1.mp}
-\ienc{\iencacconemp}
 
+\instdescx{ACC1.mp}
+{\iencacconemp}
+{
+}{
 \begin{itemize}
 \item \INST{ACC1.mp (crd2, crd1), crs1}{
 $t \ASN ( \CPR[*][crd2] \CONS \CPR[*][crd1] ) + \CPR[*][crs1] $\\
@@ -631,10 +671,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{ACC2.mp}
-\ienc{\iencacctwomp}
 
+\instdescx{ACC2.mp}
+{\iencacctwomp}
+{
+}{
 \begin{itemize}
 \item \INST{ACC2.mp (crd2, crd1), crs1, crs2}{
 $t \ASN ( \CPR[*][crd2] \CONS \CPR[*][crd1] ) + \CPR[*][crs1] + \CPR[*][crs2] $\\
@@ -642,10 +685,13 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{MAC.mp}
-\ienc{\iencmacmp}
 
+\instdescx{MAC.mp}
+{\iencmacmp}
+{
+}{
 \begin{itemize}
 \item \INST{MAC.mp (crd2, crd1), crs1, crs2, crs3}{
 $t \ASN ( \CPR[*][crs1] \SOP{\cdot}{u} \CPR[*][crs2] ) + \CPR[*][crs3] $\\
@@ -653,10 +699,12 @@ $\CPR[*][crd1] \ASN t[31: 0]$\\
 $\CPR[*][crd2] \ASN t[64:32]$\\
 }
 \end{itemize}
+}{}
 
-\instdesc{SLL.mp}
-\ienc{\iencsllmp}
-
+\instdescx{SLL.mp}
+{\iencsllmp}
+{
+}{
 \begin{itemize}
 \item \INST{SLL.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \LSH \CPR[*][crs3][5:0]$\\
@@ -664,10 +712,13 @@ $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
+}{}
 
-\instdesc{SLLI.mp}
-\ienc{\iencsllimp}
 
+\instdescx{SLLI.mp}
+{\iencsllimp}
+{
+}{
 \begin{itemize}
 \item \INST{SLLI.mp (crd2, rd1), crs1, crs2, shamt   }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \LSH shamt$\\
@@ -675,10 +726,13 @@ $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
+}{}
 
-\instdesc{SRL.mp}
-\ienc{\iencsrlmp}
 
+\instdescx{SRL.mp}
+{\iencsrlmp}
+{
+}{
 \begin{itemize}
 \item \INST{SRL.mp (crd2, crd1), crs1, crs2, crs3     }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \RSH \CPR[*][crs3][5:0]$\\
@@ -686,10 +740,13 @@ $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
+}{}
 
-\instdesc{SRLI.mp}
-\ienc{\iencsrlimp}
 
+\instdescx{SRLI.mp}
+{\iencsrlimp}
+{
+}{
 \begin{itemize}
 \item \INST{SRLI.mp (crd2, crd1), crs1, crs2, shamt   }{
 $t \ASN (\CPR[*][crs1] \CONS \CPR[*][crs2]) \RSH shamt$\\
@@ -697,34 +754,42 @@ $\CPR[*][crd2] \ASN t[63:32]$ \\
 $\CPR[*][crd1] \ASN t[31:0]$
 }
 \end{itemize}
+}{}
 
-\instdesc{EQU.mp}
-\ienc{\ienceqump}
 
+\instdescx{EQU.mp}
+{\ienceqump}
+{
+}{
 \begin{itemize}
 \item \INST{EQU.mp rd,      crs1, crs2, crs3     }{
 $\GPR[*][rd] \ASN ( \CPR[*][crs1] = \CPR[*][crs2]) \AND \CPR[*][crs3]  $\\
 }
 \end{itemize}
+}{}
 
-\instdesc{LTU.mp}
-\ienc{\iencltump}
 
+\instdescx{LTU.mp}
+{\iencltump}
+{
+}{
 \begin{itemize}
 \item \INST{LTU.mp rd,      crs1, crs2, crs3     }{
 $\GPR[*][rd] \ASN ( \CPR[*][crs1] < \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CPR[*][crs2] ) \AND \CPR[*][crs3] )$
 }
 \end{itemize}
+}{}
 
-\instdesc{GTU.mp}
-\ienc{\iencgtump}
-
+\instdescx{GTU.mp}
+{\iencgtump}
+{
+}{
 \begin{itemize}
 \item \INST{GTU.mp rd,      crs1, crs2, crs3     }{
 $\GPR[*][rd] \ASN ( \CPR[*][crs1] > \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CPR[*][crs2] ) \AND \CPR[*][crs3] )$
 }
 \end{itemize}
-
+}{}
 
 % ------------------------------------------------------------------------
 \subsection{Memory Access}

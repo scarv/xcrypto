@@ -54,6 +54,18 @@
 \newcommandx{\instlab}[1]{\label{sec:#1}}
 \newcommandx{\instref}[1]{{\tt \nameref{sec:#1}}}
 \newcommandx{\instdesc}[1]{\subsubsection{#1}\label{sec:#1}}
+\newcommandx{\instdescx}[5]{
+
+\subsubsection{ #1 }
+
+{\ienc{ #2 }}
+
+{\paragraph{Description:} #3}
+
+{\paragraph{Function:} #4}
+
+{ #5 }
+}
 
 % Shorter bit box commands for encoding description
 \newcommandx{\BB}[2]{\bitbox{#1}{{\tt #2}}}
