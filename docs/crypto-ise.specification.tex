@@ -815,6 +815,10 @@ taken to avoid hazards between the different register sets, we
 believe this decision makes sense overall.
 }
 
+ISE load and store instructions must obey the all ordering rules and
+behaviour with regard to {\tt fence} instructions set out in the
+RISC-V user and privilidged manuals.
+
 There is no requirement for the ISE memory instructions to share the same
 address space as the standard ISA. One may wish to completely separate
 the physical memory used to store cryptographic secrets from the rest of
@@ -829,7 +833,7 @@ the standard RISC-V variants but with the following differences:
 \begin{itemize}
 \item The halfword and byte variants can specify which halfword or byte of
       the register they are reading or writing.
-\item There is no sign-extending equivalent of the \ASM{LH} and \ASM{LB}
+\item There is no sign-extending equivalent of the \ASM{LHU} and \ASM{LBU}
       instructions.
 \item The base address is taken from the normal RISC-V $\GPR$ set, while the
       target register is always in the $\CPR$ set.
@@ -843,9 +847,12 @@ the same way as their RISC-V cousins in terms of exception handling,
 interrupt behaviour and atomicity rules.
 
 
-\instdesc{LBU.cr}
-\ienc{\ienclbucr}
-
+\instdescx{LBU.cr}
+{\ienclbucr}
+{
+    Load an unsigned byte into a single byte of a $\CPR$, leaving other
+    bytes of the $\CPR$ un-modified.
+}{
 \begin{itemize}
 \item \INST{LBU.cr  crd, h, b, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -854,11 +861,14 @@ interrupt behaviour and atomicity rules.
     $\CPR[*][crd][hi:lo] \ASN \MEM[*][addr]$
 }
 \end{itemize}
+}{}
 
-
-\instdesc{LHU.cr}
-\ienc{\ienclhucr}
-
+\instdescx{LHU.cr}
+{\ienclhucr}
+{
+Load an unsigned halfword into a halfword of a $\CPR$, leaving the other
+halfword un-modified.
+}{
 \begin{itemize}
 \item \INST{LHU.cr  crd, h, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -867,11 +877,13 @@ interrupt behaviour and atomicity rules.
     $\CPR[*][crd][hi:lo] \ASN \MEM[*][addr + 1] \CONS \MEM[*][addr + 0]$ \\
 }
 \end{itemize}
+}{}
 
-
-\instdesc{LW.cr}
-\ienc{\ienclwcr}
-
+\instdescx{LW.cr}
+{\ienclwcr}
+{
+    Load a word from memory into a $\CPR$.
+}{
 \begin{itemize}
 \item \INST{LW.cr  crd, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -881,11 +893,13 @@ interrupt behaviour and atomicity rules.
                        \MEM[*][addr+0]$
 }
 \end{itemize}
+}{}
 
-
-\instdesc{SB.cr}
-\ienc{\iencsbcr}
-
+\instdescx{SB.cr}
+{\iencsbcr}
+{
+    Store a particular byte of a $\CPR$ into memory.
+}{
 \begin{itemize}
 \item \INST{SB.cr  rs2, h, b, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -894,10 +908,13 @@ interrupt behaviour and atomicity rules.
      $\MEM[*][addr] \ASN \CPR[*][rs2][hi:lo]$
 }
 \end{itemize}
+}{}
 
-\instdesc{SH.cr}
-\ienc{\iencshcr}
-
+\instdescx{SH.cr}
+{\iencshcr}
+{
+    Store a particular halfword of a $\CPR$ into memory.
+}{
 \begin{itemize}
 \item \INST{SH.cr  rs2, h, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -907,11 +924,14 @@ interrupt behaviour and atomicity rules.
     $\MEM[*][addr + 0] \ASN \CPR[*][rs2][hi:lo]$
 }
 \end{itemize}
-
-\instdesc{SW.cr}
-\ienc{\iencswcr}
+}{}
 
 
+\instdescx{SW.cr}
+{\iencswcr}
+{
+    Store a $\CPR$ into memory.
+}{
 \begin{itemize}
 \item \INST{SW.cr  rs2, imm(rs1)}{
     $addr \ASN  \GPR[*][rs1] + signextend(imm, 32)$ \\
@@ -921,10 +941,12 @@ interrupt behaviour and atomicity rules.
      \MEM[*][addr+0] \ASN \CPR[*][rd]$
 }
 \end{itemize}
+}{}
 
-\instdesc{SCATTER.[b,h], GATHER[.b,h]}
-\label{sec:scatter-gather}
 
+\instdescx{SCATTER.[b,h], GATHER[.b,h]}
+{\iencscatterb\iencscatterh\iencgatherb\iencgatherh}
+{\label{sec:scatter-gather}
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
 s-box lookup instructions. The {\tt .b} variants allow four separate lookups
 per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
@@ -949,57 +971,10 @@ Both instructions use the $\GPR$s to source their base address, while the
 offset indices into the LUT come from the $\CPR$ registers. This mirrors
 how the ISE load and store instructions compute their addresses.
 
-\bigskip
-
-\begin{minipage}{0.5\textwidth}
-\begin{itemize}
-\item \INST{GATHER.b rd, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
-    $\CPR[*][rd][0] \ASN \MEM[*][a_0]$ \\
-    $\CPR[*][rd][1] \ASN \MEM[*][a_1]$ \\
-    $\CPR[*][rd][2] \ASN \MEM[*][a_2]$ \\
-    $\CPR[*][rd][3] \ASN \MEM[*][a_3]$
-}
-\item \INST{GATHER.h rd, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
-    $\CPR[*][rd][15: 0] \ASN \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0]$ \\
-    $\CPR[*][rd][31:16] \ASN \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1]$
-}
-\end{itemize}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\begin{itemize}
-\item \INST{SCATTER.b rs, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
-    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
-    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
-    $ \MEM[*][a_0] \ASN \CPR[*][rs][0]$ \\
-    $ \MEM[*][a_1] \ASN \CPR[*][rs][1]$ \\
-    $ \MEM[*][a_2] \ASN \CPR[*][rs][2]$ \\
-    $ \MEM[*][a_3] \ASN \CPR[*][rs][3]$
-}
-\item \INST{SCATTER.h rs, base, offsets}{
-    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
-    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
-    $ \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0] \ASN \CPR[*][rs][15: 0]$ \\
-    $ \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1] \ASN \CPR[*][rs][31:16]$
-}
-\end{itemize}
-\end{minipage}
-
-\bigskip
-
-\note{
-    The scatter instruction requires three register file reads.
-    Because the reads are split across the $\GPR$ and $\CPR$ registers,
-    no {\em extra} ports are needed on the RISC-V register file beyond the
-    standard two-read-one-write set.
-}
+The scatter instruction requires three register file reads.
+Because the reads are split across the $\GPR$ and $\CPR$ registers,
+no {\em extra} ports are needed on the RISC-V register file beyond the
+standard two-read-one-write set.
 
 An implementation may perform the memory accesses in any order. The instructions
 will raise address misalignment exceptions in line with how misalignment is
@@ -1032,6 +1007,53 @@ instructions need to be fetched and travel through an execution pipeline in
 order to achieve the same goal. They are not designed to enhance performance
 (in terms of cycles to complete an operation), but this may be a side-effect
 of some implementations.
+}
+{.\\
+\begin{minipage}{0.5\textwidth}
+\medskip
+\begin{itemize}
+\item \INST{GATHER.b rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
+    $\CPR[*][rd][0] \ASN \MEM[*][a_0]$ \\
+    $\CPR[*][rd][1] \ASN \MEM[*][a_1]$ \\
+    $\CPR[*][rd][2] \ASN \MEM[*][a_2]$ \\
+    $\CPR[*][rd][3] \ASN \MEM[*][a_3]$
+}
+\item \INST{GATHER.h rd, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $\CPR[*][rd][15: 0] \ASN \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0]$ \\
+    $\CPR[*][rd][31:16] \ASN \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1]$
+}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\medskip
+\begin{itemize}
+\item \INST{SCATTER.b rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][ 7: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][15: 8]$ \\
+    $ a_2 \ASN \GPR[*][base] + \CPR[*][offsets][23:16]$ \\
+    $ a_3 \ASN \GPR[*][base] + \CPR[*][offsets][31:24]$ \\
+    $ \MEM[*][a_0] \ASN \CPR[*][rs][0]$ \\
+    $ \MEM[*][a_1] \ASN \CPR[*][rs][1]$ \\
+    $ \MEM[*][a_2] \ASN \CPR[*][rs][2]$ \\
+    $ \MEM[*][a_3] \ASN \CPR[*][rs][3]$
+}
+\item \INST{SCATTER.h rs, base, offsets}{
+    $ a_0 \ASN \GPR[*][base] + \CPR[*][offsets][15: 0]$ \\
+    $ a_1 \ASN \GPR[*][base] + \CPR[*][offsets][31:16]$ \\
+    $ \MEM[*][a_0 + 1] \CONS  \MEM[*][a_0] \ASN \CPR[*][rs][15: 0]$ \\
+    $ \MEM[*][a_1 + 1] \CONS  \MEM[*][a_1] \ASN \CPR[*][rs][31:16]$
+}
+\end{itemize}
+\end{minipage}
+}
+{}
+
 
 \newpage
 \section{Instruction Assembly Listings}
