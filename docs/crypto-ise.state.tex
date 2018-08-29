@@ -13,22 +13,22 @@ The register file addressing is shown in table \ref{tab:state-addr}.
 \begin{tabular}{|l|l l l l|}
 \hline
 \multicolumn{1}{|l|}{3:0} & \textbf{31:24} & \textbf{23:16} & \textbf{15:8} & \textbf{7:0} \\ \hline
-{\tt cpr0  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr1  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr2  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr3  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr4  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr5  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr6  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr7  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr8  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr9  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr10 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr11 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr12 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr13 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr14 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr15 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c0  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c1  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c2  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c3  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c4  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c5  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c6  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c7  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c8  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c9  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c10 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c11 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c12 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c13 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c14 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c15 } & 3 & 2 & 1 & 0      \\ \hline
 \end{tabular}
 \caption{This table shows the per-byte layout of the register file.
 Note that there is no {\em zero} register in the ISE.
@@ -78,4 +78,9 @@ and/or return values.
 All other $\CPR$ registers are considered temporaries.
 
 Any registers pushed to the stack should be written in ascending order.
+That is, as the stack grows downwards, $c1$ should be written (if needed)
+to the address following $c0$.
 
+The $\CPR$ registers which are written to the stack during function calls
+should be written {\em after} all of the $\GPR$ and floating-point registers
+(if the {\tt F} extension is implemented) have been written.
