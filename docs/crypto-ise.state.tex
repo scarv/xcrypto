@@ -1,4 +1,6 @@
 
+\subsection{ISE General Purpose Registers}
+
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE.
 It is to the crypto ISE what the floating-point register file is to the
@@ -64,6 +66,45 @@ normally have been needed for register addresses.
 This is the only extra architectural state required by the ISE.
 We followed the RISC-V principles of avoiding implicit or otherwise
 hidden state.
+
+\subsection{ISE Control \& Status Registers}
+
+The Crypto ISE adds two Control \& Status Registers (CSRs) to the
+standard set. They are used for feature identification and access
+control.
+
+\subsubsection{Crypto ISE Feature Register (CISEF)}
+
+The {\tt CISEF} register is a non-standard, read only, M-level CSR
+used to identify which parts of the ISE have been implemented.
+
+\begin{figure}[H]
+\centering
+\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\bitheader{0-31}               \\
+\BB{32}{Placeholder}            \\
+\end{bytefield}
+\captionsetup{singlelinecheck=off}
+\caption[x]{\centering Fields of the {\tt CISEF} CSR.}
+\label{fig:csr-cisef}
+\end{figure}
+
+\subsubsection{Crypto ISE Access Register (CISEA)}
+
+The {\tt CISEA} register is a non-standard, read/write, M-level CSR
+used to control which RISC-V privilege levels have access to the
+Crypto ISE state and functionality.
+
+\begin{figure}[H]
+\centering
+\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\bitheader{0-31}               \\
+\BB{32}{Placeholder}            \\
+\end{bytefield}
+\captionsetup{singlelinecheck=off}
+\caption[x]{\centering Fields of the {\tt CISEA} CSR.}
+\label{fig:csr-cisea}
+\end{figure}
 
 \subsection{ABI Standards}
 
