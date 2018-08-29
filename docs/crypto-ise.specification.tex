@@ -67,6 +67,14 @@ the \ASM{RSEED.cr} and \ASM{RSAMP.cr} instructions respectivley.
 
 We leave the exact random number generator function to the implementor,
 but require that the algorithm used is cryptographically appropriate.
+\designnote{
+    The randomness function was left implementaton specific in order to
+    cater for the wide range of implementations this ISE hopes to
+    enable. Different implementation platforms (FPGA/ASIC) and logic styles
+    have a bearing on which sorts of RNG or TRNG make sense to use.
+    It is still essential that the RNG function chosen is cryptographically
+    secure.
+}
 
 \instdesc{RSEED.cr}
 \ienc{\iencrseedcr}
