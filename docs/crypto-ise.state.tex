@@ -73,36 +73,71 @@ The Crypto ISE adds two Control \& Status Registers (CSRs) to the
 standard set. They are used for feature identification and access
 control.
 
-\subsubsection{Crypto ISE Feature Register (CISEF)}
+\subsubsection{Crypto ISE Feature Register (cisef)}
+\label{sec:csr-cisef}
 
-The {\tt CISEF} register is a non-standard, read only, M-level CSR
+The {\tt cisef} register is a non-standard, read only, M-level CSR
 used to identify which parts of the ISE have been implemented.
+
+For more information on the differences between feature sets, see
+section \ref{sec:feature-sets}.
 
 \begin{figure}[H]
 \centering
-\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
 \bitheader{0-31}               \\
-\BB{32}{Placeholder}            \\
+\BB{24}{WIRI}
+\BB{1}{ R}
+\BB{1}{MP}
+\BB{1}{SG}
+\BB{1}{p32}
+\BB{1}{p16}
+\BB{1}{ p8}
+\BB{1}{ p4}
+\BB{1}{ p2}
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
-\caption[x]{\centering Fields of the {\tt CISEF} CSR.}
+\caption[x]{\centering Fields of the {\tt cisef} CSR.}
 \label{fig:csr-cisef}
 \end{figure}
 
-\subsubsection{Crypto ISE Access Register (CISEA)}
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l}
+\toprule
+Field& Bits & Description \\\midrule
+WIRI & 31..8 &Writes ignored, reads ignored. \\
+R    & 7&Indicates if the Random Instructions interface is
+         implemented (set) or not (clear). \\
+MP   & 6&Indicates if the multi-precision arithmetic instructions
+         are implemented (set) or not (clear). \\
+SG   & 5&Indicates if the {\tt SCATTER} and {\tt GATHER} instructions
+         are implemented (set) or not (clear). \\
+p32  & 4&Indicates if pack-widths of 32 are supported (set) or not (clear).\\
+p16  & 3&Indicates if pack-widths of 16 are supported (set) or not (clear).\\
+p8   & 2&Indicates if pack-widths of  8 are supported (set) or not (clear).\\
+p4   & 1&Indicates if pack-widths of  4 are supported (set) or not (clear).\\
+p2   & 0&Indicates if pack-widths of  2 are supported (set) or not (clear).\\
+\bottomrule
+\end{tabular}
+\caption{{\tt cisef} register bit field descriptions.}
+\end{table}
 
-The {\tt CISEA} register is a non-standard, read/write, M-level CSR
+\subsubsection{Crypto ISE Access Register (cisea)}
+\label{sec:csr-cisea}
+
+The {\tt cisea} register is a non-standard, read/write, M-level CSR
 used to control which RISC-V privilege levels have access to the
 Crypto ISE state and functionality.
 
 \begin{figure}[H]
 \centering
-\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
 \bitheader{0-31}               \\
 \BB{32}{Placeholder}            \\
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
-\caption[x]{\centering Fields of the {\tt CISEA} CSR.}
+\caption[x]{\centering Fields of the {\tt cisea} CSR.}
 \label{fig:csr-cisea}
 \end{figure}
 

@@ -5,6 +5,7 @@ instruction.
 
 % ------------------------------------------------------------------------
 \subsection{Move Instructions}
+\label{sec:move-instructions}
 
 These instructions are used to either move words between the RISC-V $\GPR$s
 and the ISE $\CPR$s, or to conditionally move words within the $\CPR$
@@ -68,7 +69,7 @@ the \ASM{RSEED.cr} and \ASM{RSAMP.cr} instructions respectivley.
 We leave the exact random number generator function to the implementor,
 but require that the algorithm used is cryptographically appropriate.
 \designnote{
-    The randomness function was left implementaton specific in order to
+    The randomness function was left implementation specific in order to
     cater for the wide range of implementations this ISE hopes to
     enable. Different implementation platforms (FPGA/ASIC) and logic styles
     have a bearing on which sorts of RNG or TRNG make sense to use.
@@ -101,6 +102,7 @@ then act as a seed value.
 
 % ------------------------------------------------------------------------
 \subsection{Packed Arithmetic}
+\label{sec:packed-arithmetic-instructions}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
 packed operations on multiple independent values. They operate on words, and
@@ -261,6 +263,7 @@ left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2}
 
 % ------------------------------------------------------------------------
 \subsection{Packed Field Permutation}
+\label{sec:packed-field-instructions}
 
 These instructions allow permutation of different packed field widths.
 
@@ -358,6 +361,7 @@ $ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
 
 % ------------------------------------------------------------------------
 \subsection{Bitwise Instructions}
+\label{sec:bitwise-instructions}
 
 These instructions are designed to operate on bits within words, or
 create masks which make operating on bits within words easy.
@@ -476,7 +480,7 @@ into $\CPR[*][rd]$, starting at bit position $2*s$.
 
 The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
 register values, using a mask stored in a third register.
-It first rotates  the source register value in {\tt rs1} by the ammount in
+It first rotates  the source register value in {\tt rs1} by the amount in
 {\tt shamt}, and then mixes the rotated value and the source value according
 to the mask value in {\tt rs2}.
 
@@ -514,6 +518,7 @@ LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.
 
 % ------------------------------------------------------------------------
 \subsection{Multi-precision Arithmetic}
+\label{sec:multi-precision-instructions}
 
 Public key cryptography relies heavily on modular arithmetic over very
 large integers. The following instructions are designed to allow
@@ -723,6 +728,7 @@ $\GPR[*][rd] \ASN ( \CPR[*][crs1] > \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CP
 
 % ------------------------------------------------------------------------
 \subsection{Memory Access}
+\label{sec:memory-instructions}
 
 The ISE contains several instructions listed below which allow memory
 accesses to directly address the $\CPR$ register file. This means we do
@@ -852,6 +858,7 @@ interrupt behaviour and atomicity rules.
 \end{itemize}
 
 \instdesc{SCATTER.[b,h], GATHER[.b,h]}
+\label{sec:scatter-gather}
 
 The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
 s-box lookup instructions. The {\tt .b} variants allow four separate lookups
