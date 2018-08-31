@@ -405,7 +405,15 @@ def make_verilog_extra(match,mask):
         print("// Implementation function for the %s instruction." % instr)
         print("//")
         print("task %s;" % fname)
-        print("begin")
+        print("begin: t_model_%s"%instr.lower().replace(".","_"))
+        
+        regs_read = [a for a in arguments[instr] if a.startswith("crs")]
+        if(len(regs_read) > 0):
+            print("    reg  [31:0] %s;" % (", ".join(regs_read)))
+
+        for r in regs_read:
+            print("    model_do_read_cpr(dec_arg_%s, %s);" %(r,r))
+
         print("    $display(\"ISE> ERROR: Instruction %s not implemented\");"\
             %(instr))
         print("end endtask")

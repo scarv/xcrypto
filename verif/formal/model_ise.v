@@ -31,7 +31,14 @@ input  wire [31:0]      cop_rs1         , // RS1 source data
 
 //
 // Output modelling signals
-output reg  [ 2:0]      cop_result        // Instruction execution result
+output reg  [ 2:0]      cop_result      , // Instruction execution result
+
+output reg  [15:0]      cop_cprs_written, // CPR Registers read by instr
+output reg  [15:0]      cop_cprs_read   , // CPR Registers written by instr
+
+output reg              cop_rd_wen      , // GPR Write Enable
+output reg  [ 4:0]      cop_rd_addr     , // GPR Write Address
+output reg  [31:0]      cop_rd_data       // Data to write to GPR
 
 );
 
@@ -132,6 +139,24 @@ begin
 
 end endtask
 
+
+//
+// Resets all outputs of the model so they do not carry to the next
+// instruction and polute the results.
+task model_do_clear_outputs;
+begin
+    
+    cop_result       = 0;
+
+    cop_cprs_written = 0; // CPR Registers read by instr
+    cop_cprs_read    = 0; // CPR Registers written by instr
+    
+    cop_rd_wen       = 0; // GPR Write Enable
+    cop_rd_addr      = 0; // GPR Write Address
+    cop_rd_data      = 0; // Data to write to GPR
+
+end endtask
+
 //
 // Implements ISE functionality when we encounter an invalid opcode.
 task model_do_invalid_opcode;
@@ -141,6 +166,35 @@ begin
 
 end endtask 
 
+//
+// Write a CPR with a particular value.
+task model_do_write_cpr;
+    input  [ 3:0] cpr_addr;
+    input  [31:0] cpr_data;
+begin
+    model_cprs[cpr_addr] = cpr_data;
+    cop_cprs_written[cpr_addr] = 1'b1;
+end endtask
+
+//
+// Write a CPR with a particular value.
+task model_do_read_cpr;
+    input  [ 3:0] cpr_addr;
+    output [31:0] cpr_data;
+begin
+    cpr_data = model_cprs[cpr_addr];
+    cop_cprs_read[cpr_addr] = 1'b1;
+end endtask
+
+//
+// Decode a register address pair for a multi-precision instruction.
+task model_do_decode_rdm;
+    output [ 3:0]   rd2;
+    output [ 3:0]   rd1;
+begin
+    rd1 = {dec_arg_crdm,2'b00};
+    rd2 = {dec_arg_crdm,2'b01};
+end endtask
 
 // ------------------------------------------------------------------------
 
@@ -153,7 +207,9 @@ end endtask
 // Implementation function for the mv2gpr instruction.
 //
 task model_do_mv2gpr;
-begin
+begin: t_model_mv2gpr
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction mv2gpr not implemented");
 end endtask
 
@@ -162,7 +218,7 @@ end endtask
 // Implementation function for the mv2cop instruction.
 //
 task model_do_mv2cop;
-begin
+begin: t_model_mv2cop
     $display("ISE> ERROR: Instruction mv2cop not implemented");
 end endtask
 
@@ -171,7 +227,10 @@ end endtask
 // Implementation function for the add.px instruction.
 //
 task model_do_add_px;
-begin
+begin: t_model_add_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction add.px not implemented");
 end endtask
 
@@ -180,7 +239,10 @@ end endtask
 // Implementation function for the sub.px instruction.
 //
 task model_do_sub_px;
-begin
+begin: t_model_sub_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sub.px not implemented");
 end endtask
 
@@ -189,7 +251,10 @@ end endtask
 // Implementation function for the mul.px instruction.
 //
 task model_do_mul_px;
-begin
+begin: t_model_mul_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction mul.px not implemented");
 end endtask
 
@@ -198,7 +263,10 @@ end endtask
 // Implementation function for the sll.px instruction.
 //
 task model_do_sll_px;
-begin
+begin: t_model_sll_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sll.px not implemented");
 end endtask
 
@@ -207,7 +275,10 @@ end endtask
 // Implementation function for the srl.px instruction.
 //
 task model_do_srl_px;
-begin
+begin: t_model_srl_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction srl.px not implemented");
 end endtask
 
@@ -216,7 +287,10 @@ end endtask
 // Implementation function for the rot.px instruction.
 //
 task model_do_rot_px;
-begin
+begin: t_model_rot_px
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction rot.px not implemented");
 end endtask
 
@@ -225,7 +299,9 @@ end endtask
 // Implementation function for the slli.px instruction.
 //
 task model_do_slli_px;
-begin
+begin: t_model_slli_px
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction slli.px not implemented");
 end endtask
 
@@ -234,7 +310,9 @@ end endtask
 // Implementation function for the srli.px instruction.
 //
 task model_do_srli_px;
-begin
+begin: t_model_srli_px
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction srli.px not implemented");
 end endtask
 
@@ -243,7 +321,9 @@ end endtask
 // Implementation function for the roti.px instruction.
 //
 task model_do_roti_px;
-begin
+begin: t_model_roti_px
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction roti.px not implemented");
 end endtask
 
@@ -252,7 +332,9 @@ end endtask
 // Implementation function for the rseed.cr instruction.
 //
 task model_do_rseed_cr;
-begin
+begin: t_model_rseed_cr
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction rseed.cr not implemented");
 end endtask
 
@@ -261,7 +343,7 @@ end endtask
 // Implementation function for the rsamp.cr instruction.
 //
 task model_do_rsamp_cr;
-begin
+begin: t_model_rsamp_cr
     $display("ISE> ERROR: Instruction rsamp.cr not implemented");
 end endtask
 
@@ -270,7 +352,10 @@ end endtask
 // Implementation function for the cmov.cr instruction.
 //
 task model_do_cmov_cr;
-begin
+begin: t_model_cmov_cr
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction cmov.cr not implemented");
 end endtask
 
@@ -279,7 +364,10 @@ end endtask
 // Implementation function for the cmovn.cr instruction.
 //
 task model_do_cmovn_cr;
-begin
+begin: t_model_cmovn_cr
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction cmovn.cr not implemented");
 end endtask
 
@@ -288,7 +376,9 @@ end endtask
 // Implementation function for the scatter.b instruction.
 //
 task model_do_scatter_b;
-begin
+begin: t_model_scatter_b
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction scatter.b not implemented");
 end endtask
 
@@ -297,7 +387,9 @@ end endtask
 // Implementation function for the gather.b instruction.
 //
 task model_do_gather_b;
-begin
+begin: t_model_gather_b
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction gather.b not implemented");
 end endtask
 
@@ -306,7 +398,9 @@ end endtask
 // Implementation function for the scatter.h instruction.
 //
 task model_do_scatter_h;
-begin
+begin: t_model_scatter_h
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction scatter.h not implemented");
 end endtask
 
@@ -315,7 +409,9 @@ end endtask
 // Implementation function for the gather.h instruction.
 //
 task model_do_gather_h;
-begin
+begin: t_model_gather_h
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction gather.h not implemented");
 end endtask
 
@@ -324,7 +420,10 @@ end endtask
 // Implementation function for the lmix.cr instruction.
 //
 task model_do_lmix_cr;
-begin
+begin: t_model_lmix_cr
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction lmix.cr not implemented");
 end endtask
 
@@ -333,7 +432,10 @@ end endtask
 // Implementation function for the hmix.cr instruction.
 //
 task model_do_hmix_cr;
-begin
+begin: t_model_hmix_cr
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction hmix.cr not implemented");
 end endtask
 
@@ -342,7 +444,10 @@ end endtask
 // Implementation function for the bop.cr instruction.
 //
 task model_do_bop_cr;
-begin
+begin: t_model_bop_cr
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction bop.cr not implemented");
 end endtask
 
@@ -351,7 +456,11 @@ end endtask
 // Implementation function for the equ.mp instruction.
 //
 task model_do_equ_mp;
-begin
+begin: t_model_equ_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction equ.mp not implemented");
 end endtask
 
@@ -360,7 +469,11 @@ end endtask
 // Implementation function for the ltu.mp instruction.
 //
 task model_do_ltu_mp;
-begin
+begin: t_model_ltu_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction ltu.mp not implemented");
 end endtask
 
@@ -369,7 +482,11 @@ end endtask
 // Implementation function for the gtu.mp instruction.
 //
 task model_do_gtu_mp;
-begin
+begin: t_model_gtu_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction gtu.mp not implemented");
 end endtask
 
@@ -378,7 +495,11 @@ end endtask
 // Implementation function for the add3.mp instruction.
 //
 task model_do_add3_mp;
-begin
+begin: t_model_add3_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction add3.mp not implemented");
 end endtask
 
@@ -387,7 +508,10 @@ end endtask
 // Implementation function for the add2.mp instruction.
 //
 task model_do_add2_mp;
-begin
+begin: t_model_add2_mp
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction add2.mp not implemented");
 end endtask
 
@@ -396,7 +520,11 @@ end endtask
 // Implementation function for the sub3.mp instruction.
 //
 task model_do_sub3_mp;
-begin
+begin: t_model_sub3_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction sub3.mp not implemented");
 end endtask
 
@@ -405,7 +533,10 @@ end endtask
 // Implementation function for the sub2.mp instruction.
 //
 task model_do_sub2_mp;
-begin
+begin: t_model_sub2_mp
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sub2.mp not implemented");
 end endtask
 
@@ -414,7 +545,10 @@ end endtask
 // Implementation function for the slli.mp instruction.
 //
 task model_do_slli_mp;
-begin
+begin: t_model_slli_mp
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction slli.mp not implemented");
 end endtask
 
@@ -423,7 +557,11 @@ end endtask
 // Implementation function for the sll.mp instruction.
 //
 task model_do_sll_mp;
-begin
+begin: t_model_sll_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction sll.mp not implemented");
 end endtask
 
@@ -432,7 +570,10 @@ end endtask
 // Implementation function for the srli.mp instruction.
 //
 task model_do_srli_mp;
-begin
+begin: t_model_srli_mp
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction srli.mp not implemented");
 end endtask
 
@@ -441,7 +582,11 @@ end endtask
 // Implementation function for the srl.mp instruction.
 //
 task model_do_srl_mp;
-begin
+begin: t_model_srl_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction srl.mp not implemented");
 end endtask
 
@@ -450,7 +595,10 @@ end endtask
 // Implementation function for the acc2.mp instruction.
 //
 task model_do_acc2_mp;
-begin
+begin: t_model_acc2_mp
+    reg  [31:0] crs1, crs2;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction acc2.mp not implemented");
 end endtask
 
@@ -459,7 +607,9 @@ end endtask
 // Implementation function for the acc1.mp instruction.
 //
 task model_do_acc1_mp;
-begin
+begin: t_model_acc1_mp
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction acc1.mp not implemented");
 end endtask
 
@@ -468,7 +618,11 @@ end endtask
 // Implementation function for the mac.mp instruction.
 //
 task model_do_mac_mp;
-begin
+begin: t_model_mac_mp
+    reg  [31:0] crs1, crs2, crs3;
+    model_do_read_cpr(dec_arg_crs1, crs1);
+    model_do_read_cpr(dec_arg_crs2, crs2);
+    model_do_read_cpr(dec_arg_crs3, crs3);
     $display("ISE> ERROR: Instruction mac.mp not implemented");
 end endtask
 
@@ -477,7 +631,7 @@ end endtask
 // Implementation function for the lbu.cr instruction.
 //
 task model_do_lbu_cr;
-begin
+begin: t_model_lbu_cr
     $display("ISE> ERROR: Instruction lbu.cr not implemented");
 end endtask
 
@@ -486,7 +640,7 @@ end endtask
 // Implementation function for the lhu.cr instruction.
 //
 task model_do_lhu_cr;
-begin
+begin: t_model_lhu_cr
     $display("ISE> ERROR: Instruction lhu.cr not implemented");
 end endtask
 
@@ -495,7 +649,7 @@ end endtask
 // Implementation function for the lw.cr instruction.
 //
 task model_do_lw_cr;
-begin
+begin: t_model_lw_cr
     $display("ISE> ERROR: Instruction lw.cr not implemented");
 end endtask
 
@@ -504,7 +658,7 @@ end endtask
 // Implementation function for the lui.cr instruction.
 //
 task model_do_lui_cr;
-begin
+begin: t_model_lui_cr
     $display("ISE> ERROR: Instruction lui.cr not implemented");
 end endtask
 
@@ -513,7 +667,7 @@ end endtask
 // Implementation function for the lli.cr instruction.
 //
 task model_do_lli_cr;
-begin
+begin: t_model_lli_cr
     $display("ISE> ERROR: Instruction lli.cr not implemented");
 end endtask
 
@@ -522,7 +676,9 @@ end endtask
 // Implementation function for the twid.b instruction.
 //
 task model_do_twid_b;
-begin
+begin: t_model_twid_b
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.b not implemented");
 end endtask
 
@@ -531,7 +687,9 @@ end endtask
 // Implementation function for the twid.n0 instruction.
 //
 task model_do_twid_n0;
-begin
+begin: t_model_twid_n0
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.n0 not implemented");
 end endtask
 
@@ -540,7 +698,9 @@ end endtask
 // Implementation function for the twid.n1 instruction.
 //
 task model_do_twid_n1;
-begin
+begin: t_model_twid_n1
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.n1 not implemented");
 end endtask
 
@@ -549,7 +709,9 @@ end endtask
 // Implementation function for the twid.c0 instruction.
 //
 task model_do_twid_c0;
-begin
+begin: t_model_twid_c0
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.c0 not implemented");
 end endtask
 
@@ -558,7 +720,9 @@ end endtask
 // Implementation function for the twid.c1 instruction.
 //
 task model_do_twid_c1;
-begin
+begin: t_model_twid_c1
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.c1 not implemented");
 end endtask
 
@@ -567,7 +731,9 @@ end endtask
 // Implementation function for the twid.c2 instruction.
 //
 task model_do_twid_c2;
-begin
+begin: t_model_twid_c2
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.c2 not implemented");
 end endtask
 
@@ -576,7 +742,9 @@ end endtask
 // Implementation function for the twid.c3 instruction.
 //
 task model_do_twid_c3;
-begin
+begin: t_model_twid_c3
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction twid.c3 not implemented");
 end endtask
 
@@ -585,7 +753,9 @@ end endtask
 // Implementation function for the ins.cr instruction.
 //
 task model_do_ins_cr;
-begin
+begin: t_model_ins_cr
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction ins.cr not implemented");
 end endtask
 
@@ -594,7 +764,9 @@ end endtask
 // Implementation function for the ext.cr instruction.
 //
 task model_do_ext_cr;
-begin
+begin: t_model_ext_cr
+    reg  [31:0] crs1;
+    model_do_read_cpr(dec_arg_crs1, crs1);
     $display("ISE> ERROR: Instruction ext.cr not implemented");
 end endtask
 
@@ -603,7 +775,9 @@ end endtask
 // Implementation function for the sb.cr instruction.
 //
 task model_do_sb_cr;
-begin
+begin: t_model_sb_cr
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sb.cr not implemented");
 end endtask
 
@@ -612,7 +786,9 @@ end endtask
 // Implementation function for the sh.cr instruction.
 //
 task model_do_sh_cr;
-begin
+begin: t_model_sh_cr
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sh.cr not implemented");
 end endtask
 
@@ -621,9 +797,12 @@ end endtask
 // Implementation function for the sw.cr instruction.
 //
 task model_do_sw_cr;
-begin
+begin: t_model_sw_cr
+    reg  [31:0] crs2;
+    model_do_read_cpr(dec_arg_crs2, crs2);
     $display("ISE> ERROR: Instruction sw.cr not implemented");
 end endtask
+
 
 
 
@@ -642,6 +821,9 @@ always @(posedge g_clk) begin : p_model_control
         model_do_reset();
 
     end else if(cop_insn_valid) begin
+
+        // Reset model outputs ready for new instruction.
+        model_do_clear_outputs();
         
         if (dec_invalid_opcode) model_do_invalid_opcode();
         else if (dec_mv2gpr     ) model_do_mv2gpr     ();
