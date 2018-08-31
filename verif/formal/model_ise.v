@@ -29,8 +29,9 @@ input  wire             cop_insn_valid  , // Instruction valid
 input  wire [31:0]      cop_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cop_rs1         , // RS1 source data
 
+
 //
-// Output modelling signals
+// Output modelling signals.
 output reg  [ 2:0]      cop_result      , // Instruction execution result
 
 output reg  [15:0]      cop_cprs_written, // CPR Registers read by instr
@@ -38,7 +39,37 @@ output reg  [15:0]      cop_cprs_read   , // CPR Registers written by instr
 
 output reg              cop_rd_wen      , // GPR Write Enable
 output reg  [ 4:0]      cop_rd_addr     , // GPR Write Address
-output reg  [31:0]      cop_rd_data       // Data to write to GPR
+output reg  [31:0]      cop_rd_data     , // Data to write to GPR
+
+//
+// Memory transaction tracking.
+output reg              cop_mem_cen_0   , // Memory transaction 0 enable
+output reg              cop_mem_wen_0   , // Transaction 0 write enable
+output reg  [ 3:0]      cop_mem_ben_0   , // Transaction byte enable
+output reg  [31:0]      cop_mem_addr_0  , // Transaction 0 address
+output reg  [31:0]      cop_mem_wdata_0 , // Transaction 0 write enable
+input       [31:0]      cop_mem_rdata_0 , // Transaction 0 write enable
+
+output reg              cop_mem_cen_1   , // Memory transaction 1 enable
+output reg              cop_mem_wen_1   , // Transaction 1 write enable
+output reg  [ 3:0]      cop_mem_ben_1   , // Transaction byte enable
+output reg  [31:0]      cop_mem_addr_1  , // Transaction 1 address
+output reg  [31:0]      cop_mem_wdata_1 , // Transaction 1 write enable
+input       [31:0]      cop_mem_rdata_1 , // Transaction 1 write enable
+
+output reg              cop_mem_cen_2   , // Memory transaction 1 enable
+output reg              cop_mem_wen_2   , // Transaction 2 write enable
+output reg  [ 3:0]      cop_mem_ben_2   , // Transaction byte enable
+output reg  [31:0]      cop_mem_addr_2  , // Transaction 2 address
+output reg  [31:0]      cop_mem_wdata_2 , // Transaction 2 write enable
+input       [31:0]      cop_mem_rdata_2 , // Transaction 2 write enable
+
+output reg              cop_mem_cen_3   , // Memory transaction 1 enable
+output reg              cop_mem_wen_3   , // Transaction 3 write enable
+output reg  [ 3:0]      cop_mem_ben_3   , // Transaction byte enable
+output reg  [31:0]      cop_mem_addr_3  , // Transaction 3 address
+output reg  [31:0]      cop_mem_wdata_3 , // Transaction 3 write enable
+input       [31:0]      cop_mem_rdata_3   // Transaction 3 write enable
 
 );
 
@@ -121,6 +152,7 @@ reg        model_mccr_u  = ISE_MCCR_U_R;
 
 //
 // Applies the reset function to all of the ISE state.
+//
 task model_do_reset;
 begin
 
@@ -136,6 +168,8 @@ begin
     model_mccr_c7 = ISE_MCCR_C7_R;
     model_mccr_s  = ISE_MCCR_S_R; 
     model_mccr_u  = ISE_MCCR_U_R; 
+
+    model_do_clear_outputs();
 
 end endtask
 
@@ -155,10 +189,36 @@ begin
     cop_rd_addr      = 0; // GPR Write Address
     cop_rd_data      = 0; // Data to write to GPR
 
+    cop_mem_cen_0    = 0; // Memory transaction 0 enable
+    cop_mem_wen_0    = 0; // Transaction 0 write enable
+    cop_mem_addr_0   = 0; // Transaction 0 address
+    cop_mem_wdata_0  = 0; // Transaction 0 write enable
+    cop_mem_rdata_0  = 0; // Transaction 0 write enable
+    
+    cop_mem_cen_1    = 0; // Memory transaction 1 enable
+    cop_mem_wen_1    = 0; // Transaction 1 write enable
+    cop_mem_addr_1   = 0; // Transaction 1 address
+    cop_mem_wdata_1  = 0; // Transaction 1 write enable
+    cop_mem_rdata_1  = 0; // Transaction 1 write enable
+    
+    cop_mem_cen_2    = 0; // Memory transaction 1 enable
+    cop_mem_wen_2    = 0; // Transaction 2 write enable
+    cop_mem_addr_2   = 0; // Transaction 2 address
+    cop_mem_wdata_2  = 0; // Transaction 2 write enable
+    cop_mem_rdata_2  = 0; // Transaction 2 write enable
+    
+    cop_mem_cen_3    = 0; // Memory transaction 1 enable
+    cop_mem_wen_3    = 0; // Transaction 3 write enable
+    cop_mem_addr_3   = 0; // Transaction 3 address
+    cop_mem_wdata_3  = 0; // Transaction 3 write enable
+    cop_mem_rdata_3  = 0; // Transaction 3 write enable
+
 end endtask
+
 
 //
 // Implements ISE functionality when we encounter an invalid opcode.
+//
 task model_do_invalid_opcode;
 begin
 
@@ -166,8 +226,10 @@ begin
 
 end endtask 
 
+
 //
 // Write a CPR with a particular value.
+//
 task model_do_write_cpr;
     input  [ 3:0] cpr_addr;
     input  [31:0] cpr_data;
@@ -176,8 +238,10 @@ begin
     cop_cprs_written[cpr_addr] = 1'b1;
 end endtask
 
+
 //
 // Write a CPR with a particular value.
+//
 task model_do_read_cpr;
     input  [ 3:0] cpr_addr;
     output [31:0] cpr_data;
@@ -186,8 +250,10 @@ begin
     cop_cprs_read[cpr_addr] = 1'b1;
 end endtask
 
+
 //
 // Decode a register address pair for a multi-precision instruction.
+//
 task model_do_decode_rdm;
     output [ 3:0]   rd2;
     output [ 3:0]   rd1;
