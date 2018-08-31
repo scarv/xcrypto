@@ -193,25 +193,21 @@ begin
     cop_mem_wen_0    = 0; // Transaction 0 write enable
     cop_mem_addr_0   = 0; // Transaction 0 address
     cop_mem_wdata_0  = 0; // Transaction 0 write enable
-    cop_mem_rdata_0  = 0; // Transaction 0 write enable
     
     cop_mem_cen_1    = 0; // Memory transaction 1 enable
     cop_mem_wen_1    = 0; // Transaction 1 write enable
     cop_mem_addr_1   = 0; // Transaction 1 address
     cop_mem_wdata_1  = 0; // Transaction 1 write enable
-    cop_mem_rdata_1  = 0; // Transaction 1 write enable
     
     cop_mem_cen_2    = 0; // Memory transaction 1 enable
     cop_mem_wen_2    = 0; // Transaction 2 write enable
     cop_mem_addr_2   = 0; // Transaction 2 address
     cop_mem_wdata_2  = 0; // Transaction 2 write enable
-    cop_mem_rdata_2  = 0; // Transaction 2 write enable
     
     cop_mem_cen_3    = 0; // Memory transaction 1 enable
     cop_mem_wen_3    = 0; // Transaction 3 write enable
     cop_mem_addr_3   = 0; // Transaction 3 address
     cop_mem_wdata_3  = 0; // Transaction 3 write enable
-    cop_mem_rdata_3  = 0; // Transaction 3 write enable
 
 end endtask
 

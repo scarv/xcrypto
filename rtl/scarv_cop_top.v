@@ -21,7 +21,7 @@ module scarv_cop_top (
 
 input  wire             g_clk           , // Global clock
 output wire             g_clk_req       , // Clock request
-input  wire             g_resten        , // Synchronous active low reset.
+input  wire             g_resetn        , // Synchronous active low reset.
 
 //
 // Status Interface

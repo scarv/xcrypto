@@ -1,6 +1,6 @@
 
 # Read in the design
-read_verilog -I../../work/ ../../verif/formal/model_ise.v
+read_verilog -I../../work/ ../../verif/model/model_ise.v
 
 # Get setup to use the yosys_tb as the top module. The -nordff flag stops
 # the memory_dff command (run as part of prep) from merging flipflops into
