@@ -354,6 +354,7 @@ def make_verilog(match,mask):
 
     src_wire = "encoded"
     ise_args = set([])
+    dec_wires= set([])
 
     for instr in namelist:
         wirename = "dec_%s"     % instr.lower().replace(".","_")
@@ -362,6 +363,8 @@ def make_verilog(match,mask):
         tw      += "(%s & 32'h%s) == 32'h%s;" % (
             src_wire, hex(mask[instr])[2:], hex(match[instr])[2:]
         )
+        
+        dec_wires.add(wirename)
 
         print(tw)
 
@@ -374,6 +377,11 @@ def make_verilog(match,mask):
             wirename.ljust(15), arglut[field][0],arglut[field][1]
         )
         print(tw)
+
+    invalidinstr = "wire dec_invalid_opcode = !(" + \
+        " || ".join(list(dec_wires)) +  \
+        ");" 
+    print(invalidinstr)
 
 ##################################
 
