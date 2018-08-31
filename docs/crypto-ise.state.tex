@@ -1,4 +1,6 @@
 
+\subsection{ISE General Purpose Registers}
+
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE.
 It is to the crypto ISE what the floating-point register file is to the
@@ -13,22 +15,22 @@ The register file addressing is shown in table \ref{tab:state-addr}.
 \begin{tabular}{|l|l l l l|}
 \hline
 \multicolumn{1}{|l|}{3:0} & \textbf{31:24} & \textbf{23:16} & \textbf{15:8} & \textbf{7:0} \\ \hline
-{\tt cpr0  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr1  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr2  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr3  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr4  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr5  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr6  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr7  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr8  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr9  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr10 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr11 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr12 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr13 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr14 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt cpr15 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c0  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c1  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c2  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c3  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c4  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c5  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c6  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c7  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c8  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c9  } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c10 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c11 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c12 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c13 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c14 } & 3 & 2 & 1 & 0      \\ \hline
+{\tt c15 } & 3 & 2 & 1 & 0      \\ \hline
 \end{tabular}
 \caption{This table shows the per-byte layout of the register file.
 Note that there is no {\em zero} register in the ISE.
@@ -65,6 +67,112 @@ This is the only extra architectural state required by the ISE.
 We followed the RISC-V principles of avoiding implicit or otherwise
 hidden state.
 
+\subsection{ISE Control \& Status Registers}
+
+The Crypto ISE one Control \& Status Register (CSR) to the
+standard set. It is used for feature identification and access
+control.
+
+\subsubsection{Crypto ISE Control Register (mccr)}
+\label{sec:csr-mccr}
+
+The {\tt mccr} register is a non-standard, read/write, M-level CSR
+used to identify which parts of the ISE have been implemented,
+enable or disable countermeasures, and to control which privilidge
+levels can access the ISE features.
+
+The {\tt mccr} occupies address {\tt 0x7FE}, defined in the RISC-V
+Privileged ISA Specification as reserved for non-standard,
+read/write CSRs.
+
+For more information on the differences between feature sets, see
+section \ref{sec:feature-sets}.
+
+\begin{figure}[H]
+\centering
+\begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
+\bitheader{0-31}               \\
+\BB{1}{  R}
+\BB{1}{ MP}
+\BB{1}{ SG}
+\BB{1}{p32}
+\BB{1}{p16}
+\BB{1}{ p8}
+\BB{1}{ p4}
+\BB{1}{ p2}
+\BB{14}{WIRI}
+\BB{1}{  s}
+\BB{1}{  u}
+\BB{1}{ c7}
+\BB{1}{ c6}
+\BB{1}{ c5}
+\BB{1}{ c4}
+\BB{1}{ c3}
+\BB{1}{ c2}
+\BB{1}{ c1}
+\BB{1}{ c0}
+\end{bytefield}
+\captionsetup{singlelinecheck=off}
+\caption[x]{\centering Fields of the {\tt mccr} CSR.}
+\label{fig:csr-mccr}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l}
+\toprule
+Field& Bits & Description \\\midrule
+R    &31&Is the Random Instructions interface is implemented (set) or not (clear). \\
+MP   &30&Are the multi-precision arithmetic instructions are implemented (set) or not (clear). \\
+SG   &29&Are the {\tt SCATTER} and {\tt GATHER} instructions are implemented (set) or not (clear). \\
+p32  &28&Are pack-widths of 32 are supported (set) or not (clear).\\
+p16  &27&Are pack-widths of 16 are supported (set) or not (clear).\\
+p8   &26&Are pack-widths of  8 are supported (set) or not (clear).\\
+p4   &25&Are pack-widths of  4 are supported (set) or not (clear).\\
+p2   &24&Are pack-widths of  2 are supported (set) or not (clear).\\
+WIRI & 23..10&Writes ignored, reads ignored. \\
+s    & 9 & Allow supervisor mode access to the Crypto ISE. \\
+u    & 8 & Allow user mode access to the Crypto ISE. \\
+c7..c0 & 7..0 & Countermeasure enable bits. \\
+\bottomrule
+\end{tabular}
+\caption{{\tt mccr} register bit field descriptions.}
+\end{table}
+
+All writable bits of the {\tt mccr} may be tied to zero based on the
+implementation. If no countermeasures are implemented for example, or
+user/supervisor mode is not supported, the corresponding bits may be
+constants.
+
+\subsubsection{Access Control In The mccr}
+
+The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
+priviledge levels of the RISC-V core can use the Crypto ISE instructions
+and state. 
+
+If {\tt s} is clear, neither supervisor mode or user mode may access the
+Crypto ISE. If {\tt s} is set, then supervisor mode may access the Crypto
+ISE, and user mode access depends on whether the {\tt u} bit is set.
+
+Machine-mode software always has access to the Crypto ISE.
+
+If a Crypto ISE instruction is encountered in a priviledge mode which
+does not have access to the ISE, then an {\em illegal instruction exception}
+is raised.
+
+Any access to the {\tt mccr} in anything other than machine mode
+causes an {\em illegal instruction exception}.
+
+\subsubsection{Countermeasure Control In The mccr}
+
+The {\tt mccr} includes coarse grain control for implementation specific
+hardware side channel countermeasures using the {\tt cX} bits.
+
+It is up to the implementer to specify and document exactly what each
+countermeasure bit controls. We expect them to be used to implement
+switches for controlling things like constant time computation, random
+stalling, instruction shuffling and so on.
+
 \subsection{ABI Standards}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
@@ -78,4 +186,9 @@ and/or return values.
 All other $\CPR$ registers are considered temporaries.
 
 Any registers pushed to the stack should be written in ascending order.
+That is, as the stack grows downwards, $c1$ should be written (if needed)
+to the address following $c0$.
 
+The $\CPR$ registers which are written to the stack during function calls
+should be written {\em after} all of the $\GPR$ and floating-point registers
+(if the {\tt F} extension is implemented) have been written.
