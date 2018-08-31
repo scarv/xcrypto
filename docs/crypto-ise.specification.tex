@@ -434,10 +434,10 @@ in the {\tt imm5} field.
 \instdescx{BOP.cr}
 {\iencbopcr}
 {
-The \instref{BOP.cr} instruction is designed to express all bitwise logic functions, and be
+The BOP.cr instruction is designed to express all bitwise logic functions, and be
 amenable to bit-sliced implementations of cryptographic functions.
 
-\instref{BOP.cr} takes a 4-bit immediate {\tt lut4}, and uses the concatenated
+BOP.cr takes a 4-bit immediate {\tt lut4}, and uses the concatenated
 $i$'th bits of register inputs $\CPR[*][crs1]$ and  $\CPR[*][crs2]$
 as the inputs, writing the output bit of the lut to the $i$'th bit of the
 destination register.
@@ -462,7 +462,7 @@ destination register.
 \item {\tt bop.cr  c1, c2, c3, 0111    // OR }
 \item {\tt bop.cr  c1, c2, c3, 0110    // XOR}
 \end{itemize}
-These examples of \instref{BOP.cr} show how to encode the existing
+These examples of BOP.cr show how to encode the existing
 bitwise operation instructions found in the base RISC-V architecture.
 }
 
