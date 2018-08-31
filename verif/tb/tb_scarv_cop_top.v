@@ -44,8 +44,9 @@ reg [255*8:0] imemfile;     // Where to load a test vector from.
 
 initial begin
     
-    if($value$plusargs("IMEM=%s",imemfile)) begin
-        $display("IMEM :    %s", imemfile);
+    if($value$plusargs("VECTOR=%s",imemfile)) begin
+        $display("VECTOR:    %s", imemfile);
+        $readmemh(imemfile, sim_instr_mem);
     end
     
     if($value$plusargs("TIMEOUT=%d",TB_MAX_CYCLES)) begin

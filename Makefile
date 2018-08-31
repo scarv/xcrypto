@@ -7,6 +7,8 @@ PARSE_OPCODES = $(COP_HOME)/bin/ise-parse-opcodes.py
 OPCODES_SPEC  = $(COP_HOME)/docs/ise-opcodes.txt
 RTL_DECODER   = $(COP_WORK)/ise_decode.v
 
+export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
+
 .PHONY: docs
 docs:
 	$(MAKE) -C $(COP_HOME)/docs all
@@ -41,5 +43,9 @@ icarus_build: $(RTL_DECODER)
 .PHONY: icarus_run
 icarus_run: icarus_build
 	$(MAKE) -C $(COP_HOME)/flow/icarus run
+
+.PHONY: unit_tests
+unit_tests:
+	$(MAKE) -C $(COP_HOME)/verif/unit all
 
 build_all: yosys_smt2 icarus_build

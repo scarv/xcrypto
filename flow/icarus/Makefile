@@ -1,8 +1,9 @@
 
 RTL_TIMEOUT=1000
 RTL_WAVES  = $(COP_HOME)/work/icarus/waves.vcd
-RTL_VECTOR = 
 RTL_TRACE  =
+
+SIM_UNIT_TEST ?= 
 
 ICARUS      = iverilog
 IRUN        = vvp
@@ -26,7 +27,7 @@ $(SIM) :
 
 run: $(SIM)
 	$(IRUN) $(SIM) +TIMEOUT=$(RTL_TIMEOUT) +WAVES=$(RTL_WAVES) \
-        +VECTOR=$(RTL_VECTOR) +TRACE=$(RTL_TRACE)
+        +VECTOR=$(SIM_UNIT_TEST) +TRACE=$(RTL_TRACE)
 
 .PHONY: clean
 clean:
