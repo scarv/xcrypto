@@ -505,7 +505,7 @@ into $\CPR[*][rd]$, starting at bit position $2*s$.
 \instdescx{MIX.cr}
 {\ienclmixcr\ienchmixcr}
 {
-The \instref{MIX.cr} instruction allows an arbitrary bit-wise mixing of two
+The MIX.cr instruction allows an arbitrary bit-wise mixing of two
 register values, using a mask stored in a third register.
 It first rotates  the source register value in {\tt rs1} by the amount in
 {\tt shamt}, and then mixes the rotated value and the source value according
@@ -515,7 +515,7 @@ to the mask value in {\tt rs2}.
 while \ASM{HMIX.cr} will rotate to the right by $16..31$. 
 \designnote{This decision was made simply to make the encoding space
 easier to manage. Rather than adding another 5-bit immediate field, it was
-more efficient to re-use the 4-bit lut field of the \instref{BOP.cr}
+more efficient to re-use the 4-bit lut field of the BOP.cr
 instruction.}
 }{
 \begin{itemize}
