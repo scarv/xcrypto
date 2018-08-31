@@ -69,15 +69,21 @@ hidden state.
 
 \subsection{ISE Control \& Status Registers}
 
-The Crypto ISE adds two Control \& Status Registers (CSRs) to the
-standard set. They are used for feature identification and access
+The Crypto ISE one Control \& Status Register (CSR) to the
+standard set. It is used for feature identification and access
 control.
 
-\subsubsection{Crypto ISE Feature Register (cisef)}
-\label{sec:csr-cisef}
+\subsubsection{Crypto ISE Control Register (mccr)}
+\label{sec:csr-mccr}
 
-The {\tt cisef} register is a non-standard, read only, M-level CSR
-used to identify which parts of the ISE have been implemented.
+The {\tt mccr} register is a non-standard, read/write, M-level CSR
+used to identify which parts of the ISE have been implemented,
+enable or disable countermeasures, and to control which privilidge
+levels can access the ISE features.
+
+The {\tt mccr} occupies address {\tt 0x7FE}, defined in the RISC-V
+Privileged ISA Specification as reserved for non-standard,
+read/write CSRs.
 
 For more information on the differences between feature sets, see
 section \ref{sec:feature-sets}.
@@ -86,19 +92,29 @@ section \ref{sec:feature-sets}.
 \centering
 \begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
 \bitheader{0-31}               \\
-\BB{24}{WIRI}
-\BB{1}{ R}
-\BB{1}{MP}
-\BB{1}{SG}
+\BB{1}{  R}
+\BB{1}{ MP}
+\BB{1}{ SG}
 \BB{1}{p32}
 \BB{1}{p16}
 \BB{1}{ p8}
 \BB{1}{ p4}
 \BB{1}{ p2}
+\BB{14}{WIRI}
+\BB{1}{  s}
+\BB{1}{  u}
+\BB{1}{ c7}
+\BB{1}{ c6}
+\BB{1}{ c5}
+\BB{1}{ c4}
+\BB{1}{ c3}
+\BB{1}{ c2}
+\BB{1}{ c1}
+\BB{1}{ c0}
 \end{bytefield}
 \captionsetup{singlelinecheck=off}
-\caption[x]{\centering Fields of the {\tt cisef} CSR.}
-\label{fig:csr-cisef}
+\caption[x]{\centering Fields of the {\tt mccr} CSR.}
+\label{fig:csr-mccr}
 \end{figure}
 
 \begin{table}[H]
@@ -106,40 +122,56 @@ section \ref{sec:feature-sets}.
 \begin{tabular}{l l l}
 \toprule
 Field& Bits & Description \\\midrule
-WIRI & 31..8 &Writes ignored, reads ignored. \\
-R    & 7&Indicates if the Random Instructions interface is
-         implemented (set) or not (clear). \\
-MP   & 6&Indicates if the multi-precision arithmetic instructions
-         are implemented (set) or not (clear). \\
-SG   & 5&Indicates if the {\tt SCATTER} and {\tt GATHER} instructions
-         are implemented (set) or not (clear). \\
-p32  & 4&Indicates if pack-widths of 32 are supported (set) or not (clear).\\
-p16  & 3&Indicates if pack-widths of 16 are supported (set) or not (clear).\\
-p8   & 2&Indicates if pack-widths of  8 are supported (set) or not (clear).\\
-p4   & 1&Indicates if pack-widths of  4 are supported (set) or not (clear).\\
-p2   & 0&Indicates if pack-widths of  2 are supported (set) or not (clear).\\
+R    &31&Is the Random Instructions interface is implemented (set) or not (clear). \\
+MP   &30&Are the multi-precision arithmetic instructions are implemented (set) or not (clear). \\
+SG   &29&Are the {\tt SCATTER} and {\tt GATHER} instructions are implemented (set) or not (clear). \\
+p32  &28&Are pack-widths of 32 are supported (set) or not (clear).\\
+p16  &27&Are pack-widths of 16 are supported (set) or not (clear).\\
+p8   &26&Are pack-widths of  8 are supported (set) or not (clear).\\
+p4   &25&Are pack-widths of  4 are supported (set) or not (clear).\\
+p2   &24&Are pack-widths of  2 are supported (set) or not (clear).\\
+WIRI & 23..10&Writes ignored, reads ignored. \\
+s    & 9 & Allow supervisor mode access to the Crypto ISE. \\
+u    & 8 & Allow user mode access to the Crypto ISE. \\
+c7..c0 & 7..0 & Countermeasure enable bits. \\
 \bottomrule
 \end{tabular}
-\caption{{\tt cisef} register bit field descriptions.}
+\caption{{\tt mccr} register bit field descriptions.}
 \end{table}
 
-\subsubsection{Crypto ISE Access Register (cisea)}
-\label{sec:csr-cisea}
+All writable bits of the {\tt mccr} may be tied to zero based on the
+implementation. If no countermeasures are implemented for example, or
+user/supervisor mode is not supported, the corresponding bits may be
+constants.
 
-The {\tt cisea} register is a non-standard, read/write, M-level CSR
-used to control which RISC-V privilege levels have access to the
-Crypto ISE state and functionality.
+\subsubsection{Access Control In The mccr}
 
-\begin{figure}[H]
-\centering
-\begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
-\bitheader{0-31}               \\
-\BB{32}{Placeholder}            \\
-\end{bytefield}
-\captionsetup{singlelinecheck=off}
-\caption[x]{\centering Fields of the {\tt cisea} CSR.}
-\label{fig:csr-cisea}
-\end{figure}
+The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
+priviledge levels of the RISC-V core can use the Crypto ISE instructions
+and state. 
+
+If {\tt s} is clear, neither supervisor mode or user mode may access the
+Crypto ISE. If {\tt s} is set, then supervisor mode may access the Crypto
+ISE, and user mode access depends on whether the {\tt u} bit is set.
+
+Machine-mode software always has access to the Crypto ISE.
+
+If a Crypto ISE instruction is encountered in a priviledge mode which
+does not have access to the ISE, then an {\em illegal instruction exception}
+is raised.
+
+Any access to the {\tt mccr} in anything other than machine mode
+causes an {\em illegal instruction exception}.
+
+\subsubsection{Countermeasure Control In The mccr}
+
+The {\tt mccr} includes coarse grain control for implementation specific
+hardware side channel countermeasures using the {\tt cX} bits.
+
+It is up to the implementer to specify and document exactly what each
+countermeasure bit controls. We expect them to be used to implement
+switches for controlling things like constant time computation, random
+stalling, instruction shuffling and so on.
 
 \subsection{ABI Standards}
 

@@ -9,7 +9,7 @@ relevant to certain algorithms or primitives.
 
 Software can determine which features of the ISE are implemented by
 interrogating the {\tt CISEF} register detailed in section
-\ref{sec:csr-cisef}.
+\ref{sec:csr-mccr}.
 
 All of the optional features within the ISE can be emulated using the
 base RISC-V ISE and the Crypto ISE.
@@ -39,7 +39,7 @@ For extremely resource constrained or application specific implementations,
 some unnecessary pack widths (as defined by the implementer) may be omitted.
 
 Supported pack widths are indicated by the {\tt pX} bits of the
-\nameref{sec:csr-cisef}.
+\nameref{sec:csr-mccr}.
 
 Packed arithmetic instructions operating on supported pack widths are
 executed as normal. If a packed arithmetic instruction operating on an
@@ -52,7 +52,7 @@ Implementations can optionally implement the Crypto ISE randomness interface
 instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
 
 The inclusion of these instructions in an implementation is indicated by the
-{\tt R} bit of the \nameref{sec:csr-cisef}.
+{\tt R} bit of the \nameref{sec:csr-mccr}.
 
 If the random interface instructions are not implemented, then their opcodes
 will cause the implementation to raise an {\em Illegal Instruction}
@@ -65,7 +65,7 @@ in section \ref{sec:scatter-gather} may be omitted to reduce implementation
 complexity.
 
 The inclusion of these instructions in an implementation is indicated by the
-{\tt SG} bit of the \nameref{sec:csr-cisef}.
+{\tt SG} bit of the \nameref{sec:csr-mccr}.
 
 An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
 or none.
@@ -81,7 +81,7 @@ All of the multi-precision arithmetic instructions listed in section
 as a group.
 
 Inclusion of the multi-precision arithmetic instructions is indicated by
-the {\tt MP} bit of the  \nameref{sec:csr-cisef}.
+the {\tt MP} bit of the  \nameref{sec:csr-mccr}.
 
 If the multi-precision arithmetic instructions are not implemented, then their
 opcodes will cause the implementation to raise an {\em Illegal Instruction}
