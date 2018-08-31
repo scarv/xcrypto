@@ -148,6 +148,485 @@ end endtask
 // Instruction Implementations
 //
 
+
+//
+// Implementation function for the mv2gpr instruction.
+//
+task model_do_mv2gpr;
+begin
+    $display("ISE> ERROR: Instruction mv2gpr not implemented");
+end endtask
+
+
+//
+// Implementation function for the mv2cop instruction.
+//
+task model_do_mv2cop;
+begin
+    $display("ISE> ERROR: Instruction mv2cop not implemented");
+end endtask
+
+
+//
+// Implementation function for the add.px instruction.
+//
+task model_do_add_px;
+begin
+    $display("ISE> ERROR: Instruction add.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the sub.px instruction.
+//
+task model_do_sub_px;
+begin
+    $display("ISE> ERROR: Instruction sub.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the mul.px instruction.
+//
+task model_do_mul_px;
+begin
+    $display("ISE> ERROR: Instruction mul.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the sll.px instruction.
+//
+task model_do_sll_px;
+begin
+    $display("ISE> ERROR: Instruction sll.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the srl.px instruction.
+//
+task model_do_srl_px;
+begin
+    $display("ISE> ERROR: Instruction srl.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the rot.px instruction.
+//
+task model_do_rot_px;
+begin
+    $display("ISE> ERROR: Instruction rot.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the slli.px instruction.
+//
+task model_do_slli_px;
+begin
+    $display("ISE> ERROR: Instruction slli.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the srli.px instruction.
+//
+task model_do_srli_px;
+begin
+    $display("ISE> ERROR: Instruction srli.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the roti.px instruction.
+//
+task model_do_roti_px;
+begin
+    $display("ISE> ERROR: Instruction roti.px not implemented");
+end endtask
+
+
+//
+// Implementation function for the rseed.cr instruction.
+//
+task model_do_rseed_cr;
+begin
+    $display("ISE> ERROR: Instruction rseed.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the rsamp.cr instruction.
+//
+task model_do_rsamp_cr;
+begin
+    $display("ISE> ERROR: Instruction rsamp.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the cmov.cr instruction.
+//
+task model_do_cmov_cr;
+begin
+    $display("ISE> ERROR: Instruction cmov.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the cmovn.cr instruction.
+//
+task model_do_cmovn_cr;
+begin
+    $display("ISE> ERROR: Instruction cmovn.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the scatter.b instruction.
+//
+task model_do_scatter_b;
+begin
+    $display("ISE> ERROR: Instruction scatter.b not implemented");
+end endtask
+
+
+//
+// Implementation function for the gather.b instruction.
+//
+task model_do_gather_b;
+begin
+    $display("ISE> ERROR: Instruction gather.b not implemented");
+end endtask
+
+
+//
+// Implementation function for the scatter.h instruction.
+//
+task model_do_scatter_h;
+begin
+    $display("ISE> ERROR: Instruction scatter.h not implemented");
+end endtask
+
+
+//
+// Implementation function for the gather.h instruction.
+//
+task model_do_gather_h;
+begin
+    $display("ISE> ERROR: Instruction gather.h not implemented");
+end endtask
+
+
+//
+// Implementation function for the lmix.cr instruction.
+//
+task model_do_lmix_cr;
+begin
+    $display("ISE> ERROR: Instruction lmix.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the hmix.cr instruction.
+//
+task model_do_hmix_cr;
+begin
+    $display("ISE> ERROR: Instruction hmix.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the bop.cr instruction.
+//
+task model_do_bop_cr;
+begin
+    $display("ISE> ERROR: Instruction bop.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the equ.mp instruction.
+//
+task model_do_equ_mp;
+begin
+    $display("ISE> ERROR: Instruction equ.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the ltu.mp instruction.
+//
+task model_do_ltu_mp;
+begin
+    $display("ISE> ERROR: Instruction ltu.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the gtu.mp instruction.
+//
+task model_do_gtu_mp;
+begin
+    $display("ISE> ERROR: Instruction gtu.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the add3.mp instruction.
+//
+task model_do_add3_mp;
+begin
+    $display("ISE> ERROR: Instruction add3.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the add2.mp instruction.
+//
+task model_do_add2_mp;
+begin
+    $display("ISE> ERROR: Instruction add2.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the sub3.mp instruction.
+//
+task model_do_sub3_mp;
+begin
+    $display("ISE> ERROR: Instruction sub3.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the sub2.mp instruction.
+//
+task model_do_sub2_mp;
+begin
+    $display("ISE> ERROR: Instruction sub2.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the slli.mp instruction.
+//
+task model_do_slli_mp;
+begin
+    $display("ISE> ERROR: Instruction slli.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the sll.mp instruction.
+//
+task model_do_sll_mp;
+begin
+    $display("ISE> ERROR: Instruction sll.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the srli.mp instruction.
+//
+task model_do_srli_mp;
+begin
+    $display("ISE> ERROR: Instruction srli.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the srl.mp instruction.
+//
+task model_do_srl_mp;
+begin
+    $display("ISE> ERROR: Instruction srl.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the acc2.mp instruction.
+//
+task model_do_acc2_mp;
+begin
+    $display("ISE> ERROR: Instruction acc2.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the acc1.mp instruction.
+//
+task model_do_acc1_mp;
+begin
+    $display("ISE> ERROR: Instruction acc1.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the mac.mp instruction.
+//
+task model_do_mac_mp;
+begin
+    $display("ISE> ERROR: Instruction mac.mp not implemented");
+end endtask
+
+
+//
+// Implementation function for the lbu.cr instruction.
+//
+task model_do_lbu_cr;
+begin
+    $display("ISE> ERROR: Instruction lbu.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the lhu.cr instruction.
+//
+task model_do_lhu_cr;
+begin
+    $display("ISE> ERROR: Instruction lhu.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the lw.cr instruction.
+//
+task model_do_lw_cr;
+begin
+    $display("ISE> ERROR: Instruction lw.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the lui.cr instruction.
+//
+task model_do_lui_cr;
+begin
+    $display("ISE> ERROR: Instruction lui.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the lli.cr instruction.
+//
+task model_do_lli_cr;
+begin
+    $display("ISE> ERROR: Instruction lli.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.b instruction.
+//
+task model_do_twid_b;
+begin
+    $display("ISE> ERROR: Instruction twid.b not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.n0 instruction.
+//
+task model_do_twid_n0;
+begin
+    $display("ISE> ERROR: Instruction twid.n0 not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.n1 instruction.
+//
+task model_do_twid_n1;
+begin
+    $display("ISE> ERROR: Instruction twid.n1 not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.c0 instruction.
+//
+task model_do_twid_c0;
+begin
+    $display("ISE> ERROR: Instruction twid.c0 not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.c1 instruction.
+//
+task model_do_twid_c1;
+begin
+    $display("ISE> ERROR: Instruction twid.c1 not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.c2 instruction.
+//
+task model_do_twid_c2;
+begin
+    $display("ISE> ERROR: Instruction twid.c2 not implemented");
+end endtask
+
+
+//
+// Implementation function for the twid.c3 instruction.
+//
+task model_do_twid_c3;
+begin
+    $display("ISE> ERROR: Instruction twid.c3 not implemented");
+end endtask
+
+
+//
+// Implementation function for the ins.cr instruction.
+//
+task model_do_ins_cr;
+begin
+    $display("ISE> ERROR: Instruction ins.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the ext.cr instruction.
+//
+task model_do_ext_cr;
+begin
+    $display("ISE> ERROR: Instruction ext.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the sb.cr instruction.
+//
+task model_do_sb_cr;
+begin
+    $display("ISE> ERROR: Instruction sb.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the sh.cr instruction.
+//
+task model_do_sh_cr;
+begin
+    $display("ISE> ERROR: Instruction sh.cr not implemented");
+end endtask
+
+
+//
+// Implementation function for the sw.cr instruction.
+//
+task model_do_sw_cr;
+begin
+    $display("ISE> ERROR: Instruction sw.cr not implemented");
+end endtask
+
+
+
 // ------------------------------------------------------------------------
 
 //
@@ -164,7 +643,60 @@ always @(posedge g_clk) begin : p_model_control
 
     end else if(cop_insn_valid) begin
         
-        if(dec_invalid_opcode) model_do_invalid_opcode();
+        if (dec_invalid_opcode) model_do_invalid_opcode();
+        else if (dec_mv2gpr     ) model_do_mv2gpr     ();
+        else if (dec_mv2cop     ) model_do_mv2cop     ();
+        else if (dec_add_px     ) model_do_add_px     ();
+        else if (dec_sub_px     ) model_do_sub_px     ();
+        else if (dec_mul_px     ) model_do_mul_px     ();
+        else if (dec_sll_px     ) model_do_sll_px     ();
+        else if (dec_srl_px     ) model_do_srl_px     ();
+        else if (dec_rot_px     ) model_do_rot_px     ();
+        else if (dec_slli_px    ) model_do_slli_px    ();
+        else if (dec_srli_px    ) model_do_srli_px    ();
+        else if (dec_roti_px    ) model_do_roti_px    ();
+        else if (dec_rseed_cr   ) model_do_rseed_cr   ();
+        else if (dec_rsamp_cr   ) model_do_rsamp_cr   ();
+        else if (dec_cmov_cr    ) model_do_cmov_cr    ();
+        else if (dec_cmovn_cr   ) model_do_cmovn_cr   ();
+        else if (dec_scatter_b  ) model_do_scatter_b  ();
+        else if (dec_gather_b   ) model_do_gather_b   ();
+        else if (dec_scatter_h  ) model_do_scatter_h  ();
+        else if (dec_gather_h   ) model_do_gather_h   ();
+        else if (dec_lmix_cr    ) model_do_lmix_cr    ();
+        else if (dec_hmix_cr    ) model_do_hmix_cr    ();
+        else if (dec_bop_cr     ) model_do_bop_cr     ();
+        else if (dec_equ_mp     ) model_do_equ_mp     ();
+        else if (dec_ltu_mp     ) model_do_ltu_mp     ();
+        else if (dec_gtu_mp     ) model_do_gtu_mp     ();
+        else if (dec_add3_mp    ) model_do_add3_mp    ();
+        else if (dec_add2_mp    ) model_do_add2_mp    ();
+        else if (dec_sub3_mp    ) model_do_sub3_mp    ();
+        else if (dec_sub2_mp    ) model_do_sub2_mp    ();
+        else if (dec_slli_mp    ) model_do_slli_mp    ();
+        else if (dec_sll_mp     ) model_do_sll_mp     ();
+        else if (dec_srli_mp    ) model_do_srli_mp    ();
+        else if (dec_srl_mp     ) model_do_srl_mp     ();
+        else if (dec_acc2_mp    ) model_do_acc2_mp    ();
+        else if (dec_acc1_mp    ) model_do_acc1_mp    ();
+        else if (dec_mac_mp     ) model_do_mac_mp     ();
+        else if (dec_lbu_cr     ) model_do_lbu_cr     ();
+        else if (dec_lhu_cr     ) model_do_lhu_cr     ();
+        else if (dec_lw_cr      ) model_do_lw_cr      ();
+        else if (dec_lui_cr     ) model_do_lui_cr     ();
+        else if (dec_lli_cr     ) model_do_lli_cr     ();
+        else if (dec_twid_b     ) model_do_twid_b     ();
+        else if (dec_twid_n0    ) model_do_twid_n0    ();
+        else if (dec_twid_n1    ) model_do_twid_n1    ();
+        else if (dec_twid_c0    ) model_do_twid_c0    ();
+        else if (dec_twid_c1    ) model_do_twid_c1    ();
+        else if (dec_twid_c2    ) model_do_twid_c2    ();
+        else if (dec_twid_c3    ) model_do_twid_c3    ();
+        else if (dec_ins_cr     ) model_do_ins_cr     ();
+        else if (dec_ext_cr     ) model_do_ext_cr     ();
+        else if (dec_sb_cr      ) model_do_sb_cr      ();
+        else if (dec_sh_cr      ) model_do_sh_cr      ();
+        else if (dec_sw_cr      ) model_do_sw_cr      ();
         else begin
             $display("ERROR: We should never reach here!");
         end

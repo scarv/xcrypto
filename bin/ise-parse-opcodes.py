@@ -346,6 +346,8 @@ def signed(value, width):
   else:
     return value - (1<<width)
 
+def make_dec_wirename(instrname):
+    return "dec_%s"     % instrname.lower().replace(".","_")
 
 def make_verilog(match,mask):
     """
@@ -357,7 +359,7 @@ def make_verilog(match,mask):
     dec_wires= set([])
 
     for instr in namelist:
-        wirename = "dec_%s"     % instr.lower().replace(".","_")
+        wirename = make_dec_wirename(instr)
         tw       = "wire %s = " % (wirename.ljust(15))
         
         tw      += "(%s & 32'h%s) == 32'h%s;" % (
@@ -382,6 +384,33 @@ def make_verilog(match,mask):
         " || ".join(list(dec_wires)) +  \
         ");" 
     print(invalidinstr)
+
+
+def make_verilog_extra(match,mask):
+    """
+    Generate verilog code which will only need generating once (hopefully).
+    """
+    
+    # Decode -> implementation function if/else tree
+    for instr in namelist:
+        wirename = make_dec_wirename(instr).ljust(15)
+
+        print("else if (%s) model_do_%s();" % (wirename,wirename[4:]))
+
+    # Empty implementation functions.
+    for instr in namelist:
+        fname = "model_do_%s" % instr.lower().replace(".","_")
+
+        print("//")
+        print("// Implementation function for the %s instruction." % instr)
+        print("//")
+        print("task %s;" % fname)
+        print("begin")
+        print("    $display(\"ISE> ERROR: Instruction %s not implemented\");"\
+            %(instr))
+        print("end endtask")
+        print("")
+        print("")
 
 ##################################
 
@@ -460,5 +489,7 @@ elif sys.argv[1] == '-c':
   make_c(match,mask)
 elif sys.argv[1] == '-verilog':
   make_verilog(match,mask)
+elif sys.argv[1] == '-verilog-extra':
+  make_verilog_extra(match,mask)
 else:
   assert 0
