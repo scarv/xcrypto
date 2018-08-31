@@ -340,21 +340,40 @@ def make_latex_table():
       print
 
 
-def print_chisel_insn(name):
-  s = "  def %-18s = BitPat(\"b" % name.replace('.', '_').upper()
-  for i in range(31, -1, -1):
-    if yank(mask[name], i, 1):
-      s = '%s%d' % (s, yank(match[name], i, 1))
-    else:
-      s = s + '?'
-  print s + "\")"
-
-
 def signed(value, width):
   if 0 <= value < (1<<(width-1)):
     return value
   else:
     return value - (1<<width)
+
+
+def make_verilog(match,mask):
+    """
+    Generate verilog for decoding all of the ISE instructions.
+    """
+
+    src_wire = "encoded"
+    ise_args = set([])
+
+    for instr in namelist:
+        wirename = "dec_%s"     % instr.lower().replace(".","_")
+        tw       = "wire %s = " % (wirename.ljust(15))
+        
+        tw      += "(%s & 32'h%s) == 32'h%s;" % (
+            src_wire, hex(mask[instr])[2:], hex(match[instr])[2:]
+        )
+
+        print(tw)
+
+        for arg in arguments[instr]:
+            ise_args.add(arg)
+
+    for field in ise_args:
+        wirename = "dec_arg_%s" % field.lower().replace(".","_")
+        tw       = "wire %s = encoded[%d:%d];" % (
+            wirename.ljust(15), arglut[field][0],arglut[field][1]
+        )
+        print(tw)
 
 ##################################
 
@@ -429,11 +448,9 @@ if sys.argv[1] == '-tex':
   make_latex_table()
 elif sys.argv[1] == '-privtex':
   make_supervisor_latex_table()
-elif sys.argv[1] == '-chisel':
-  make_chisel()
 elif sys.argv[1] == '-c':
   make_c(match,mask)
-elif sys.argv[1] == '-go':
-  make_go()
+elif sys.argv[1] == '-verilog':
+  make_verilog(match,mask)
 else:
   assert 0
