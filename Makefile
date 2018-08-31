@@ -38,4 +38,8 @@ yosys_smt2: $(RTL_DECODER)
 icarus_build: $(RTL_DECODER)
 	$(MAKE) -C $(COP_HOME)/flow/icarus sim
 
+.PHONY: icarus_run
+icarus_run: icarus_build
+	$(MAKE) -C $(COP_HOME)/flow/icarus run
+
 build_all: yosys_smt2 icarus_build

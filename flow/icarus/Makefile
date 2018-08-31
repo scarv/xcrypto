@@ -1,6 +1,6 @@
 
 RTL_TIMEOUT=1000
-RTL_WAVES  = $(COP_HOME)/work/waves.vcd
+RTL_WAVES  = $(COP_HOME)/work/icarus/waves.vcd
 RTL_VECTOR = 
 RTL_TRACE  =
 

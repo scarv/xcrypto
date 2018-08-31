@@ -29,6 +29,38 @@ initial g_clk    = 0;
 initial #80 g_resetn = 1;
 always @(g_clk) #20 g_clk <= !g_clk;
 
+reg [10:0] clk_counter = 0;
+always @(posedge g_clk) begin
+    clk_counter = clk_counter + 1;
+
+    if(clk_counter > TB_MAX_CYCLES) begin
+        $finish;
+    end
+end
+
+integer TB_MAX_CYCLES = 100;
+reg [255*8:0] wavesfile;    // Where to dump VCD wave files
+reg [255*8:0] imemfile;     // Where to load a test vector from.
+
+initial begin
+    
+    if($value$plusargs("IMEM=%s",imemfile)) begin
+        $display("IMEM :    %s", imemfile);
+    end
+    
+    if($value$plusargs("TIMEOUT=%d",TB_MAX_CYCLES)) begin
+        $display("TIMEOUT : %d", TB_MAX_CYCLES);
+    end
+    
+    if($value$plusargs("WAVES=%s",wavesfile)) begin
+    end else begin
+        wavesfile="work/waves-icarus.vcd";
+    end
+    
+    $dumpfile(wavesfile);
+    $dumpvars(0,tb_scarv_cop_top);
+end
+
 //
 // Simulation instruction memory
 //
@@ -42,7 +74,7 @@ wire [ 5:0] n_sim_instr_cnt = sim_instr_cnt + 1;
 //
 
 // Which instruction to feed to the DUT next.
-assign cop_insn_enc = sim_instr_mem[sim_instr_cnt];
+wire [31:0] cop_insn_enc = sim_instr_mem[sim_instr_cnt];
 
 // Increment the instruction counter each time an instruction is accepted
 // by the COP.
@@ -60,18 +92,19 @@ initial cpu_abort_req = 0;
 // Random instruction dispatch to the DUT
 always @(posedge g_clk) begin
     if(!g_resetn) begin
+        cpu_insn_req <= 1'b0;
 
     end else if( cpu_insn_req &&  cop_insn_ack) begin
-        cpu_insn_req <= $random && 1;
+        cpu_insn_req <= $random & 1;
     
     end else if( cpu_insn_req && !cop_insn_ack) begin
         cpu_insn_req <= 1'b1;
 
     end else if(!cpu_insn_req &&  cop_insn_ack) begin
-        cpu_insn_req <= $random && 1;
+        cpu_insn_req <= $random & 1;
 
     end else if(!cpu_insn_req && !cop_insn_ack) begin
-        cpu_insn_req <= $random && 1;
+        cpu_insn_req <= $random & 1;
 
     end
 end
@@ -87,7 +120,7 @@ always @(posedge g_clk) begin
     end else if (cop_insn_rsp && ($random & 1)) begin
         cpu_insn_ack <= 1'b1;
     end else begin
-        cpu_insn_ack <= $random & 1;
+        cpu_insn_ack <= 1'b0;
     end
 end
 
@@ -100,7 +133,6 @@ end
 reg              cpu_insn_req    ; // Instruction request
 wire             cop_insn_ack    ; // Instruction request acknowledge
 reg              cpu_abort_req   ; // Abort Instruction
-reg  [31:0]      cpu_insn_enc    ; // Encoded instruction data
 reg  [31:0]      cpu_rs1         ; // RS1 source data
 
 wire             cop_wen         ; // COP write enable
@@ -148,7 +180,7 @@ model_ise i_grm(
 .g_clk_req       (g_clk_req       ), // Clock request
 .g_resetn        (g_resetn        ), // Synchronous active low reset.
 .cop_insn_valid  (cop_insn_valid  ), // Instruction valid
-.cop_insn_enc    (cpu_insn_enc    ), // Encoded instruction data
+.cop_insn_enc    (cop_insn_enc    ), // Encoded instruction data
 .cop_rs1         (cpu_rs1         ), // RS1 source data
 .cop_result      (grm_result      ), // Instruction execution result
 .cop_cprs_written(grm_cprs_written), // CPR Registers read by instr
@@ -193,7 +225,7 @@ scarv_cop_top i_dut(
 .cpu_insn_req  (cpu_insn_req ) , // Instruction request
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
 .cpu_abort_req (cpu_abort_req) , // Abort Instruction
-.cpu_insn_enc  (cpu_insn_enc ) , // Encoded instruction data
+.cpu_insn_enc  (cop_insn_enc ) , // Encoded instruction data
 .cpu_rs1       (cpu_rs1      ) , // RS1 source data
 .cop_wen       (cop_wen      ) , // COP write enable
 .cop_waddr     (cop_waddr    ) , // COP destination register address

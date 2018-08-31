@@ -58,6 +58,8 @@ input  wire             cop_mem_error     // Error
 );
 
 
+assign cop_insn_ack = 1'b0;
+assign cop_insn_rsp = 1'b0;
 
 
 endmodule
