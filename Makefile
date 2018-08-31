@@ -29,3 +29,13 @@ $(COP_WORK)/binutils-gen.h: ./bin/ise-parse-opcodes.py ./docs/ise-opcodes.txt
 rtl_decoder: $(RTL_DECODER)
 $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 	cat $< | $(PARSE_OPCODES) -verilog > $@
+
+.PHONY: yosys_smt2
+yosys_smt2: $(RTL_DECODER)
+	$(MAKE) -C $(COP_HOME)/flow/yosys all
+
+.PHONY: icarus_build
+icarus_build: $(RTL_DECODER)
+	$(MAKE) -C $(COP_HOME)/flow/icarus sim
+
+build_all: yosys_smt2 icarus_build

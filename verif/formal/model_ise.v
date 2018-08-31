@@ -95,14 +95,14 @@ wire [31:0] encoded = cop_insn_enc & {32{cop_insn_valid}};
 //
 
 reg [31:0] model_cprs [15:0];
-reg        model_mccr_c0 = ISE_MCCR_U0_R; 
-reg        model_mccr_c1 = ISE_MCCR_U1_R; 
-reg        model_mccr_c2 = ISE_MCCR_U2_R; 
-reg        model_mccr_c3 = ISE_MCCR_U3_R; 
-reg        model_mccr_c4 = ISE_MCCR_U4_R; 
-reg        model_mccr_c5 = ISE_MCCR_U5_R; 
-reg        model_mccr_c6 = ISE_MCCR_U6_R; 
-reg        model_mccr_c7 = ISE_MCCR_U7_R; 
+reg        model_mccr_c0 = ISE_MCCR_C0_R;
+reg        model_mccr_c1 = ISE_MCCR_C1_R;
+reg        model_mccr_c2 = ISE_MCCR_C2_R;
+reg        model_mccr_c3 = ISE_MCCR_C3_R;
+reg        model_mccr_c4 = ISE_MCCR_C4_R;
+reg        model_mccr_c5 = ISE_MCCR_C5_R;
+reg        model_mccr_c6 = ISE_MCCR_C6_R;
+reg        model_mccr_c7 = ISE_MCCR_C7_R;
 reg        model_mccr_s  = ISE_MCCR_S_R; 
 reg        model_mccr_u  = ISE_MCCR_U_R; 
 
@@ -114,30 +114,32 @@ reg        model_mccr_u  = ISE_MCCR_U_R;
 
 //
 // Applies the reset function to all of the ISE state.
-function model_do_reset();
+task model_do_reset;
+begin
 
     $display("ISE> reset");
 
-    model_mccr_c0 = ISE_MCCR_U0_R; 
-    model_mccr_c1 = ISE_MCCR_U1_R; 
-    model_mccr_c2 = ISE_MCCR_U2_R; 
-    model_mccr_c3 = ISE_MCCR_U3_R; 
-    model_mccr_c4 = ISE_MCCR_U4_R; 
-    model_mccr_c5 = ISE_MCCR_U5_R; 
-    model_mccr_c6 = ISE_MCCR_U6_R; 
-    model_mccr_c7 = ISE_MCCR_U7_R; 
+    model_mccr_c0 = ISE_MCCR_C0_R;
+    model_mccr_c1 = ISE_MCCR_C1_R;
+    model_mccr_c2 = ISE_MCCR_C2_R;
+    model_mccr_c3 = ISE_MCCR_C3_R;
+    model_mccr_c4 = ISE_MCCR_C4_R;
+    model_mccr_c5 = ISE_MCCR_C5_R;
+    model_mccr_c6 = ISE_MCCR_C6_R;
+    model_mccr_c7 = ISE_MCCR_C7_R;
     model_mccr_s  = ISE_MCCR_S_R; 
     model_mccr_u  = ISE_MCCR_U_R; 
 
-endfunction
+end endtask
 
 //
 // Implements ISE functionality when we encounter an invalid opcode.
-function model_do_invalid_opcode();
+task model_do_invalid_opcode;
+begin
 
     $display("ISE> Invalid Opcode: %h", encoded);
 
-endfunction
+end endtask 
 
 
 // ------------------------------------------------------------------------
@@ -154,9 +156,9 @@ endfunction
 //  This process implements the main model control loop. It runs once every
 //  clock tick, and models a single instruction or action every cycle.
 //
-always @(posedge g_clk) begin
+always @(posedge g_clk) begin : p_model_control
 
-    if(g_reset) begin
+    if(!g_resetn) begin
         
         model_do_reset();
 
