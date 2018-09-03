@@ -911,8 +911,20 @@ end endtask
 task model_do_ins_cr;
 begin: t_model_ins_cr
     reg  [31:0] crs1;
+    reg  [31:0] crd ;
+    reg  [5:0]  s;
+    reg  [5:0]  l;
+    reg  [31:0] mask;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction ins.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    s = {dec_arg_cs, 1'b0};
+    l = {dec_arg_cl, 1'b0};
+    mask = (~(32'hFFFF_FFFF << l)) << s;
+    result = (mask & (crs1 << s)) | ((~mask)&crd);
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> ins.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+        s+l,s);
 end endtask
 
 
@@ -922,8 +934,16 @@ end endtask
 task model_do_ext_cr;
 begin: t_model_ext_cr
     reg  [31:0] crs1;
+    reg  [5:0]  s;
+    reg  [5:0]  l;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction ext.cr not implemented");
+    s = {dec_arg_cs, 1'b0};
+    l = {dec_arg_cl, 1'b0};
+    result = (crs1 >> s) & (~(32'hFFFF_FFFF << l));
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> ext.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+        s+l,s);
 end endtask
 
 
