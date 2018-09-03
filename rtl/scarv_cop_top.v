@@ -67,15 +67,20 @@ reg dummy_rsp = 0;
 assign cop_insn_ack = dummy_ack;
 assign cop_insn_rsp = dummy_rsp;
 
-always @(posedge g_clk) dummy_ack <= !g_resetn ? 1'b0 : cpu_insn_req;
+wire new_in = cop_insn_ack && cpu_insn_req;
+
+always @(posedge g_clk) dummy_ack <= !g_resetn    ? 1'b0 :
+                                     cop_insn_rsp ? 1'b0 :
+                                                    cpu_insn_req;
 
 always @(posedge g_clk) begin
-    if(!g_resetn) 
-        dummy_rsp <= 1'b0;
-    else if(dummy_rsp)
-        dummy_rsp <= cpu_insn_ack ? 1'b1 : dummy_ack;
+    if(      new_in)
+        dummy_rsp <= 1'b1;
+    else if(dummy_rsp && !cpu_insn_ack)
+        dummy_rsp <= 1'b1;
     else
-        dummy_rsp <= dummy_ack;
+        dummy_rsp <= 1'b0;
+
 end
 
 // END DUMMY CODE

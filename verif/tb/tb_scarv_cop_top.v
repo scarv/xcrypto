@@ -161,8 +161,8 @@ reg              cop_mem_error   ; // Error
 
 //
 // Model signals
-wire             cop_insn_valid  = cpu_insn_req && cop_insn_ack;
-wire             cop_insn_finish = cop_insn_rsp && cpu_insn_ack;
+wire cop_insn_valid  = cpu_insn_req && cop_insn_ack; // New input instruction
+wire cop_insn_finish = cop_insn_rsp && cpu_insn_ack; // instr output valid.
 
 wire [ 2:0]      grm_result      ; // Instruction execution result
 
