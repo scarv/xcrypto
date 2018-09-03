@@ -555,10 +555,16 @@ end endtask
 //
 task model_do_lmix_cr;
 begin: t_model_lmix_cr
-    reg  [31:0] crs1, crs2;
+    reg  [31:0] crs1, crs2, crd;
+    reg  [31:0] result;
+    reg  [31:0] t0;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction lmix.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
+    result  = (~crs2 & crd) | (crs2 & t0);
+    $display("ISE> lmix.cr c%d, c%d, c%d, %d",
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
@@ -567,10 +573,16 @@ end endtask
 //
 task model_do_hmix_cr;
 begin: t_model_hmix_cr
-    reg  [31:0] crs1, crs2;
+    reg  [31:0] crs1, crs2, crd;
+    reg  [31:0] result;
+    reg  [31:0] t0;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction hmix.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
+    result  = (~crs2 & crd) | (crs2 & t0);
+    $display("ISE> hmix.cr c%d, c%d, c%d, 16+%d",
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
