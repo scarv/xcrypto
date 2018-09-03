@@ -340,21 +340,87 @@ def make_latex_table():
       print
 
 
-def print_chisel_insn(name):
-  s = "  def %-18s = BitPat(\"b" % name.replace('.', '_').upper()
-  for i in range(31, -1, -1):
-    if yank(mask[name], i, 1):
-      s = '%s%d' % (s, yank(match[name], i, 1))
-    else:
-      s = s + '?'
-  print s + "\")"
-
-
 def signed(value, width):
   if 0 <= value < (1<<(width-1)):
     return value
   else:
     return value - (1<<width)
+
+def make_dec_wirename(instrname):
+    return "dec_%s"     % instrname.lower().replace(".","_")
+
+def make_verilog(match,mask):
+    """
+    Generate verilog for decoding all of the ISE instructions.
+    """
+
+    src_wire = "encoded"
+    ise_args = set([])
+    dec_wires= set([])
+
+    for instr in namelist:
+        wirename = make_dec_wirename(instr)
+        tw       = "wire %s = " % (wirename.ljust(15))
+        
+        tw      += "(%s & 32'h%s) == 32'h%s;" % (
+            src_wire, hex(mask[instr])[2:], hex(match[instr])[2:]
+        )
+        
+        dec_wires.add(wirename)
+
+        print(tw)
+
+        for arg in arguments[instr]:
+            ise_args.add(arg)
+
+    for field in ise_args:
+        wirename = "dec_arg_%s" % field.lower().replace(".","_")
+        wirewidth= 1+(arglut[field][0]-arglut[field][1])
+        tw       = "wire [%d:0] %s = encoded[%d:%d];" % (
+            wirewidth,
+            wirename.ljust(15), arglut[field][0],arglut[field][1]
+        )
+        print(tw)
+
+    invalidinstr = "wire dec_invalid_opcode = !(" + \
+        " || ".join(list(dec_wires)) +  \
+        ");" 
+    print(invalidinstr)
+
+
+def make_verilog_extra(match,mask):
+    """
+    Generate verilog code which will only need generating once (hopefully).
+    """
+    
+    # Decode -> implementation function if/else tree
+    for instr in namelist:
+        wirename = make_dec_wirename(instr).ljust(15)
+
+        print("else if (%s) model_do_%s();" % (wirename,wirename[4:]))
+
+    # Empty implementation functions.
+    for instr in namelist:
+        fname = "model_do_%s" % instr.lower().replace(".","_")
+
+        print("//")
+        print("// Implementation function for the %s instruction." % instr)
+        print("//")
+        print("task %s;" % fname)
+        print("begin: t_model_%s"%instr.lower().replace(".","_"))
+        
+        regs_read = [a for a in arguments[instr] if a.startswith("crs")]
+        if(len(regs_read) > 0):
+            print("    reg  [31:0] %s;" % (", ".join(regs_read)))
+
+        for r in regs_read:
+            print("    model_do_read_cpr(dec_arg_%s, %s);" %(r,r))
+
+        print("    $display(\"ISE> ERROR: Instruction %s not implemented\");"\
+            %(instr))
+        print("end endtask")
+        print("")
+        print("")
 
 ##################################
 
@@ -429,11 +495,11 @@ if sys.argv[1] == '-tex':
   make_latex_table()
 elif sys.argv[1] == '-privtex':
   make_supervisor_latex_table()
-elif sys.argv[1] == '-chisel':
-  make_chisel()
 elif sys.argv[1] == '-c':
   make_c(match,mask)
-elif sys.argv[1] == '-go':
-  make_go()
+elif sys.argv[1] == '-verilog':
+  make_verilog(match,mask)
+elif sys.argv[1] == '-verilog-extra':
+  make_verilog_extra(match,mask)
 else:
   assert 0
