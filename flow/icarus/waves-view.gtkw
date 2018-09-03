@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Mon Sep  3 07:55:43 2018
+[*] Mon Sep  3 08:07:01 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/waves.vcd"
-[dumpfile_mtime] "Mon Sep  3 07:54:47 2018"
-[dumpfile_size] 120835
+[dumpfile_mtime] "Mon Sep  3 08:06:19 2018"
+[dumpfile_size] 138906
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
 [size] 1920 1025
 [pos] -1 -1
-*-8.721859 909 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.721859 1228 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [sst_width] 223
 [signals_width] 404
@@ -4172,10 +4172,18 @@ tb_scarv_cop_top.i_grm.cop_insn_valid
 -
 @28
 tb_scarv_cop_top.i_grm.dec_invalid_opcode
+@24
+tb_scarv_cop_top.i_grm.dec_arg_crd[4:0]
+tb_scarv_cop_top.i_grm.dec_arg_crs1[4:0]
+tb_scarv_cop_top.i_grm.dec_arg_crs2[4:0]
+tb_scarv_cop_top.i_grm.dec_arg_crs3[4:0]
+tb_scarv_cop_top.i_grm.dec_arg_rd[5:0]
+tb_scarv_cop_top.i_grm.dec_arg_rs1[5:0]
 @200
 -
-@22
+@25
 tb_scarv_cop_top.i_grm.cop_rd_addr[4:0]
+@22
 tb_scarv_cop_top.i_grm.cop_rd_data[31:0]
 @28
 tb_scarv_cop_top.i_grm.cop_rd_wen
@@ -4209,30 +4217,6 @@ tb_scarv_cop_top.i_grm.dec_acc2_mp
 tb_scarv_cop_top.i_grm.dec_add2_mp
 tb_scarv_cop_top.i_grm.dec_add3_mp
 tb_scarv_cop_top.i_grm.dec_add_px
-tb_scarv_cop_top.i_grm.dec_arg_b0
-tb_scarv_cop_top.i_grm.dec_arg_b1
-tb_scarv_cop_top.i_grm.dec_arg_b2
-tb_scarv_cop_top.i_grm.dec_arg_b3
-tb_scarv_cop_top.i_grm.dec_arg_ca
-tb_scarv_cop_top.i_grm.dec_arg_cb
-tb_scarv_cop_top.i_grm.dec_arg_cc
-tb_scarv_cop_top.i_grm.dec_arg_cd
-tb_scarv_cop_top.i_grm.dec_arg_cl
-tb_scarv_cop_top.i_grm.dec_arg_cmshamt
-tb_scarv_cop_top.i_grm.dec_arg_crd
-tb_scarv_cop_top.i_grm.dec_arg_crdm
-tb_scarv_cop_top.i_grm.dec_arg_crs1
-tb_scarv_cop_top.i_grm.dec_arg_crs2
-tb_scarv_cop_top.i_grm.dec_arg_crs3
-tb_scarv_cop_top.i_grm.dec_arg_cs
-tb_scarv_cop_top.i_grm.dec_arg_cshamt
-tb_scarv_cop_top.i_grm.dec_arg_imm5
-tb_scarv_cop_top.i_grm.dec_arg_imm11
-tb_scarv_cop_top.i_grm.dec_arg_imm11hi
-tb_scarv_cop_top.i_grm.dec_arg_imm11lo
-tb_scarv_cop_top.i_grm.dec_arg_lut4
-tb_scarv_cop_top.i_grm.dec_arg_rd
-tb_scarv_cop_top.i_grm.dec_arg_rs1
 tb_scarv_cop_top.i_grm.dec_bop_cr
 tb_scarv_cop_top.i_grm.dec_cmov_cr
 tb_scarv_cop_top.i_grm.dec_cmovn_cr

@@ -242,6 +242,22 @@ end endtask
 
 
 //
+// Write a GPR with a particular value.
+//
+task model_do_write_gpr;
+    input  [ 4:0] gpr_addr;
+    input  [31:0] gpr_data;
+begin
+    if(cop_rd_wen) begin
+        $display("ISE> WARNING: cop_rd_wen already set for this instruction");
+    end
+    cop_rd_wen  = 1'b1;
+    cop_rd_addr = gpr_addr;
+    cop_rd_data = gpr_data;
+end endtask
+
+
+//
 // Write a CPR with a particular value.
 //
 task model_do_write_cpr;
@@ -254,7 +270,7 @@ end endtask
 
 
 //
-// Write a CPR with a particular value.
+// Read the value in a CPR
 //
 task model_do_read_cpr;
     input  [ 3:0] cpr_addr;
@@ -290,7 +306,8 @@ task model_do_mv2gpr;
 begin: t_model_mv2gpr
     reg  [31:0] crs1;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction mv2gpr not implemented");
+    model_do_write_gpr(dec_arg_rd, crs1);
+    $display("ISE> mv2gpr %d, %d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
 
@@ -299,7 +316,8 @@ end endtask
 //
 task model_do_mv2cop;
 begin: t_model_mv2cop
-    $display("ISE> ERROR: Instruction mv2cop not implemented");
+    model_do_write_cpr(dec_arg_crd, cop_rs1);
+    $display("ISE> mv2cop %d, %d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
 
