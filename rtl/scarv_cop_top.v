@@ -57,6 +57,10 @@ input  wire             cop_mem_error     // Error
 
 );
 
+assign cop_wen = 1'b0;
+assign cop_waddr = 0;
+assign cop_result = 0;
+assign cop_wdata = 0;
 
 //
 // BEGIN DUMMY CODE
@@ -64,7 +68,7 @@ input  wire             cop_mem_error     // Error
 reg dummy_ack = 0;
 reg dummy_rsp = 0;
 
-assign cop_insn_ack = dummy_ack;
+assign cop_insn_ack = dummy_ack && (cop_insn_ack || !cop_insn_rsp);
 assign cop_insn_rsp = dummy_rsp;
 
 wire new_in = cop_insn_ack && cpu_insn_req;

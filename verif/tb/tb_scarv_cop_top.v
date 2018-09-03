@@ -176,6 +176,31 @@ wire [31:0]      grm_rd_data     ; // Data to write to GPR
 //
 // Runtime Checks
 //
+model_checks i_model_checks(
+.g_clk        (g_clk            ), // Global clock
+.g_clk_req    (g_clk_req        ), // Clock request
+.g_resetn     (g_resetn         ), // Synchronous active low reset.
+
+.dut_in_valid (cop_insn_valid   ), // Input Instruction valid
+.dut_insn_enc (cop_insn_enc     ), // Encoded instruction data
+.dut_rs1      (cpu_rs1          ), // RS1 source data
+
+.grm_in_valid (cop_insn_valid   ), // Input Instruction valid
+.grm_insn_enc (cop_insn_enc     ), // Encoded instruction data
+.grm_rs1      (cpu_rs1          ), // RS1 source data
+
+.dut_out_valid(cop_insn_finish  ), // Output of DUT valid.
+.dut_result   (cop_result       ), // Instruction execution result
+.dut_rd_wen   (cop_wen          ), // GPR Write Enable
+.dut_rd_addr  (cop_waddr        ), // GPR Write Address
+.dut_rd_data  (cop_wdata        ), // Data to write to GPR
+
+.grm_out_valid(cop_insn_finish  ), // Output of GRM valid.
+.grm_result   (grm_result       ), // Instruction execution result
+.grm_rd_wen   (grm_rd_wen       ), // GPR Write Enable
+.grm_rd_addr  (grm_rd_addr      ), // GPR Write Address
+.grm_rd_data  (grm_rd_data      )  // Data to write to GPR
+);
 
 
 //

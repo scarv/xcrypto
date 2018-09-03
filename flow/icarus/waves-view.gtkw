@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Mon Sep  3 08:07:01 2018
+[*] Mon Sep  3 08:22:02 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/waves.vcd"
-[dumpfile_mtime] "Mon Sep  3 08:06:19 2018"
-[dumpfile_size] 138906
+[dumpfile_mtime] "Mon Sep  3 08:18:53 2018"
+[dumpfile_size] 117660
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
 [size] 1920 1025
 [pos] -1 -1
-*-8.721859 1228 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.516423 1374 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [sst_width] 223
 [signals_width] 404
 [sst_expanded] 1
 [sst_vpaned_height] 301
-@c00200
+@800200
 -Testbench
 @28
 tb_scarv_cop_top.g_clk
@@ -24,12 +24,11 @@ tb_scarv_cop_top.g_resetn
 @24
 tb_scarv_cop_top.clk_counter[10:0]
 tb_scarv_cop_top.sim_instr_cnt[31:0]
-@28
-tb_scarv_cop_top.i_dut.cpu_insn_req
-tb_scarv_cop_top.cop_insn_ack
 @22
 tb_scarv_cop_top.i_dut.cpu_insn_enc[31:0]
 @28
+tb_scarv_cop_top.i_dut.cpu_insn_req
+tb_scarv_cop_top.cop_insn_ack
 tb_scarv_cop_top.cop_insn_rsp
 tb_scarv_cop_top.cpu_insn_ack
 tb_scarv_cop_top.cop_insn_finish
@@ -4154,6 +4153,7 @@ tb_scarv_cop_top.imemfile[2040:0]
 @1401200
 >-40
 -group_end
+@1000200
 >0
 -Testbench
 @800200
@@ -4168,6 +4168,7 @@ tb_scarv_cop_top.i_grm.cop_rs1[31:0]
 tb_scarv_cop_top.i_grm.cop_insn_enc[31:0]
 @28
 tb_scarv_cop_top.i_grm.cop_insn_valid
+tb_scarv_cop_top.cop_insn_finish
 @200
 -
 @28
@@ -4181,7 +4182,7 @@ tb_scarv_cop_top.i_grm.dec_arg_rd[5:0]
 tb_scarv_cop_top.i_grm.dec_arg_rs1[5:0]
 @200
 -
-@25
+@24
 tb_scarv_cop_top.i_grm.cop_rd_addr[4:0]
 @22
 tb_scarv_cop_top.i_grm.cop_rd_data[31:0]
@@ -4209,7 +4210,7 @@ tb_scarv_cop_top.i_grm.model_cpr_c14[31:0]
 tb_scarv_cop_top.i_grm.model_cpr_c15[31:0]
 @1000200
 -CPRs
-@c00200
+@c00201
 -GRM Decoder
 @28
 tb_scarv_cop_top.i_grm.dec_acc1_mp
@@ -4268,7 +4269,7 @@ tb_scarv_cop_top.i_grm.dec_twid_n0
 tb_scarv_cop_top.i_grm.dec_twid_n1
 @22
 tb_scarv_cop_top.i_grm.encoded[31:0]
-@1401200
+@1401201
 -GRM Decoder
 @1000200
 -Reference Model
