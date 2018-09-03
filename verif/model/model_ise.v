@@ -580,9 +580,15 @@ end endtask
 task model_do_bop_cr;
 begin: t_model_bop_cr
     reg  [31:0] crs1, crs2;
+    integer i;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction bop.cr not implemented");
+    for(i = 0; i < 32; i = i + 1)
+        result[i] = dec_arg_lut4[{crs1[i],crs2[2]}];
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> bop.cr %d, %d, %d, %4b", dec_arg_crd,
+        dec_arg_crs1, dec_arg_crs2, dec_arg_lut4[3:0]);
 end endtask
 
 
