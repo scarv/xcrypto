@@ -791,7 +791,14 @@ end endtask
 //
 task model_do_lui_cr;
 begin: t_model_lui_cr
-    $display("ISE> ERROR: Instruction lui.cr not implemented");
+    reg  [31:0] crsd;
+    reg  [15:0] imm;
+    reg  [31:0] wdata;
+    model_do_read_cpr(dec_arg_crd, crsd);
+    imm   = {dec_arg_imm11,dec_arg_imm5};
+    wdata = {imm,crsd[15:0]};
+    model_do_write_cpr(dec_arg_crd, wdata);
+    $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
 
@@ -800,7 +807,14 @@ end endtask
 //
 task model_do_lli_cr;
 begin: t_model_lli_cr
-    $display("ISE> ERROR: Instruction lli.cr not implemented");
+    reg  [31:0] crsd;
+    reg  [15:0] imm;
+    reg  [31:0] wdata;
+    model_do_read_cpr(dec_arg_crd, crsd);
+    imm   = {dec_arg_imm11,dec_arg_imm5};
+    wdata = {crsd[31:16],imm};
+    model_do_write_cpr(dec_arg_crd, wdata);
+    $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
 

@@ -13,8 +13,8 @@ test_start:
     cmov.cr c6, c2, c3
     cmov.cr c7, c3, c4
     
-    mv2gpr x0, c0
-    mv2gpr x1, c1
-    mv2gpr x2, c2
-    mv2gpr x3, c3
+    mv2gpr x0, c4
+    mv2gpr x1, c5
+    mv2gpr x2, c6
+    mv2gpr x3, c7
 
