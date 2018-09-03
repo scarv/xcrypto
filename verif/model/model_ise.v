@@ -132,7 +132,25 @@ wire [31:0] encoded = cop_insn_enc & {32{cop_insn_valid}};
 //  These registers hold the complete state of the ISE.
 //
 
-reg [31:0] model_cprs [15:0];
+reg  [31:0] model_cprs [15:0];
+
+wire [31:0] model_cpr_c0  = model_cprs[ 0];
+wire [31:0] model_cpr_c1  = model_cprs[ 1];
+wire [31:0] model_cpr_c2  = model_cprs[ 2];
+wire [31:0] model_cpr_c3  = model_cprs[ 3];
+wire [31:0] model_cpr_c4  = model_cprs[ 4];
+wire [31:0] model_cpr_c5  = model_cprs[ 5];
+wire [31:0] model_cpr_c6  = model_cprs[ 6];
+wire [31:0] model_cpr_c7  = model_cprs[ 7];
+wire [31:0] model_cpr_c8  = model_cprs[ 8];
+wire [31:0] model_cpr_c9  = model_cprs[ 9];
+wire [31:0] model_cpr_c10 = model_cprs[10];
+wire [31:0] model_cpr_c11 = model_cprs[11];
+wire [31:0] model_cpr_c12 = model_cprs[12];
+wire [31:0] model_cpr_c13 = model_cprs[13];
+wire [31:0] model_cpr_c14 = model_cprs[14];
+wire [31:0] model_cpr_c15 = model_cprs[15];
+
 reg        model_mccr_c0 = ISE_MCCR_C0_R;
 reg        model_mccr_c1 = ISE_MCCR_C1_R;
 reg        model_mccr_c2 = ISE_MCCR_C2_R;
