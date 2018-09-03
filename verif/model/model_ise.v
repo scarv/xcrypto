@@ -476,7 +476,13 @@ begin: t_model_cmov_cr
     reg  [31:0] crs1, crs2;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction cmov.cr not implemented");
+    if(crs2 == 0) begin
+        model_do_write_cpr(dec_arg_crd,crs1);
+    end else begin
+        // Do nothing
+    end
+    $display("ISE> cmov.cr %d, %d, %d", 
+        dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 
@@ -488,7 +494,13 @@ begin: t_model_cmovn_cr
     reg  [31:0] crs1, crs2;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction cmovn.cr not implemented");
+    if(crs2 == 0) begin
+        // Do nothing
+    end else begin
+        model_do_write_cpr(dec_arg_crd,crs1);
+    end
+    $display("ISE> cmovn.cr %d, %d, %d", 
+        dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 

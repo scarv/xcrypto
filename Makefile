@@ -41,7 +41,7 @@ icarus_build: $(RTL_DECODER)
 	$(MAKE) -C $(COP_HOME)/flow/icarus sim
 
 .PHONY: icarus_run
-icarus_run: icarus_build
+icarus_run: icarus_build unit_tests
 	$(MAKE) -C $(COP_HOME)/flow/icarus run
 
 .PHONY: unit_tests
