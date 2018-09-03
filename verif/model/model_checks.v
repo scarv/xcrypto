@@ -64,6 +64,28 @@ input  wire [31:0]      grm_rd_data       // Data to write to GPR
 
 // ------------------------------------------------------------------------
 
+//
+// Input Output Consistency
+//
+//  Check that we get the right number of output transactions for
+//  the number of input transactions.
+//
+
+reg [10:0] tx_i_counter;
+reg [10:0] tx_o_counter;
+
+always @(posedge g_clk) tx_i_counter <= 
+    !g_resetn ? 0 : tx_i_counter + dut_in_valid;
+
+always @(posedge g_clk) tx_o_counter <= 
+    !g_resetn ? 0 : tx_o_counter + dut_out_valid;
+
+always @(posedge g_clk) if(grm_in_valid && dut_in_valid) begin
+    `MC_ASSERT(tx_o_counter == tx_i_counter);
+end
+
+// ------------------------------------------------------------------------
+
 
 //
 // Output Interface Checking

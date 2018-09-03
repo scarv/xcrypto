@@ -68,7 +68,7 @@ assign cop_wdata = 0;
 reg dummy_ack = 0;
 reg dummy_rsp = 0;
 
-assign cop_insn_ack = dummy_ack && (cop_insn_ack || !cop_insn_rsp);
+assign cop_insn_ack = dummy_ack && (cpu_insn_ack == cop_insn_rsp);
 assign cop_insn_rsp = dummy_rsp;
 
 wire new_in = cop_insn_ack && cpu_insn_req;
