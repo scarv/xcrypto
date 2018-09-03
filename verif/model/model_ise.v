@@ -807,6 +807,9 @@ begin: t_model_lui_cr
     wdata = {imm,crsd[15:0]};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("imm11: %h %b", dec_arg_imm11, dec_arg_imm11);
+    $display("imm5 : %h %b", dec_arg_imm5 , dec_arg_imm5 );
+    $display("imm  : %h %b", imm, imm);
     $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
@@ -824,6 +827,9 @@ begin: t_model_lli_cr
     wdata = {crsd[31:16],imm};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("imm11: %h %b", dec_arg_imm11, dec_arg_imm11);
+    $display("imm5 : %h %b", dec_arg_imm5 , dec_arg_imm5 );
+    $display("imm  : %h %b", imm, imm);
     $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
 end endtask
 

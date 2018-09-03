@@ -14,7 +14,7 @@ test_start:
     lui.cr c5, 0
     lli.cr c5, 0
     
-    ext.cr c5, c4, 1, 4
+    ext.cr c5, c4, 2, 4
     
     lli.cr c6, 0xFF00
     lui.cr c6, 0x0000

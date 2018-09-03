@@ -375,7 +375,7 @@ def make_verilog(match,mask):
 
     for field in ise_args:
         wirename = "dec_arg_%s" % field.lower().replace(".","_")
-        wirewidth= 1+(arglut[field][0]-arglut[field][1])
+        wirewidth= (arglut[field][0]-arglut[field][1])
         tw       = "wire [%d:0] %s = encoded[%d:%d];" % (
             wirewidth,
             wirename.ljust(15), arglut[field][0],arglut[field][1]
