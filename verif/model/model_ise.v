@@ -109,6 +109,16 @@ parameter ISE_MCCR_C5_R = 1; //
 parameter ISE_MCCR_C6_R = 1; // 
 parameter ISE_MCCR_C7_R = 1; // 
 
+
+// Instruction result codes
+localparam ISE_RESULT_SUCCESS           = 3'b000;
+localparam ISE_RESULT_ABORT             = 3'b001;
+localparam ISE_RESULT_DECODE_EXCEPTION  = 3'b010;
+localparam ISE_RESULT_LOAD_ADDR_MISALIGN= 3'b100;
+localparam ISE_RESULT_STOR_ADDR_MISALIGN= 3'b101;
+localparam ISE_RESULT_LOAD_ACCESS_FAULT = 3'b110;
+localparam ISE_RESULT_STOR_ACCESS_FAUKT = 3'b111;
+
 // ------------------------------------------------------------------------
 
 // Input to the generated decoder, gated by whether the input instruction
@@ -236,6 +246,7 @@ end endtask
 task model_do_invalid_opcode;
 begin
 
+    model_do_instr_result(ISE_RESULT_DECODE_EXCEPTION);
     $display("ISE> Invalid Opcode: %h", encoded);
 
 end endtask 
@@ -292,6 +303,15 @@ begin
     rd2 = {dec_arg_crdm,2'b01};
 end endtask
 
+//
+// Set the result of an instruction execution.
+//
+task model_do_instr_result;
+    input  [ 2:0]   result;
+begin
+    cop_result = result;
+end endtask
+
 // ------------------------------------------------------------------------
 
 //
@@ -307,6 +327,7 @@ begin: t_model_mv2gpr
     reg  [31:0] crs1;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_write_gpr(dec_arg_rd, crs1);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> mv2gpr %d, %d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
@@ -317,6 +338,7 @@ end endtask
 task model_do_mv2cop;
 begin: t_model_mv2cop
     model_do_write_cpr(dec_arg_crd, cop_rs1);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> mv2cop %d, %d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
