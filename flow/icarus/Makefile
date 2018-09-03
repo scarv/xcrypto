@@ -1,5 +1,5 @@
 
-RTL_TIMEOUT=1000
+RTL_TIMEOUT=200
 RTL_WAVES  = $(COP_HOME)/work/icarus/waves.vcd
 RTL_TRACE  =
 
