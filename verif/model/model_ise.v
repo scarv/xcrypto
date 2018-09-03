@@ -481,6 +481,7 @@ begin: t_model_cmov_cr
     end else begin
         // Do nothing
     end
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> cmov.cr %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
@@ -499,6 +500,7 @@ begin: t_model_cmovn_cr
     end else begin
         model_do_write_cpr(dec_arg_crd,crs1);
     end
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> cmovn.cr %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
@@ -798,6 +800,7 @@ begin: t_model_lui_cr
     imm   = {dec_arg_imm11,dec_arg_imm5};
     wdata = {imm,crsd[15:0]};
     model_do_write_cpr(dec_arg_crd, wdata);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
@@ -814,6 +817,7 @@ begin: t_model_lli_cr
     imm   = {dec_arg_imm11,dec_arg_imm5};
     wdata = {crsd[31:16],imm};
     model_do_write_cpr(dec_arg_crd, wdata);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
