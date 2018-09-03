@@ -38,14 +38,19 @@ always @(posedge g_clk) begin
     end
 end
 
-integer TB_MAX_CYCLES = 100;
+integer     TB_MAX_CYCLES = 100;
+localparam  SIM_MEM_SIZE  = 64;
+
 reg [255*8:0] wavesfile;    // Where to dump VCD wave files
 reg [255*8:0] imemfile;     // Where to load a test vector from.
 
 initial begin
+    integer i;
     
     if($value$plusargs("VECTOR=%s",imemfile)) begin
         $display("VECTOR:    %s", imemfile);
+        for(i = 0; i < SIM_MEM_SIZE; i = i + 1)
+            sim_instr_mem[i] = 0;
         $readmemh(imemfile, sim_instr_mem);
     end
     
@@ -66,7 +71,7 @@ end
 // Simulation instruction memory
 //
 
-reg  [31:0] sim_instr_mem [64:0];
+reg  [31:0] sim_instr_mem [SIM_MEM_SIZE-1:0];
 reg  [31:0] sim_instr_cnt;
 wire [ 5:0] n_sim_instr_cnt = sim_instr_cnt + 1;
 
