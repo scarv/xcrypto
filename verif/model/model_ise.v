@@ -43,34 +43,14 @@ output reg  [31:0]      cop_rd_data     , // Data to write to GPR
 
 //
 // Memory transaction tracking.
-output reg              cop_mem_cen_0   , // Memory transaction 0 enable
-output reg              cop_mem_wen_0   , // Transaction 0 write enable
-output reg  [ 3:0]      cop_mem_ben_0   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_0  , // Transaction 0 address
-output reg  [31:0]      cop_mem_wdata_0 , // Transaction 0 write enable
-input       [31:0]      cop_mem_rdata_0 , // Transaction 0 write enable
-
-output reg              cop_mem_cen_1   , // Memory transaction 1 enable
-output reg              cop_mem_wen_1   , // Transaction 1 write enable
-output reg  [ 3:0]      cop_mem_ben_1   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_1  , // Transaction 1 address
-output reg  [31:0]      cop_mem_wdata_1 , // Transaction 1 write enable
-input       [31:0]      cop_mem_rdata_1 , // Transaction 1 write enable
-
-output reg              cop_mem_cen_2   , // Memory transaction 1 enable
-output reg              cop_mem_wen_2   , // Transaction 2 write enable
-output reg  [ 3:0]      cop_mem_ben_2   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_2  , // Transaction 2 address
-output reg  [31:0]      cop_mem_wdata_2 , // Transaction 2 write enable
-input       [31:0]      cop_mem_rdata_2 , // Transaction 2 write enable
-
-output reg              cop_mem_cen_3   , // Memory transaction 1 enable
-output reg              cop_mem_wen_3   , // Transaction 3 write enable
-output reg  [ 3:0]      cop_mem_ben_3   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_3  , // Transaction 3 address
-output reg  [31:0]      cop_mem_wdata_3 , // Transaction 3 write enable
-input       [31:0]      cop_mem_rdata_3   // Transaction 3 write enable
-
+input                   cop_mem_cen     , // Memory transaction 0 enable
+input                   cop_mem_wen     , // Transaction 0 write enable
+input       [ 3:0]      cop_mem_ben     , // Transaction byte enable
+input       [31:0]      cop_mem_addr    , // Transaction 0 address
+input       [31:0]      cop_mem_wdata   , // Transaction 0 write enable
+input       [31:0]      cop_mem_rdata   , // Transaction 0 write enable
+input                   cop_mem_stall   ,
+input                   cop_mem_error    
 );
 
 //
@@ -108,6 +88,176 @@ parameter ISE_MCCR_C4_R = 1; //
 parameter ISE_MCCR_C5_R = 1; // 
 parameter ISE_MCCR_C6_R = 1; // 
 parameter ISE_MCCR_C7_R = 1; // 
+    
+
+//
+// Arithmetic pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_ARITH_OPERATION(OP) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = crs1 OP crs2; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {crs1[31:16] OP crs2[31:16], \
+                  crs1[15: 0] OP crs2[15: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {crs1[31:24] OP crs2[31:24], \
+                  crs1[23:16] OP crs2[23:16], \
+                  crs1[15: 8] OP crs2[15: 8], \
+                  crs1[ 7: 0] OP crs2[ 7: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {crs1[31:28] OP crs2[31:28], \
+                  crs1[27:24] OP crs2[27:24], \
+                  crs1[23:20] OP crs2[23:20], \
+                  crs1[19:16] OP crs2[19:16], \
+                  crs1[15:12] OP crs2[15:12], \
+                  crs1[11: 8] OP crs2[11: 8], \
+                  crs1[ 7: 4] OP crs2[ 7: 4], \
+                  crs1[ 3: 0] OP crs2[ 3: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {crs1[31:30] OP crs2[31:30], \
+                  crs1[29:28] OP crs2[29:28], \
+                  crs1[27:26] OP crs2[27:26], \
+                  crs1[25:24] OP crs2[25:24], \
+                  crs1[23:22] OP crs2[23:22], \
+                  crs1[21:20] OP crs2[21:20], \
+                  crs1[19:18] OP crs2[19:18], \
+                  crs1[17:16] OP crs2[17:16], \
+                  crs1[15:14] OP crs2[15:14], \
+                  crs1[13:12] OP crs2[13:12], \
+                  crs1[11:10] OP crs2[11:10], \
+                  crs1[ 9: 8] OP crs2[ 9: 8], \
+                  crs1[ 7: 6] OP crs2[ 7: 6], \
+                  crs1[ 5: 4] OP crs2[ 5: 4], \
+                  crs1[ 3: 2] OP crs2[ 3: 2], \
+                  crs1[ 1: 0] OP crs2[ 1: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
+
+//
+// Shift pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_SHIFT_OPERATION(OP,AMNT) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = crs1 OP AMNT; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {crs1[31:16] OP AMNT, \
+                  crs1[15: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {crs1[31:24] OP AMNT, \
+                  crs1[23:16] OP AMNT, \
+                  crs1[15: 8] OP AMNT, \
+                  crs1[ 7: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {crs1[31:28] OP AMNT, \
+                  crs1[27:24] OP AMNT, \
+                  crs1[23:20] OP AMNT, \
+                  crs1[19:16] OP AMNT, \
+                  crs1[15:12] OP AMNT, \
+                  crs1[11: 8] OP AMNT, \
+                  crs1[ 7: 4] OP AMNT, \
+                  crs1[ 3: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {crs1[31:30] OP AMNT, \
+                  crs1[29:28] OP AMNT, \
+                  crs1[27:26] OP AMNT, \
+                  crs1[25:24] OP AMNT, \
+                  crs1[23:22] OP AMNT, \
+                  crs1[21:20] OP AMNT, \
+                  crs1[19:18] OP AMNT, \
+                  crs1[17:16] OP AMNT, \
+                  crs1[15:14] OP AMNT, \
+                  crs1[13:12] OP AMNT, \
+                  crs1[11:10] OP AMNT, \
+                  crs1[ 9: 8] OP AMNT, \
+                  crs1[ 7: 6] OP AMNT, \
+                  crs1[ 5: 4] OP AMNT, \
+                  crs1[ 3: 2] OP AMNT, \
+                  crs1[ 1: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
+
+//
+// Rotate pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_ROTATE_LEFT_OPERATION(AMNT) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = (crs1 << AMNT) | (crs1 >> (32-AMNT)); \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {(crs1[31:16] << AMNT) | (crs1[31:16] >> (16-AMNT)), \
+                  (crs1[15: 0] << AMNT) | (crs1[15: 0] >> (16-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {(crs1[31:24] << AMNT) | (crs1[31:24] >> (8-AMNT)), \
+                  (crs1[23:16] << AMNT) | (crs1[23:16] >> (8-AMNT)), \
+                  (crs1[15: 8] << AMNT) | (crs1[15: 8] >> (8-AMNT)), \
+                  (crs1[ 7: 0] << AMNT) | (crs1[ 7: 0] >> (8-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {(crs1[31:28] << AMNT) | (crs1[31:28] >> (4-AMNT)), \
+                  (crs1[27:24] << AMNT) | (crs1[27:24] >> (4-AMNT)), \
+                  (crs1[23:20] << AMNT) | (crs1[23:20] >> (4-AMNT)), \
+                  (crs1[19:16] << AMNT) | (crs1[19:16] >> (4-AMNT)), \
+                  (crs1[15:12] << AMNT) | (crs1[15:12] >> (4-AMNT)), \
+                  (crs1[11: 8] << AMNT) | (crs1[11: 8] >> (4-AMNT)), \
+                  (crs1[ 7: 4] << AMNT) | (crs1[ 7: 4] >> (4-AMNT)), \
+                  (crs1[ 3: 0] << AMNT) | (crs1[ 3: 0] >> (4-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {(crs1[31:30] << AMNT) | (crs1[31:30] >> (4-AMNT)), \
+                  (crs1[29:28] << AMNT) | (crs1[29:28] >> (4-AMNT)), \
+                  (crs1[27:26] << AMNT) | (crs1[27:26] >> (4-AMNT)), \
+                  (crs1[25:24] << AMNT) | (crs1[25:24] >> (4-AMNT)), \
+                  (crs1[23:22] << AMNT) | (crs1[23:22] >> (4-AMNT)), \
+                  (crs1[21:20] << AMNT) | (crs1[21:20] >> (4-AMNT)), \
+                  (crs1[19:18] << AMNT) | (crs1[19:18] >> (4-AMNT)), \
+                  (crs1[17:16] << AMNT) | (crs1[17:16] >> (4-AMNT)), \
+                  (crs1[15:14] << AMNT) | (crs1[15:14] >> (4-AMNT)), \
+                  (crs1[13:12] << AMNT) | (crs1[13:12] >> (4-AMNT)), \
+                  (crs1[11:10] << AMNT) | (crs1[11:10] >> (4-AMNT)), \
+                  (crs1[ 9: 8] << AMNT) | (crs1[ 9: 8] >> (4-AMNT)), \
+                  (crs1[ 7: 6] << AMNT) | (crs1[ 7: 6] >> (4-AMNT)), \
+                  (crs1[ 5: 4] << AMNT) | (crs1[ 5: 4] >> (4-AMNT)), \
+                  (crs1[ 3: 2] << AMNT) | (crs1[ 3: 2] >> (4-AMNT)), \
+                  (crs1[ 1: 0] << AMNT) | (crs1[ 1: 0] >> (4-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
+
+
+// Instruction result codes
+localparam ISE_RESULT_SUCCESS           = 3'b000;
+localparam ISE_RESULT_ABORT             = 3'b001;
+localparam ISE_RESULT_DECODE_EXCEPTION  = 3'b010;
+localparam ISE_RESULT_LOAD_ADDR_MISALIGN= 3'b100;
+localparam ISE_RESULT_STOR_ADDR_MISALIGN= 3'b101;
+localparam ISE_RESULT_LOAD_ACCESS_FAULT = 3'b110;
+localparam ISE_RESULT_STOR_ACCESS_FAUKT = 3'b111;
 
 // ------------------------------------------------------------------------
 
@@ -162,6 +312,11 @@ reg        model_mccr_c7 = ISE_MCCR_C7_R;
 reg        model_mccr_s  = ISE_MCCR_S_R; 
 reg        model_mccr_u  = ISE_MCCR_U_R; 
 
+// Bit indicating an instruction will take more than one cycle for
+// the model to produce a result. This is mostly used for memory
+// access instructions.
+reg        model_multi_cycle = 0;
+
 // ------------------------------------------------------------------------
 
 //
@@ -207,26 +362,6 @@ begin
     cop_rd_addr      = 0; // GPR Write Address
     cop_rd_data      = 0; // Data to write to GPR
 
-    cop_mem_cen_0    = 0; // Memory transaction 0 enable
-    cop_mem_wen_0    = 0; // Transaction 0 write enable
-    cop_mem_addr_0   = 0; // Transaction 0 address
-    cop_mem_wdata_0  = 0; // Transaction 0 write enable
-    
-    cop_mem_cen_1    = 0; // Memory transaction 1 enable
-    cop_mem_wen_1    = 0; // Transaction 1 write enable
-    cop_mem_addr_1   = 0; // Transaction 1 address
-    cop_mem_wdata_1  = 0; // Transaction 1 write enable
-    
-    cop_mem_cen_2    = 0; // Memory transaction 1 enable
-    cop_mem_wen_2    = 0; // Transaction 2 write enable
-    cop_mem_addr_2   = 0; // Transaction 2 address
-    cop_mem_wdata_2  = 0; // Transaction 2 write enable
-    
-    cop_mem_cen_3    = 0; // Memory transaction 1 enable
-    cop_mem_wen_3    = 0; // Transaction 3 write enable
-    cop_mem_addr_3   = 0; // Transaction 3 address
-    cop_mem_wdata_3  = 0; // Transaction 3 write enable
-
 end endtask
 
 
@@ -236,6 +371,7 @@ end endtask
 task model_do_invalid_opcode;
 begin
 
+    model_do_instr_result(ISE_RESULT_DECODE_EXCEPTION);
     $display("ISE> Invalid Opcode: %h", encoded);
 
 end endtask 
@@ -292,6 +428,88 @@ begin
     rd2 = {dec_arg_crdm,2'b01};
 end endtask
 
+//
+// Set the result of an instruction execution.
+//
+task model_do_instr_result;
+    input  [ 2:0]   result;
+begin
+    cop_result = result;
+end endtask
+
+
+//
+// Decode and return the decode pack width for an instruction.
+//
+task model_decode_pack_widths;
+    output [ 5:0]   width;
+    output          valid;
+begin : t_model_decode_pack_widths
+    reg a,b,c;
+    a = cop_insn_enc[24];
+    b = cop_insn_enc[19];
+    c = cop_insn_enc[11];
+    if         ({a,b,c} == 3'b000 && ISE_MCCR_P32) begin
+        width = 32;
+        valid = 1;
+    end else if({a,b,c} == 3'b001 && ISE_MCCR_P16) begin
+        width = 16;
+        valid = 1;
+    end else if({a,b,c} == 3'b010 && ISE_MCCR_P8 ) begin
+        width = 8;
+        valid = 1;
+    end else if({a,b,c} == 3'b011 && ISE_MCCR_P4 ) begin
+        width = 4;
+        valid = 1;
+    end else if({a,b,c} == 3'b100 && ISE_MCCR_P2 ) begin
+        width = 2;
+        valid = 1;
+    end else begin
+        width = 0;
+        valid = 0;
+    end
+end endtask
+
+//
+// Utility wires / registers for monitoring the memory transaction
+// snoop interface.
+
+reg         p_cen   ;
+reg [31:0]  p_addr  ;
+reg [ 3:0]  p_ben   ;
+reg         p_wen   ;
+reg [31:0]  p_wdata ;
+
+always @(posedge g_clk) p_cen   <= cop_mem_cen  ;
+always @(posedge g_clk) if(cop_mem_cen) p_wen   <= cop_mem_wen  ;
+always @(posedge g_clk) if(cop_mem_cen) p_ben   <= cop_mem_ben  ;
+always @(posedge g_clk) if(cop_mem_cen) p_addr  <= cop_mem_addr ;
+always @(posedge g_clk) if(cop_mem_cen) p_wdata <= cop_mem_wdata;
+
+//
+// Monitors the input memory bus and returns when a transaction
+// completes.
+//
+task model_do_get_mem_transaction;
+    output        wen  ;
+    output [ 3:0] ben  ;
+    output [31:0] addr ;
+    output [31:0] rdata;
+    output [31:0] wdata;
+    output        error;
+begin : t_model_get_mem_txn
+    
+    wait(p_cen && !cop_mem_stall);
+
+    wen   = p_wen           ;
+    ben   = p_ben           ;
+    addr  = p_addr          ;
+    rdata = cop_mem_rdata   ;
+    wdata = p_wdata         ;
+    error = cop_mem_error   ;
+
+end endtask
+
 // ------------------------------------------------------------------------
 
 //
@@ -307,6 +525,7 @@ begin: t_model_mv2gpr
     reg  [31:0] crs1;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_write_gpr(dec_arg_rd, crs1);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> mv2gpr %d, %d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
@@ -317,6 +536,7 @@ end endtask
 task model_do_mv2cop;
 begin: t_model_mv2cop
     model_do_write_cpr(dec_arg_crd, cop_rs1);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> mv2cop %d, %d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
@@ -327,9 +547,13 @@ end endtask
 task model_do_add_px;
 begin: t_model_add_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction add.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(+)
 end endtask
 
 
@@ -339,9 +563,13 @@ end endtask
 task model_do_sub_px;
 begin: t_model_sub_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sub.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(-)
 end endtask
 
 
@@ -351,9 +579,13 @@ end endtask
 task model_do_mul_px;
 begin: t_model_mul_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction mul.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(*)
 end endtask
 
 
@@ -363,9 +595,13 @@ end endtask
 task model_do_sll_px;
 begin: t_model_sll_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sll.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
 end endtask
 
 
@@ -375,9 +611,13 @@ end endtask
 task model_do_srl_px;
 begin: t_model_srl_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction srl.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
 end endtask
 
 
@@ -387,9 +627,13 @@ end endtask
 task model_do_rot_px;
 begin: t_model_rot_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction rot.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ROTATE_LEFT_OPERATION(crs2[4:0])
 end endtask
 
 
@@ -399,8 +643,12 @@ end endtask
 task model_do_slli_px;
 begin: t_model_slli_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction slli.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(<<, dec_arg_cshamt)
 end endtask
 
 
@@ -410,8 +658,12 @@ end endtask
 task model_do_srli_px;
 begin: t_model_srli_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction srli.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(>>, dec_arg_cshamt)
 end endtask
 
 
@@ -421,8 +673,12 @@ end endtask
 task model_do_roti_px;
 begin: t_model_roti_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction roti.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ROTATE_LEFT_OPERATION(dec_arg_cshamt)
 end endtask
 
 
@@ -454,7 +710,14 @@ begin: t_model_cmov_cr
     reg  [31:0] crs1, crs2;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction cmov.cr not implemented");
+    if(crs2 == 0) begin
+        model_do_write_cpr(dec_arg_crd,crs1);
+    end else begin
+        // Do nothing
+    end
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("ISE> cmov.cr %d, %d, %d", 
+        dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 
@@ -466,7 +729,14 @@ begin: t_model_cmovn_cr
     reg  [31:0] crs1, crs2;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction cmovn.cr not implemented");
+    if(crs2 == 0) begin
+        // Do nothing
+    end else begin
+        model_do_write_cpr(dec_arg_crd,crs1);
+    end
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("ISE> cmovn.cr %d, %d, %d", 
+        dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 
@@ -519,10 +789,16 @@ end endtask
 //
 task model_do_lmix_cr;
 begin: t_model_lmix_cr
-    reg  [31:0] crs1, crs2;
+    reg  [31:0] crs1, crs2, crd;
+    reg  [31:0] result;
+    reg  [31:0] t0;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction lmix.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
+    result  = (~crs2 & crd) | (crs2 & t0);
+    $display("ISE> lmix.cr c%d, c%d, c%d, %d",
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
@@ -531,10 +807,16 @@ end endtask
 //
 task model_do_hmix_cr;
 begin: t_model_hmix_cr
-    reg  [31:0] crs1, crs2;
+    reg  [31:0] crs1, crs2, crd;
+    reg  [31:0] result;
+    reg  [31:0] t0;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction hmix.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
+    result  = (~crs2 & crd) | (crs2 & t0);
+    $display("ISE> hmix.cr c%d, c%d, c%d, 16+%d",
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
@@ -544,9 +826,15 @@ end endtask
 task model_do_bop_cr;
 begin: t_model_bop_cr
     reg  [31:0] crs1, crs2;
+    integer i;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction bop.cr not implemented");
+    for(i = 0; i < 32; i = i + 1)
+        result[i] = dec_arg_lut4[{crs1[i],crs2[2]}];
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> bop.cr %d, %d, %d, %4b", dec_arg_crd,
+        dec_arg_crs1, dec_arg_crs2, dec_arg_lut4[3:0]);
 end endtask
 
 
@@ -757,7 +1045,18 @@ end endtask
 //
 task model_do_lui_cr;
 begin: t_model_lui_cr
-    $display("ISE> ERROR: Instruction lui.cr not implemented");
+    reg  [31:0] crsd;
+    reg  [15:0] imm;
+    reg  [31:0] wdata;
+    model_do_read_cpr(dec_arg_crd, crsd);
+    imm   = {dec_arg_imm11,dec_arg_imm5};
+    wdata = {imm,crsd[15:0]};
+    model_do_write_cpr(dec_arg_crd, wdata);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("imm11: %h %b", dec_arg_imm11, dec_arg_imm11);
+    $display("imm5 : %h %b", dec_arg_imm5 , dec_arg_imm5 );
+    $display("imm  : %h %b", imm, imm);
+    $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
 
@@ -766,7 +1065,18 @@ end endtask
 //
 task model_do_lli_cr;
 begin: t_model_lli_cr
-    $display("ISE> ERROR: Instruction lli.cr not implemented");
+    reg  [31:0] crsd;
+    reg  [15:0] imm;
+    reg  [31:0] wdata;
+    model_do_read_cpr(dec_arg_crd, crsd);
+    imm   = {dec_arg_imm11,dec_arg_imm5};
+    wdata = {crsd[31:16],imm};
+    model_do_write_cpr(dec_arg_crd, wdata);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("imm11: %h %b", dec_arg_imm11, dec_arg_imm11);
+    $display("imm5 : %h %b", dec_arg_imm5 , dec_arg_imm5 );
+    $display("imm  : %h %b", imm, imm);
+    $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
 end endtask
 
 
@@ -853,8 +1163,20 @@ end endtask
 task model_do_ins_cr;
 begin: t_model_ins_cr
     reg  [31:0] crs1;
+    reg  [31:0] crd ;
+    reg  [5:0]  s;
+    reg  [5:0]  l;
+    reg  [31:0] mask;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction ins.cr not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+    s = {dec_arg_cs, 1'b0};
+    l = {dec_arg_cl, 1'b0};
+    mask = (~(32'hFFFF_FFFF << l)) << s;
+    result = (mask & (crs1 << s)) | ((~mask)&crd);
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> ins.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+        s+l,s);
 end endtask
 
 
@@ -864,8 +1186,16 @@ end endtask
 task model_do_ext_cr;
 begin: t_model_ext_cr
     reg  [31:0] crs1;
+    reg  [5:0]  s;
+    reg  [5:0]  l;
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction ext.cr not implemented");
+    s = {dec_arg_cs, 1'b0};
+    l = {dec_arg_cl, 1'b0};
+    result = (crs1 >> s) & (~(32'hFFFF_FFFF << l));
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> ext.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+        s+l,s);
 end endtask
 
 
@@ -918,7 +1248,7 @@ always @(posedge g_clk) begin : p_model_control
         
         model_do_reset();
 
-    end else if(cop_insn_valid) begin
+    end else if(cop_insn_valid && !model_multi_cycle) begin
 
         // Reset model outputs ready for new instruction.
         model_do_clear_outputs();

@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index f60bea15c8..2336a39b2f 100644
+index f60bea15c8..25bd17903c 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -401,6 +401,7 @@ enum reg_class
@@ -109,7 +109,7 @@ index f60bea15c8..2336a39b2f 100644
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
    for (s = str; *s != '\0'; ++s)
-@@ -1267,6 +1321,267 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1267,6 +1321,275 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -164,15 +164,19 @@ index f60bea15c8..2336a39b2f 100644
 +        }
 +        EAT_ARG_TOKENS;
 +        continue;
-+    case 'L': /* cl */
++    case 'L': /* cl - Insert / Extract Length*/
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number >= 16) {
-+          as_bad (_("Crypto ISE Improper multi-precision shift length (%lu). Should be 0 <= x <= 16."),
++        if ((unsigned long) imm_expr->X_add_number > 32) {
++          as_bad (_("Crypto ISE Improper bitfield length length (%lu). Should be 0 <= x <= 32."),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        } else if ((unsigned long) imm_expr->X_add_number & 0x1) {
++          as_bad (_("Crypto ISE Improper bitfield length (%lu). Should be a multiple of 2."),
 +          (unsigned long) imm_expr->X_add_number);
 +          break;
 +        }
-+        INSERT_OPERAND (XCMSHAMT, *ip, imm_expr->X_add_number);
++        INSERT_OPERAND (XCL, *ip, imm_expr->X_add_number >> 1);
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
 +        continue;
@@ -180,12 +184,12 @@ index f60bea15c8..2336a39b2f 100644
 +    case 'r': /* cmshamt */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number >= 30 && !(imm_expr->X_add_number&0x1)) {
-+          as_bad (_("Crypto ISE Improper insert/extract length (%lu). Should be 0 <= x <= 30 and even."),
++        if ((unsigned long) imm_expr->X_add_number >= 16) {
++          as_bad (_("Crypto ISE Improper multi-precision shift (%lu). Should be 0 <= x <= 16"),
 +          (unsigned long) imm_expr->X_add_number);
 +          break;
 +        }
-+        INSERT_OPERAND (XCL, *ip, imm_expr->X_add_number >> 1);
++        INSERT_OPERAND (XCMSHAMT, *ip, imm_expr->X_add_number);
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
 +        continue;
@@ -252,8 +256,12 @@ index f60bea15c8..2336a39b2f 100644
 +    case 'k': /* cs - Insert / Extract start */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number >= 30 && !(imm_expr->X_add_number&0x1)) {
-+          as_bad (_("Crypto ISE Improper insert/extract start (%lu). Should be 0 <= x <= 30 and even."),
++        if ((unsigned long) imm_expr->X_add_number >= 30) {
++          as_bad (_("Crypto ISE Improper insert/extract start (%lu). Should be 0 <= x <= 30."),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        } else if ((unsigned long) imm_expr->X_add_number & 0x1) {
++          as_bad (_("Crypto ISE Improper bitfield start (%lu). Should be a multiple of 2."),
 +          (unsigned long) imm_expr->X_add_number);
 +          break;
 +        }
@@ -347,7 +355,7 @@ index f60bea15c8..2336a39b2f 100644
 +          (unsigned long) imm_expr->X_add_number,65535);
 +          break;
 +        }
-+        INSERT_OPERAND (XIMM11, *ip, imm_expr->X_add_number>>5);
++        INSERT_OPERAND (XIMM11, *ip, (imm_expr->X_add_number>>5) & 0x7FF);
 +        INSERT_OPERAND (XIMM5, *ip, imm_expr->X_add_number & 0x1f);
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
@@ -377,7 +385,7 @@ index f60bea15c8..2336a39b2f 100644
  	    case 'C': /* RVC */
  	      switch (*++args)
  		{
-@@ -1562,6 +1877,7 @@ rvc_lui:
+@@ -1562,6 +1885,7 @@ rvc_lui:
  	    case 't':		/* Target register.  */
  	      if (reg_lookup (&s, RCLASS_GPR, &regno))
  		{

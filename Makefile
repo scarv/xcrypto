@@ -8,6 +8,7 @@ OPCODES_SPEC  = $(COP_HOME)/docs/ise-opcodes.txt
 RTL_DECODER   = $(COP_WORK)/ise_decode.v
 
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
+export RTL_TIMEOUT   ?= 300
 
 .PHONY: docs
 docs:
@@ -41,7 +42,7 @@ icarus_build: $(RTL_DECODER)
 	$(MAKE) -C $(COP_HOME)/flow/icarus sim
 
 .PHONY: icarus_run
-icarus_run: icarus_build
+icarus_run: icarus_build unit_tests
 	$(MAKE) -C $(COP_HOME)/flow/icarus run
 
 .PHONY: unit_tests

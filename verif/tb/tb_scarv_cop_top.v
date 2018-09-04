@@ -219,30 +219,14 @@ model_ise i_grm(
 .cop_rd_wen      (grm_rd_wen      ), // GPR Write Enable
 .cop_rd_addr     (grm_rd_addr     ), // GPR Write Address
 .cop_rd_data     (grm_rd_data     ), // Data to write to GPR
-.cop_mem_cen_0   (                ), // Memory transaction 0 enable
-.cop_mem_wen_0   (                ), // Transaction 0 write enable
-.cop_mem_ben_0   (                ), // Transaction byte enable
-.cop_mem_addr_0  (                ), // Transaction 0 address
-.cop_mem_wdata_0 (                ), // Transaction 0 write enable
-.cop_mem_rdata_0 (0               ), // Transaction 0 write enable
-.cop_mem_cen_1   (                ), // Memory transaction 1 enable
-.cop_mem_wen_1   (                ), // Transaction 1 write enable
-.cop_mem_ben_1   (                ), // Transaction byte enable
-.cop_mem_addr_1  (                ), // Transaction 1 address
-.cop_mem_wdata_1 (                ), // Transaction 1 write enable
-.cop_mem_rdata_1 (0               ), // Transaction 1 write enable
-.cop_mem_cen_2   (                ), // Memory transaction 1 enable
-.cop_mem_wen_2   (                ), // Transaction 2 write enable
-.cop_mem_ben_2   (                ), // Transaction byte enable
-.cop_mem_addr_2  (                ), // Transaction 2 address
-.cop_mem_wdata_2 (                ), // Transaction 2 write enable
-.cop_mem_rdata_2 (0               ), // Transaction 2 write enable
-.cop_mem_cen_3   (                ), // Memory transaction 1 enable
-.cop_mem_wen_3   (                ), // Transaction 3 write enable
-.cop_mem_ben_3   (                ), // Transaction byte enable
-.cop_mem_addr_3  (                ), // Transaction 3 address
-.cop_mem_wdata_3 (                ), // Transaction 3 write enable
-.cop_mem_rdata_3 (0               )  // Transaction 3 write enable
+.cop_mem_cen     (cop_mem_cen     ), // Chip enable
+.cop_mem_wen     (cop_mem_wen     ), // write enable
+.cop_mem_addr    (cop_mem_addr    ), // Read/write address (word aligned)
+.cop_mem_wdata   (cop_mem_wdata   ), // Memory write data
+.cop_mem_rdata   (cop_mem_rdata   ), // Memory read data
+.cop_mem_ben     (cop_mem_ben     ), // Write Byte enable
+.cop_mem_stall   (cop_mem_stall   ), // Stall
+.cop_mem_error   (cop_mem_error   )  // Error
 );
 
 
