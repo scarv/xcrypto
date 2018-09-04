@@ -43,34 +43,14 @@ output reg  [31:0]      cop_rd_data     , // Data to write to GPR
 
 //
 // Memory transaction tracking.
-output reg              cop_mem_cen_0   , // Memory transaction 0 enable
-output reg              cop_mem_wen_0   , // Transaction 0 write enable
-output reg  [ 3:0]      cop_mem_ben_0   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_0  , // Transaction 0 address
-output reg  [31:0]      cop_mem_wdata_0 , // Transaction 0 write enable
-input       [31:0]      cop_mem_rdata_0 , // Transaction 0 write enable
-
-output reg              cop_mem_cen_1   , // Memory transaction 1 enable
-output reg              cop_mem_wen_1   , // Transaction 1 write enable
-output reg  [ 3:0]      cop_mem_ben_1   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_1  , // Transaction 1 address
-output reg  [31:0]      cop_mem_wdata_1 , // Transaction 1 write enable
-input       [31:0]      cop_mem_rdata_1 , // Transaction 1 write enable
-
-output reg              cop_mem_cen_2   , // Memory transaction 1 enable
-output reg              cop_mem_wen_2   , // Transaction 2 write enable
-output reg  [ 3:0]      cop_mem_ben_2   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_2  , // Transaction 2 address
-output reg  [31:0]      cop_mem_wdata_2 , // Transaction 2 write enable
-input       [31:0]      cop_mem_rdata_2 , // Transaction 2 write enable
-
-output reg              cop_mem_cen_3   , // Memory transaction 1 enable
-output reg              cop_mem_wen_3   , // Transaction 3 write enable
-output reg  [ 3:0]      cop_mem_ben_3   , // Transaction byte enable
-output reg  [31:0]      cop_mem_addr_3  , // Transaction 3 address
-output reg  [31:0]      cop_mem_wdata_3 , // Transaction 3 write enable
-input       [31:0]      cop_mem_rdata_3   // Transaction 3 write enable
-
+input                   cop_mem_cen     , // Memory transaction 0 enable
+input                   cop_mem_wen     , // Transaction 0 write enable
+input       [ 3:0]      cop_mem_ben     , // Transaction byte enable
+input       [31:0]      cop_mem_addr    , // Transaction 0 address
+input       [31:0]      cop_mem_wdata   , // Transaction 0 write enable
+input       [31:0]      cop_mem_rdata   , // Transaction 0 write enable
+input                   cop_mem_stall   ,
+input                   cop_mem_error    
 );
 
 //
@@ -332,6 +312,11 @@ reg        model_mccr_c7 = ISE_MCCR_C7_R;
 reg        model_mccr_s  = ISE_MCCR_S_R; 
 reg        model_mccr_u  = ISE_MCCR_U_R; 
 
+// Bit indicating an instruction will take more than one cycle for
+// the model to produce a result. This is mostly used for memory
+// access instructions.
+reg        model_multi_cycle = 0;
+
 // ------------------------------------------------------------------------
 
 //
@@ -376,26 +361,6 @@ begin
     cop_rd_wen       = 0; // GPR Write Enable
     cop_rd_addr      = 0; // GPR Write Address
     cop_rd_data      = 0; // Data to write to GPR
-
-    cop_mem_cen_0    = 0; // Memory transaction 0 enable
-    cop_mem_wen_0    = 0; // Transaction 0 write enable
-    cop_mem_addr_0   = 0; // Transaction 0 address
-    cop_mem_wdata_0  = 0; // Transaction 0 write enable
-    
-    cop_mem_cen_1    = 0; // Memory transaction 1 enable
-    cop_mem_wen_1    = 0; // Transaction 1 write enable
-    cop_mem_addr_1   = 0; // Transaction 1 address
-    cop_mem_wdata_1  = 0; // Transaction 1 write enable
-    
-    cop_mem_cen_2    = 0; // Memory transaction 1 enable
-    cop_mem_wen_2    = 0; // Transaction 2 write enable
-    cop_mem_addr_2   = 0; // Transaction 2 address
-    cop_mem_wdata_2  = 0; // Transaction 2 write enable
-    
-    cop_mem_cen_3    = 0; // Memory transaction 1 enable
-    cop_mem_wen_3    = 0; // Transaction 3 write enable
-    cop_mem_addr_3   = 0; // Transaction 3 address
-    cop_mem_wdata_3  = 0; // Transaction 3 write enable
 
 end endtask
 
@@ -503,6 +468,46 @@ begin : t_model_decode_pack_widths
         width = 0;
         valid = 0;
     end
+end endtask
+
+//
+// Utility wires / registers for monitoring the memory transaction
+// snoop interface.
+
+reg         p_cen   ;
+reg [31:0]  p_addr  ;
+reg [ 3:0]  p_ben   ;
+reg         p_wen   ;
+reg [31:0]  p_wdata ;
+
+always @(posedge g_clk) p_cen   <= cop_mem_cen  ;
+always @(posedge g_clk) if(cop_mem_cen) p_wen   <= cop_mem_wen  ;
+always @(posedge g_clk) if(cop_mem_cen) p_ben   <= cop_mem_ben  ;
+always @(posedge g_clk) if(cop_mem_cen) p_addr  <= cop_mem_addr ;
+always @(posedge g_clk) if(cop_mem_cen) p_wdata <= cop_mem_wdata;
+
+//
+// Monitors the input memory bus and returns when a transaction
+// completes.
+//
+task model_do_get_mem_transaction;
+    output        wen  ;
+    output [ 3:0] ben  ;
+    output [31:0] addr ;
+    output [31:0] rdata;
+    output [31:0] wdata;
+    output        error;
+begin : t_model_get_mem_txn
+    
+    wait(p_cen && !cop_mem_stall);
+
+    wen   = p_wen           ;
+    ben   = p_ben           ;
+    addr  = p_addr          ;
+    rdata = cop_mem_rdata   ;
+    wdata = p_wdata         ;
+    error = cop_mem_error   ;
+
 end endtask
 
 // ------------------------------------------------------------------------
@@ -1243,7 +1248,7 @@ always @(posedge g_clk) begin : p_model_control
         
         model_do_reset();
 
-    end else if(cop_insn_valid) begin
+    end else if(cop_insn_valid && !model_multi_cycle) begin
 
         // Reset model outputs ready for new instruction.
         model_do_clear_outputs();
