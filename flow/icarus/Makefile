@@ -1,7 +1,7 @@
 
-RTL_TIMEOUT=200
-RTL_WAVES  = $(COP_HOME)/work/icarus/waves.vcd
-RTL_TRACE  =
+RTL_TIMEOUT ?=200
+RTL_WAVES   ?= $(COP_HOME)/work/icarus/waves.vcd
+RTL_TRACE    =
 
 SIM_UNIT_TEST ?= 
 

@@ -8,6 +8,7 @@ OPCODES_SPEC  = $(COP_HOME)/docs/ise-opcodes.txt
 RTL_DECODER   = $(COP_WORK)/ise_decode.v
 
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
+export RTL_TIMEOUT   ?= 300
 
 .PHONY: docs
 docs:

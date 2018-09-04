@@ -108,6 +108,166 @@ parameter ISE_MCCR_C4_R = 1; //
 parameter ISE_MCCR_C5_R = 1; // 
 parameter ISE_MCCR_C6_R = 1; // 
 parameter ISE_MCCR_C7_R = 1; // 
+    
+
+//
+// Arithmetic pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_ARITH_OPERATION(OP) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = crs1 OP crs2; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {crs1[31:16] OP crs2[31:16], \
+                  crs1[15: 0] OP crs2[15: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {crs1[31:24] OP crs2[31:24], \
+                  crs1[23:16] OP crs2[23:16], \
+                  crs1[15: 8] OP crs2[15: 8], \
+                  crs1[ 7: 0] OP crs2[ 7: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {crs1[31:28] OP crs2[31:28], \
+                  crs1[27:24] OP crs2[27:24], \
+                  crs1[23:20] OP crs2[23:20], \
+                  crs1[19:16] OP crs2[19:16], \
+                  crs1[15:12] OP crs2[15:12], \
+                  crs1[11: 8] OP crs2[11: 8], \
+                  crs1[ 7: 4] OP crs2[ 7: 4], \
+                  crs1[ 3: 0] OP crs2[ 3: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {crs1[31:30] OP crs2[31:30], \
+                  crs1[29:28] OP crs2[29:28], \
+                  crs1[27:26] OP crs2[27:26], \
+                  crs1[25:24] OP crs2[25:24], \
+                  crs1[23:22] OP crs2[23:22], \
+                  crs1[21:20] OP crs2[21:20], \
+                  crs1[19:18] OP crs2[19:18], \
+                  crs1[17:16] OP crs2[17:16], \
+                  crs1[15:14] OP crs2[15:14], \
+                  crs1[13:12] OP crs2[13:12], \
+                  crs1[11:10] OP crs2[11:10], \
+                  crs1[ 9: 8] OP crs2[ 9: 8], \
+                  crs1[ 7: 6] OP crs2[ 7: 6], \
+                  crs1[ 5: 4] OP crs2[ 5: 4], \
+                  crs1[ 3: 2] OP crs2[ 3: 2], \
+                  crs1[ 1: 0] OP crs2[ 1: 0]}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
+
+//
+// Shift pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_SHIFT_OPERATION(OP,AMNT) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = crs1 OP AMNT; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {crs1[31:16] OP AMNT, \
+                  crs1[15: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {crs1[31:24] OP AMNT, \
+                  crs1[23:16] OP AMNT, \
+                  crs1[15: 8] OP AMNT, \
+                  crs1[ 7: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {crs1[31:28] OP AMNT, \
+                  crs1[27:24] OP AMNT, \
+                  crs1[23:20] OP AMNT, \
+                  crs1[19:16] OP AMNT, \
+                  crs1[15:12] OP AMNT, \
+                  crs1[11: 8] OP AMNT, \
+                  crs1[ 7: 4] OP AMNT, \
+                  crs1[ 3: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {crs1[31:30] OP AMNT, \
+                  crs1[29:28] OP AMNT, \
+                  crs1[27:26] OP AMNT, \
+                  crs1[25:24] OP AMNT, \
+                  crs1[23:22] OP AMNT, \
+                  crs1[21:20] OP AMNT, \
+                  crs1[19:18] OP AMNT, \
+                  crs1[17:16] OP AMNT, \
+                  crs1[15:14] OP AMNT, \
+                  crs1[13:12] OP AMNT, \
+                  crs1[11:10] OP AMNT, \
+                  crs1[ 9: 8] OP AMNT, \
+                  crs1[ 7: 6] OP AMNT, \
+                  crs1[ 5: 4] OP AMNT, \
+                  crs1[ 3: 2] OP AMNT, \
+                  crs1[ 1: 0] OP AMNT}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
+
+//
+// Rotate pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_ROTATE_LEFT_OPERATION(AMNT) begin \
+    if(!pw_valid) begin \
+        model_do_invalid_opcode(); \
+    end else if(pw == 32) begin \
+        result = (crs1 << AMNT) | (crs1 >> (32-AMNT)); \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw == 16) begin \
+        result = {(crs1[31:16] << AMNT) | (crs1[31:16] >> (16-AMNT)), \
+                  (crs1[15: 0] << AMNT) | (crs1[15: 0] >> (16-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  8) begin \
+        result = {(crs1[31:24] << AMNT) | (crs1[31:24] >> (8-AMNT)), \
+                  (crs1[23:16] << AMNT) | (crs1[23:16] >> (8-AMNT)), \
+                  (crs1[15: 8] << AMNT) | (crs1[15: 8] >> (8-AMNT)), \
+                  (crs1[ 7: 0] << AMNT) | (crs1[ 7: 0] >> (8-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  4) begin \
+        result = {(crs1[31:28] << AMNT) | (crs1[31:28] >> (4-AMNT)), \
+                  (crs1[27:24] << AMNT) | (crs1[27:24] >> (4-AMNT)), \
+                  (crs1[23:20] << AMNT) | (crs1[23:20] >> (4-AMNT)), \
+                  (crs1[19:16] << AMNT) | (crs1[19:16] >> (4-AMNT)), \
+                  (crs1[15:12] << AMNT) | (crs1[15:12] >> (4-AMNT)), \
+                  (crs1[11: 8] << AMNT) | (crs1[11: 8] >> (4-AMNT)), \
+                  (crs1[ 7: 4] << AMNT) | (crs1[ 7: 4] >> (4-AMNT)), \
+                  (crs1[ 3: 0] << AMNT) | (crs1[ 3: 0] >> (4-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end else if(pw ==  2) begin \
+        result = {(crs1[31:30] << AMNT) | (crs1[31:30] >> (4-AMNT)), \
+                  (crs1[29:28] << AMNT) | (crs1[29:28] >> (4-AMNT)), \
+                  (crs1[27:26] << AMNT) | (crs1[27:26] >> (4-AMNT)), \
+                  (crs1[25:24] << AMNT) | (crs1[25:24] >> (4-AMNT)), \
+                  (crs1[23:22] << AMNT) | (crs1[23:22] >> (4-AMNT)), \
+                  (crs1[21:20] << AMNT) | (crs1[21:20] >> (4-AMNT)), \
+                  (crs1[19:18] << AMNT) | (crs1[19:18] >> (4-AMNT)), \
+                  (crs1[17:16] << AMNT) | (crs1[17:16] >> (4-AMNT)), \
+                  (crs1[15:14] << AMNT) | (crs1[15:14] >> (4-AMNT)), \
+                  (crs1[13:12] << AMNT) | (crs1[13:12] >> (4-AMNT)), \
+                  (crs1[11:10] << AMNT) | (crs1[11:10] >> (4-AMNT)), \
+                  (crs1[ 9: 8] << AMNT) | (crs1[ 9: 8] >> (4-AMNT)), \
+                  (crs1[ 7: 6] << AMNT) | (crs1[ 7: 6] >> (4-AMNT)), \
+                  (crs1[ 5: 4] << AMNT) | (crs1[ 5: 4] >> (4-AMNT)), \
+                  (crs1[ 3: 2] << AMNT) | (crs1[ 3: 2] >> (4-AMNT)), \
+                  (crs1[ 1: 0] << AMNT) | (crs1[ 1: 0] >> (4-AMNT))}; \
+        model_do_write_cpr(dec_arg_crd, result[31:0]); \
+    end \
+end \
 
 
 // Instruction result codes
@@ -312,6 +472,39 @@ begin
     cop_result = result;
 end endtask
 
+
+//
+// Decode and return the decode pack width for an instruction.
+//
+task model_decode_pack_widths;
+    output [ 5:0]   width;
+    output          valid;
+begin : t_model_decode_pack_widths
+    reg a,b,c;
+    a = cop_insn_enc[24];
+    b = cop_insn_enc[19];
+    c = cop_insn_enc[11];
+    if         ({a,b,c} == 3'b000 && ISE_MCCR_P32) begin
+        width = 32;
+        valid = 1;
+    end else if({a,b,c} == 3'b001 && ISE_MCCR_P16) begin
+        width = 16;
+        valid = 1;
+    end else if({a,b,c} == 3'b010 && ISE_MCCR_P8 ) begin
+        width = 8;
+        valid = 1;
+    end else if({a,b,c} == 3'b011 && ISE_MCCR_P4 ) begin
+        width = 4;
+        valid = 1;
+    end else if({a,b,c} == 3'b100 && ISE_MCCR_P2 ) begin
+        width = 2;
+        valid = 1;
+    end else begin
+        width = 0;
+        valid = 0;
+    end
+end endtask
+
 // ------------------------------------------------------------------------
 
 //
@@ -349,9 +542,13 @@ end endtask
 task model_do_add_px;
 begin: t_model_add_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction add.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(+)
 end endtask
 
 
@@ -361,9 +558,13 @@ end endtask
 task model_do_sub_px;
 begin: t_model_sub_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sub.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(-)
 end endtask
 
 
@@ -373,9 +574,13 @@ end endtask
 task model_do_mul_px;
 begin: t_model_mul_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction mul.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ARITH_OPERATION(*)
 end endtask
 
 
@@ -385,9 +590,13 @@ end endtask
 task model_do_sll_px;
 begin: t_model_sll_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sll.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
 end endtask
 
 
@@ -397,9 +606,13 @@ end endtask
 task model_do_srl_px;
 begin: t_model_srl_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction srl.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
 end endtask
 
 
@@ -409,9 +622,13 @@ end endtask
 task model_do_rot_px;
 begin: t_model_rot_px
     reg  [31:0] crs1, crs2;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction rot.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ROTATE_LEFT_OPERATION(crs2[4:0])
 end endtask
 
 
@@ -421,8 +638,12 @@ end endtask
 task model_do_slli_px;
 begin: t_model_slli_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction slli.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(<<, dec_arg_cshamt)
 end endtask
 
 
@@ -432,8 +653,12 @@ end endtask
 task model_do_srli_px;
 begin: t_model_srli_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction srli.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_SHIFT_OPERATION(>>, dec_arg_cshamt)
 end endtask
 
 
@@ -443,8 +668,12 @@ end endtask
 task model_do_roti_px;
 begin: t_model_roti_px
     reg  [31:0] crs1;
+    reg  [31:0] result;
+    reg  [ 5:0] pw;
+    reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction roti.px not implemented");
+    model_decode_pack_widths(pw,pw_valid);
+    `PACK_WIDTH_ROTATE_LEFT_OPERATION(dec_arg_cshamt)
 end endtask
 
 
