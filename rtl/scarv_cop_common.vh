@@ -20,5 +20,12 @@ localparam SCARV_COP_INSN_BAD_SAD =  3'b101;
 localparam SCARV_COP_INSN_LD_ERR  =  3'b110;
 localparam SCARV_COP_INSN_ST_ERR  =  3'b111;
 
+localparam SCARV_COP_ICLASS_PACKED_ARITH = 3'b001;
+localparam SCARV_COP_ICLASS_TWIDDLE      = 3'b010;
+localparam SCARV_COP_ICLASS_LOADSTORE    = 3'b011;
+localparam SCARV_COP_ICLASS_RANDOM       = 3'b100;
+localparam SCARV_COP_ICLASS_MOVE         = 3'b101;
+localparam SCARV_COP_ICLASS_MP           = 3'b110;
+localparam SCARV_COP_ICLASS_BITWISE      = 3'b111;
 
 `endif
