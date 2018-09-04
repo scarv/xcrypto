@@ -34,7 +34,7 @@ output wire [31:0]      crs3_rdata    , // Port 3 read data
 
 input  wire [ 3:0]      crd_wen       , // Port 4 write enable
 input  wire [ 3:0]      crd_addr      , // Port 4 address
-input  wire [31:0]      crd_wdata     , // Port 4 write data
+input  wire [31:0]      crd_wdata       // Port 4 write data
 
 );
 
