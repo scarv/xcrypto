@@ -80,6 +80,8 @@ wire [ 3:0]   id_crd2         ; // Instruction destination register 2
 wire [ 4:0]   id_rd           ; // GPR destination register
 wire [ 4:0]   id_rs1          ; // GPR source register
 wire [31:0]   id_imm          ; // Decoded immediate.
+wire [31:0]   id_wb_h         ; // Halfword index (load/store)
+wire [31:0]   id_wb_b         ; // Byte index (load/store)
 
 wire          crs1_ren        ; // CPR Port 1 read enable
 wire [ 3:0]   crs1_addr       ; // CPR Port 1 address
@@ -149,7 +151,9 @@ scarv_cop_idecode i_scarv_cop_idecode (
 .id_crd2     (id_crd2     ), // Instruction destination register 2
 .id_rd       (id_rd       ), // GPR destination register
 .id_rs1      (id_rs1      ), // GPR source register
-.id_imm      (id_imm      )  // Decoded immediate.
+.id_imm      (id_imm      ), // Decoded immediate.
+.id_wb_h     (id_wb_h     ),
+.id_wb_b     (id_wb_b     )
 );
 
 
