@@ -42,9 +42,9 @@ localparam SCARV_COP_SCLASS_SCATTER_H = 4'd2 ;
 localparam SCARV_COP_SCLASS_GATHER_H  = 4'd3 ;
 localparam SCARV_COP_SCLASS_SW_CR     = 4'd4 ;
 localparam SCARV_COP_SCLASS_LW_CR     = 4'd5 ;
-localparam SCARV_COP_SCLASS_SHU_CR    = 4'd6 ;
+localparam SCARV_COP_SCLASS_SH_CR     = 4'd6 ;
 localparam SCARV_COP_SCLASS_LH_CR     = 4'd7 ;
-localparam SCARV_COP_SCLASS_SBU_CR    = 4'd8 ;
+localparam SCARV_COP_SCLASS_SB_CR     = 4'd8 ;
 localparam SCARV_COP_SCLASS_LB_CR     = 4'd9 ;
     
 localparam SCARV_COP_SCLASS_LMIX_CR = 4'd0;

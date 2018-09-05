@@ -31,7 +31,9 @@ output wire [ 3:0] id_crd1         , // Instruction destination register 1
 output wire [ 3:0] id_crd2         , // Instruction destination register 2
 output wire [ 4:0] id_rd           , // GPR destination register
 output wire [ 4:0] id_rs1          , // GPR source register
-output wire [31:0] id_imm            // Decoded immediate.
+output wire [31:0] id_imm          , // Decoded immediate.
+output wire [31:0] id_wb_h         , // Halfword index (load/store)
+output wire [31:0] id_wb_b           // Byte index (load/store)
 
 );
 
@@ -121,9 +123,9 @@ wire [3:0] subclass_load_store =
     {4{dec_gather_h }} & {SCARV_COP_SCLASS_GATHER_H } |
     {4{dec_sw_cr    }} & {SCARV_COP_SCLASS_SW_CR    } |
     {4{dec_lw_cr    }} & {SCARV_COP_SCLASS_LW_CR    } |
-    {4{dec_sh_cr    }} & {SCARV_COP_SCLASS_SHU_CR   } |
+    {4{dec_sh_cr    }} & {SCARV_COP_SCLASS_SH_CR    } |
     {4{dec_lhu_cr   }} & {SCARV_COP_SCLASS_LH_CR    } |
-    {4{dec_sb_cr    }} & {SCARV_COP_SCLASS_SBU_CR   } |
+    {4{dec_sb_cr    }} & {SCARV_COP_SCLASS_SB_CR    } |
     {4{dec_lbu_cr   }} & {SCARV_COP_SCLASS_LB_CR    } ;
 
 wire [3:0] subclass_mp =
@@ -170,5 +172,7 @@ assign id_imm =
     {32{imm_sh_mp   }} & {27'b0, dec_arg_cmshamt                          } |
     {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } ;
 
+assign id_wb_h = dec_arg_cc ;
+assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_cc;
 
 endmodule
