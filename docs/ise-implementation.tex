@@ -403,6 +403,14 @@ decoded output fields will be valid for every instruction.
     For load and store offsets, the encoded immediates are also
     sign-extended.
 }
+\SIGNALO{1}{id\_wb\_h}{
+    Halfword write index for loads and stores. For instructions which can
+    read or write a particular halfword of a memory word or register.
+}
+\SIGNALO{1}{id\_wb\_b}{
+    Byte write index for loads and stores. For instructions which can
+    read or write a particular byte of a memory word or register.
+}
 }{
     Input and output signals to the crypto ISE instruction decode block.
 }{tab:sigs-decode-block}
@@ -716,6 +724,14 @@ listed in table \ref{tab:sigs-mem-block}.
 }
 \SIGNALI{32}{id\_imm}{
     The decoded offset immediate. Used for load/store offsets.
+}
+\SIGNALO{1}{id\_wb\_h}{
+    Halfword write index for loads and stores. For instructions which can
+    read or write a particular halfword of a memory word or register.
+}
+\SIGNALO{1}{id\_wb\_b}{
+    Byte write index for loads and stores. For instructions which can
+    read or write a particular byte of a memory word or register.
 }
 \SIGNALI{32}{gpr\_rs1}{
     Source register 1 from the RISC-V GPR file. Used as the base address
