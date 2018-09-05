@@ -9,9 +9,6 @@
 // 
 // 
 
-`ifndef SCARV_COP_COMMON_VH
-`define SCARV_COP_COMMON_VH
-
 localparam SCARV_COP_INSN_SUCCESS =  3'b000;
 localparam SCARV_COP_INSN_ABORT   =  3'b001;
 localparam SCARV_COP_INSN_BAD_INS =  3'b010;
@@ -28,6 +25,16 @@ localparam SCARV_COP_ICLASS_MOVE         = 3'b101;
 localparam SCARV_COP_ICLASS_MP           = 3'b110;
 localparam SCARV_COP_ICLASS_BITWISE      = 3'b111;
     
+localparam SCARV_COP_SCLASS_CMOV      = 4'b1100;
+localparam SCARV_COP_SCLASS_CMOVN     = 4'b1101;
+
+localparam SCARV_COP_SCLASS_TWID_B    = 4'b0000;
+localparam SCARV_COP_SCLASS_TWID_N0   = 4'b0010;
+localparam SCARV_COP_SCLASS_TWID_N1   = 4'b0011;
+localparam SCARV_COP_SCLASS_TWID_C0   = 4'b0100;
+localparam SCARV_COP_SCLASS_TWID_C1   = 4'b0101;
+localparam SCARV_COP_SCLASS_TWID_C2   = 4'b0110;
+localparam SCARV_COP_SCLASS_TWID_C3   = 4'b0111;
     
 localparam SCARV_COP_SCLASS_SCATTER_B = 4'd0 ;
 localparam SCARV_COP_SCLASS_GATHER_B  = 4'd1 ;
@@ -48,4 +55,3 @@ localparam SCARV_COP_SCLASS_EXT_CR  = 4'd4;
 localparam SCARV_COP_SCLASS_LLI_CR  = 4'd5;
 localparam SCARV_COP_SCLASS_LUI_CR  = 4'd6;
 
-`endif
