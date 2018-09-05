@@ -16,7 +16,7 @@
 //
 module scarv_cop_malu (
 input  wire         malu_ivalid      , // Valid instruction input
-input  wire         malu_idone       , // Instruction complete
+output wire         malu_idone       , // Instruction complete
 
 input  wire [31:0]  malu_rs1         , // Source register 1
 input  wire [31:0]  malu_rs2         , // Source register 2
