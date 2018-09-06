@@ -31,22 +31,22 @@ input  wire [31:0]  cpr_rs2          , // Source register 3
 input  wire [31:0]  id_wb_h          , // Halfword index (load/store)
 input  wire [31:0]  id_wb_b          , // Byte index (load/store)
 input  wire [31:0]  id_imm           , // Source immedate
-input  wire [31:0]  id_class         , // Instruction class
-input  wire [31:0]  id_subclass      , // Instruction subclass
+input  wire [ 2:0]  id_class         , // Instruction class
+input  wire [ 3:0]  id_subclass      , // Instruction subclass
 
 output wire [ 3:0]  mem_cpr_rd_ben   , // Writeback byte enable
-output wire [ 3:0]  mem_cpr_rd_wdata , // Writeback data
+output wire [31:0]  mem_cpr_rd_wdata , // Writeback data
 
 //
 // Memory Interface
-output wire             cop_mem_cen  , // Chip enable
-output wire             cop_mem_wen  , // write enable
-output wire [31:0]      cop_mem_addr , // Read/write address (word aligned)
-output wire [31:0]      cop_mem_wdata, // Memory write data
-input  wire [31:0]      cop_mem_rdata, // Memory read data
-output wire [ 3:0]      cop_mem_ben  , // Write Byte enable
-input  wire             cop_mem_stall, // Stall
-input  wire             cop_mem_error  // Error
+output wire         cop_mem_cen      , // Chip enable
+output wire         cop_mem_wen      , // write enable
+output wire [31:0]  cop_mem_addr     , // Read/write address (word aligned)
+output wire [31:0]  cop_mem_wdata    , // Memory write data
+input  wire [31:0]  cop_mem_rdata    , // Memory read data
+output wire [ 3:0]  cop_mem_ben      , // Write Byte enable
+input  wire         cop_mem_stall    , // Stall
+input  wire         cop_mem_error      // Error
 );
 
 // Common field encodings and definitions
@@ -221,7 +221,9 @@ always @(*) begin
     end
 end
 
-assign mem_cpr_rd_wdata  = {wb_bytes[3],wb_bytes[2],wb_bytes[1],wb_bytes[0]};
+assign mem_cpr_rd_wdata  = 
+    {32{mem_txn_good}} & 
+    {wb_bytes[3],wb_bytes[2],wb_bytes[1],wb_bytes[0]};
 
 assign mem_cpr_rd_ben[3] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_3);
 assign mem_cpr_rd_ben[2] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_2);

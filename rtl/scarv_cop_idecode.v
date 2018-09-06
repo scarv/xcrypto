@@ -27,8 +27,9 @@ output wire [ 2:0] id_pw           , // Instruction pack width.
 output wire [ 3:0] id_crs1         , // Instruction source register 1
 output wire [ 3:0] id_crs2         , // Instruction source register 2
 output wire [ 3:0] id_crs3         , // Instruction source register 3
-output wire [ 3:0] id_crd1         , // Instruction destination register 1
-output wire [ 3:0] id_crd2         , // Instruction destination register 2
+output wire [ 3:0] id_crd          , // Instruction destination register
+output wire [ 3:0] id_crd1         , // MP Instruction destination register 1
+output wire [ 3:0] id_crd2         , // MP Instruction destination register 2
 output wire [ 4:0] id_rd           , // GPR destination register
 output wire [ 4:0] id_rs1          , // GPR source register
 output wire [31:0] id_imm          , // Decoded immediate.
@@ -63,6 +64,7 @@ parameter ISE_MCCR_P2   = 1; //
 assign id_crs1 = dec_arg_crs1;
 assign id_crs2 = dec_arg_crs2;
 assign id_crs3 = dec_arg_crs3;
+assign id_crd  = dec_arg_crd ;
 assign id_rs1  = dec_arg_rs1;
 assign id_crd1 = {dec_arg_crdm, 2'b00};
 assign id_crd2 = {dec_arg_crdm, 2'b01};

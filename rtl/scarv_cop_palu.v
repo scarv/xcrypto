@@ -22,17 +22,18 @@ module scarv_cop_palu (
 input  wire         palu_ivalid      , // Valid instruction input
 output wire         palu_idone       , // Instruction complete
 
+input  wire [31:0]  gpr_rs1          , // GPR Source register 1
 input  wire [31:0]  palu_rs1         , // Source register 1
 input  wire [31:0]  palu_rs2         , // Source register 2
 input  wire [31:0]  palu_rs3         , // Source register 3
 
 input  wire [31:0]  id_imm           , // Source immedate
 input  wire [ 2:0]  id_pw            , // Pack width
-input  wire [31:0]  id_class         , // Instruction class
-input  wire [31:0]  id_subclass      , // Instruction subclass
+input  wire [ 2:0]  id_class         , // Instruction class
+input  wire [ 3:0]  id_subclass      , // Instruction subclass
 
 output wire [ 3:0]  palu_cpr_rd_ben  , // Writeback byte enable
-output wire [ 3:0]  palu_cpr_rd_wdata  // Writeback data
+output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
 );
 
 // Commom field name and values.
@@ -42,7 +43,7 @@ output wire [ 3:0]  palu_cpr_rd_wdata  // Writeback data
 assign palu_idone = palu_ivalid;
 
 // Detect which subclass of instruction to execute.
-wire is_cmov_insn = 
+wire is_mov_insn  = 
     palu_ivalid && id_class == SCARV_COP_ICLASS_MOVE;
 
 wire is_bitwise_insn = 
@@ -57,7 +58,7 @@ wire is_twid_insn =
 //
 // Result data muxing
 assign palu_cpr_rd_wdata = 
-    {32{is_cmov_insn    }} & result_cmov    |
+    {32{is_mov_insn     }} & result_cmov    |
     {32{is_bitwise_insn }} & result_bitwise |
     {32{is_parith_insn  }} & result_parith  |
     {32{is_twid_insn    }} & result_twid    ;
@@ -65,7 +66,7 @@ assign palu_cpr_rd_wdata =
 //
 // Should the result be written back?
 assign palu_cpr_rd_ben =
-    is_cmov_insn                                      ? {4{wen_cmov}} :
+    is_mov_insn                                       ? {4{wen_cmov}} :
     is_bitwise_insn || is_parith_insn || is_twid_insn ? 4'hF          :
                                                         4'h0          ;
 
@@ -76,12 +77,16 @@ assign palu_cpr_rd_ben =
 //
 
 wire        cmov_cond   = palu_rs2 == 0;
-wire [31:0] result_cmov = palu_rs1;
+wire [31:0] result_cmov = is_mv2cop ? gpr_rs1 : palu_rs1;
+
+wire        is_cmov   = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV  ;
+wire        is_cmovn  = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOVN ;
+wire        is_mv2cop = is_mov_insn && id_subclass == SCARV_COP_SCLASS_MV2COP;
+
 wire        wen_cmov    = 
-    is_cmov_insn && (
-        (id_subclass == SCARV_COP_SCLASS_CMOV  &&  cmov_cond) ||
-        (id_subclass == SCARV_COP_SCLASS_CMOVN && !cmov_cond)
-    );
+        (is_mv2cop             ) ||
+        (is_cmov  &&  cmov_cond) ||
+        (is_cmovn && !cmov_cond)  ;
 
 // ----------------------------------------------------------------------
 

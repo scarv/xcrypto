@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Tue Sep  4 13:32:23 2018
+[*] Thu Sep  6 08:01:21 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/waves.vcd"
-[dumpfile_mtime] "Tue Sep  4 13:31:47 2018"
-[dumpfile_size] 80491
+[dumpfile_mtime] "Thu Sep  6 08:01:05 2018"
+[dumpfile_size] 80122
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
 [size] 1920 1025
 [pos] -1 -1
-*-11.882953 12020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.184587 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [treeopen] tb_scarv_cop_top.i_dut.
 [treeopen] tb_scarv_cop_top.i_grm.model_do_slli_px.
@@ -4358,28 +4358,50 @@ tb_scarv_cop_top.i_model_checks.tx_o_counter[10:0]
 -Model Checks
 @800200
 -DUT
-@c00201
 -DUT CPRs
-@22
+@25
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_addr[3:0]
+@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wdata[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wen[3:0]
+@25
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs1_addr[3:0]
+@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs1_rdata[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs1_ren
-@22
+@25
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs2_addr[3:0]
+@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs2_rdata[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs2_ren
-@22
+@25
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs3_addr[3:0]
+@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs3_rdata[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs3_ren
-@1401201
+@1000200
 -DUT CPRs
+@800200
+-Memory
+@22
+tb_scarv_cop_top.i_dut.cop_mem_addr[31:0]
+tb_scarv_cop_top.i_dut.cop_mem_ben[3:0]
+@28
+tb_scarv_cop_top.i_dut.cop_mem_cen
+tb_scarv_cop_top.i_dut.cop_mem_error
+@22
+tb_scarv_cop_top.i_dut.cop_mem_rdata[31:0]
+@28
+tb_scarv_cop_top.i_dut.cop_mem_stall
+@22
+tb_scarv_cop_top.i_dut.cop_mem_wdata[31:0]
+@28
+tb_scarv_cop_top.i_dut.cop_mem_wen
+@1000200
+-Memory
 @c00200
 -DUT Decode
 @28
