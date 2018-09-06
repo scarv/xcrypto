@@ -40,6 +40,7 @@ output reg  [15:0]      cop_cprs_read   , // CPR Registers written by instr
 output reg              cop_rd_wen      , // GPR Write Enable
 output reg  [ 4:0]      cop_rd_addr     , // GPR Write Address
 output reg  [31:0]      cop_rd_data     , // Data to write to GPR
+output reg              cop_insn_finish , // Instruction finished
 
 //
 // Memory transaction tracking.
@@ -88,6 +89,8 @@ parameter ISE_MCCR_C4_R = 1; //
 parameter ISE_MCCR_C5_R = 1; // 
 parameter ISE_MCCR_C6_R = 1; // 
 parameter ISE_MCCR_C7_R = 1; // 
+
+parameter ISE_RESET_CPRS= 1; // Reset CPRS to zero?
     
 
 //
@@ -342,6 +345,25 @@ begin
     model_mccr_s  = ISE_MCCR_S_R; 
     model_mccr_u  = ISE_MCCR_U_R; 
 
+    if (ISE_RESET_CPRS) begin
+        model_cprs[ 0] = 0;
+        model_cprs[ 1] = 0;
+        model_cprs[ 2] = 0;
+        model_cprs[ 3] = 0;
+        model_cprs[ 4] = 0;
+        model_cprs[ 5] = 0;
+        model_cprs[ 6] = 0;
+        model_cprs[ 7] = 0;
+        model_cprs[ 8] = 0;
+        model_cprs[ 9] = 0;
+        model_cprs[10] = 0;
+        model_cprs[11] = 0;
+        model_cprs[12] = 0;
+        model_cprs[13] = 0;
+        model_cprs[14] = 0;
+        model_cprs[15] = 0;
+    end
+
     model_do_clear_outputs();
 
 end endtask
@@ -353,6 +375,7 @@ end endtask
 task model_do_clear_outputs;
 begin
     
+    cop_insn_finish  = 0;
     cop_result       = 0;
 
     cop_cprs_written = 0; // CPR Registers read by instr
@@ -372,6 +395,7 @@ task model_do_invalid_opcode;
 begin
 
     model_do_instr_result(ISE_RESULT_DECODE_EXCEPTION);
+    cop_insn_finish = 1'b1;
     $display("ISE> Invalid Opcode: %h", encoded);
 
 end endtask 
@@ -434,7 +458,8 @@ end endtask
 task model_do_instr_result;
     input  [ 2:0]   result;
 begin
-    cop_result = result;
+    cop_result      = result;
+    cop_insn_finish = 1'b1;
 end endtask
 
 

@@ -123,10 +123,8 @@ always @(posedge g_clk) if(cop_insn_valid) cpu_rs1 <= $random;
 always @(posedge g_clk) begin
     if(!g_resetn) begin
         cpu_insn_ack <= 1'b0;
-    end else if (cop_insn_rsp && ($random & 1)) begin
-        cpu_insn_ack <= 1'b1;
     end else begin
-        cpu_insn_ack <= 1'b0;
+        cpu_insn_ack <= $random & 1'b1;
     end
 end
 
@@ -147,6 +145,26 @@ wire [31:0]      cop_wdata       ; // COP write data
 wire [ 2:0]      cop_result      ; // COP execution result
 wire             cop_insn_rsp    ; // COP instruction finished
 reg              cpu_insn_ack    ; // Instruction finish acknowledge
+
+// Registerd versions of the DUT outputs for checking.
+reg              p_cop_finish    ; // COP finish.
+reg              p_cop_wen       ; // COP write enable
+reg  [ 4:0]      p_cop_waddr     ; // COP destination register address
+reg  [31:0]      p_cop_wdata     ; // COP write data
+reg  [ 2:0]      p_cop_result    ; // COP execution result
+
+`define FIFO(D,W,S,E) reg [W-1:0] fifo_``S [D-1:0];\
+genvar gf_``S;\
+always @(*) fifo_``S[0] = S; \
+generate for(gf_``S = 1;gf_``S < D; gf_``S = gf_``S + 1) \
+    always @(posedge g_clk) if(!g_resetn) fifo_``S[gf_``S] <= 0;\
+        else if (E) fifo_``S[gf_``S] <= fifo_``S[gf_``S - 1];\
+endgenerate
+
+`FIFO(4, 5,cop_waddr ,cop_insn_finish)
+`FIFO(4, 1,cop_wen   ,cop_insn_finish)
+`FIFO(4,32,cop_wdata ,cop_insn_finish)
+`FIFO(4, 3,cop_result,cop_insn_finish)
 
 //
 // Memory Interface
@@ -190,10 +208,10 @@ model_checks i_model_checks(
 .grm_rs1      (cpu_rs1          ), // RS1 source data
 
 .dut_out_valid(cop_insn_finish  ), // Output of DUT valid.
-.dut_result   (cop_result       ), // Instruction execution result
-.dut_rd_wen   (cop_wen          ), // GPR Write Enable
-.dut_rd_addr  (cop_waddr        ), // GPR Write Address
-.dut_rd_data  (cop_wdata        ), // Data to write to GPR
+.dut_result   (fifo_cop_result[1]), // Instruction execution result
+.dut_rd_wen   (fifo_cop_wen   [1]), // GPR Write Enable
+.dut_rd_addr  (fifo_cop_waddr [1]), // GPR Write Address
+.dut_rd_data  (fifo_cop_wdata [1]), // Data to write to GPR
 
 .grm_out_valid(cop_insn_finish  ), // Output of GRM valid.
 .grm_result   (grm_result       ), // Instruction execution result

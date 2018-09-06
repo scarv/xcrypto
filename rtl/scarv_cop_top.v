@@ -32,7 +32,7 @@ input  wire             g_resetn        , // Synchronous active low reset.
 //
 // CPU / COP Interface
 input  wire             cpu_insn_req    , // Instruction request
-output wire             cop_insn_ack    , // Instruction request acknowledge
+output reg              cop_insn_ack    , // Instruction request acknowledge
 input  wire             cpu_abort_req   , // Abort Instruction
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
@@ -41,7 +41,7 @@ output wire             cop_wen         , // COP write enable
 output wire [ 4:0]      cop_waddr       , // COP destination register address
 output wire [31:0]      cop_wdata       , // COP write data
 output wire [ 2:0]      cop_result      , // COP execution result
-output wire             cop_insn_rsp    , // COP instruction finished
+output reg              cop_insn_rsp    , // COP instruction finished
 input  wire             cpu_insn_ack    , // Instruction finish acknowledge
 
 //
@@ -171,27 +171,33 @@ assign cop_result= id_exception     ? SCARV_COP_INSN_BAD_INS    :
 //
 // BEGIN DUMMY CODE
 
-reg dummy_ack = 0;
-reg dummy_rsp = 0;
+reg cop_insn_ack_r;
+reg n_cop_insn_ack;
+reg n_cop_insn_rsp;
 
-assign cop_insn_ack = dummy_ack && (cpu_insn_ack == cop_insn_rsp);
-assign cop_insn_rsp = dummy_rsp;
+assign cop_insn_ack = cop_insn_ack_r && !(cop_insn_rsp && !cpu_insn_ack);
 
-wire new_in = cop_insn_ack && cpu_insn_req;
+always @(*) begin : p_ack
+    n_cop_insn_ack = 1'b1;
 
-always @(posedge g_clk) dummy_ack <= !g_resetn    ? 1'b0 :
-                                     cop_insn_rsp ? 1'b0 :
-                                                    cpu_insn_req;
-
-always @(posedge g_clk) begin
-    if(      new_in)
-        dummy_rsp <= 1'b1;
-    else if(dummy_rsp && !cpu_insn_ack)
-        dummy_rsp <= 1'b1;
-    else
-        dummy_rsp <= 1'b0;
-
+    if(cop_insn_rsp && !cpu_insn_ack) begin
+        n_cop_insn_ack = 1'b0;
+    end
 end
+
+always @(*) begin : p_rsp
+    n_cop_insn_rsp = 1'b0;
+
+    if(cop_insn_ack && cpu_insn_req) begin
+        n_cop_insn_rsp = 1'b1;
+    end else if(cop_insn_rsp && !cpu_insn_ack) begin
+        n_cop_insn_rsp = 1'b1;
+    end
+end
+
+always @(posedge g_clk) cop_insn_ack_r <=  !g_resetn ? 1'b1 : n_cop_insn_ack;
+always @(posedge g_clk) cop_insn_rsp   <=  !g_resetn ? 1'b0 : n_cop_insn_rsp;
+
 
 // END DUMMY CODE
 //
