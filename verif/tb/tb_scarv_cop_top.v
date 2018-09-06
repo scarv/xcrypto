@@ -39,7 +39,7 @@ always @(posedge g_clk) begin
 end
 
 integer     TB_MAX_CYCLES = 100;
-localparam  SIM_MEM_SIZE  = 64;
+localparam  SIM_MEM_SIZE  = 128;
 
 reg [255*8:0] wavesfile;    // Where to dump VCD wave files
 reg [255*8:0] imemfile;     // Where to load a test vector from.
