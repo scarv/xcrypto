@@ -63,7 +63,12 @@ parameter ISE_MCCR_P2   = 1; //
 
 assign id_crs1 = dec_arg_crs1;
 assign id_crs2 = dec_arg_crs2;
-assign id_crs3 = dec_arg_crs3;
+
+wire   crd_in_crs3 = dec_lmix_cr || dec_hmix_cr || dec_ins_cr ||
+                     dec_lli_cr  || dec_lui_cr  ;
+
+assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
+
 assign id_crd  = dec_arg_crd ;
 assign id_rs1  = dec_arg_rs1;
 assign id_crd1 = {dec_arg_crdm, 2'b00};

@@ -16,6 +16,7 @@
 //
 // notes:
 //  - LMIX/HMIX expect crd value to be in palu_rs3
+//  - LUI/LLI expect crd value to be in palu_rs3
 //  - INS expects crd value to be in palu_rs3
 //
 module scarv_cop_palu (
@@ -132,8 +133,8 @@ wire [31:0] mix_result =
 
 // AND/ORing the various bitwise results together.
 wire [31:0] result_bitwise = 
-    {32{bw_lli_cr }} & {palu_rs1[31:16], id_imm[15:0]    } |
-    {32{bw_lui_cr }} & {id_imm[15:0]   , palu_rs1[15: 0] } |
+    {32{bw_lli_cr }} & {palu_rs3[31:16], id_imm[15:0]    } |
+    {32{bw_lui_cr }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
     {32{bw_bop_cr }} & {bop_result                       } |
     {32{bw_bop_cr }} & {bop_result                       } |
     {32{bw_ext_cr }} & {ext_result                       } |
