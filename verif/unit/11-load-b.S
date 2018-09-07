@@ -1,0 +1,48 @@
+
+.text
+
+test_start:
+
+	mv2cop c1, a1
+	mv2cop c2, a2
+	mv2cop c3, a3 
+
+    lbu.cr c1,(0,0), 0(a1)
+    lbu.cr c2,(0,1), 4(a1)
+    lbu.cr c3,(1,0),16(a1)
+
+    mv2gpr a1, c1
+    mv2gpr a2, c2
+    mv2gpr a3, c3
+
+    lbu.cr c1,(1,1), 0(a1)
+    lbu.cr c2,(1,0), 4(a1)
+    lbu.cr c3,(1,1),16(a1)
+
+    mv2gpr a1, c1
+    mv2gpr a2, c2
+    mv2gpr a3, c3
+    
+    lbu.cr c1,(0,0),10(a1)
+    lbu.cr c2,(0,1),14(a1)
+    lbu.cr c3,(0,0),16(a1)
+
+    mv2gpr a1, c1
+    mv2gpr a2, c2
+    mv2gpr a3, c3
+    
+    lbu.cr c1,(1,1), 0(a1)
+    lbu.cr c2,(1,0), 4(a1)
+    lbu.cr c3,(1,1),16(a1)
+
+    mv2gpr a1, c1
+    mv2gpr a2, c2
+    mv2gpr a3, c3
+    
+    lbu.cr c1,(1,0), 0(a1)
+    lbu.cr c2,(1,1), 4(a1)
+    lbu.cr c3,(1,0),16(a1)
+
+    mv2gpr a1, c1
+    mv2gpr a2, c2
+    mv2gpr a3, c3

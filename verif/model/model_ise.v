@@ -533,8 +533,8 @@ begin : t_model_get_mem_txn
     ben   = p_ben   ;
     addr  = p_addr  ;
     wdata = p_wdata ;
-    rdata = cop_mem_rdata   ;
-    error = cop_mem_error   ;
+    rdata = cop_mem_rdata;
+    error = cop_mem_error;
 
 end endtask
 
@@ -1046,7 +1046,41 @@ end endtask
 //
 task model_do_lbu_cr;
 begin: t_model_lbu_cr
-    $display("ISE> ERROR: Instruction lbu.cr not implemented");
+    reg [31:0] crd;
+    reg [31:0] exp_addr;
+    reg        wen  ;
+    reg [ 3:0] ben  ;
+    reg [31:0] addr ;
+    reg [31:0] rdata;
+    reg [31:0] wdata;
+    reg        error;
+    reg [31:0] wb_data;
+    reg [15:0] loaded_byte;
+    reg [ 1:0] wb_byte;
+    wb_byte = {dec_arg_cc,dec_arg_cd};
+    model_do_read_cpr(dec_arg_crd, crd);
+    exp_addr = cop_rs1 + {{21{dec_arg_imm11[10]}},dec_arg_imm11};
+    model_do_get_mem_transaction(wen,ben,addr,rdata,wdata,error);
+    if(error) begin
+        model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+    end else begin
+        if(addr[31:28] != exp_addr[31:28]) begin
+            $display("t=%0d ERROR: lbu.cr address expected %h got %h.",
+                $time, exp_addr, addr);
+            #40 $finish;
+        end
+        loaded_byte = exp_addr[1:0] == 2'b00 ? rdata[ 7: 0] :
+                      exp_addr[1:0] == 2'b01 ? rdata[15: 8] :
+                      exp_addr[1:0] == 2'b10 ? rdata[23:16] :
+                                               rdata[31:24] ;
+        wb_data = wb_byte == 2'b00 ? {crd[31: 8],loaded_byte}           :
+                  wb_byte == 2'b01 ? {crd[31:16],loaded_byte,crd[ 7:0]} :
+                  wb_byte == 2'b10 ? {crd[31:24],loaded_byte,crd[15:0]} :
+                                     {loaded_byte,crd[23:0]}            ;
+        model_do_write_cpr(dec_arg_crd, wb_data);
+        $display("ISE> lb.cr %d(%d,%d) <- MEM[%h] (%h)",
+            dec_arg_crd,dec_arg_cc,dec_arg_cd, exp_addr,rdata);
+    end
 end endtask
 
 
@@ -1073,7 +1107,7 @@ begin: t_model_lhu_cr
             model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         end else begin
             if(addr[31:28] != exp_addr[31:28]) begin
-                $display("t=%0d ERROR: lw.cr address expected %h got %h.",
+                $display("t=%0d ERROR: lhu.cr address expected %h got %h.",
                     $time, exp_addr, addr);
                 #40 $finish;
             end
