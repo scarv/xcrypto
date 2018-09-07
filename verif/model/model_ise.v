@@ -524,13 +524,16 @@ task model_do_get_mem_transaction;
     output        error;
 begin : t_model_get_mem_txn
     
+    $display("%d getmem 1", $time);
+    
     wait(p_cen && !cop_mem_stall);
 
-    wen   = p_wen           ;
-    ben   = p_ben           ;
-    addr  = p_addr          ;
+    $display("%d getmem 2", $time);
+    wen   = p_wen   ;
+    ben   = p_ben   ;
+    addr  = p_addr  ;
+    wdata = p_wdata ;
     rdata = cop_mem_rdata   ;
-    wdata = p_wdata         ;
     error = cop_mem_error   ;
 
 end endtask
@@ -1061,7 +1064,33 @@ end endtask
 //
 task model_do_lw_cr;
 begin: t_model_lw_cr
-    $display("ISE> ERROR: Instruction lw.cr not implemented");
+    reg [31:0] exp_addr;
+    reg        wen  ;
+    reg [ 3:0] ben  ;
+    reg [31:0] addr ;
+    reg [31:0] rdata;
+    reg [31:0] wdata;
+    reg        error;
+    exp_addr = cop_rs1 + {{21{dec_arg_imm11[10]}},dec_arg_imm11};
+    if(exp_addr[1:0] == 2'b00) begin
+        model_do_get_mem_transaction(wen,ben,addr,rdata,wdata,error);
+        if(error) begin
+            model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+        end else begin
+            if(addr != exp_addr) begin
+                $display("t=%0d ERROR: lw.cr address expected %h got %h.",
+                    $time, exp_addr, addr);
+                #40 $finish;
+            end
+            model_do_write_cpr(dec_arg_crd, rdata);
+            $display("ISE> lw.cr %d <- MEM[%h] (%h)",
+                dec_arg_crd, exp_addr,rdata);
+        end
+    end else begin
+        model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
+        $display("ISE> lw.cr %d <- MEM[%h] bad addr",
+            dec_arg_crd, exp_addr,rdata);
+    end
 end endtask
 
 

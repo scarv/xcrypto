@@ -123,7 +123,7 @@ wire [31:0] mem_address = gpr_rs1 + addr_offset     ;
 //
 // Bus wire assignments.
 
-assign cop_mem_cen    = mem_ivalid && !mem_idone;
+assign cop_mem_cen    = mem_ivalid && !mem_idone && !mem_addr_error;
 
 assign cop_mem_addr   = mem_address & {{30{cop_mem_cen}},2'b00};
 
@@ -155,7 +155,8 @@ wire mem_txn_good  =
     p_cen && !cop_mem_stall && !(cop_mem_error || mem_addr_error);
 
 wire mem_txn_error = 
-    p_cen && !cop_mem_stall &&  (cop_mem_error || mem_addr_error); 
+     p_cen && !cop_mem_stall &&  (cop_mem_error || mem_addr_error)   ||
+    !p_cen && mem_addr_error; 
 
 //
 // Is the instruction finished, and how did it finish.
@@ -276,7 +277,7 @@ end
 //
 // FSM state progression
 always @(posedge g_clk) begin
-    if(g_resetn) begin
+    if(!g_resetn) begin
         mem_fsm <= FSM_IDLE;
     end else begin
         mem_fsm <= n_mem_fsm;
@@ -286,14 +287,15 @@ end
 
 //
 // Recording of chip enable.
+wire n_p_cen = cop_mem_cen && !mem_idone;
 always @(posedge g_clk) begin
-    if(g_resetn) begin
+    if(!g_resetn) begin
         p_cen <= 1'b0;
         p_addr_lsbs <= 2'b00;
     end else begin
         // If we are finishing the instruction, the for the purposes of
         // the next instruction,  p_cen is always clear.
-        p_cen <= cop_mem_cen && !mem_idone;
+        p_cen <= n_p_cen;
         p_addr_lsbs <= mem_address[1:0];
     end
 end

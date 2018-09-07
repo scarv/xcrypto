@@ -175,7 +175,15 @@ reg cop_insn_ack_r;
 reg n_cop_insn_ack;
 reg n_cop_insn_rsp;
 
-assign cop_insn_ack = cop_insn_ack_r && !(cop_insn_rsp && !cpu_insn_ack);
+assign cop_insn_ack = 
+    cop_insn_ack_r                      && 
+    instr_finished                      && 
+    !(cop_insn_rsp && !cpu_insn_ack)    ;
+
+wire instr_finished =
+    mem_ivalid  && mem_idone    ||
+    palu_ivalid && palu_idone   ||
+    malu_ivalid && malu_idone    ;
 
 always @(*) begin : p_ack
     n_cop_insn_ack = 1'b1;
@@ -189,7 +197,7 @@ always @(*) begin : p_rsp
     n_cop_insn_rsp = 1'b0;
 
     if(cop_insn_ack && cpu_insn_req) begin
-        n_cop_insn_rsp = 1'b1;
+        n_cop_insn_rsp = instr_finished;
     end else if(cop_insn_rsp && !cpu_insn_ack) begin
         n_cop_insn_rsp = 1'b1;
     end

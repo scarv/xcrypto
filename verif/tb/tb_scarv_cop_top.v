@@ -117,7 +117,8 @@ end
 
 // Random RS1 Read data
 initial cpu_rs1 = $random;
-always @(posedge g_clk) if(cop_insn_valid) cpu_rs1 <= $random;
+always @(posedge g_clk) if(cop_insn_valid) if($random & 1'b1)
+    cpu_rs1 <= $random; else cpu_rs1 <= $random & 32'hFFFF_FFFC;
 
 // Random accepting of instruction results.
 always @(posedge g_clk) begin
@@ -127,6 +128,12 @@ always @(posedge g_clk) begin
         cpu_insn_ack <= $random & 1'b1;
     end
 end
+
+//
+// Memory bus responses
+always @(posedge g_clk) if(cop_mem_cen) cop_mem_error <= 1'b0;
+always @(posedge g_clk) cop_mem_stall <= $random;
+always @(posedge g_clk) if(!cop_mem_stall) cop_mem_rdata <= $random;
 
 //
 // DUT and model Interface Signals
