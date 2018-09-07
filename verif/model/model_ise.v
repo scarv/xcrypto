@@ -554,7 +554,7 @@ begin: t_model_mv2gpr
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_write_gpr(dec_arg_rd, crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2gpr %d, %d",dec_arg_rd,dec_arg_crs1);
+    $display("ISE> mv2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
 
@@ -565,7 +565,7 @@ task model_do_mv2cop;
 begin: t_model_mv2cop
     model_do_write_cpr(dec_arg_crd, cop_rs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2cop %d, %d",dec_arg_crd, dec_arg_rs1);
+    $display("ISE> mv2cop c%0d, x%0d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
 
@@ -1134,8 +1134,17 @@ end endtask
 task model_do_twid_b;
 begin: t_model_twid_b
     reg  [31:0] crs1;
+    reg  [ 7:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.b not implemented");
+    split[3] = crs1[31:24];    split[2] = crs1[23:16];
+    split[1] = crs1[15: 8];    split[0] = crs1[ 7: 0];
+    result   = {split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.b c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1145,8 +1154,18 @@ end endtask
 task model_do_twid_n0;
 begin: t_model_twid_n0
     reg  [31:0] crs1;
+    reg  [ 3:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.n0 not implemented");
+    split[3] = crs1[15:12];    split[2] = crs1[11: 8];
+    split[1] = crs1[ 7: 4];    split[0] = crs1[ 3: 0];
+    result   = {crs1[31:16],
+                split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.n0 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1156,8 +1175,18 @@ end endtask
 task model_do_twid_n1;
 begin: t_model_twid_n1
     reg  [31:0] crs1;
+    reg  [ 3:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.n1 not implemented");
+    split[3] = crs1[31:28];    split[2] = crs1[27:24];
+    split[1] = crs1[23:20];    split[0] = crs1[19:16];
+    result   = {split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0],
+                crs1[15:0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.n1 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1167,8 +1196,20 @@ end endtask
 task model_do_twid_c0;
 begin: t_model_twid_c0
     reg  [31:0] crs1;
+    reg  [ 7:0] ibyte;
+    reg  [ 1:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.c0 not implemented");
+    ibyte    = crs1[7:0];
+    split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
+    split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
+    result   = {crs1[31:8],
+                split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.c0 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1178,8 +1219,21 @@ end endtask
 task model_do_twid_c1;
 begin: t_model_twid_c1
     reg  [31:0] crs1;
+    reg  [ 7:0] ibyte;
+    reg  [ 1:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.c1 not implemented");
+    ibyte    = crs1[15:8];
+    split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
+    split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
+    result   = {crs1[31:16],
+                split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0],
+                crs1[7:0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.c1 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1189,8 +1243,21 @@ end endtask
 task model_do_twid_c2;
 begin: t_model_twid_c2
     reg  [31:0] crs1;
+    reg  [ 7:0] ibyte;
+    reg  [ 1:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.c2 not implemented");
+    ibyte    = crs1[23:16];
+    split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
+    split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
+    result   = {crs1[31:24],
+                split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0],
+                crs1[15:0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.c2 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 
@@ -1200,8 +1267,20 @@ end endtask
 task model_do_twid_c3;
 begin: t_model_twid_c3
     reg  [31:0] crs1;
+    reg  [ 7:0] ibyte;
+    reg  [ 1:0] split[3:0];
+    reg  [31:0] result;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction twid.c3 not implemented");
+    ibyte    = crs1[31:24];
+    split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
+    split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
+    result   = {split[dec_arg_b3], split[dec_arg_b2],
+                split[dec_arg_b1], split[dec_arg_b0],
+                crs1[23:0]};
+    model_do_write_cpr(dec_arg_crd, result);
+    $display("ISE> twid.c3 c%0d, c%0d, %d, %d, %d, %d",
+        dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
+        dec_arg_b0);
 end endtask
 
 

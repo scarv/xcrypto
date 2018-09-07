@@ -182,10 +182,10 @@ wire [31:0] twid_n_result;
 wire [31:0] twid_c_result;
 
 // Twiddle select indexes from instruction immediate
-wire [1:0] b3  = id_imm[7:6];
-wire [1:0] b2  = id_imm[5:4];
-wire [1:0] b1  = id_imm[3:2];
-wire [1:0] b0  = id_imm[1:0];
+wire [1:0] b0  = id_imm[7:6];
+wire [1:0] b1  = id_imm[5:4];
+wire [1:0] b2  = id_imm[3:2];
+wire [1:0] b3  = id_imm[1:0];
 
 // Input halfword to twid.nX
 wire [15:0] twid_n_hw = twid_n0 ? palu_rs1[15:0] : palu_rs1[31:16];
@@ -234,10 +234,10 @@ assign twid_n_result =
     {32{twid_n1}} & {twid_n_out, palu_rs1[15: 0]} ;
 
 assign twid_c_result = 
-{32{twid_c0}} & {palu_rs1[31:24],palu_rs1[23:16],palu_rs1[15:7],twid_c_out} |
+{32{twid_c0}} & {palu_rs1[31:24],palu_rs1[23:16],palu_rs1[15:8],twid_c_out} |
 {32{twid_c1}} & {palu_rs1[31:24],palu_rs1[23:16],twid_c_out, palu_rs1[7:0]} |
-{32{twid_c2}} & {palu_rs1[31:24],twid_c_out, palu_rs1[15:7], palu_rs1[7:0]} |
-{32{twid_c3}} & {twid_c_out, palu_rs1[23:16],palu_rs1[15:7], palu_rs1[7:0]} ;
+{32{twid_c2}} & {palu_rs1[31:24],twid_c_out, palu_rs1[15:8], palu_rs1[7:0]} |
+{32{twid_c3}} & {twid_c_out, palu_rs1[23:16],palu_rs1[15:8], palu_rs1[7:0]} ;
 
 wire [31:0] result_twid = 
     twid_b_result | twid_n_result | twid_c_result;
