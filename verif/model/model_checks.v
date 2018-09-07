@@ -59,7 +59,11 @@ input  wire [31:0]      grm_rd_data       // Data to write to GPR
 //  based verification flows.
 //
 
-`define MC_ASSERT(C) if(!(C)) $display("%0d ERROR: Assertion failed: C ",$time)
+`define MC_ASSERT_EQ(A,B) if(!(A === B)) begin \
+    $display("t=%0d ERROR: Assertion failed: A (0x%h) === B (0x%h) ", \
+        $time,A,B);  \
+    #40 $finish; \
+end \
 
 
 // ------------------------------------------------------------------------
@@ -74,14 +78,18 @@ input  wire [31:0]      grm_rd_data       // Data to write to GPR
 reg [10:0] tx_i_counter;
 reg [10:0] tx_o_counter;
 
+wire [10:0] n_tx_i_counter = tx_i_counter + dut_in_valid;
+wire [10:0] n_tx_o_counter = tx_o_counter + dut_out_valid;
+
 always @(posedge g_clk) tx_i_counter <= 
-    !g_resetn ? 0 : tx_i_counter + dut_in_valid;
+    !g_resetn ? 0 : n_tx_i_counter;
 
 always @(posedge g_clk) tx_o_counter <= 
-    !g_resetn ? 0 : tx_o_counter + dut_out_valid;
+    !g_resetn ? 0 : n_tx_o_counter;
 
-always @(posedge g_clk) if(grm_in_valid && dut_in_valid) begin
-    `MC_ASSERT(tx_o_counter == tx_i_counter);
+always @(posedge g_clk) if(
+    grm_in_valid && dut_in_valid && !(dut_out_valid && grm_out_valid)) begin
+    `MC_ASSERT_EQ(tx_o_counter, tx_i_counter)
 end
 
 // ------------------------------------------------------------------------
@@ -98,13 +106,13 @@ always @(posedge g_clk) if(g_resetn) begin
 
     if(dut_out_valid && grm_out_valid) begin
         
-        `MC_ASSERT(dut_result === grm_result);
-        `MC_ASSERT(dut_rd_wen === grm_rd_wen);
+        `MC_ASSERT_EQ(dut_result, grm_result)
+        `MC_ASSERT_EQ(dut_rd_wen, grm_rd_wen)
         
         if(grm_rd_wen) begin
             
-            `MC_ASSERT(dut_rd_addr === grm_rd_addr);
-            `MC_ASSERT(dut_rd_data === grm_rd_data);
+            `MC_ASSERT_EQ(dut_rd_addr, grm_rd_addr)
+            `MC_ASSERT_EQ(dut_rd_data, grm_rd_data)
 
         end
 

@@ -1,3 +1,10 @@
++incdir+$(COP_HOME)/rtl
+$(COP_HOME)/rtl/scarv_cop_cprs.v
+$(COP_HOME)/rtl/scarv_cop_idecode.v
+$(COP_HOME)/rtl/scarv_cop_palu.v
+$(COP_HOME)/rtl/scarv_cop_malu.v
+$(COP_HOME)/rtl/scarv_cop_rng.v
+$(COP_HOME)/rtl/scarv_cop_mem.v
 $(COP_HOME)/rtl/scarv_cop_top.v
 $(COP_HOME)/verif/model/model_ise.v
 $(COP_HOME)/verif/model/model_checks.v
