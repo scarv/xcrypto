@@ -10,7 +10,8 @@ IRUN        = vvp
 
 MANIFEST   ?= $(COP_HOME)/flow/icarus/manifest.cmd
 
-SIM     = $(COP_HOME)/work/icarus/isim
+SIM         = $(COP_HOME)/work/icarus/isim
+SIM_LOG    ?= $(COP_HOME)/work/icarus/sim.log
 
 DEFINES = 
 
@@ -26,8 +27,12 @@ $(SIM) :
         -c$(MANIFEST)
 
 run: $(SIM)
-	$(IRUN) $(SIM) +TIMEOUT=$(RTL_TIMEOUT) +WAVES=$(RTL_WAVES) \
-        +VECTOR=$(SIM_UNIT_TEST) +TRACE=$(RTL_TRACE)
+	$(IRUN) -l $(SIM_LOG) \
+        $(SIM) \
+        +TIMEOUT=$(RTL_TIMEOUT) \
+        +WAVES=$(RTL_WAVES) \
+        +VECTOR=$(SIM_UNIT_TEST) \
+        +TRACE=$(RTL_TRACE)
 
 .PHONY: clean
 clean:
