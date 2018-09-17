@@ -79,8 +79,8 @@ wire [ 3:0]   id_crd2         ; // MP Instruction destination register 2
 wire [ 4:0]   id_rd           ; // GPR destination register
 wire [ 4:0]   id_rs1          ; // GPR source register
 wire [31:0]   id_imm          ; // Decoded immediate.
-wire [31:0]   id_wb_h         ; // Halfword index (load/store)
-wire [31:0]   id_wb_b         ; // Byte index (load/store)
+wire          id_wb_h         ; // Halfword index (load/store)
+wire          id_wb_b         ; // Byte index (load/store)
 
 wire          crs1_ren   = 1'b1   ; // CPR Port 1 read enable
 wire [ 3:0]   crs1_addr  = id_crs1; // CPR Port 1 address

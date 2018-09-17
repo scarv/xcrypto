@@ -28,8 +28,8 @@ input  wire [31:0]  gpr_rs1          , // Source register 1
 input  wire [31:0]  cpr_rs1          , // Source register 2
 input  wire [31:0]  cpr_rs2          , // Source register 3
 
-input  wire [31:0]  id_wb_h          , // Halfword index (load/store)
-input  wire [31:0]  id_wb_b          , // Byte index (load/store)
+input  wire         id_wb_h          , // Halfword index (load/store)
+input  wire         id_wb_b          , // Byte index (load/store)
 input  wire [31:0]  id_imm           , // Source immedate
 input  wire [ 2:0]  id_class         , // Instruction class
 input  wire [ 3:0]  id_subclass      , // Instruction subclass
@@ -201,7 +201,8 @@ always @(*) begin
     wb_bytes[0] = loaded_bytes[0];
 
     if(word_op) begin
-        // Do nothing. Correct values by default.
+        // Do nothing, correct by default
+
     end else if(halfword_op) begin
         if(!p_addr_lsbs[1] && !id_wb_h) begin
             // Do nothing, correct by default
@@ -216,6 +217,7 @@ always @(*) begin
 
         end else if( p_addr_lsbs[1] &&  id_wb_h) begin
             // Do nothing, correct by default
+
         end
     end else if(byte_op) begin
         wb_bytes[{id_wb_h,id_wb_b}] = loaded_bytes[p_addr_lsbs];
@@ -224,7 +226,10 @@ end
 
 assign mem_cpr_rd_wdata  = 
     {32{mem_txn_good}} & 
-    {wb_bytes[3],wb_bytes[2],wb_bytes[1],wb_bytes[0]};
+    {wb_bytes[3],
+     wb_bytes[2],
+     wb_bytes[1],
+     wb_bytes[0]};
 
 assign mem_cpr_rd_ben[3] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_3);
 assign mem_cpr_rd_ben[2] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_2);

@@ -1056,7 +1056,7 @@ begin: t_model_lbu_cr
     reg [31:0] wdata;
     reg        error;
     reg [31:0] wb_data;
-    reg [15:0] loaded_byte;
+    reg [ 7:0] loaded_byte;
     reg [ 1:0] wb_byte;
     wb_byte = {dec_arg_cc,dec_arg_cd};
     model_do_read_cpr(dec_arg_crd, crd);
