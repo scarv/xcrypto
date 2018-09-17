@@ -266,7 +266,7 @@ localparam ISE_RESULT_STOR_ACCESS_FAUKT = 3'b111;
 
 // Input to the generated decoder, gated by whether the input instruction
 // is valid or not.
-wire [31:0] encoded = cop_insn_enc & {32{cop_insn_valid}};
+wire [31:0] encoded = cop_insn_enc;
 
 //
 // Include the generated decoder. Exposes two classes of signal:
@@ -426,6 +426,7 @@ task model_do_write_cpr;
 begin
     model_cprs[cpr_addr] = cpr_data;
     cop_cprs_written[cpr_addr] = 1'b1;
+    $display("\tCPR[%d] <- %h", cpr_addr, cpr_data);
 end endtask
 
 
