@@ -76,7 +76,7 @@ icarus_run: icarus_build unit_tests
 #
 .PHONY: icarus_run_all
 icarus_run_all : $(UNIT_WAVES)
-	-grep --color -e "ERROR" $(COP_WORK)/unit/*.log
+	-grep -m 1 --color -e "ERROR" $(COP_WORK)/unit/*.log
 
 work/unit/%.vcd : $(COP_WORK)/unit/%.hex icarus_build
 	$(MAKE) -C $(COP_HOME)/flow/icarus run \
