@@ -1,22 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Fri Sep  7 08:36:23 2018
+[*] Mon Sep 17 12:55:12 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/waves.vcd"
-[dumpfile_mtime] "Fri Sep  7 08:34:40 2018"
-[dumpfile_size] 43967
+[dumpfile_mtime] "Mon Sep 17 12:11:16 2018"
+[dumpfile_size] 101756
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
 [size] 1920 1025
 [pos] -1 -1
-*-6.641611 314 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-9.446819 856 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [treeopen] tb_scarv_cop_top.i_dut.
+[treeopen] tb_scarv_cop_top.i_grm.model_do_lw_cr.
 [treeopen] tb_scarv_cop_top.i_grm.model_do_slli_px.
 [sst_width] 223
-[signals_width] 360
+[signals_width] 359
 [sst_expanded] 1
-[sst_vpaned_height] 301
+[sst_vpaned_height] 598
 @c00200
 -Testbench
 @28
@@ -4166,27 +4167,22 @@ tb_scarv_cop_top.i_grm.g_resetn
 tb_scarv_cop_top.sim_instr_cnt[31:0]
 @200
 -
+@29
+tb_scarv_cop_top.i_dut.cpu_insn_req
 @22
 tb_scarv_cop_top.i_grm.cop_rs1[31:0]
 tb_scarv_cop_top.i_grm.cop_insn_enc[31:0]
 @28
 tb_scarv_cop_top.i_grm.cop_insn_valid
 tb_scarv_cop_top.cop_insn_finish
+@22
+tb_scarv_cop_top.i_model_checks.tx_i_counter[10:0]
+tb_scarv_cop_top.i_model_checks.tx_o_counter[10:0]
 @200
 -
 @28
 tb_scarv_cop_top.i_grm.dec_invalid_opcode
-@200
--
-@24
-tb_scarv_cop_top.i_grm.cop_rd_addr[4:0]
-@22
-tb_scarv_cop_top.i_grm.cop_rd_data[31:0]
-@28
-tb_scarv_cop_top.i_grm.cop_rd_wen
-tb_scarv_cop_top.i_grm.cop_result[2:0]
-tb_scarv_cop_top.i_grm.cop_insn_finish
-@800200
+@c00200
 -CPRs
 @22
 tb_scarv_cop_top.i_grm.model_cpr_c0[31:0]
@@ -4242,7 +4238,7 @@ tb_scarv_cop_top.i_grm.model_cpr_c12[31:0]
 tb_scarv_cop_top.i_grm.model_cpr_c13[31:0]
 tb_scarv_cop_top.i_grm.model_cpr_c14[31:0]
 tb_scarv_cop_top.i_grm.model_cpr_c15[31:0]
-@1000200
+@1401200
 -CPRs
 @c00200
 -GRM Decoder
@@ -4307,7 +4303,7 @@ tb_scarv_cop_top.i_grm.encoded[31:0]
 -GRM Decoder
 @1000200
 -Reference Model
-@800200
+@c00200
 -Model Checks
 @28
 tb_scarv_cop_top.i_model_checks.g_clk
@@ -4329,9 +4325,10 @@ tb_scarv_cop_top.i_model_checks.grm_rs1[31:0]
 @28
 tb_scarv_cop_top.i_model_checks.dut_out_valid
 tb_scarv_cop_top.i_model_checks.grm_out_valid
-@22
+@24
 tb_scarv_cop_top.i_model_checks.dut_rd_addr[4:0]
 tb_scarv_cop_top.i_model_checks.grm_rd_addr[4:0]
+@22
 tb_scarv_cop_top.i_model_checks.dut_rd_data[31:0]
 tb_scarv_cop_top.i_model_checks.grm_rd_data[31:0]
 @28
@@ -4344,33 +4341,49 @@ tb_scarv_cop_top.i_model_checks.grm_result[2:0]
 @24
 tb_scarv_cop_top.i_model_checks.tx_i_counter[10:0]
 tb_scarv_cop_top.i_model_checks.tx_o_counter[10:0]
-@1000200
+@1401200
 -Model Checks
 @c00200
 -DUT
-@800200
 -DUT I/O
+@24
+tb_scarv_cop_top.i_dut.cop_fsm[2:0]
+tb_scarv_cop_top.i_dut.n_cop_fsm[2:0]
+@200
+-
 @28
 tb_scarv_cop_top.i_dut.cpu_insn_req
 tb_scarv_cop_top.i_dut.cop_insn_ack
-tb_scarv_cop_top.i_dut.n_cop_insn_ack
-@22
-tb_scarv_cop_top.i_dut.cpu_insn_enc[31:0]
-tb_scarv_cop_top.i_dut.cpu_rs1[31:0]
+@200
+-
 @28
-tb_scarv_cop_top.i_dut.n_cop_insn_rsp
+tb_scarv_cop_top.i_dut.malu_idone
+tb_scarv_cop_top.i_dut.palu_idone
+tb_scarv_cop_top.i_dut.mem_idone
+tb_scarv_cop_top.i_dut.fu_done
+@200
+-
+@28
+tb_scarv_cop_top.i_dut.insn_accept
+tb_scarv_cop_top.i_dut.insn_finish
+tb_scarv_cop_top.i_dut.insn_retired
+@200
+-
+@28
 tb_scarv_cop_top.i_dut.cop_insn_rsp
 tb_scarv_cop_top.i_dut.cpu_insn_ack
+@200
+-
+@24
 tb_scarv_cop_top.i_dut.cop_result[2:0]
-tb_scarv_cop_top.i_dut.cop_wen
+tb_scarv_cop_top.i_dut.cop_waddr[4:0]
 @22
 tb_scarv_cop_top.i_dut.cop_wdata[31:0]
-@24
-tb_scarv_cop_top.i_dut.cop_waddr[4:0]
-@1000200
--DUT I/O
+tb_scarv_cop_top.i_dut.n_cop_wdata[31:0]
 @28
-tb_scarv_cop_top.i_dut.instr_finished
+tb_scarv_cop_top.i_dut.cop_wen
+@1401200
+-DUT I/O
 @c00200
 -DUT Decode
 @28
@@ -4417,6 +4430,9 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_arg_rs1[4:0]
 @c00200
 -One-hot
 @28
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lw_cr
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mv2cop
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mv2gpr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc1_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc2_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_add2_mp
@@ -4438,11 +4454,8 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lli_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lmix_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ltu_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lui_cr
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lw_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mac_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mul_px
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mv2cop
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mv2gpr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rot_px
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_roti_px
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rsamp_cr
@@ -4515,6 +4528,9 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wen[3:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_addr[3:0]
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wdata[31:0]
+@200
+-
+@22
 tb_scarv_cop_top.i_dut.malu_cpr_rd_wdata[31:0]
 tb_scarv_cop_top.i_dut.mem_cpr_rd_wdata[31:0]
 tb_scarv_cop_top.i_dut.palu_cpr_rd_wdata[31:0]
@@ -4540,7 +4556,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs3_rdata[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crs3_ren
 @1401200
 -DUT CPRs
-@800200
+@c00200
 -DUT Memory FU
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.mem_addr_error
@@ -4645,9 +4661,9 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_mem.wb_b_2
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.wb_b_3
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.wb_hw_hi
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.wb_hw_lo
-@1000200
+@1401200
 -DUT Memory FU
-@800200
+@c00200
 -Memory
 @22
 tb_scarv_cop_top.i_dut.cop_mem_addr[31:0]
@@ -4663,9 +4679,8 @@ tb_scarv_cop_top.i_dut.cop_mem_stall
 tb_scarv_cop_top.i_dut.cop_mem_wdata[31:0]
 @28
 tb_scarv_cop_top.i_dut.cop_mem_wen
-@1000200
--Memory
 @1401200
+-Memory
 -DUT
 @c00200
 -DUT Packed Arithmetic / PALU

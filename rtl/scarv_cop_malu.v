@@ -33,6 +33,7 @@ output wire [ 3:0]  malu_cpr_rd_ben  , // Writeback byte enable
 output wire [31:0]  malu_cpr_rd_wdata  // Writeback data
 );
 
+assign malu_idone = 1'b0;
 
 assign malu_cpr_rd_ben = 4'b0;
 assign malu_cpr_rd_wdata = 0;

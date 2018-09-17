@@ -87,7 +87,7 @@ wire [31:0] cop_insn_enc = sim_instr_mem[sim_instr_cnt];
 always @(posedge g_clk) begin
     if(!g_resetn) begin
         sim_instr_cnt <= 0;
-    end else if(cop_insn_valid) begin
+    end else if(cop_insn_finish) begin
         sim_instr_cnt <= n_sim_instr_cnt;;
     end
 end
@@ -117,7 +117,7 @@ end
 
 // Random RS1 Read data
 initial cpu_rs1 = $random;
-always @(posedge g_clk) if(cop_insn_valid) if($random & 1'b1)
+always @(posedge g_clk) if(cop_insn_finish) if($random & 1'b1)
     cpu_rs1 <= $random; else cpu_rs1 <= $random & 32'hFFFF_FFFC;
 
 // Random accepting of instruction results.
@@ -125,7 +125,7 @@ always @(posedge g_clk) begin
     if(!g_resetn) begin
         cpu_insn_ack <= 1'b0;
     end else begin
-        cpu_insn_ack <= $random & 1'b1;
+        cpu_insn_ack <= $random;
     end
 end
 
@@ -215,10 +215,10 @@ model_checks i_model_checks(
 .grm_rs1      (cpu_rs1          ), // RS1 source data
 
 .dut_out_valid(cop_insn_finish  ), // Output of DUT valid.
-.dut_result   (fifo_cop_result[1]), // Instruction execution result
-.dut_rd_wen   (fifo_cop_wen   [1]), // GPR Write Enable
-.dut_rd_addr  (fifo_cop_waddr [1]), // GPR Write Address
-.dut_rd_data  (fifo_cop_wdata [1]), // Data to write to GPR
+.dut_result   (fifo_cop_result[0]), // Instruction execution result
+.dut_rd_wen   (fifo_cop_wen   [0]), // GPR Write Enable
+.dut_rd_addr  (fifo_cop_waddr [0]), // GPR Write Address
+.dut_rd_data  (fifo_cop_wdata [0]), // Data to write to GPR
 
 .grm_out_valid(cop_insn_finish  ), // Output of GRM valid.
 .grm_result   (grm_result       ), // Instruction execution result

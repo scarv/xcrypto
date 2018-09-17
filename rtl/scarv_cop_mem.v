@@ -287,7 +287,9 @@ end
 
 //
 // Recording of chip enable.
-wire n_p_cen = cop_mem_cen && !mem_idone;
+wire n_p_cen = cop_mem_cen && !mem_idone ||
+               p_cen && cop_mem_stall;
+
 always @(posedge g_clk) begin
     if(!g_resetn) begin
         p_cen <= 1'b0;
