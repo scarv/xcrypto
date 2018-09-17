@@ -37,10 +37,10 @@ input  wire             cpu_abort_req   , // Abort Instruction
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
 
-output wire             cop_wen         , // COP write enable
-output wire [ 4:0]      cop_waddr       , // COP destination register address
-output wire [31:0]      cop_wdata       , // COP write data
-output wire [ 2:0]      cop_result      , // COP execution result
+output reg              cop_wen         , // COP write enable
+output reg  [ 4:0]      cop_waddr       , // COP destination register address
+output reg  [31:0]      cop_wdata       , // COP write data
+output reg  [ 2:0]      cop_result      , // COP execution result
 output reg              cop_insn_rsp    , // COP instruction finished
 input  wire             cpu_insn_ack    , // Instruction finish acknowledge
 
@@ -122,14 +122,20 @@ wire [31:0]   malu_cpr_rd_wdata; // Writeback data
 //  Send instructions to FU based on the decoded id_class.
 //
 
-assign palu_ivalid = id_class == SCARV_COP_ICLASS_PACKED_ARITH ||
-                     id_class == SCARV_COP_ICLASS_MOVE         ||
-                     id_class == SCARV_COP_ICLASS_BITWISE      ||
-                     id_class == SCARV_COP_ICLASS_TWIDDLE       ;
+assign palu_ivalid = 
+    insn_valid  && (
+    id_class == SCARV_COP_ICLASS_PACKED_ARITH ||
+    id_class == SCARV_COP_ICLASS_MOVE         ||
+    id_class == SCARV_COP_ICLASS_BITWISE      ||
+    id_class == SCARV_COP_ICLASS_TWIDDLE      );
 
-assign malu_ivalid = id_class == SCARV_COP_ICLASS_MP            ;
+assign malu_ivalid =
+    insn_valid  && (
+    id_class == SCARV_COP_ICLASS_MP           );
 
-assign mem_ivalid  = id_class == SCARV_COP_ICLASS_LOADSTORE     ;
+assign mem_ivalid  =
+    insn_valid  && (
+    id_class == SCARV_COP_ICLASS_LOADSTORE    );
 
 //
 // CPR Writeback data selection
@@ -154,60 +160,122 @@ assign crd_wdata = palu_cpr_rd_wdata |
 //  instruction.
 //
 
-assign cop_waddr = id_rd;
+wire        n_cop_wen   ; // COP write enable
+wire [ 4:0] n_cop_waddr ; // COP destination register address
+wire [31:0] n_cop_wdata ; // COP write data
+wire [ 2:0] n_cop_result; // COP execution result
 
-assign cop_wen   = id_class     == SCARV_COP_ICLASS_MOVE    &&
-                   id_subclass  == SCARV_COP_SCLASS_MV2GPR  ;
+assign n_cop_waddr = id_rd;
 
-assign cop_wdata = palu_cpr_rd_wdata;
+assign n_cop_wen   = id_class     == SCARV_COP_ICLASS_MOVE    &&
+                     id_subclass  == SCARV_COP_SCLASS_MV2GPR  ;
+
+assign n_cop_wdata = palu_cpr_rd_wdata;
 
 // FIXME - bug here, address / bus errors should differentiate between
 //         whether a load or store caused them.
-assign cop_result= id_exception     ? SCARV_COP_INSN_BAD_INS    :
-                   mem_addr_error   ? SCARV_COP_INSN_BAD_LAD    :
-                   mem_bus_error    ? SCARV_COP_INSN_LD_ERR     :
-                                      SCARV_COP_INSN_SUCCESS    ;
+assign n_cop_result= id_exception     ? SCARV_COP_INSN_BAD_INS    :
+                     mem_addr_error   ? SCARV_COP_INSN_BAD_LAD    :
+                     mem_bus_error    ? SCARV_COP_INSN_LD_ERR     :
+                                        SCARV_COP_INSN_SUCCESS    ;
+
+always @(posedge g_clk) if(!g_resetn) begin
+    cop_wen    <= 1'b0; // COP write enable
+    cop_waddr  <= 5'b0; // COP destination register address
+    cop_wdata  <= 32'b0; // COP write data
+    cop_result <= 3'b0; // COP execution result
+end else if(insn_finish) begin
+    cop_wen    <= n_cop_wen   ; // COP write enable
+    cop_waddr  <= n_cop_waddr ; // COP destination register address
+    cop_wdata  <= n_cop_wdata ; // COP write data
+    cop_result <= n_cop_result; // COP execution result
+end
 
 //
-// BEGIN DUMMY CODE
+// BEGIN PIPELINE PROGRESSION CONTROL
 
-reg cop_insn_ack_r;
-reg n_cop_insn_ack;
-reg n_cop_insn_rsp;
+wire    fu_done         = 
+    mem_idone || palu_idone || malu_idone ||
+    id_exception && insn_accept;
 
-assign cop_insn_ack = 
-    cop_insn_ack_r                      && 
-    instr_finished                      && 
-    !(cop_insn_rsp && !cpu_insn_ack)    ;
+wire    insn_valid      = insn_accept ||
+                          cop_fsm == FSM_EXECUTING;
+wire    insn_accept     = cpu_insn_req && cop_insn_ack;
+wire    insn_retired    = cop_insn_rsp && cpu_insn_ack;
+wire    insn_finish     = fu_done;
 
-wire instr_finished =
-    mem_ivalid  && mem_idone    ||
-    palu_ivalid && palu_idone   ||
-    malu_ivalid && malu_idone    ;
+localparam FSM_IDLE         = 0;
+localparam FSM_WAITING      = 1;
+localparam FSM_EXECUTING    = 2;
+localparam FSM_FINISHED     = 3;
 
-always @(*) begin : p_ack
-    n_cop_insn_ack = 1'b1;
+reg           n_cop_insn_ack;
+reg           n_cop_insn_rsp;
 
-    if(cop_insn_rsp && !cpu_insn_ack) begin
-        n_cop_insn_ack = 1'b0;
+reg     [2:0] cop_fsm;
+reg     [2:0] n_cop_fsm;
+
+always @(*) begin
+    
+    n_cop_fsm       = FSM_IDLE;
+    n_cop_insn_ack  = 1'b0;
+    n_cop_insn_rsp  = 1'b0;
+    
+    case(cop_fsm)
+
+    FSM_IDLE     : begin    // 0
+        n_cop_fsm       = FSM_WAITING;
+        n_cop_insn_ack  = 1'b1;
     end
+
+    FSM_WAITING  : begin    // 1
+        n_cop_insn_ack = 1'b1;
+        if(cpu_insn_req && n_cop_insn_ack) begin
+            if(insn_finish) begin
+                n_cop_fsm   = FSM_FINISHED;
+                n_cop_insn_rsp = 1'b1;
+                n_cop_insn_ack = 1'b0;
+            end else begin
+                n_cop_fsm   = FSM_EXECUTING;
+                n_cop_insn_ack = 1'b0;
+            end
+        end else begin
+            n_cop_fsm       = FSM_WAITING;
+        end
+    end
+    
+    FSM_EXECUTING: begin    // 2
+        if(insn_finish) begin
+            n_cop_fsm       = FSM_FINISHED;
+            n_cop_insn_rsp  = 1'b1;
+        end else begin
+            n_cop_fsm       = FSM_EXECUTING;
+        end
+    end
+
+    FSM_FINISHED : begin    // 3
+        if(insn_retired) begin
+            n_cop_fsm       = FSM_WAITING;
+            n_cop_insn_ack  = 1'b1;
+        end else begin
+            n_cop_fsm       = FSM_FINISHED;
+            n_cop_insn_rsp  = 1'b1;
+        end
+    end
+
+endcase end
+
+always @(posedge g_clk) cop_insn_ack <= g_resetn ? n_cop_insn_ack : 1'b0;
+always @(posedge g_clk) cop_insn_rsp <= g_resetn ? n_cop_insn_rsp : 1'b0;
+
+always @(posedge g_clk) if(!g_resetn) begin
+    cop_fsm <= FSM_IDLE;
+end else begin
+    cop_fsm <= n_cop_fsm;
 end
 
-always @(*) begin : p_rsp
-    n_cop_insn_rsp = 1'b0;
 
-    if(cop_insn_ack && cpu_insn_req) begin
-        n_cop_insn_rsp = instr_finished;
-    end else if(cop_insn_rsp && !cpu_insn_ack) begin
-        n_cop_insn_rsp = 1'b1;
-    end
-end
-
-always @(posedge g_clk) cop_insn_ack_r <=  !g_resetn ? 1'b1 : n_cop_insn_ack;
-always @(posedge g_clk) cop_insn_rsp   <=  !g_resetn ? 1'b0 : n_cop_insn_rsp;
-
-
-// END DUMMY CODE
+// END PIPELINE PROGRESSION CONTROL
 //
 
 // ----------------------------------------------------------------------
