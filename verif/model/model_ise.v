@@ -1463,8 +1463,36 @@ end endtask
 task model_do_sb_cr;
 begin: t_model_sb_cr
     reg  [31:0] crs2;
+    reg  [31:0] exp_addr;
+    reg  [31:0] wrd_addr;
+    reg  [31:0] exp_wdata;
+    reg  [ 3:0] exp_ben;
+    reg  [ 3:0] exp_wen;
+    reg         txn_correct;
+
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sb.cr not implemented");
+
+    exp_addr  =
+        cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
+    exp_ben   = exp_addr[1:0] == 2'b00 ? 4'b0001 :
+                exp_addr[1:0] == 2'b01 ? 4'b0010 :
+                exp_addr[1:0] == 2'b10 ? 4'b0100 :
+                                         4'b1000 ;
+    exp_wen   = 1'b1;
+    exp_wdata =
+        ({dec_arg_cc,dec_arg_ca} == 2'b00 ? crs2[ 7: 0] :
+         {dec_arg_cc,dec_arg_ca} == 2'b01 ? crs2[15: 8] :
+         {dec_arg_cc,dec_arg_ca} == 2'b10 ? crs2[23:16] :
+                                            crs2[31:24] ) <<
+            (exp_addr[1:0] == 2'b00 ? 0  :
+             exp_addr[1:0] == 2'b01 ? 8  :
+             exp_addr[1:0] == 2'b10 ? 16 :
+                                      24 );
+
+    wrd_addr = exp_addr & 32'hFFFF_FFFC;
+    model_do_check_mem_transaction(
+        exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct
+    );
 end endtask
 
 
