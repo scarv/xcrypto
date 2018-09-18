@@ -562,25 +562,12 @@ task model_do_get_mem_transaction;
     output        error;
 begin : t_model_get_mem_txn
     
-    $display("%d getmem 1", $time);
-    wen   = p_wen  [0] ;
-    ben   = p_ben  [0] ;
-    addr  = p_addr [0] ;
-    wdata = p_wdata[0] ;
-    rdata = cop_mem_rdata;
-    error = cop_mem_error;
-    
-    while (!(p_cen && !cop_mem_stall)) begin
-        @(posedge g_clk);
-    end
-
-    $display("%d getmem 2", $time);
-    wen   = p_wen  [0] ;
-    ben   = p_ben  [0] ;
-    addr  = p_addr [0] ;
-    wdata = p_wdata[0] ;
-    rdata = cop_mem_rdata;
-    error = cop_mem_error;
+    wen   = p_wen  [1] ;
+    ben   = p_ben  [1] ;
+    addr  = p_addr [1] ;
+    wdata = p_wdata[1] ;
+    rdata = p_rdata[1] ;
+    error = p_error[1] ;
 
 end endtask
 
@@ -942,7 +929,7 @@ begin: t_model_gather_b
     integer     txn_cnt;
     
     txn_cnt = 0;
-    errors  = 4'hF;
+    errors  = {p_error[1],p_error[2],p_error[3],p_error[4]};
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_do_read_cpr(dec_arg_crd , crd );
 
@@ -951,39 +938,30 @@ begin: t_model_gather_b
     addr2 = cop_rs1 + crs2[23:16]; wadd2 = addr2 & 32'hFFFF_FFFC;
     addr3 = cop_rs1 + crs2[31:24]; wadd3 = addr3 & 32'hFFFF_FFFC;
 
-    while(txn_cnt < 4) begin
-        @(posedge g_clk) if(mem_txn_finish && !cop_mem_error) begin
-            errors[txn_cnt] = 0;
-            txn_cnt = txn_cnt + 1;
-        end else if(mem_txn_finish && cop_mem_error) begin
-            txn_cnt = 4;
-        end
-    end
-
     if(p_wen[3]) $display("t=%0d ERROR: Gather.b txn 0 expects wen=0",$time);
     if(p_wen[2]) $display("t=%0d ERROR: Gather.b txn 1 expects wen=0",$time);
     if(p_wen[1]) $display("t=%0d ERROR: Gather.b txn 2 expects wen=0",$time);
     if(p_wen[0]) $display("t=%0d ERROR: Gather.b txn 3 expects wen=0",$time);
 
-    if(wadd0 != p_addr[3])
+    if(wadd0 != p_addr[4])
         $display("t=%0d ERROR: gather address 0 expected %h got %h.",
-                $time, wadd0, p_addr[3]);
-    if(wadd1 != p_addr[2])
+                $time, wadd0, p_addr[4]);
+    if(wadd1 != p_addr[3])
         $display("t=%0d ERROR: gather address 1 expected %h got %h.",
-                $time, wadd1, p_addr[2]);
-    if(wadd2 != p_addr[1])
+                $time, wadd1, p_addr[3]);
+    if(wadd2 != p_addr[2])
         $display("t=%0d ERROR: gather address 2 expected %h got %h.",
-                $time, wadd2, p_addr[1]);
-    if(wadd3 != p_addr[0]) 
+                $time, wadd2, p_addr[2]);
+    if(wadd3 != p_addr[1]) 
         $display("t=%0d ERROR: gather address 3 expected %h got %h.",
-                $time, wadd3, p_addr[0]);
+                $time, wadd3, p_addr[1]);
 
     wb_data = crd;
 
-    if(!errors[0]) model_get_byte(p_rdata[3]   , addr0[1:0], wb_data[ 7: 0]);
-    if(!errors[1]) model_get_byte(p_rdata[2]   , addr1[1:0], wb_data[15: 8]);
-    if(!errors[2]) model_get_byte(p_rdata[1]   , addr2[1:0], wb_data[23:16]);
-    if(!errors[3]) model_get_byte(cop_mem_rdata, addr3[1:0], wb_data[31:24]);
+    if(!errors[0]) model_get_byte(p_rdata[4], addr0[1:0], wb_data[ 7: 0]);
+    if(!errors[1]) model_get_byte(p_rdata[3], addr1[1:0], wb_data[15: 8]);
+    if(!errors[2]) model_get_byte(p_rdata[2], addr2[1:0], wb_data[23:16]);
+    if(!errors[3]) model_get_byte(p_rdata[1], addr3[1:0], wb_data[31:24]);
 
     model_do_write_cpr(dec_arg_crd, wb_data);
 
@@ -1272,7 +1250,6 @@ begin: t_model_lbu_cr
         if(addr[31:28] != exp_addr[31:28]) begin
             $display("t=%0d ERROR: lbu.cr address expected %h got %h.",
                 $time, exp_addr, addr);
-            #40 $finish;
         end
         loaded_byte = exp_addr[1:0] == 2'b00 ? rdata[ 7: 0] :
                       exp_addr[1:0] == 2'b01 ? rdata[15: 8] :
@@ -1314,7 +1291,6 @@ begin: t_model_lhu_cr
             if(addr[31:28] != exp_addr[31:28]) begin
                 $display("t=%0d ERROR: lhu.cr address expected %h got %h.",
                     $time, exp_addr, addr);
-                #40 $finish;
             end
             loaded_hw = exp_addr[1] ? rdata[31:16] : rdata[15:0];
             wb_data   = dec_arg_cc  ? {loaded_hw, crd[15:0]}  :
@@ -1352,7 +1328,6 @@ begin: t_model_lw_cr
             if(addr != exp_addr) begin
                 $display("t=%0d ERROR: lw.cr address expected %h got %h.",
                     $time, exp_addr, addr);
-                #40 $finish;
             end
             model_do_write_cpr(dec_arg_crd, rdata);
             $display("ISE> lw.cr %d <- MEM[%h] (%h)",
