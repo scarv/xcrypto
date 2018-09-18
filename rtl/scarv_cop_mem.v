@@ -225,7 +225,16 @@ always @(*) begin
 
         end
     end else if(byte_op) begin
-        wb_bytes[{id_wb_h,id_wb_b}] = loaded_bytes[p_addr_lsbs];
+        if(wb_b_0)
+            wb_bytes[0] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_1)
+            wb_bytes[1] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_2)
+            wb_bytes[2] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_3)
+            wb_bytes[3] = loaded_bytes[p_addr_lsbs];
+        else
+            wb_bytes[{id_wb_h,id_wb_b}] = loaded_bytes[p_addr_lsbs];
     end
 end
 
