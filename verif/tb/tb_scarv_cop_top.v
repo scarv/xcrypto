@@ -131,7 +131,9 @@ end
 
 //
 // Memory bus responses
-always @(posedge g_clk) if(cop_mem_cen) cop_mem_error <= 1'b0;
+always @(posedge g_clk) if(g_resetn)
+    cop_mem_error <= 1'b0;
+    else if(cop_mem_cen) cop_mem_error <= $random&'h7 == 0;
 always @(posedge g_clk) cop_mem_stall <= $random;
 always @(posedge g_clk) if(!cop_mem_stall) cop_mem_rdata <= $random;
 

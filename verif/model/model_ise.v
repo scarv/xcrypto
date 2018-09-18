@@ -315,11 +315,6 @@ reg        model_mccr_c7 = ISE_MCCR_C7_R;
 reg        model_mccr_s  = ISE_MCCR_S_R; 
 reg        model_mccr_u  = ISE_MCCR_U_R; 
 
-// Bit indicating an instruction will take more than one cycle for
-// the model to produce a result. This is mostly used for memory
-// access instructions.
-reg        model_multi_cycle = 0;
-
 // ------------------------------------------------------------------------
 
 //
@@ -500,17 +495,59 @@ end endtask
 // Utility wires / registers for monitoring the memory transaction
 // snoop interface.
 
-reg         p_cen   ;
-reg [31:0]  p_addr  ;
-reg [ 3:0]  p_ben   ;
-reg         p_wen   ;
-reg [31:0]  p_wdata ;
+reg         p_cen        ;
+reg [31:0]  p_addr  [4:0];
+reg [ 3:0]  p_ben   [4:0];
+reg         p_wen   [4:0];
+reg [31:0]  p_wdata [4:0];
+reg [31:0]  k_rdata [4:0];
+reg [31:0]  k_error [4:0];
+wire[31:0]  p_rdata [4:0];
+wire[31:0]  p_error [4:0];
 
-always @(posedge g_clk) p_cen   <= cop_mem_cen  ;
-always @(posedge g_clk) if(cop_mem_cen) p_wen   <= cop_mem_wen  ;
-always @(posedge g_clk) if(cop_mem_cen) p_ben   <= cop_mem_ben  ;
-always @(posedge g_clk) if(cop_mem_cen) p_addr  <= cop_mem_addr ;
-always @(posedge g_clk) if(cop_mem_cen) p_wdata <= cop_mem_wdata;
+always @(posedge g_clk) p_cen <= (cop_mem_cen || 
+                                (p_cen && cop_mem_stall));
+
+wire mem_txn_finish = p_cen && !cop_mem_stall;
+
+wire [31:0]  samp_p_addr  = p_addr [0];
+wire [ 3:0]  samp_p_ben   = p_ben  [0];
+wire         samp_p_wen   = p_wen  [0];
+wire [31:0]  samp_p_wdata = p_wdata[0];
+wire [31:0]  samp_p_rdata = p_rdata[0];
+wire [31:0]  samp_p_error = p_error[0];
+
+always @(posedge g_clk) begin
+    if(cop_mem_cen) begin 
+        p_wen  [0] <= cop_mem_wen  ;
+        p_ben  [0] <= cop_mem_ben  ;
+        p_addr [0] <= cop_mem_addr ;
+        p_wdata[0] <= cop_mem_wdata;
+    end
+    if(mem_txn_finish) begin
+        k_rdata[0] <= cop_mem_rdata;
+        k_error[0] <= cop_mem_error;
+    end
+end
+
+genvar m;
+generate for(m = 1; m < 5; m = m + 1) begin
+
+assign p_rdata[m] = k_rdata[m-1];
+assign p_error[m] = k_error[m-1];
+
+always @(posedge g_clk) begin
+    if(mem_txn_finish) begin
+        p_wen  [m] <= p_wen  [m-1];
+        p_ben  [m] <= p_ben  [m-1];
+        p_addr [m] <= p_addr [m-1];
+        p_wdata[m] <= p_wdata[m-1];
+        k_rdata[m] <= k_rdata[m-1];
+        k_error[m] <= k_error[m-1];
+    end
+end
+
+end endgenerate
 
 //
 // Monitors the input memory bus and returns when a transaction
@@ -526,14 +563,22 @@ task model_do_get_mem_transaction;
 begin : t_model_get_mem_txn
     
     $display("%d getmem 1", $time);
+    wen   = p_wen  [0] ;
+    ben   = p_ben  [0] ;
+    addr  = p_addr [0] ;
+    wdata = p_wdata[0] ;
+    rdata = cop_mem_rdata;
+    error = cop_mem_error;
     
-    wait(p_cen && !cop_mem_stall);
+    while (!(p_cen && !cop_mem_stall)) begin
+        @(posedge g_clk);
+    end
 
     $display("%d getmem 2", $time);
-    wen   = p_wen   ;
-    ben   = p_ben   ;
-    addr  = p_addr  ;
-    wdata = p_wdata ;
+    wen   = p_wen  [0] ;
+    ben   = p_ben  [0] ;
+    addr  = p_addr [0] ;
+    wdata = p_wdata[0] ;
     rdata = cop_mem_rdata;
     error = cop_mem_error;
 
@@ -549,6 +594,7 @@ task model_do_check_mem_transaction;
     input [31:0] exp_rdata;
     input [31:0] exp_wdata;
     output       correct  ;
+    output[31:0] ardata   ;
 begin : t_model_do_check_mem_transaction
     reg        wen  ;
     reg [ 3:0] ben  ;
@@ -559,47 +605,86 @@ begin : t_model_do_check_mem_transaction
         
     correct = 1'b0;
     model_do_get_mem_transaction(wen,ben,addr,rdata,wdata,error);
-
+    ardata = rdata;
     if(error) begin
-        model_do_instr_result(ISE_RESULT_STOR_ACCESS_FAUKT);
+        if(exp_wen)
+            model_do_instr_result(ISE_RESULT_STOR_ACCESS_FAUKT);
+        else
+            model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         correct = 1'b1;
     end else begin
         if(exp_addr != addr) begin
             $display("t=%0d ERROR: mem address expected %h got %h.",
                 $time, exp_addr, addr);
-            #90 $finish;
+            //#90 $finish;
         end else if (wen != exp_wen) begin
             $display("t=%0d ERROR: mem expected wen=%b, got %b.",
                 $time,exp_wen, wen);
-            #90 $finish;
+            //#90 $finish;
         end else if (exp_ben[0] && (wdata[7:0] != exp_wdata[7:0])) begin
             $display("t=%0d ERROR: mem expected wdata byte 0 =%h, got %h.",
                 $time,exp_wdata[7:0],wdata[7:0]);
-            #90 $finish;
+            //#90 $finish;
         end else if (exp_ben[1] && (wdata[15:8] != exp_wdata[15:8])) begin
             $display("t=%0d ERROR: mem expected wdata byte 1 =%h, got %h.",
                 $time,exp_wdata[15:8],wdata[15:8]);
-            #90 $finish;
+            //#90 $finish;
         end else if (exp_ben[2] && (wdata[23:16] != exp_wdata[23:16])) begin
             $display("t=%0d ERROR: mem expected wdata byte 2 =%h, got %h.",
                 $time,exp_wdata[23:16],wdata[23:16]);
-            #90 $finish;
+            //#90 $finish;
         end else if (exp_ben[3] && (wdata[31:24] != exp_wdata[31:24])) begin
             $display("t=%0d ERROR: mem expected wdata byte 3 =%h, got %h.",
                 $time,exp_wdata[31:24],wdata[31:24]);
-            #90 $finish;
+            //#90 $finish;
         end else if (exp_ben != ben) begin
             $display(
                 "t=%0d ERROR: mem byte enable expected %4b got %4b.",
                 $time, exp_ben, ben);
-            #90 $finish;
+            //#90 $finish;
         end else begin
-            $display("ISE> store MEM[%h](%4b) <- c%0d (%h)",
-                exp_addr, exp_ben, dec_arg_crs2, exp_wdata);
+            if(exp_wen)
+                $display("ISE> MEM[%h](%4b) <- c%0d (%h)",
+                    exp_addr, exp_ben, dec_arg_crs2, exp_wdata);
+            else
+                $display("ISE> c%0d <- MEM[%h](%h)",
+                   dec_arg_crd, exp_addr, rdata);
             correct = 1'b1;
         end
     end
 
+end endtask
+
+//
+// Get a byte of a word
+//
+task model_get_byte;
+    input   [31:0] w;
+    input   [ 1:0] b;
+    output  [7:0]  r;
+begin : t_model_get_byte
+    if(b== 2'b00)
+        r= w[7:0];
+    else if(b== 2'b01)
+        r= w[15:8];
+    else if(b== 2'b10)
+        r= w[23:16];
+    else if(b== 2'b11)
+        r= w[31:24];
+end endtask
+
+//
+// Get a halfword of a word
+//
+task model_get_hw;
+    input   [31:0] w;
+    input          h;
+    output  [15:0] r;
+begin : t_model_get_hw
+    if(h== 0)
+        r= w[15: 0];
+    else if(h== 1)
+        r= w[31:16];
 end endtask
 
 // ------------------------------------------------------------------------
@@ -849,8 +934,64 @@ end endtask
 task model_do_gather_b;
 begin: t_model_gather_b
     reg  [31:0] crs2;
+    reg  [31:0] crd ;
+    reg  [31:0] addr0, addr1, addr2, addr3;
+    reg  [31:0] wadd0, wadd1, wadd2, wadd3;
+    reg  [ 3:0] errors;
+    reg  [31:0] wb_data;
+    integer     txn_cnt;
+    
+    txn_cnt = 0;
+    errors  = 4'hF;
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction gather.b not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+
+    addr0 = cop_rs1 + crs2[ 7: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
+    addr1 = cop_rs1 + crs2[15: 8]; wadd1 = addr1 & 32'hFFFF_FFFC;
+    addr2 = cop_rs1 + crs2[23:16]; wadd2 = addr2 & 32'hFFFF_FFFC;
+    addr3 = cop_rs1 + crs2[31:24]; wadd3 = addr3 & 32'hFFFF_FFFC;
+
+    while(txn_cnt < 4) begin
+        @(posedge g_clk) if(mem_txn_finish && !cop_mem_error) begin
+            errors[txn_cnt] = 0;
+            txn_cnt = txn_cnt + 1;
+        end else if(mem_txn_finish && cop_mem_error) begin
+            txn_cnt = 4;
+        end
+    end
+
+    if(p_wen[3]) $display("t=%0d ERROR: Gather.b txn 0 expects wen=0",$time);
+    if(p_wen[2]) $display("t=%0d ERROR: Gather.b txn 1 expects wen=0",$time);
+    if(p_wen[1]) $display("t=%0d ERROR: Gather.b txn 2 expects wen=0",$time);
+    if(p_wen[0]) $display("t=%0d ERROR: Gather.b txn 3 expects wen=0",$time);
+
+    if(wadd0 != p_addr[3])
+        $display("t=%0d ERROR: gather address 0 expected %h got %h.",
+                $time, wadd0, p_addr[3]);
+    if(wadd1 != p_addr[2])
+        $display("t=%0d ERROR: gather address 1 expected %h got %h.",
+                $time, wadd1, p_addr[2]);
+    if(wadd2 != p_addr[1])
+        $display("t=%0d ERROR: gather address 2 expected %h got %h.",
+                $time, wadd2, p_addr[1]);
+    if(wadd3 != p_addr[0]) 
+        $display("t=%0d ERROR: gather address 3 expected %h got %h.",
+                $time, wadd3, p_addr[0]);
+
+    wb_data = crd;
+
+    if(!errors[0]) model_get_byte(p_rdata[3]   , addr0[1:0], wb_data[ 7: 0]);
+    if(!errors[1]) model_get_byte(p_rdata[2]   , addr1[1:0], wb_data[15: 8]);
+    if(!errors[2]) model_get_byte(p_rdata[1]   , addr2[1:0], wb_data[23:16]);
+    if(!errors[3]) model_get_byte(cop_mem_rdata, addr3[1:0], wb_data[31:24]);
+
+    model_do_write_cpr(dec_arg_crd, wb_data);
+
+    if(errors)
+        model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+    else
+        model_do_instr_result(ISE_RESULT_SUCCESS);
+
 end endtask
 
 
@@ -1469,6 +1610,7 @@ begin: t_model_sb_cr
     reg  [ 3:0] exp_ben;
     reg  [ 3:0] exp_wen;
     reg         txn_correct;
+    reg  [31:0] ardata;
 
     model_do_read_cpr(dec_arg_crs2, crs2);
 
@@ -1491,7 +1633,7 @@ begin: t_model_sb_cr
 
     wrd_addr = exp_addr & 32'hFFFF_FFFC;
     model_do_check_mem_transaction(
-        exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct
+        exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct,ardata
     );
 end endtask
 
@@ -1508,6 +1650,7 @@ begin: t_model_sh_cr
     reg  [ 3:0] exp_ben;
     reg  [ 3:0] exp_wen;
     reg         txn_correct;
+    reg  [31:0] ardata;
 
     model_do_read_cpr(dec_arg_crs2, crs2);
 
@@ -1521,7 +1664,7 @@ begin: t_model_sh_cr
     if(exp_addr[0] == 1'b0) begin
         wrd_addr = exp_addr & 32'hFFFF_FFFC;
         model_do_check_mem_transaction(
-            exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct
+            exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct,ardata
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
@@ -1542,6 +1685,7 @@ begin: t_model_sw_cr
     reg  [ 3:0] exp_ben;
     reg  [ 3:0] exp_wen;
     reg         txn_correct;
+    reg  [31:0] ardata;
 
     model_do_read_cpr(dec_arg_crs2, crs2);
 
@@ -1553,7 +1697,7 @@ begin: t_model_sw_cr
 
     if(exp_addr[1:0] == 2'b00) begin
         model_do_check_mem_transaction(
-            exp_wen, exp_ben, exp_addr, 0, exp_wdata, txn_correct
+            exp_wen, exp_ben, exp_addr, 0, exp_wdata, txn_correct,ardata
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
@@ -1579,7 +1723,7 @@ always @(posedge g_clk) begin : p_model_control
         
         model_do_reset();
 
-    end else if(cop_insn_valid && !model_multi_cycle) begin
+    end else if(cop_insn_valid) begin
 
         // Reset model outputs ready for new instruction.
         model_do_clear_outputs();
