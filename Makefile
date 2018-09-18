@@ -29,6 +29,7 @@ examples:
 clean:
 	$(MAKE) -C $(COP_HOME)/docs     clean
 	$(MAKE) -C $(COP_HOME)/examples clean
+	$(MAKE) -C $(COP_HOME)/verif/unit clean
 	rm -f $(RTL_DECODER)
 
 #
