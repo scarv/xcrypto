@@ -181,6 +181,6 @@ assign id_imm =
     {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } ;
 
 assign id_wb_h = dec_arg_cc ;
-assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_cc;
+assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_ca;
 
 endmodule
