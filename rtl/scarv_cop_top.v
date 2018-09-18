@@ -106,6 +106,7 @@ wire [31:0]   palu_cpr_rd_wdata; // Writeback data
 
 wire          mem_ivalid       ; // Valid instruction input
 wire          mem_idone        ; // Instruction complete
+wire          mem_is_store     ; // Instruction is a store / nload
 wire          mem_addr_error   ; // Memory address exception
 wire          mem_bus_error    ; // Memory bus exception
 wire [ 3:0]   mem_cpr_rd_ben   ; // Writeback byte enable
@@ -172,12 +173,16 @@ assign n_cop_wen   = id_class     == SCARV_COP_ICLASS_MOVE    &&
 
 assign n_cop_wdata = palu_cpr_rd_wdata;
 
-// FIXME - bug here, address / bus errors should differentiate between
-//         whether a load or store caused them.
-assign n_cop_result= id_exception     ? SCARV_COP_INSN_BAD_INS    :
-                     mem_addr_error   ? SCARV_COP_INSN_BAD_LAD    :
-                     mem_bus_error    ? SCARV_COP_INSN_LD_ERR     :
-                                        SCARV_COP_INSN_SUCCESS    ;
+//
+//  and/or the result of the instruction together. Note
+//  SCARV_COP_INSN_SUCCESS == 0
+assign n_cop_result= 
+    {3{id_exception                  }} & SCARV_COP_INSN_BAD_INS |
+    {3{!mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_LAD |
+    {3{!mem_is_store & mem_bus_error }} & SCARV_COP_INSN_LD_ERR  |
+    {3{ mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_SAD |
+    {3{ mem_is_store & mem_bus_error }} & SCARV_COP_INSN_ST_ERR  |
+                                          SCARV_COP_INSN_SUCCESS ;
 
 always @(posedge g_clk) if(!g_resetn) begin
     cop_wen    <= 1'b0; // COP write enable
@@ -368,6 +373,7 @@ scarv_cop_mem i_scarv_cop_mem (
 .g_resetn        (g_resetn        ), // Synchronous active low reset.
 .mem_ivalid      (mem_ivalid      ), // Valid instruction input
 .mem_idone       (mem_idone       ), // Instruction complete
+.mem_is_store    (mem_is_store    ), // Is the instruction a store?
 .mem_addr_error  (mem_addr_error  ), // Memory address exception
 .mem_bus_error   (mem_bus_error   ), // Memory bus exception
 .gpr_rs1         (cpu_rs1         ), // Source register 1

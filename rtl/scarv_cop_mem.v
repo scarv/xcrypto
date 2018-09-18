@@ -23,6 +23,7 @@ output wire         mem_idone        , // Instruction complete
 
 output wire         mem_addr_error   , // Memory address exception
 output wire         mem_bus_error    , // Memory bus exception
+output wire         mem_is_store     , // Is this a store instruction?
 
 input  wire [31:0]  gpr_rs1          , // Source register 1
 input  wire [31:0]  cpr_rs1          , // Source register 2
@@ -128,6 +129,7 @@ assign cop_mem_cen    = mem_ivalid && !mem_idone && !mem_addr_error;
 assign cop_mem_addr   = mem_address & {{30{cop_mem_cen}},2'b00};
 
 assign cop_mem_wen    = is_sc_b || is_sc_h || is_sw || is_sh || is_sb;
+assign mem_is_store   = cop_mem_wen;
 
 // Byte lane select wires.
 wire   ben_word       = is_sw;
@@ -138,30 +140,33 @@ wire   ben_b_2        = is_sb &&  mem_address[1:0] == 2'b10;
 wire   ben_b_1        = is_sb &&  mem_address[1:0] == 2'b01;
 wire   ben_b_0        = is_sb &&  mem_address[1:0] == 2'b00;
 
-assign cop_mem_ben[3] = ben_word || ben_hw_lo || ben_b_3;
-assign cop_mem_ben[2] = ben_word || ben_hw_lo || ben_b_2;
-assign cop_mem_ben[1] = ben_word || ben_hw_hi || ben_b_1;
-assign cop_mem_ben[0] = ben_word || ben_hw_hi || ben_b_0;
+assign cop_mem_ben[3] = ben_word || ben_hw_hi || ben_b_3;
+assign cop_mem_ben[2] = ben_word || ben_hw_hi || ben_b_2;
+assign cop_mem_ben[1] = ben_word || ben_hw_lo || ben_b_1;
+assign cop_mem_ben[0] = ben_word || ben_hw_lo || ben_b_0;
  
 // Write data select.
+wire [31:0] hw_wdata = id_wb_h ? cpr_rs2[31:16] : cpr_rs2[15:0];
+wire [31:0] by_wdata = id_wb_h ? 
+    (id_wb_b ? cpr_rs2[31:24]: cpr_rs2[23:16]):
+    (id_wb_b ? cpr_rs2[15: 8]: cpr_rs2[ 7: 0]);
 assign cop_mem_wdata =
-    is_sw            ? cpr_rs2                                 :
-    is_sh || is_sc_h ? cpr_rs2 << (mem_address[1] ? 16 : 0)    :
-    is_sb || is_sc_b ? cpr_rs2 << {mem_address[1:0],3'b00}     :
-                       32'b0                                   ;
+    is_sw            ? cpr_rs2                                  :
+    is_sh || is_sc_h ? hw_wdata << (mem_address[1] ? 16 : 0)    :
+    is_sb || is_sc_b ? by_wdata << {mem_address[1:0],3'b00}     :
+                       32'b0                                    ;
 
 // Memory transaction finish tracking
 wire mem_txn_good  = 
     p_cen && !cop_mem_stall && !(cop_mem_error || mem_addr_error);
 
-wire mem_txn_error = 
-     p_cen && !cop_mem_stall &&  (cop_mem_error || mem_addr_error)   ||
-    !p_cen && mem_addr_error; 
+wire mem_txn_error = mem_bus_error || mem_addr_error;
 
 //
 // Is the instruction finished, and how did it finish.
 
-assign mem_bus_error    = mem_txn_error;
+assign mem_bus_error =
+     p_cen && !cop_mem_stall && cop_mem_error;
 
 assign mem_addr_error   = 
     (is_sw   || is_lw  ) && |mem_address[1:0]   ||
