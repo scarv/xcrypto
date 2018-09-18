@@ -17,3 +17,6 @@ $(OUT_DIR)/%.hex : $(OUT_DIR)/%.o
 	$(OBJDUMP) -D -j.text $< | grep -P ":\t" > $@
 	sed -i 's/     .*$///' $@
 	sed -i 's/^.*:\t//' $@
+
+clean:
+	rm -rf $(OUTPUTS)
