@@ -539,6 +539,69 @@ begin : t_model_get_mem_txn
 
 end endtask
 
+//
+// Checks that we get the correct results from a memory transaction
+//
+task model_do_check_mem_transaction;
+    input        exp_wen  ;
+    input [ 3:0] exp_ben  ;
+    input [31:0] exp_addr ;
+    input [31:0] exp_rdata;
+    input [31:0] exp_wdata;
+    output       correct  ;
+begin : t_model_do_check_mem_transaction
+    reg        wen  ;
+    reg [ 3:0] ben  ;
+    reg [31:0] addr ;
+    reg [31:0] rdata;
+    reg [31:0] wdata;
+    reg        error;
+        
+    correct = 1'b0;
+    model_do_get_mem_transaction(wen,ben,addr,rdata,wdata,error);
+
+    if(error) begin
+        model_do_instr_result(ISE_RESULT_STOR_ACCESS_FAUKT);
+        correct = 1'b1;
+    end else begin
+        if(exp_addr != addr) begin
+            $display("t=%0d ERROR: mem address expected %h got %h.",
+                $time, exp_addr, addr);
+            #90 $finish;
+        end else if (wen != exp_wen) begin
+            $display("t=%0d ERROR: mem expected wen=%b, got %b.",
+                $time,exp_wen, wen);
+            #90 $finish;
+        end else if (exp_ben[0] && (wdata[7:0] != exp_wdata[7:0])) begin
+            $display("t=%0d ERROR: mem expected wdata byte 0 =%h, got %h.",
+                $time,exp_wdata[7:0],wdata[7:0]);
+            #90 $finish;
+        end else if (exp_ben[1] && (wdata[15:8] != exp_wdata[15:8])) begin
+            $display("t=%0d ERROR: mem expected wdata byte 1 =%h, got %h.",
+                $time,exp_wdata[15:8],wdata[15:8]);
+            #90 $finish;
+        end else if (exp_ben[2] && (wdata[23:16] != exp_wdata[23:16])) begin
+            $display("t=%0d ERROR: mem expected wdata byte 2 =%h, got %h.",
+                $time,exp_wdata[23:16],wdata[23:16]);
+            #90 $finish;
+        end else if (exp_ben[3] && (wdata[31:24] != exp_wdata[31:24])) begin
+            $display("t=%0d ERROR: mem expected wdata byte 3 =%h, got %h.",
+                $time,exp_wdata[31:24],wdata[31:24]);
+            #90 $finish;
+        end else if (exp_ben != ben) begin
+            $display(
+                "t=%0d ERROR: mem byte enable expected %4b got %4b.",
+                $time, exp_ben, ben);
+            #90 $finish;
+        end else begin
+            $display("ISE> store MEM[%h](%4b) <- c%0d (%h)",
+                exp_addr, exp_ben, dec_arg_crs2, exp_wdata);
+            correct = 1'b1;
+        end
+    end
+
+end endtask
+
 // ------------------------------------------------------------------------
 
 //
@@ -1411,8 +1474,32 @@ end endtask
 task model_do_sh_cr;
 begin: t_model_sh_cr
     reg  [31:0] crs2;
+    reg  [31:0] exp_addr;
+    reg  [31:0] wrd_addr;
+    reg  [31:0] exp_wdata;
+    reg  [ 3:0] exp_ben;
+    reg  [ 3:0] exp_wen;
+    reg         txn_correct;
+
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sh.cr not implemented");
+
+    exp_addr  =
+        cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
+    exp_ben   = exp_addr[1] ? 4'b1100 : 4'b0011;
+    exp_wen   = 1'b1;
+    exp_wdata =
+        (dec_arg_cc ? crs2[31:16] : crs2[15:0]) << (exp_addr[1]? 16 : 0);
+
+    if(exp_addr[0] == 1'b0) begin
+        wrd_addr = exp_addr & 32'hFFFF_FFFC;
+        model_do_check_mem_transaction(
+            exp_wen, exp_ben, wrd_addr, 0, exp_wdata, txn_correct
+        );
+    end else begin
+        model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
+        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+            exp_addr, dec_arg_crs2,crs2);
+    end
 end endtask
 
 
@@ -1422,8 +1509,29 @@ end endtask
 task model_do_sw_cr;
 begin: t_model_sw_cr
     reg  [31:0] crs2;
+    reg  [31:0] exp_addr;
+    reg  [31:0] exp_wdata;
+    reg  [ 3:0] exp_ben;
+    reg  [ 3:0] exp_wen;
+    reg         txn_correct;
+
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction sw.cr not implemented");
+
+    exp_addr  =
+        cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
+    exp_ben   = 4'b1111;
+    exp_wen   = 1'b1;
+    exp_wdata = crs2;
+
+    if(exp_addr[1:0] == 2'b00) begin
+        model_do_check_mem_transaction(
+            exp_wen, exp_ben, exp_addr, 0, exp_wdata, txn_correct
+        );
+    end else begin
+        model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
+        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+            exp_addr, dec_arg_crs2,crs2);
+    end
 end endtask
 
 
