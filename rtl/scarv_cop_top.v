@@ -379,6 +379,7 @@ scarv_cop_mem i_scarv_cop_mem (
 .gpr_rs1         (cpu_rs1         ), // Source register 1
 .cpr_rs1         (crs1_rdata      ), // Source register 2
 .cpr_rs2         (crs2_rdata      ), // Source register 3
+.cpr_rs3         (crs3_rdata      ), // Source register 3
 .id_wb_h         (id_wb_h         ), // Halfword index (load/store)
 .id_wb_b         (id_wb_b         ), // Byte index (load/store)
 .id_imm          (id_imm          ), // Source immedate

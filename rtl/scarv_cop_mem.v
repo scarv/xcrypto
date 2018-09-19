@@ -25,9 +25,10 @@ output wire         mem_addr_error   , // Memory address exception
 output wire         mem_bus_error    , // Memory bus exception
 output wire         mem_is_store     , // Is this a store instruction?
 
-input  wire [31:0]  gpr_rs1          , // Source register 1
+input  wire [31:0]  gpr_rs1          , // GPR Source register 1
 input  wire [31:0]  cpr_rs1          , // Source register 2
-input  wire [31:0]  cpr_rs2          , // Source register 3
+input  wire [31:0]  cpr_rs2          , // Source register 2
+input  wire [31:0]  cpr_rs3          , // Source register 3
 
 input  wire         id_wb_h          , // Halfword index (load/store)
 input  wire         id_wb_b          , // Byte index (load/store)
@@ -147,9 +148,26 @@ assign cop_mem_ben[0] = ben_word || ben_hw_lo || ben_b_0;
  
 // Write data select.
 wire [31:0] hw_wdata = id_wb_h ? cpr_rs2[31:16] : cpr_rs2[15:0];
-wire [31:0] by_wdata = id_wb_h ? 
-    (id_wb_b ? cpr_rs2[31:24]: cpr_rs2[23:16]):
-    (id_wb_b ? cpr_rs2[15: 8]: cpr_rs2[ 7: 0]);
+reg  [31:0] by_wdata;
+
+always @(*) begin
+    if(is_sc_b) begin
+        by_wdata = n_fsm_idle ? cpr_rs3[ 7: 0]    :
+                   n_fsm_b1   ? cpr_rs3[15: 8]    :
+                   n_fsm_b2   ? cpr_rs3[23:16]    :
+                   n_fsm_b3   ? cpr_rs3[31:24]    :
+                              0                 ;
+    end else if(is_sc_h) begin
+        by_wdata = n_fsm_idle ? cpr_rs3[15: 0]    :
+                   n_fsm_h1   ? cpr_rs3[31:16]    :
+                              0                 ;
+    end else if(id_wb_h) begin
+        by_wdata = id_wb_b ? cpr_rs2[31:24]: cpr_rs2[23:16];
+    end else begin
+        by_wdata = id_wb_b ? cpr_rs2[15: 8]: cpr_rs2[ 7: 0];
+    end
+end
+
 assign cop_mem_wdata =
     is_sw            ? cpr_rs2                                  :
     is_sh || is_sc_h ? hw_wdata << (mem_address[1] ? 16 : 0)    :
