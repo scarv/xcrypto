@@ -66,7 +66,7 @@ assign id_crs2 = dec_arg_crs2;
 
 wire   crd_in_crs3 = dec_lmix_cr || dec_hmix_cr || dec_ins_cr ||
                      dec_lli_cr  || dec_lui_cr  || dec_lbu_cr ||
-                     dec_lhu_cr  ;
+                     dec_lhu_cr  || dec_scatter_b || dec_scatter_h;
 
 assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
 
