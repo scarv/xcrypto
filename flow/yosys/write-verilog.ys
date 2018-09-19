@@ -12,7 +12,7 @@ tee -o ../../work/logic-loops.rpt check -assert
 synth -top scarv_cop_top
 
 # Print some statistics out
-tee -o ../../work/synth-statistics.rpt -width
+tee -o ../../work/synth-statistics.rpt stat -width
 
 # Write out the synthesised verilog
 write_verilog ../../work/scarv_cop_top.v
