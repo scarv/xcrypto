@@ -1026,8 +1026,42 @@ end endtask
 task model_do_scatter_h;
 begin: t_model_scatter_h
     reg  [31:0] crs2;
+    reg  [31:0] crd ;
+    reg  [31:0] addr0, addr1;
+    reg  [31:0] wadd0, wadd1;
+    reg  [ 1:0] errors;
+    reg  [31:0] wb_data;
+    integer     txn_cnt;
+    
+    txn_cnt = 0;
+    errors  = {p_error[1],p_error[2]};
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction scatter.h not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+
+    addr0 = cop_rs1 + crs2[15: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
+    addr1 = cop_rs1 + crs2[31:16]; wadd1 = addr1 & 32'hFFFF_FFFC;
+
+    if(!p_wen[1])$display("t=%0d ERROR: scatter.h txn 0 expects wen=1",$time);
+    if(!p_wen[0])$display("t=%0d ERROR: scatter.h txn 1 expects wen=1",$time);
+
+    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], gather.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], gather.b) 
+
+    wb_data = crd;
+
+    if(!errors) begin
+        model_get_hw(p_wdata[2], addr0[1], wb_data[15: 0]);
+        model_get_hw(p_wdata[1], addr1[1], wb_data[31:16]);
+    end
+
+    model_do_write_cpr(dec_arg_crd, wb_data);
+    
+    if(addr0[0] || addr1[0])
+        model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
+    else if(errors)
+        model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+    else
+        model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
@@ -1037,8 +1071,41 @@ end endtask
 task model_do_gather_h;
 begin: t_model_gather_h
     reg  [31:0] crs2;
+    reg  [31:0] crd ;
+    reg  [31:0] addr0, addr1;
+    reg  [31:0] wadd0, wadd1;
+    reg  [ 1:0] errors;
+    reg  [31:0] wb_data;
+    integer     txn_cnt;
+    
+    txn_cnt = 0;
+    errors  = {p_error[1],p_error[2]};
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction gather.h not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+
+    addr0 = cop_rs1 + crs2[15: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
+    addr1 = cop_rs1 + crs2[31:16]; wadd1 = addr1 & 32'hFFFF_FFFC;
+
+    if(p_wen[1]) $display("t=%0d ERROR: Gather.h txn 0 expects wen=0",$time);
+    if(p_wen[0]) $display("t=%0d ERROR: Gather.h txn 1 expects wen=0",$time);
+
+    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], gather.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], gather.b) 
+
+    wb_data = crd;
+
+    if(!errors[0]) model_get_hw(p_rdata[2], addr0[1], wb_data[15: 0]);
+    if(!errors[1]) model_get_hw(p_rdata[1], addr1[1], wb_data[31:16]);
+
+    model_do_write_cpr(dec_arg_crd, wb_data);
+    
+    if(addr0[0] || addr1[0])
+        model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
+    else if(errors)
+        model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+    else
+        model_do_instr_result(ISE_RESULT_SUCCESS);
+
 end endtask
 
 
