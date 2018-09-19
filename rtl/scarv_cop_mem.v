@@ -186,10 +186,21 @@ wire mem_txn_error = mem_bus_error || mem_addr_error;
 assign mem_bus_error =
      p_cen && !cop_mem_stall && cop_mem_error;
 
+
+// Compute address errors based on inputs to the address computation, not
+// on the computed address.
+//  This prevents logic loops where the next FSM state depends on the
+//  computed memory address being correct, but where the computed memory
+//  address also depends on the *next* fsm state.
+wire w_addr_err     = |((gpr_rs1[1:0] + id_imm[1:0])&2'b11);
+wire h_addr_err     = gpr_rs1[0] || id_imm[0];
+wire sgh_0_addr_err = gpr_rs1[0] || cpr_rs2[0];
+wire sgh_1_addr_err = gpr_rs1[0] || cpr_rs2[16];
+
 assign mem_addr_error   = 
-    (is_sw   || is_lw  ) && |mem_address[1:0]   ||
-    (is_sh   || is_lh  ) && |mem_address[0]     ||
-    (is_ga_h || is_sc_h) && |mem_address[0]      ;
+    (is_sw   || is_lw  ) && w_addr_err   ||
+    (is_sh   || is_lh  ) && h_addr_err   ||
+    (is_ga_h || is_sc_h) && (sgh_0_addr_err || sgh_1_addr_err);
 
 assign mem_idone        = 
     mem_txn_good && n_mem_fsm == FSM_IDLE       ||
