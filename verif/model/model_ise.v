@@ -92,6 +92,18 @@ parameter ISE_MCCR_C7_R = 1; //
 
 parameter ISE_RESET_CPRS= 1; // Reset CPRS to zero?
     
+//
+// Scatter gather address check
+//
+//  Checks that the addresses of memory transactions caused by scatter/
+//  gather are correct in value.
+//
+`define SCATTER_GATHER_ADDR_CHECK(EXP_ADDR, DUT_ADDR, NOTE) begin \
+    if(EXP_ADDR != DUT_ADDR) begin \
+        $display("t=%0d ERROR: NOTE address 0 expected %h got %h.", \
+                $time, wadd0, p_addr[4]); \
+    end \
+end
 
 //
 // Arithmetic pack width operation macro
@@ -510,15 +522,14 @@ always @(posedge g_clk) p_cen <= (cop_mem_cen ||
 
 wire mem_txn_finish = p_cen && !cop_mem_stall;
 
-wire [31:0]  samp_p_addr  = p_addr [0];
-wire [ 3:0]  samp_p_ben   = p_ben  [0];
-wire         samp_p_wen   = p_wen  [0];
-wire [31:0]  samp_p_wdata = p_wdata[0];
-wire [31:0]  samp_p_rdata = p_rdata[0];
-wire [31:0]  samp_p_error = p_error[0];
+wire [31:0]  samp_p_wdata_0  = p_wdata [0];
+wire [31:0]  samp_p_wdata_1  = p_wdata [1];
+wire [31:0]  samp_p_wdata_2  = p_wdata [2];
+wire [31:0]  samp_p_wdata_3  = p_wdata [3];
+wire [31:0]  samp_p_wdata_4  = p_wdata [4];
 
 always @(posedge g_clk) begin
-    if(cop_mem_cen) begin 
+    if(cop_mem_cen && !(p_cen && cop_mem_stall)) begin 
         p_wen  [0] <= cop_mem_wen  ;
         p_ben  [0] <= cop_mem_ben  ;
         p_addr [0] <= cop_mem_addr ;
@@ -910,8 +921,52 @@ end endtask
 task model_do_scatter_b;
 begin: t_model_scatter_b
     reg  [31:0] crs2;
+    reg  [31:0] crd ;
+    reg  [31:0] addr0, addr1, addr2, addr3;
+    reg  [31:0] wadd0, wadd1, wadd2, wadd3;
+    reg  [ 3:0] errors;
+    reg  [31:0] wdata;
+    integer     txn_cnt;
+    
+    txn_cnt = 0;
+    errors  = {p_error[1],p_error[2],p_error[3],p_error[4]};
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction scatter.b not implemented");
+    model_do_read_cpr(dec_arg_crd , crd );
+
+    addr0 = cop_rs1 + crs2[ 7: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
+    addr1 = cop_rs1 + crs2[15: 8]; wadd1 = addr1 & 32'hFFFF_FFFC;
+    addr2 = cop_rs1 + crs2[23:16]; wadd2 = addr2 & 32'hFFFF_FFFC;
+    addr3 = cop_rs1 + crs2[31:24]; wadd3 = addr3 & 32'hFFFF_FFFC;
+
+    if(!p_wen[3])$display("t=%0d ERROR: scatter.b txn 0 expects wen=1",$time);
+    if(!p_wen[2])$display("t=%0d ERROR: scatter.b txn 1 expects wen=1",$time);
+    if(!p_wen[1])$display("t=%0d ERROR: scatter.b txn 2 expects wen=1",$time);
+    if(!p_wen[0])$display("t=%0d ERROR: scatter.b txn 3 expects wen=1",$time);
+
+    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[4], scatter.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[3], scatter.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd2,p_addr[2], scatter.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd3,p_addr[1], scatter.b) 
+
+    if(!errors) begin
+        model_get_byte(p_wdata[4], addr0[1:0], wdata[ 7: 0]);
+        model_get_byte(p_wdata[3], addr1[1:0], wdata[15: 8]);
+        model_get_byte(p_wdata[2], addr2[1:0], wdata[23:16]);
+        model_get_byte(p_wdata[1], addr3[1:0], wdata[31:24]);
+    end
+
+    `define SCATTER_B_WDATA_CHECK(H,L,B) if(wdata[H:L] != crd[H:L])\
+$display("t=%0d ERROR: Byte B wdata expect %h got %h",$time, crd[H:L], wdata[H:L]);
+    
+    `SCATTER_B_WDATA_CHECK( 7, 0,0)
+    `SCATTER_B_WDATA_CHECK(15, 8,1)
+    `SCATTER_B_WDATA_CHECK(23,16,2)
+    `SCATTER_B_WDATA_CHECK(31,24,3)
+
+    if(errors)
+        model_do_instr_result(ISE_RESULT_STOR_ACCESS_FAUKT);
+    else
+        model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
@@ -943,18 +998,10 @@ begin: t_model_gather_b
     if(p_wen[1]) $display("t=%0d ERROR: Gather.b txn 2 expects wen=0",$time);
     if(p_wen[0]) $display("t=%0d ERROR: Gather.b txn 3 expects wen=0",$time);
 
-    if(wadd0 != p_addr[4])
-        $display("t=%0d ERROR: gather address 0 expected %h got %h.",
-                $time, wadd0, p_addr[4]);
-    if(wadd1 != p_addr[3])
-        $display("t=%0d ERROR: gather address 1 expected %h got %h.",
-                $time, wadd1, p_addr[3]);
-    if(wadd2 != p_addr[2])
-        $display("t=%0d ERROR: gather address 2 expected %h got %h.",
-                $time, wadd2, p_addr[2]);
-    if(wadd3 != p_addr[1]) 
-        $display("t=%0d ERROR: gather address 3 expected %h got %h.",
-                $time, wadd3, p_addr[1]);
+    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[4], gather.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[3], gather.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd2,p_addr[2], gather.b)
+    `SCATTER_GATHER_ADDR_CHECK(wadd3,p_addr[1], gather.b) 
 
     wb_data = crd;
 
