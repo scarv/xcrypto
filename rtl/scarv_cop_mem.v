@@ -224,7 +224,6 @@ assign loaded_bytes[2] = cop_mem_rdata[23:16];
 assign loaded_bytes[1] = cop_mem_rdata[15: 8];
 assign loaded_bytes[0] = cop_mem_rdata[ 7: 0];
 
-// FIXME: Gather bytes/halfwords will go to the wrong places.
 // Gathers the loaded bytes and arranges them so the
 // correct loaded byte goes to the correct CPR destination
 // byte.
@@ -238,7 +237,10 @@ always @(*) begin
         // Do nothing, correct by default
 
     end else if(halfword_op) begin
-        if(!p_addr_lsbs[1] && !id_wb_h) begin
+        if(wb_hw_hi) begin
+            wb_bytes[3] = p_addr_lsbs[1] ? loaded_bytes[3] : loaded_bytes[1];
+            wb_bytes[2] = p_addr_lsbs[1] ? loaded_bytes[2] : loaded_bytes[0];
+        end else if(!p_addr_lsbs[1] && !id_wb_h) begin
             // Do nothing, correct by default
 
         end else if(!p_addr_lsbs[1] &&  id_wb_h) begin
