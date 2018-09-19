@@ -23,13 +23,15 @@ output wire         mem_idone        , // Instruction complete
 
 output wire         mem_addr_error   , // Memory address exception
 output wire         mem_bus_error    , // Memory bus exception
+output wire         mem_is_store     , // Is this a store instruction?
 
-input  wire [31:0]  gpr_rs1          , // Source register 1
+input  wire [31:0]  gpr_rs1          , // GPR Source register 1
 input  wire [31:0]  cpr_rs1          , // Source register 2
-input  wire [31:0]  cpr_rs2          , // Source register 3
+input  wire [31:0]  cpr_rs2          , // Source register 2
+input  wire [31:0]  cpr_rs3          , // Source register 3
 
-input  wire [31:0]  id_wb_h          , // Halfword index (load/store)
-input  wire [31:0]  id_wb_b          , // Byte index (load/store)
+input  wire         id_wb_h          , // Halfword index (load/store)
+input  wire         id_wb_b          , // Byte index (load/store)
 input  wire [31:0]  id_imm           , // Source immedate
 input  wire [ 2:0]  id_class         , // Instruction class
 input  wire [ 3:0]  id_subclass      , // Instruction subclass
@@ -128,6 +130,7 @@ assign cop_mem_cen    = mem_ivalid && !mem_idone && !mem_addr_error;
 assign cop_mem_addr   = mem_address & {{30{cop_mem_cen}},2'b00};
 
 assign cop_mem_wen    = is_sc_b || is_sc_h || is_sw || is_sh || is_sb;
+assign mem_is_store   = cop_mem_wen;
 
 // Byte lane select wires.
 wire   ben_word       = is_sw;
@@ -138,35 +141,66 @@ wire   ben_b_2        = is_sb &&  mem_address[1:0] == 2'b10;
 wire   ben_b_1        = is_sb &&  mem_address[1:0] == 2'b01;
 wire   ben_b_0        = is_sb &&  mem_address[1:0] == 2'b00;
 
-assign cop_mem_ben[3] = ben_word || ben_hw_lo || ben_b_3;
-assign cop_mem_ben[2] = ben_word || ben_hw_lo || ben_b_2;
-assign cop_mem_ben[1] = ben_word || ben_hw_hi || ben_b_1;
-assign cop_mem_ben[0] = ben_word || ben_hw_hi || ben_b_0;
+assign cop_mem_ben[3] = ben_word || ben_hw_hi || ben_b_3;
+assign cop_mem_ben[2] = ben_word || ben_hw_hi || ben_b_2;
+assign cop_mem_ben[1] = ben_word || ben_hw_lo || ben_b_1;
+assign cop_mem_ben[0] = ben_word || ben_hw_lo || ben_b_0;
  
 // Write data select.
+wire [31:0] hw_wdata = id_wb_h ? cpr_rs2[31:16] : cpr_rs2[15:0];
+reg  [31:0] by_wdata;
+
+always @(*) begin
+    if(is_sc_b) begin
+        by_wdata = n_fsm_idle ? cpr_rs3[ 7: 0]    :
+                   n_fsm_b1   ? cpr_rs3[15: 8]    :
+                   n_fsm_b2   ? cpr_rs3[23:16]    :
+                   n_fsm_b3   ? cpr_rs3[31:24]    :
+                              0                 ;
+    end else if(is_sc_h) begin
+        by_wdata = n_fsm_idle ? cpr_rs3[15: 0]    :
+                   n_fsm_h1   ? cpr_rs3[31:16]    :
+                              0                 ;
+    end else if(id_wb_h) begin
+        by_wdata = id_wb_b ? cpr_rs2[31:24]: cpr_rs2[23:16];
+    end else begin
+        by_wdata = id_wb_b ? cpr_rs2[15: 8]: cpr_rs2[ 7: 0];
+    end
+end
+
 assign cop_mem_wdata =
-    is_sw            ? cpr_rs2                                 :
-    is_sh || is_sc_h ? cpr_rs2 << (mem_address[1] ? 16 : 0)    :
-    is_sb || is_sc_b ? cpr_rs2 << {mem_address[1:0],3'b00}     :
-                       32'b0                                   ;
+    is_sw            ? cpr_rs2                                  :
+    is_sh || is_sc_h ? hw_wdata << (mem_address[1] ? 16 : 0)    :
+    is_sb || is_sc_b ? by_wdata << {mem_address[1:0],3'b00}     :
+                       32'b0                                    ;
 
 // Memory transaction finish tracking
 wire mem_txn_good  = 
     p_cen && !cop_mem_stall && !(cop_mem_error || mem_addr_error);
 
-wire mem_txn_error = 
-     p_cen && !cop_mem_stall &&  (cop_mem_error || mem_addr_error)   ||
-    !p_cen && mem_addr_error; 
+wire mem_txn_error = mem_bus_error || mem_addr_error;
 
 //
 // Is the instruction finished, and how did it finish.
 
-assign mem_bus_error    = mem_txn_error;
+assign mem_bus_error =
+     p_cen && !cop_mem_stall && cop_mem_error;
+
+
+// Compute address errors based on inputs to the address computation, not
+// on the computed address.
+//  This prevents logic loops where the next FSM state depends on the
+//  computed memory address being correct, but where the computed memory
+//  address also depends on the *next* fsm state.
+wire w_addr_err     = |((gpr_rs1[1:0] + id_imm[1:0])&2'b11);
+wire h_addr_err     = gpr_rs1[0] || id_imm[0];
+wire sgh_0_addr_err = gpr_rs1[0] || cpr_rs2[0];
+wire sgh_1_addr_err = gpr_rs1[0] || cpr_rs2[16];
 
 assign mem_addr_error   = 
-    (is_sw   || is_lw  ) && |mem_address[1:0]   ||
-    (is_sh   || is_lh  ) && |mem_address[0]     ||
-    (is_ga_h || is_sc_h) && |mem_address[0]      ;
+    (is_sw   || is_lw  ) && w_addr_err   ||
+    (is_sh   || is_lh  ) && h_addr_err   ||
+    (is_ga_h || is_sc_h) && (sgh_0_addr_err || sgh_1_addr_err);
 
 assign mem_idone        = 
     mem_txn_good && n_mem_fsm == FSM_IDLE       ||
@@ -190,7 +224,6 @@ assign loaded_bytes[2] = cop_mem_rdata[23:16];
 assign loaded_bytes[1] = cop_mem_rdata[15: 8];
 assign loaded_bytes[0] = cop_mem_rdata[ 7: 0];
 
-// FIXME: Gather bytes/halfwords will go to the wrong places.
 // Gathers the loaded bytes and arranges them so the
 // correct loaded byte goes to the correct CPR destination
 // byte.
@@ -201,9 +234,13 @@ always @(*) begin
     wb_bytes[0] = loaded_bytes[0];
 
     if(word_op) begin
-        // Do nothing. Correct values by default.
+        // Do nothing, correct by default
+
     end else if(halfword_op) begin
-        if(!p_addr_lsbs[1] && !id_wb_h) begin
+        if(wb_hw_hi) begin
+            wb_bytes[3] = p_addr_lsbs[1] ? loaded_bytes[3] : loaded_bytes[1];
+            wb_bytes[2] = p_addr_lsbs[1] ? loaded_bytes[2] : loaded_bytes[0];
+        end else if(!p_addr_lsbs[1] && !id_wb_h) begin
             // Do nothing, correct by default
 
         end else if(!p_addr_lsbs[1] &&  id_wb_h) begin
@@ -216,15 +253,28 @@ always @(*) begin
 
         end else if( p_addr_lsbs[1] &&  id_wb_h) begin
             // Do nothing, correct by default
+
         end
     end else if(byte_op) begin
-        wb_bytes[{id_wb_h,id_wb_b}] = loaded_bytes[p_addr_lsbs];
+        if(wb_b_0)
+            wb_bytes[0] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_1)
+            wb_bytes[1] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_2)
+            wb_bytes[2] = loaded_bytes[p_addr_lsbs];
+        else if(wb_b_3)
+            wb_bytes[3] = loaded_bytes[p_addr_lsbs];
+        else
+            wb_bytes[{id_wb_h,id_wb_b}] = loaded_bytes[p_addr_lsbs];
     end
 end
 
 assign mem_cpr_rd_wdata  = 
     {32{mem_txn_good}} & 
-    {wb_bytes[3],wb_bytes[2],wb_bytes[1],wb_bytes[0]};
+    {wb_bytes[3],
+     wb_bytes[2],
+     wb_bytes[1],
+     wb_bytes[0]};
 
 assign mem_cpr_rd_ben[3] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_3);
 assign mem_cpr_rd_ben[2] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_2);

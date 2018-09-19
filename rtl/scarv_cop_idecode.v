@@ -33,8 +33,8 @@ output wire [ 3:0] id_crd2         , // MP Instruction destination register 2
 output wire [ 4:0] id_rd           , // GPR destination register
 output wire [ 4:0] id_rs1          , // GPR source register
 output wire [31:0] id_imm          , // Decoded immediate.
-output wire [31:0] id_wb_h         , // Halfword index (load/store)
-output wire [31:0] id_wb_b           // Byte index (load/store)
+output wire        id_wb_h         , // Halfword index (load/store)
+output wire        id_wb_b           // Byte index (load/store)
 
 );
 
@@ -65,7 +65,8 @@ assign id_crs1 = dec_arg_crs1;
 assign id_crs2 = dec_arg_crs2;
 
 wire   crd_in_crs3 = dec_lmix_cr || dec_hmix_cr || dec_ins_cr ||
-                     dec_lli_cr  || dec_lui_cr  ;
+                     dec_lli_cr  || dec_lui_cr  || dec_lbu_cr ||
+                     dec_lhu_cr  || dec_scatter_b || dec_scatter_h;
 
 assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
 
@@ -180,6 +181,6 @@ assign id_imm =
     {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } ;
 
 assign id_wb_h = dec_arg_cc ;
-assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_cc;
+assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_ca;
 
 endmodule

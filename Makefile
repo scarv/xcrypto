@@ -29,6 +29,7 @@ examples:
 clean:
 	$(MAKE) -C $(COP_HOME)/docs     clean
 	$(MAKE) -C $(COP_HOME)/examples clean
+	$(MAKE) -C $(COP_HOME)/verif/unit clean
 	rm -f $(RTL_DECODER)
 
 #
@@ -54,7 +55,14 @@ $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 #
 .PHONY: yosys_smt2
 yosys_smt2: $(RTL_DECODER)
-	$(MAKE) -C $(COP_HOME)/flow/yosys all
+	$(MAKE) -C $(COP_HOME)/flow/yosys smt2
+
+#
+# Synthesis the verilog design using yosys
+#
+.PHONY: yosys_synth
+yosys_synth: $(RTL_DECODER)
+	$(MAKE) -C $(COP_HOME)/flow/yosys synthesise
 
 #
 # Build the Icarus Verilog based simulation model

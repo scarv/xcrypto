@@ -131,7 +131,9 @@ end
 
 //
 // Memory bus responses
-always @(posedge g_clk) if(cop_mem_cen) cop_mem_error <= 1'b0;
+always @(posedge g_clk) if(g_resetn)
+    cop_mem_error <= 1'b0;
+    else if(cop_mem_cen) cop_mem_error <= $random&'h7 == 0;
 always @(posedge g_clk) cop_mem_stall <= $random;
 always @(posedge g_clk) if(!cop_mem_stall) cop_mem_rdata <= $random;
 
@@ -188,6 +190,11 @@ reg              cop_mem_error   ; // Error
 // Model signals
 wire cop_insn_valid  = cpu_insn_req && cop_insn_ack; // New input instruction
 wire cop_insn_finish = cop_insn_rsp && cpu_insn_ack; // instr output valid.
+wire grm_insn_valid  = cop_insn_finish;
+
+// GRM finishes all instructions in one cycle.
+reg  grm_insn_finish;
+always @(posedge g_clk) grm_insn_finish<= grm_insn_valid;
 
 wire [ 2:0]      grm_result      ; // Instruction execution result
 
@@ -197,6 +204,11 @@ wire [15:0]      grm_cprs_read   ; // CPR Registers written by instr
 wire             grm_rd_wen      ; // GPR Write Enable
 wire [ 4:0]      grm_rd_addr     ; // GPR Write Address
 wire [31:0]      grm_rd_data     ; // Data to write to GPR
+
+`FIFO(4, 5,grm_rd_addr  , cop_insn_finish)
+`FIFO(4, 1,grm_rd_wen   , cop_insn_finish)
+`FIFO(4,32,grm_rd_data  , cop_insn_finish)
+`FIFO(4, 3,grm_result   , cop_insn_finish)
 
 //
 // Runtime Checks
@@ -210,21 +222,21 @@ model_checks i_model_checks(
 .dut_insn_enc (cop_insn_enc     ), // Encoded instruction data
 .dut_rs1      (cpu_rs1          ), // RS1 source data
 
-.grm_in_valid (cop_insn_valid   ), // Input Instruction valid
+.grm_in_valid (grm_insn_finish  ), // Input Instruction valid
 .grm_insn_enc (cop_insn_enc     ), // Encoded instruction data
 .grm_rs1      (cpu_rs1          ), // RS1 source data
 
 .dut_out_valid(cop_insn_finish  ), // Output of DUT valid.
-.dut_result   (fifo_cop_result[0]), // Instruction execution result
-.dut_rd_wen   (fifo_cop_wen   [0]), // GPR Write Enable
-.dut_rd_addr  (fifo_cop_waddr [0]), // GPR Write Address
-.dut_rd_data  (fifo_cop_wdata [0]), // Data to write to GPR
+.dut_result   (fifo_cop_result[1]), // Instruction execution result
+.dut_rd_wen   (fifo_cop_wen   [1]), // GPR Write Enable
+.dut_rd_addr  (fifo_cop_waddr [1]), // GPR Write Address
+.dut_rd_data  (fifo_cop_wdata [1]), // Data to write to GPR
 
-.grm_out_valid(cop_insn_finish  ), // Output of GRM valid.
-.grm_result   (grm_result       ), // Instruction execution result
-.grm_rd_wen   (grm_rd_wen       ), // GPR Write Enable
-.grm_rd_addr  (grm_rd_addr      ), // GPR Write Address
-.grm_rd_data  (grm_rd_data      )  // Data to write to GPR
+.grm_out_valid(cop_insn_finish    ), // Output of GRM valid.
+.grm_result   (fifo_grm_result [0]), // Instruction execution result
+.grm_rd_wen   (fifo_grm_rd_wen [0]), // GPR Write Enable
+.grm_rd_addr  (fifo_grm_rd_addr[0]), // GPR Write Address
+.grm_rd_data  (fifo_grm_rd_data[0])  // Data to write to GPR
 );
 
 
@@ -235,7 +247,7 @@ model_ise i_grm(
 .g_clk           (g_clk           ), // Global clock
 .g_clk_req       (g_clk_req       ), // Clock request
 .g_resetn        (g_resetn        ), // Synchronous active low reset.
-.cop_insn_valid  (cop_insn_valid  ), // Instruction valid
+.cop_insn_valid  (grm_insn_valid  ), // Instruction valid
 .cop_insn_enc    (cop_insn_enc    ), // Encoded instruction data
 .cop_rs1         (cpu_rs1         ), // RS1 source data
 .cop_result      (grm_result      ), // Instruction execution result

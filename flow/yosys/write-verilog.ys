@@ -1,0 +1,18 @@
+
+# Read in the design
+read_verilog -I../../work/ ../../rtl/*
+
+# Synthesise processes ready for SCC check.
+proc
+
+# Check that there are no logic loops in the design early on.
+tee -o ../../work/logic-loops.rpt check -assert
+
+# Generic yosys synthesis command
+synth -top scarv_cop_top
+
+# Print some statistics out
+tee -o ../../work/synth-statistics.rpt stat -width
+
+# Write out the synthesised verilog
+write_verilog ../../work/scarv_cop_top.v

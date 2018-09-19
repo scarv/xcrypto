@@ -59,12 +59,19 @@ input  wire [31:0]      grm_rd_data       // Data to write to GPR
 //  based verification flows.
 //
 
+`ifdef FORMAL
+
+`define MC_ASSERT_EQ(A,B) assert(!(A === B));
+
+`else
+
 `define MC_ASSERT_EQ(A,B) if(!(A === B)) begin \
     $display("t=%0d ERROR: Assertion failed: A (0x%h) === B (0x%h) ", \
         $time,A,B);  \
     #40 $finish; \
 end \
 
+`endif
 
 // ------------------------------------------------------------------------
 

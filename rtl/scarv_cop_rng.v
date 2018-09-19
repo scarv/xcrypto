@@ -28,6 +28,8 @@ output wire [ 3:0]  rng_cpr_rd_ben   , // Writeback byte enable
 output wire [ 3:0]  rng_cpr_rd_wdata  // Writeback data
 );
 
-
+assign rng_cpr_rd_ben = 0;
+assign rng_cpr_rd_wdata = 0;
+assign rng_idone = 0;
 
 endmodule
