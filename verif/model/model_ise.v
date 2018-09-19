@@ -1044,8 +1044,10 @@ begin: t_model_scatter_h
     if(!p_wen[1])$display("t=%0d ERROR: scatter.h txn 0 expects wen=1",$time);
     if(!p_wen[0])$display("t=%0d ERROR: scatter.h txn 1 expects wen=1",$time);
 
-    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], gather.b)
-    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], gather.b) 
+    if(!addr0[0] && !addr1[0]) begin
+        `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], scatter.h)
+        `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], scatter.h) 
+    end
 
     wb_data = crd;
 
@@ -1053,13 +1055,11 @@ begin: t_model_scatter_h
         model_get_hw(p_wdata[2], addr0[1], wb_data[15: 0]);
         model_get_hw(p_wdata[1], addr1[1], wb_data[31:16]);
     end
-
-    model_do_write_cpr(dec_arg_crd, wb_data);
     
     if(addr0[0] || addr1[0])
-        model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
+        model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
     else if(errors)
-        model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
+        model_do_instr_result(ISE_RESULT_STOR_ACCESS_FAUKT);
     else
         model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
@@ -1089,15 +1089,19 @@ begin: t_model_gather_h
     if(p_wen[1]) $display("t=%0d ERROR: Gather.h txn 0 expects wen=0",$time);
     if(p_wen[0]) $display("t=%0d ERROR: Gather.h txn 1 expects wen=0",$time);
 
-    `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], gather.b)
-    `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], gather.b) 
+    if(!addr0[0] && !addr1[0]) begin
+        `SCATTER_GATHER_ADDR_CHECK(wadd0,p_addr[2], gather.b)
+        `SCATTER_GATHER_ADDR_CHECK(wadd1,p_addr[1], gather.b) 
+    end
 
     wb_data = crd;
 
     if(!errors[0]) model_get_hw(p_rdata[2], addr0[1], wb_data[15: 0]);
     if(!errors[1]) model_get_hw(p_rdata[1], addr1[1], wb_data[31:16]);
-
-    model_do_write_cpr(dec_arg_crd, wb_data);
+    
+    if(!errors && !(addr0[0] || addr1[0])) begin
+        model_do_write_cpr(dec_arg_crd, wb_data);
+    end
     
     if(addr0[0] || addr1[0])
         model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
