@@ -25,9 +25,10 @@ input  wire             g_resetn        , // Synchronous active low reset.
 
 //
 // Status Interface
-
-// TBD
-
+`ifndef SYNTHESIS
+output wire [31:0]      cop_random      , // The most recent random sample
+output wire             cop_rand_sample , // cop_random valid when this high.
+`endif
 
 //
 // CPU / COP Interface
@@ -117,6 +118,11 @@ wire          malu_idone       ; // Instruction complete
 wire [ 3:0]   malu_cpr_rd_ben  ; // Writeback byte enable
 wire [31:0]   malu_cpr_rd_wdata; // Writeback data
 
+wire          rng_ivalid       ; // Valid instruction input
+wire          rng_idone        ; // Instruction complete
+wire [ 3:0]   rng_cpr_rd_ben   ; // Writeback byte enable
+wire [31:0]   rng_cpr_rd_wdata ;// Writeback data
+
 //
 // Functional unit dispatch
 //
@@ -138,6 +144,10 @@ assign mem_ivalid  =
     insn_valid  && (
     id_class == SCARV_COP_ICLASS_LOADSTORE    );
 
+assign rng_ivalid =
+    insn_valid && (
+    id_class == SCARV_COP_ICLASS_RANDOM       );
+
 //
 // CPR Writeback data selection
 //
@@ -146,13 +156,15 @@ assign mem_ivalid  =
 
 assign crd_wen   = palu_cpr_rd_ben |
                    mem_cpr_rd_ben  |
-                   malu_cpr_rd_ben ;
+                   malu_cpr_rd_ben |
+                   rng_cpr_rd_ben  ;
 
 assign crd_addr  = id_crd;
 
 assign crd_wdata = palu_cpr_rd_wdata |
                    mem_cpr_rd_wdata  |
-                   malu_cpr_rd_wdata ;
+                   malu_cpr_rd_wdata |
+                   rng_cpr_rd_wdata  ;
 
 //
 // GPR Writeback data and instruction result selection
@@ -200,8 +212,8 @@ end
 // BEGIN PIPELINE PROGRESSION CONTROL
 
 wire    fu_done         = 
-    mem_idone || palu_idone || malu_idone ||
-    id_exception && insn_accept;
+    mem_idone || palu_idone || malu_idone || rng_idone ||
+    (id_exception && insn_accept);
 
 wire    insn_valid      = insn_accept ||
                           cop_fsm == FSM_EXECUTING;
@@ -416,6 +428,24 @@ scarv_cop_malu i_scarv_cop_malu (
 .id_subclass      (id_subclass      ), // Instruction subclass
 .malu_cpr_rd_ben  (malu_cpr_rd_ben  ), // Writeback byte enable
 .malu_cpr_rd_wdata(malu_cpr_rd_wdata)  // Writeback data
+);
+
+
+scarv_cop_rng i_scarv_cop_rng(
+.g_clk           (g_clk           ), // Global clock
+.g_resetn        (g_resetn        ), // Synchronous active low reset.
+.rng_ivalid      (rng_ivalid      ), // Valid instruction input
+.rng_idone       (rng_idone       ), // Instruction complete
+`ifndef SYNTHESIS
+.cop_random      (cop_random      ), // Latest random sample value
+.cop_rand_sample (cop_rand_sample ), // random sample value valid
+`endif
+.rng_rs1         (crs1_rdata      ), // Source register 1
+.id_imm          (id_imm          ), // Source immedate
+.id_class        (id_class        ), // Instruction class
+.id_subclass     (id_subclass     ), // Instruction subclass
+.rng_cpr_rd_ben  (rng_cpr_rd_ben  ), // Writeback byte enable
+.rng_cpr_rd_wdata(rng_cpr_rd_wdata) // Writeback data
 );
 
 endmodule

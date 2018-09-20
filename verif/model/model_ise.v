@@ -43,6 +43,11 @@ output reg  [31:0]      cop_rd_data     , // Data to write to GPR
 output reg              cop_insn_finish , // Instruction finished
 
 //
+// Random number sampling
+input  wire [31:0]      cop_random      , // The most recent random sample
+input  wire             cop_rand_sample , // cop_random valid when this high.
+
+//
 // Memory transaction tracking.
 input                   cop_mem_cen     , // Memory transaction 0 enable
 input                   cop_mem_wen     , // Transaction 0 write enable
@@ -504,6 +509,11 @@ begin : t_model_decode_pack_widths
 end endtask
 
 //
+// Recording of the last random number sampled by the design.
+reg [31:0] p_random;
+always @(posedge g_clk) if(cop_rand_sample) p_random <= cop_random;
+
+//
 // Utility wires / registers for monitoring the memory transaction
 // snoop interface.
 
@@ -864,7 +874,8 @@ task model_do_rseed_cr;
 begin: t_model_rseed_cr
     reg  [31:0] crs1;
     model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction rseed.cr not implemented");
+    $display("ISE> rseed.cr %d", dec_arg_crs1);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
@@ -873,7 +884,9 @@ end endtask
 //
 task model_do_rsamp_cr;
 begin: t_model_rsamp_cr
-    $display("ISE> ERROR: Instruction rsamp.cr not implemented");
+    $display("ISE> rsamp.cr %d", dec_arg_crd);
+    model_do_write_cpr(dec_arg_crd, p_random);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 

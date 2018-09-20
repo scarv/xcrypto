@@ -57,3 +57,7 @@ localparam SCARV_COP_SCLASS_EXT_CR  = 4'd4;
 localparam SCARV_COP_SCLASS_LLI_CR  = 4'd5;
 localparam SCARV_COP_SCLASS_LUI_CR  = 4'd6;
 
+localparam SCARV_COP_SCLASS_RSEED   = 4'b1010;
+localparam SCARV_COP_SCLASS_RSAMP   = 4'b1011;
+
+localparam SCARV_COP_RNG_TYPE_LFSR32= 0;
