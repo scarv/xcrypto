@@ -25,9 +25,10 @@ input  wire             g_resetn        , // Synchronous active low reset.
 
 //
 // Status Interface
-
-// TBD
-
+`ifndef SYNTHESIS
+output wire [31:0]      cop_random      , // The most recent random sample
+output wire             cop_rand_sample , // cop_random valid when this high.
+`endif
 
 //
 // CPU / COP Interface
@@ -120,7 +121,7 @@ wire [31:0]   malu_cpr_rd_wdata; // Writeback data
 wire          rng_ivalid       ; // Valid instruction input
 wire          rng_idone        ; // Instruction complete
 wire [ 3:0]   rng_cpr_rd_ben   ; // Writeback byte enable
-wire [ 3:0]   rng_cpr_rd_wdata ;// Writeback data
+wire [31:0]   rng_cpr_rd_wdata ;// Writeback data
 
 //
 // Functional unit dispatch
@@ -435,7 +436,11 @@ scarv_cop_rng i_scarv_cop_rng(
 .g_resetn        (g_resetn        ), // Synchronous active low reset.
 .rng_ivalid      (rng_ivalid      ), // Valid instruction input
 .rng_idone       (rng_idone       ), // Instruction complete
-.rng_rs1         (rng_rs1         ), // Source register 1
+`ifndef SYNTHESIS
+.cop_random      (cop_random      ), // Latest random sample value
+.cop_rand_sample (cop_rand_sample ), // random sample value valid
+`endif
+.rng_rs1         (crs1_rdata      ), // Source register 1
 .id_imm          (id_imm          ), // Source immedate
 .id_class        (id_class        ), // Instruction class
 .id_subclass     (id_subclass     ), // Instruction subclass
