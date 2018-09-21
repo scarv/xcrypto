@@ -775,6 +775,8 @@ begin: t_model_mul_px
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(*)
+    $display("mul.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+        dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
