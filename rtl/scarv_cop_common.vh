@@ -59,6 +59,7 @@ localparam SCARV_COP_SCLASS_LUI_CR  = 4'd6;
 
 localparam SCARV_COP_SCLASS_ADD_PX  = 4'd1;
 localparam SCARV_COP_SCLASS_SUB_PX  = 4'd2;
+localparam SCARV_COP_SCLASS_MUL_PX  = 4'd3;
 
 localparam SCARV_COP_SCLASS_RSEED   = 4'b1010;
 localparam SCARV_COP_SCLASS_RSAMP   = 4'b1011;

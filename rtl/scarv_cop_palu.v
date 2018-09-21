@@ -20,6 +20,9 @@
 //  - INS expects crd value to be in palu_rs3
 //
 module scarv_cop_palu (
+input  wire         g_clk            ,
+input  wire         g_resetn         ,
+
 input  wire         palu_ivalid      , // Valid instruction input
 output wire         palu_idone       , // Instruction complete
 
@@ -41,7 +44,8 @@ output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
 `include "scarv_cop_common.vh"
 
 // Purely combinatoral block.
-assign palu_idone = palu_ivalid;
+assign palu_idone = palu_ivalid &&
+                    (is_mul_px ? pmul_done : 1'b1);
 
 // Detect which subclass of instruction to execute.
 wire is_mov_insn  = 
@@ -243,34 +247,64 @@ wire [31:0] result_parith;
     
 wire [31:0] padd_a ;  // LHS input
 wire [31:0] padd_b ;  // RHS input
-wire [ 2:0] padd_pw;  // Current operation pack width
 wire        padd_sub; // Do subtract instead of add.
 wire        padd_ci;  // Carry in
 wire [31:0] padd_c ;  // Result
 wire        padd_co;  // Carry out
 
-assign padd_a = is_parith_insn ? palu_rs1 : 0;
-assign padd_b = is_parith_insn ? palu_rs2 : 0;
+wire        pmul_start ; // Trigger to start multiplying
+wire        pmul_done  ; // Signal multiplication has finished.
+wire [31:0] pmul_a     ; // LHS operand
+wire [31:0] pmul_b     ; // RHS operand
+wire [63:0] pmul_add_a ; // LHS operand for shared adder
+wire [63:0] pmul_add_b ; // RHS operand for shared adder
+wire [63:0] pmul_add_c ; // RHS operand for shared adder
+wire [63:0] pmul_result; // Result of the multiplication.
 
-assign padd_pw = id_pw;
+assign padd_a = is_mul_px ? pmul_add_a[31:0] : palu_rs1;
+assign padd_b = is_mul_px ? pmul_add_b[31:0] : palu_rs2;
+
+assign pmul_a       = palu_rs1;
+assign pmul_b       = palu_rs2;
+assign pmul_add_c   = padd_c;
+assign pmul_start   = is_mul_px && is_parith_insn;
+
 assign padd_ci = is_sub_px;
 assign padd_sub= is_sub_px;
 
 wire is_add_px = id_subclass == SCARV_COP_SCLASS_ADD_PX;
 wire is_sub_px = id_subclass == SCARV_COP_SCLASS_SUB_PX;
+wire is_mul_px = id_subclass == SCARV_COP_SCLASS_MUL_PX;
 
 assign result_parith =
-    {32{is_add_px}} & padd_c    |
-    {32{is_sub_px}} & padd_c    ;
+    {32{is_mul_px}} & pmul_result   |
+    {32{is_add_px}} & padd_c        |
+    {32{is_sub_px}} & padd_c        ;
+
 
 scarv_cop_palu_adder i_palu_adder(
 .a  (padd_a ),  // LHS input
 .b  (padd_b ),  // RHS input
-.pw (padd_pw),  // Current operation pack width
+.pw (id_pw  ),  // Current operation pack width
 .sub(padd_sub), // Do subtract instead of add.
 .ci (padd_ci),  // Carry in
 .c  (padd_c ),  // Result
 .co (padd_co)   // Carry out
+);
+
+
+scarv_cop_palu_multiplier i_palu_multiplier (
+.g_clk   (g_clk      ),   // Global clock.
+.g_resetn(g_resetn   ),   // Global synchronous active low reset
+.start   (pmul_start ),   // Trigger to start multiplying
+.done    (pmul_done  ),   // Signal multiplication has finished.
+.a       (pmul_a     ),   // LHS operand
+.b       (pmul_b     ),   // RHS operand
+.add_a   (pmul_add_a ),   // ADDER LHS operand
+.add_b   (pmul_add_b ),   // ADDER RHS operand
+.add_c   (pmul_add_c ),   // ADDER result
+.pw      (id_pw      ),   // Pack width.
+.result  (pmul_result)    // Result of the multiplication.
 );
 
 endmodule
