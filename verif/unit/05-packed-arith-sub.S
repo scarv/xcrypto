@@ -8,11 +8,11 @@ test_start:
     lui.cr  c1, 0x1111
     lli.cr  c1, 0x1111
 
-    add.px  w, c2, c0, c1
-    add.px  h, c3, c0, c1
-    add.px  b, c4, c0, c1
-    add.px  n, c5, c0, c1
-    add.px  c, c6, c0, c1
+    sub.px  w, c2, c0, c1
+    sub.px  h, c3, c0, c1
+    sub.px  b, c4, c0, c1
+    sub.px  n, c5, c0, c1
+    sub.px  c, c6, c0, c1
 
     mv2gpr  x1, c0
     mv2gpr  x1, c1
@@ -36,11 +36,11 @@ test_start:
     mv2gpr  x1, c5
     mv2gpr  x1, c6
     
-    mul.px  w, c2, c0, c1
-    mul.px  h, c3, c0, c1
-    mul.px  b, c4, c0, c1
-    mul.px  n, c5, c0, c1
-    mul.px  c, c6, c0, c1
+    sub.px  w, c2, c0, c1
+    sub.px  h, c3, c0, c1
+    sub.px  b, c4, c0, c1
+    sub.px  n, c5, c0, c1
+    sub.px  c, c6, c0, c1
 
     mv2gpr  x1, c0
     mv2gpr  x1, c1

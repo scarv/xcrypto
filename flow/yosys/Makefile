@@ -10,8 +10,12 @@ YS_VCD      ?= $(COP_HOME)/work/yosys.vcd
 SRC_RTL     ?= $(find $(COP_HOME) -path "rtl/*.v")
 SRC_VERIF   ?= $(find $(COP_HOME) -path "verif/*.v")
 
-SMT2_out= $(COP_HOME)/work/yosys_tb.smt2
-VLOG_out= $(COP_HOME)/work/scarv_cop_top.v
+SMT2_out    = $(COP_HOME)/work/yosys_tb.smt2
+VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
+
+SMT_STEPS   = 10
+SMT_SOLVER  = z3
+SMT_VCD     = $(COP_WORK)/smt.vcd
 
 all: $(SMT2_out) $(VLOG_out)
 
@@ -24,6 +28,19 @@ synthesise: $(VLOG_out)
 $(VLOG_out) : YS_SCRIPT = write-verilog.ys
 $(VLOG_out) : $(YS_SCRIPT) $(SRC_RTL)
 	$(YS) -QT -l $(COP_HOME)/work/yosys-synth.log $(YS_SCRIPT)
+
+.PHONY: adder
+adder       : YS_SCRIPT = adder.ys
+adder       : ../../rtl/scarv_cop_palu_adder.v
+	$(YS) -QT $(YS_SCRIPT)
+
+formal-trace:
+	$(YSMTBMC) -t $(SMT_STEPS) \
+        -g \
+        --presat \
+        --dump-vcd $(SMT_VCD) \
+        -s $(SMT_SOLVER) \
+        $(SMT2_out)
 
 clean:
 	rm -rf $(YS_VCD) $(SMT2_out)

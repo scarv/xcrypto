@@ -145,16 +145,6 @@ wire [31:0] result_bitwise =
 // ----------------------------------------------------------------------
 
 //
-//  Packed Arithmetic Instructions
-//
-
-// TODO: Implement this.
-
-wire [31:0] result_parith = 0;
-
-// ----------------------------------------------------------------------
-
-//
 //  Twiddle Instructions
 //
 
@@ -241,5 +231,46 @@ assign twid_c_result =
 
 wire [31:0] result_twid = 
     twid_b_result | twid_n_result | twid_c_result;
+
+// ----------------------------------------------------------------------
+
+//
+//  Packed Arithmetic Instructions
+//
+
+
+wire [31:0] result_parith;
+    
+wire [31:0] padd_a ;  // LHS input
+wire [31:0] padd_b ;  // RHS input
+wire [ 2:0] padd_pw;  // Current operation pack width
+wire        padd_sub; // Do subtract instead of add.
+wire        padd_ci;  // Carry in
+wire [31:0] padd_c ;  // Result
+wire        padd_co;  // Carry out
+
+assign padd_a = is_parith_insn ? palu_rs1 : 0;
+assign padd_b = is_parith_insn ? palu_rs2 : 0;
+
+assign padd_pw = id_pw;
+assign padd_ci = is_sub_px;
+assign padd_sub= is_sub_px;
+
+wire is_add_px = id_subclass == SCARV_COP_SCLASS_ADD_PX;
+wire is_sub_px = id_subclass == SCARV_COP_SCLASS_SUB_PX;
+
+assign result_parith =
+    {32{is_add_px}} & padd_c    |
+    {32{is_sub_px}} & padd_c    ;
+
+scarv_cop_palu_adder i_palu_adder(
+.a  (padd_a ),  // LHS input
+.b  (padd_b ),  // RHS input
+.pw (padd_pw),  // Current operation pack width
+.sub(padd_sub), // Do subtract instead of add.
+.ci (padd_ci),  // Carry in
+.c  (padd_c ),  // Result
+.co (padd_co)   // Carry out
+);
 
 endmodule
