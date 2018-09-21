@@ -111,10 +111,10 @@
             for complex hardware or invasive alteration to the host core.
 
       \item {\bf    Measurability}.
-            Given the remit of extending RV32I or RV32E, any feature in \ISE
-            should offer reproducible, demonstrable value vs. this baseline; 
-            for a given feature, this goal should be supported by provision
-            of associated reference implementations of cryptographically 
+            Given the remit of extending RV32I, any feature in \ISE should 
+            offer reproducible, demonstrable value vs. this baseline; for 
+            a given feature, this goal should be supported by provision of 
+            associated reference implementations of cryptographically 
             interesting benchmark kernels.
 
       \end{itemize}
@@ -202,7 +202,8 @@
       implementations that, e.g., have a $32$-bit instructions but a $32$-,
       $64$-, or $128$-bit general-purpose register file (and address space).
       The same concept is useful wrt. the co-processor, and indeed, for the
-      multi-precision integer instructions (per \REFSEC{sec:XXX})
+      multi-precision integer instructions 
+      (per \REFSEC{sec:spec:instr:mp})
       in particular.
 
       The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
@@ -336,9 +337,9 @@
       is coupled to, and there is, conceptually, no reason they cannot be 
       used within RV64I and RV128I.
       Likewise, if treated as a prototype, many constituent concepts could
-      be mapped onto alternative, brownfield extensions to RV32I or RV32E.
+      be mapped onto alternative, brownfield extensions to RV32I.
       As an example, consider the multi-precision integer instructions 
-      (per \REFSEC{sec:XXX})
+      (per \REFSEC{sec:spec:instr:mp})
       which {\em could} be adopted in RV32I (having been re-specified to
       operate on the general-purpose register file).
 

@@ -16,11 +16,12 @@ efficiency can be pitched as an enabler for countermeasures against attack
 This document acts as a specification for a 
 greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
 to the RISC-V 
-RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}
-or
-RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}
-base 
-ISA, which we dub \ISE.
+RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17} (or RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17})
+base ISA, which we dub \ISE; it forms an output from the SCARV\footnote{
+\url{http://www.scarv.org}, \url{http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/R012288/1}
+} project, funded by EPSRC and NCSC as part of the UK-based RISE\footnote{
+\url{http://www.ukrise.org}
+} initiative.
 The \ISE ISE aims to support software implementations of both symmetric and 
 asymmetric cryptographic primitives.  By analogy, one could view this remit
 as similar to that of a floating-point co-processor, but for cryptography: 
@@ -28,17 +29,8 @@ per the above, it aims to enable
 a) efficient
    and
 b) secure
-execution of said implementations.  At a high level, (pertinent) features 
-that enable it does so can be classified as follows:
+execution of said implementations.
 
-\begin{itemize}
-\item Class-$1$: randomness.
-\item Class-$2$: packed                  operations.
-\item Class-$3$: bit-wise                operations.
-\item Class-$4$: multi-precision integer operations.
-\end{itemize}
-
-\noindent
 Note that this document {\em is} a specification for \ISE, but {\em is not} 
 an implementation guide: we provide a separate document for that purpose.
 Also note that it should be viewed as a prototype or draft, so statements 

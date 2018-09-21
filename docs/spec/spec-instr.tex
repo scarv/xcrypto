@@ -547,13 +547,7 @@ using a single 3-instruction sequence:
 % ------------------------------------------------------------------------
 
 \subsubsection{Multi-precision Arithmetic}
-\label{sec:multi-precision-instructions}
-
-Public key cryptography relies heavily on modular arithmetic over very
-large integers. The following instructions are designed to allow
-operations over arbitrarily large integers, using software based carry
-and overflow mechanisms. This mirrors how the base RISC-V ISA currently
-supports carry and overflow.
+\label{sec:spec:instr:mp}
 
 These instructions use two destination registers and between three
 and four source registers. Hence, some restrictions are placed on how

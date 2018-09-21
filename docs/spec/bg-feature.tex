@@ -1,0 +1,69 @@
+% =============================================================================
+
+\subsection{Feature overview}
+\label{sec:bg:feature}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$1$: randomness}
+\label{sec:bg:feature:1}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2$: packed                  operations}
+\label{sec:bg:feature:2}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$3$: bit-wise                operations}
+\label{sec:bg:feature:3}
+
+As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
+a) a non-standard {\em representation} of data,
+   and
+b) a non-standard {\em implementation} of functions, which operate on
+   said representations:
+essentially it describes some cryptographic primitive (e.g., a block
+cipher) as a  ``software circuit'' comprising a sequence of bit-wise 
+instructions (e.g., NOT, AND, and OR).  Although not general-purpose,
+bit-slicing offers advantages including constant-time execution and 
+hence immunity from cache-based side-channel attacks.
+
+The proposal of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98} includes 
+a suggestion for accelerating bit-sliced implementations through use 
+of a ``BITSLICE instruction''; this suggestion was later investigated 
+in a more concrete sense by Grabher et al.~\cite{SCARV:GraGroPag:08}.
+In both, the idea is to ``compress'' a sub-circuit, i.e., a sequence 
+of bit-wise instructions representing an $n$-input Boolean function,
+into a Look-Up Table (LUT): essentially, the LUT is first configured 
+with a truth table for the function, and then accessed to apply said
+function.  
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$4$: multi-precision integer operations}
+\label{sec:bg:feature:4}
+
+Multi-precision (modular) integer arithmetic represents the foundation
+of many cryptographic use-cases, e.g., asymmetric algorithms such as
+RSA (relying on arithmetic in $\B{Z}_N$ for large $N$),
+and
+ECC (relying on arithmetic in $\B{F}_p$ for large $p$).
+As such, there is a large body of literature on the implementation of
+said arithmetic; this includes {\em support} for implementations via
+ISEs defined for RISC-based processors
+(see, e.g.,\cite{SCARV:GroKam:03,SCARV:GroKam:04}).
+
+The following ISE mirrors a set of ``long arithmetic'' instructions in
+XS1~\cite[Section 18]{SCARV:XS1:09}, which, in turn, mirror the set of
+primitive operations typical of multi-precision integer arithmetic.  
+A central design principle is that each instruction explicitly accepts 
+all operands required: no additional state, e.g., accumulator register
+or status flags (e.g., carry or borrow), is required.  Note that such
+an approach is particularly attractive within the context of RV32I, as
+a result of it omitting status flags in favour of software-based carry
+and overflow detection.
+
+% =============================================================================
+
+
