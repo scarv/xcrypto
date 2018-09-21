@@ -61,3 +61,9 @@ localparam SCARV_COP_SCLASS_RSEED   = 4'b1010;
 localparam SCARV_COP_SCLASS_RSAMP   = 4'b1011;
 
 localparam SCARV_COP_RNG_TYPE_LFSR32= 0;
+
+localparam SCARV_COP_PW_1           = 3'b000;
+localparam SCARV_COP_PW_2           = 3'b001;
+localparam SCARV_COP_PW_4           = 3'b010;
+localparam SCARV_COP_PW_8           = 3'b011;
+localparam SCARV_COP_PW_16          = 3'b100;
