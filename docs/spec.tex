@@ -1,0 +1,65 @@
+\documentclass{article}
+
+\usepackage{shared} \addbibresource{shared.bib}
+
+\import{../work/}{crypto-ise.encodings.tex}
+
+\title{SCARV: RISC-V Crypto ISE \\ Specification}
+
+\begin{document}
+
+\maketitle \tableofcontents
+
+% =============================================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+\import{./spec/}{intro.tex}
+
+% -----------------------------------------------------------------------------
+
+\section{Background}
+\label{sec:bg}
+
+\import{./spec/}{bg-design.tex}
+\import{./spec/}{bg-related.tex}
+\import{./spec/}{bg-notation.tex}
+
+% -----------------------------------------------------------------------------
+
+\section{Specification}
+\label{sec:spec}
+
+\import{./spec/}{spec-state.tex}
+\import{./spec/}{spec-instr.tex}
+
+% =============================================================================
+
+\printbibliography
+
+% =============================================================================
+
+\appendix
+
+\newpage
+\section{Instruction syntax}
+\label{appx:syntax}
+
+\import{./spec/}{appx-syntax.tex}
+
+\newpage
+\section{Instruction encoding}
+\label{appx:encoding}
+
+\import{./spec/}{appx-encoding.tex}
+
+% =============================================================================
+
+
+\newpage
+\section{Changelog}
+\import{./spec/}{crypto-ise.changelog.tex}
+\end{document}
+
+% =============================================================================

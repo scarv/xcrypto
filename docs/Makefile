@@ -1,5 +1,5 @@
 ETABLE  = $(COP_WORK)/crypto-ise.encodings.tex
-SOURCES = crypto-ise.tex ise-implementation.tex
+SOURCES = spec.tex ise-implementation.tex
 TARGETS = $(patsubst %.tex, %.pdf, ${SOURCES})
 
 DIA_IN  = $(shell find -name "*.dot")

@@ -1,5 +1,10 @@
+\subsection{\ISE state}
+\label{sec:spec:state}
 
-\subsection{ISE General Purpose Registers}
+% =============================================================================
+
+\subsubsection{General-purpose registers}
+\label{sec:spec:state:gpr}
 
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE.
@@ -67,14 +72,16 @@ This is the only extra architectural state required by the ISE.
 We followed the RISC-V principles of avoiding implicit or otherwise
 hidden state.
 
-\subsection{ISE Control \& Status Registers}
+% =============================================================================
+
+\subsubsection{Control and status registers}
+\label{sec:spec:state:csr}
 
 The Crypto ISE one Control \& Status Register (CSR) to the
 standard set. It is used for feature identification and access
 control.
 
-\subsubsection{Crypto ISE Control Register (mccr)}
-\label{sec:csr-mccr}
+\paragraph{Crypto ISE Control Register (mccr)}
 
 The {\tt mccr} register is a non-standard, read/write, M-level CSR
 used to identify which parts of the ISE have been implemented,
@@ -144,7 +151,7 @@ implementation. If no countermeasures are implemented for example, or
 user/supervisor mode is not supported, the corresponding bits may be
 constants.
 
-\subsubsection{Access Control In The mccr}
+\paragraph{Access Control In The mccr}
 
 The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
 priviledge levels of the RISC-V core can use the Crypto ISE instructions
@@ -163,7 +170,7 @@ is raised.
 Any access to the {\tt mccr} in anything other than machine mode
 causes an {\em illegal instruction exception}.
 
-\subsubsection{Countermeasure Control In The mccr}
+\paragraph{Countermeasure Control In The mccr.}
 
 The {\tt mccr} includes coarse grain control for implementation specific
 hardware side channel countermeasures using the {\tt cX} bits.
@@ -173,7 +180,7 @@ countermeasure bit controls. We expect them to be used to implement
 switches for controlling things like constant time computation, random
 stalling, instruction shuffling and so on.
 
-\subsection{ABI Standards}
+\paragraph{ABI Standards.}
 
 All of the state added in the Crypto ISE is considered {\em callee save}
 for the purposes of the ABI.
@@ -192,3 +199,5 @@ to the address following $c0$.
 The $\CPR$ registers which are written to the stack during function calls
 should be written {\em after} all of the $\GPR$ and floating-point registers
 (if the {\tt F} extension is implemented) have been written.
+
+% =============================================================================

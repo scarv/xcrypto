@@ -1,0 +1,53 @@
+% =============================================================================
+
+Versus a general case, cryptographic workloads are challenging in that they
+typically
+a) require computationally intensive, somewhat niche functionality,
+   and
+b) form a central target in what is a complex, evolving attack surface.
+The former is a particular issue, in the sense cryptography is typically an
+enabling technology vs. a feature per se: from the perspective of the user,
+it represents pure overhead.  Efficiency is a goal in and of itself, but is
+also as an enabler for security: one cannot (or at least {\em should} not)
+compromise security to meet efficiency requirements, so delivering higher
+efficiency can be pitched as an enabler for countermeasures against attack
+(since there is more margin in which to do so).
+
+This document acts as a specification for a 
+greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
+to the RISC-V 
+RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}
+or
+RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}
+base 
+ISA, which we dub \ISE.
+The \ISE ISE aims to support software implementations of both symmetric and 
+asymmetric cryptographic primitives.  By analogy, one could view this remit
+as similar to that of a floating-point co-processor, but for cryptography: 
+per the above, it aims to enable
+a) efficient
+   and
+b) secure
+execution of said implementations.  At a high level, (pertinent) features 
+that enable it does so can be classified as follows:
+
+\begin{itemize}
+\item Class-$1$: randomness.
+\item Class-$2$: packed                  operations.
+\item Class-$3$: bit-wise                operations.
+\item Class-$4$: multi-precision integer operations.
+\end{itemize}
+
+\noindent
+Note that this document {\em is} a specification for \ISE, but {\em is not} 
+an implementation guide: we provide a separate document for that purpose.
+Also note that it should be viewed as a prototype or draft, so statements 
+such as 
+``\ISE is   X'' 
+or
+``\ISE does Y''
+should be carefully qualified with {\em currently} vs. {\em definitively}.  
+In particular, we expect some degree of fine-tuning to emerge from ongoing
+implementation and evaluation effort.
+
+% =============================================================================

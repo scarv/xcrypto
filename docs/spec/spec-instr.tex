@@ -1,10 +1,9 @@
+\subsection{\ISE instructions}
+\label{sec:spec:instr}
 
-All instructions occupy the \encspace encoding space of the RISC-V opcode
-map, using the associated \encopcode prefix for bits $6:0$ of each 
-instruction.
+% =============================================================================
 
-% ------------------------------------------------------------------------
-\subsection{Move Instructions}
+\subsubsection{Move Instructions}
 \label{sec:move-instructions}
 
 These instructions are used to either move words between the RISC-V $\GPR$s
@@ -63,9 +62,9 @@ into register {\tt rd}.
 }{
 }
 
-
 % ------------------------------------------------------------------------
-\subsection{Randomness}
+
+\subsubsection{Randomness}
 
 Randomness is crucial to many parts of cryptography. Here we define an 
 {\em interface} to a random source, which can be seeded and sampled using
@@ -107,9 +106,9 @@ then act as a seed value.
 \end{itemize}
 }{}
 
-
 % ------------------------------------------------------------------------
-\subsection{Packed Arithmetic}
+
+\subsubsection{Packed Arithmetic}
 \label{sec:packed-arithmetic-instructions}
 
 The packed arithmetic instructions are designed to provide scalable, sub-word
@@ -280,7 +279,7 @@ left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2}
 }{}
 
 % ------------------------------------------------------------------------
-\subsection{Packed Field Permutation}
+\subsubsection{Packed Field Permutation}
 \label{sec:packed-field-instructions}
 
 These instructions allow permutation of different packed field widths.
@@ -381,7 +380,8 @@ $ \CPR[*][\OPER{crd}][31:24] \ASN crumbs[\OPER{b3}] \CONS
 }{}
 
 % ------------------------------------------------------------------------
-\subsection{Bitwise Instructions}
+
+\subsubsection{Bitwise Instructions}
 \label{sec:bitwise-instructions}
 
 These instructions are designed to operate on bits within words, or
@@ -545,7 +545,8 @@ using a single 3-instruction sequence:
 }
 
 % ------------------------------------------------------------------------
-\subsection{Multi-precision Arithmetic}
+
+\subsubsection{Multi-precision Arithmetic}
 \label{sec:multi-precision-instructions}
 
 Public key cryptography relies heavily on modular arithmetic over very
@@ -792,7 +793,8 @@ $\GPR[*][rd] \ASN ( \CPR[*][crs1] > \CPR[*][crs2] ) \IOR ( ( \CPR[*][crs1] = \CP
 }{}
 
 % ------------------------------------------------------------------------
-\subsection{Memory Access}
+
+\subsubsection{Memory Access}
 \label{sec:memory-instructions}
 
 The ISE contains several instructions listed below which allow memory
@@ -1054,106 +1056,4 @@ of some implementations.
 }
 {}
 
-
-\newpage
-\section{Instruction Assembly Listings}
-
-This section lists the assembly notation for the instructions, as well as
-their encodings.
-
-{\tt
-MV2GPR      rd, rs1                 \\
-MV2COP      rd, rs1                 \\
-TWID.B      rd, rs1, b0, b1, b2, b3 \\
-TWID.HN     rd, rs1, n0, n1, n2, n3 \\
-TWID.LN     rd, rs1, n0, n1, n2, n3 \\
-ADD.px      rd, rs1, rs2            \\
-SUB.px      rd, rs1, rs2            \\
-MUL.px      rd, rs1, rs2            \\
-SLLI.px     rd, rs1, shamt          \\
-SRLI.px     rd, rs1, shamt          \\
-ROTI.px     rd, rs1, shamt          \\
-SLL.px      rd, rs1, rs2            \\
-SRL.px      rd, rs1, rs2            \\
-ROT.px      rd, rs1, rs2            \\
-XOR.cr      rd, rs1, rs2            \\
-AND.cr      rd, rs1, rs2            \\
-OR.cr       rd, rs1, rs2            \\
-BOP.cr      rd, rs1, rs2, lut4      \\
-ADD3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-ADD2.mp     (rd1, rd2),  rs1, rs2  \\
-SUB3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-SUB2.mp     (rd1, rd2),  rs1, rs2  \\
-ACC2.mp     (rd1, rd2),  rs1, rs2  \\
-ACC1.mp     (rd1, rd2),  rs1       \\
-MAC.mp      (rd1, rd2),  rs1, rs2, rs3 \\
-MAA.mp      (rd1, rd2),  rs1, rs2, rs3, rs4 \\
-SLLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
-SLLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-SRLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
-SRLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-EQU.mp      rd1,         rs1, rs2, rs3 \\
-LTU.mp      rd1,         rs1, rs2, rs3 \\
-GTU.mp      rd1,         rs1, rs2, rs3 \\
-LBU.cr      rd , imm(rs1)           \\
-LHU.cr      rd , imm(rs1)           \\
-LW.cr       rd , imm(rs1)           \\
-LUI.cr      rd,  imm16              \\
-LLI.cr      rd,  imm16              \\
-SB.cr       rs2, imm(rs1)           \\
-SH.cr       rs2, imm(rs1)           \\
-SW.cr       rs2, imm(rs1)           \\
-SCATTER.b   rs, base, offsets       \\
-GATHER.b    rd, base, offsets       \\
-SCATTER.h   rs, base, offsets       \\
-GATHER.h    rd, base, offsets       \\
-}
-
-\newpage
-\section{Instruction Encodings}
-
-The following tables show the encodings for all instructions in the ISE,
-grouped by their layout.
-
-\encodingsel{
-    \note{The load/store byte/halfword instructions encode which bytes
-    of the destination / source register they are accessing using the
-    {\tt ca}, {\tt cc} and {\tt cd} bits.
-    For the load instructions, {\tt cd} specifies the byte, and {\tt cc}
-    specifies the halfword. For the store instructions {\tt ca}
-    specifies the byte, and {\tt cc} also specifies the halfword.
-}
-}{ fig:encodings-else }
-
-
-\encodingspx{
-Packed register type instruction encodings. 
-The fields {\tt ca, cb} and {\tt cc} are used by the {\tt *.px} instructions
-to encode the pack width of their operations. The three bits are
-concatenated into a 3-bit vector $a,b,c$ and then decoded into pack widths
-using the following lookup table. \\
-\begin{itemize}
-\item $ca,cb,cc = 000 \Rightarrow $ Pack width $1$  $\Rightarrow$ 1 32-bit word
-\item $ca,cb,cc = 001 \Rightarrow $ Pack width $2$  $\Rightarrow$ 2 halfwords
-\item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$  $\Rightarrow$ 4 bytes
-\item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$  $\Rightarrow$ 8 nibbles
-\item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$ $\Rightarrow$ 16 crumbs (2-bit values)
-\item $ca,cb,cc = 101 $ - Reserved. Should be treated as an invalid opcode.
-\item $ca,cb,cc = 110 $ - Reserved. Should be treated as an invalid opcode.
-\item $ca,cb,cc = 111 $ - Reserved. Should be treated as an invalid opcode.
-\end{itemize}
-}{
-fig:encodings-rtype
-}
-
-
-\encodingsmp{
-Multi-precision integer instruction encodings. All instructions in
-this class are identified first by the {\tt f3} field, then by the {\tt c}
-field. The {\tt c} field splits comparison operations from compute operations.
-The {\tt mo} and {\tt op} fields then further identify the instructions.
-Note that the {\tt rd} field for the comparison instructions is a RISC-V
-$\GPR$ register address.
-}{
-fig:encodings-mp
-}
+% =============================================================================
