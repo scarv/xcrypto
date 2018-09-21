@@ -3,7 +3,7 @@
 \usepackage{shared}
 
 \usepackage{biblatex}
-\addbibresource{references.bib}
+\addbibresource{shared.bib}
 
 \import{../work/}{crypto-ise.encodings.tex}
 
@@ -13,11 +13,408 @@
 
 \maketitle
 
-\abstract{
-This document contains the specification for a new Cryptographic
-Instruction Set Extension for the RISC-V Instruction Set Architecture.
-}
 \tableofcontents
+
+% =============================================================================
+
+\section{Introduction}
+
+Versus a general case, cryptographic workloads are challenging in that they
+typically
+a) require computationally intensive, somewhat niche functionality,
+   and
+b) form a central target in what is a complex, evolving attack surface.
+The former is a particular issue, in the sense cryptography is typically an
+enabling technology vs. a feature per se: from the perspective of the user,
+it represents pure overhead.  Efficiency is a goal in and of itself, but is
+also as an enabler for security: one cannot (or at least {\em should} not)
+compromise security to meet efficiency requirements, so delivering higher
+efficiency can be pitched as an enabler for countermeasures against attack
+(since there is more margin in which to do so).
+
+This document acts as a specification for a 
+greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
+to the RISC-V 
+RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}
+or
+RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}
+base 
+ISA, which we dub \ISE.
+The \ISE ISE aims to support software implementations of both symmetric and 
+asymmetric cryptographic primitives.  By analogy, one could view this remit
+as similar to that of a floating-point co-processor, but for cryptography: 
+per the above, it aims to enable
+a) efficient
+   and
+b) secure
+execution of said implementations.
+
+Note that this specification, and any associated implementation, should be
+viewed as a prototype or draft; statements such as 
+``\ISE is   X'' 
+or
+``\ISE does Y''
+should be carefully qualified with {\em currently} vs. {\em definitively}.  
+In particular, we expect some degree of fine-tuning to emerge from ongoing
+implementation and evaluation effort.
+
+% =============================================================================
+
+\section{Design decisions and discussion}
+
+% -----------------------------------------------------------------------------
+
+\subsection*{Concept}
+
+\begin{itemize}
+
+\item Assuming carte blanche wrt. design and implementation of a processor 
+      core, and the wider system it is coupled to, a large design space of 
+      candidate approaches exists.  One could, for example, realise a given 
+      cryptographic primitive using
+      a) hardware-only,
+      b) mixed (or hybrid),
+         or
+      c) software-only
+      techniques.
+      \ISE focuses on an approach which supports the latter two cases.
+
+\item \ISE is best described as a general-purpose cryptographic ISE, and so
+      specified along those lines.  However, the implementation of \ISE is,
+      by design, left more open-ended: one could consider options including
+      a) a highly   invasive extension to an existing host core,
+      b) a somewhat invasive, tightly-coupled co-processor,
+         or
+      c) a      non-invasive, loosely-coupled co-processor.
+
+\item Although all cited implementation options are viable, in {\em concept}
+      we view \ISE as a co-processor technology: wlog. we adopt terminology 
+      associated with that option from here on.
+      By doing so, we aim to present a clean(er) separation between roles of
+      the host core and \ISE co-processor: the latter is tasked with support
+      for execution of cryptography (and therefore, in a sense, represents a 
+      security boundary), whereas the latter is not.
+      Consider, for example and in a general sense, ARM {\sf big.LITTLE}
+      (an instance of the general Asymmetric Multi-core Processor (AMP)~\cite{SCARV:Mittal:16} concept),
+      which can be viewed as combining and switching between
+      use of
+      a ``big''    core (which delivers efficiency wrt. instruction throughput)
+      and 
+      a ``little'' core (which delivers efficiency wrt. energy consumption).
+      The underlying goal is to capitalise on the characteristics of each as 
+      and when need be, vs. a single core representing a compromise between 
+      those characteristics.  Along similar lines, one could imagine some
+      form of {\sf efficient.SECURE} analogue: we have a 
+      an ``efficient'' core (which ignores   security, focusing on delivery of efficiency)
+      and
+      a  ``secure''    core (which ignores efficiency, focusing on delivery of   security),
+      instantiated by the host core and \ISE co-processor respectively.
+
+\item The following design criteria rationalise this approach, some of which
+      are related (or even stem directly from one and other):
+
+      \begin{itemize}
+      \item {\bf      Consistency}.
+            As far as is reasonable, \ISE should remain consistent with the
+            RISC-V philosophy, and associated base ISA; doing so suggests,
+            for example, minimising deviation from the existing instruction
+            encoding formats and introduction of additional state.
+
+      \item {\bf       Generality}.
+            \ISE deliberately avoids inclusion of any functionality-specific 
+            features (and therefore associated hardware).  For example, it
+            would be trivial to add dedicated support for AES
+            (e.g., following~\cite{SCARV:TilGro:06})
+            but such support would be AES-specific and is therefore avoided.
+
+      \item {\bf         Security}.
+            An unfortunate fact is that security is commonly relegated to a 
+            second-class design metric, and so, by implication, viewed as 
+            being of secondary importance;
+            see, e.g., \cite{SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
+            In contrast, \ISE treats security as a first-class metric, and
+            so {\em at least} as important as more traditional alternatives; 
+            it is reasonable, for example, to trade-off improved security 
+            against degradation of instruction throughput.
+
+      \item {\bf    Composability}.
+            To mitigate a given attack, a layered approach (cf. defence in 
+            depth) is normally preferred: this favours the use of multiple
+            countermeasures, vs. a single, perfect panacea.  As such, \ISE
+            a) should be viewed as one option for or layer in a solution,
+               and
+            b) prefers features that can co-exist over those which cannot.
+
+      \item {\bf      Flexibility}. 
+            Modulo the status of security as a first-class design metric, a
+            goal of \ISE remains to avoid, or at least minimise any ``baked 
+            in'' (or hard coded) trade-offs.  Put another way, although the 
+            approach used clearly {\em will} imply trade-offs 
+            (e.g., vs. efficiency typically delivered by hardware-only techniques), 
+            it {\em should} more easily support
+
+            \begin{itemize}
+            \item agility wrt. primitive, algorithm, and parameter choices,
+                  and
+            \item instrumentation of appropriate countermeasures.
+            \end{itemize}
+
+      \item {\bf Implementability}. 
+            To use useful, it should be possible to implement \ISE with as
+            little
+            a) overhead   (e.g., wrt. additional logic),
+               and
+            b) difficulty (e.g., wrt. outright complexity, or complicating factors such as verification)
+            as possible.
+            This implies a preference for features that avoid a requirement 
+            for complex hardware or invasive alteration to the host core.
+
+      \item {\bf    Measurability}.
+            Given the remit of extending RV32I or RV32E, any feature in \ISE
+            should offer reproducible, demonstrable value vs. this baseline; 
+            for a given feature, this goal should be supported by provision
+            of associated reference implementations of cryptographically 
+            interesting benchmark kernels.
+
+      \end{itemize}
+
+\item All that said, such an approach may naturally be deemed inappropriate 
+      for some use-cases; we pitch \ISE as {\em an} approach, not {\em the}
+      approach.  In particular, note that many commercialised SoCs 
+      (e.g., Google Titan, Rambus CryptoManager) 
+      adopt the {\em opposite} approach by preferring to couple a dedicated
+      IP core 
+      (e.g., a hardware-based AES accelerator) 
+      to a RISC-V host core.
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection*{Assumptions}
+
+\begin{itemize}
+
+\item \ISE demands some interaction with an RNG, the concrete instanciation 
+      of which is unspecified.
+      On one hand, doing so affords flexibility in an implementation; this 
+      is important, in that an RNG selection and implementation will likely 
+      be technology-specific (e.g., differ for a given FPGA, vs. an ASIC).  
+      On the other hand, however, the RNG used is critically important wrt. 
+      security: the (difficult) challenge of selecting and implementing 
+      a robust RNG instance is assumed.
+
+\item \ISE assumes a memory interface that is shared between the host core 
+      and co-processor.  As such, any attack vector
+      (see, e.g.,~\cite{SCARV:GYCH:18})
+      that (ab)uses the memory interface {\em must} be robustly mitigated, 
+      as would be the case without \ISE (i.e., using the host core alone).
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection*{Content}
+
+\begin{itemize}
+
+\item \ISE attempts to follow the RISC-V philosophy of avoiding unnecessary 
+      additional state.  Even so, it does introduce
+
+      \begin{itemize}
+      \item $1$ additional $16$-entry co-processor register file,
+            and
+      \item $2$ additional CSRs: one is used to report on features in, and 
+            the other to control an implementation of \ISE.
+      \end{itemize}
+
+      \noindent
+      It is important to recognise 
+      the overhead, wrt. both 
+      time (e.g., due to it needing to be context switched) 
+      and 
+      space (e.g., due to the logic required),
+      this (or {\em any} additional state) implies.
+      However, it seems reasonable to align this overhead with that of any
+      extension for floating-point arithmetic (which, in the same way, will
+      typically make use of a dedicated floating-point register file: many 
+      of the trade-offs involved, e.g., provision of
+      a) clear separation of duty,
+      b) additional capacity,
+         and
+      c) additional (specialised) functionality,
+      are the same, but motivated by cryptographic workloads.
+      Due to the nature of such workloads, however, attack vectors such as
+      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
+      the overhead of context switching, {\em must} be robustly mitigated.
+
+\item Lee and Fiskiran introduce (e.g., see~\cite{SCARV:LeeFis:05}) the PLX
+      design, which, among other concepts, supports 
+      a) sub-word parallelism (cf. packed, or SWAR-like operations),
+         and
+      b) word size scalability (or data-path scalability).
+      First, 
+      note that a fully sub-word parallel ISA is orthogonal wrt. all useful
+      sub-word sizes; PLX supports $n$-byte sub-word sizes for sane $n$.
+      Second,
+      note that, in a sense, RISC-V is word size scalable: it can cater for
+      implementations that, e.g., have a $32$-bit instructions but a $32$-,
+      $64$-, or $128$-bit general-purpose register file (and address space).
+      The same concept is useful wrt. the co-processor, and indeed, for the
+      multi-precision integer instructions (per \REFSEC{sec:XXX})
+      in particular.
+
+      The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
+      sizes; doing so is motivated, e.g., by their utility in some classes 
+      of light-weight block cipher.  However, it does not currently explore 
+      the potential of a scalable word size: it assumes the general-purpose
+      and co-processor register file word sizes are {\em both} $32$ bits.
+
+\item Consider a general case, wherein a given ISA has instruction formats
+      to allow access to $n$ general-purpose registers, st. 
+      $
+      n = s + d
+      $ 
+      for $s$ sources and $d$ destinations, meaning an associated encoding 
+      must somehow specify $n$ register addresses.  The special case
+      $
+      n = 3 = 2 + 1 
+      $
+      is common, and adopted by RISC-V, but it should nevertheless be clear
+      that {\em other} cases can also be useful.  A common ``wrinkle'' in a 
+      strict $3$-address case is (full) $( w \times w )$-bit multiplication, 
+      which produces a $(2 \cdot w )$-bit product and therefore demands use 
+      of {\em two} $w$-bit destination registers.
+   
+      One of the strategies underlying \ISE is support for larger $s$ and/or 
+      $d$.  This is rationalised by a (ideally positive) trade-off between
+      a) increased register file complexity, as a result of the requirement
+         to support $n$ ports, or, alternatively, multi-cycle operations,
+         vs.
+      b) increased register file bandwidth.
+      The latter enables each instruction to perform more, or richer forms 
+      of computation, aligning well with the demands of many cryptographic 
+      workloads.  Even {\em if} said trade-off is acceptable, however, it 
+      also implies some challenges wrt. instruction encoding.  There seem
+      to be several possible options:
+
+      \begin{enumerate}
+      \item One could make all  register addresses {\em explicit}.
+            For example, XS1 uses a long (i.e., $32$-bit) $6$-address 
+            instruction format~\cite[Page 246]{SCARV:XS1:09} 
+            to encode
+            {\tt lmul}~\cite[Page 146]{SCARV:XS1:09}.
+      \item One could make some register addresses {\em implicit}.  
+            For example, the x86 $( 32 \times 32 )$-bit multiplication 
+            instruction 
+            {\tt mull}~\cite[Page 4-144]{SCARV:X86:2a:12} 
+            makes implicit uses of {\tt edx} and {\tt edx} as destinations.
+      \item One could make some register addresses {\em implied}.
+            For example, this approach has been considered within the
+            specific context of support for cryptography: 
+            Lee and Choi~\cite{SCARV:LeeCho:08} propose Register File
+            Extension for Multi-word and Long-word Operation (RFEMLO), 
+            where a group of $n$ contiguous registers is identified by 
+            one register address plus a group size (or level in their terminology): 
+            address $i$ and level $n$ implies use of registers
+            \[
+            i, i + 1, i + 2, \ldots i + 2^n - 1 .
+            \]
+            Note that this approach potentially causes an issue wrt.
+            registers with specific semantics.  For example, in many
+            RISC-like ISAs (including RISC-V), $\GPR[0]$ is fixed to 
+            $0$; it may be difficult to include or exclude $\GPR[0]$ 
+            in a group as need be.
+      \item One could make some register addresses {\em overloaded}.
+            For example, ARMv7-A includes a so-called ``unsigned multiply,
+            accumulate accumulate'' instruction 
+            {\tt umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
+            whose format {\em suggests} $n = 4 = 2 + 2$ but in fact 
+            reuses the two destination as additional sources.
+      \end{enumerate}
+      
+      \noindent
+      Note that several of these approaches have an implication for the
+      difficulty of register allocation; the obvious example is that of
+      implicit register addresses.  Likewise, there are various generic
+      ways to mitigate the encoding pressure (i.e., the availability of 
+      at most $w$ bits) given an approach.  For example one could
+      
+      \begin{enumerate}
+      \item restrict access to some subset of the register file 
+            (cf. ARM Thumb or RV32E) 
+            thereby reducing the number of bits required to encode each  
+            register address,
+            or
+      \item use some form of instruction prefix.
+      \end{enumerate}
+      
+      \noindent
+      The current design is somewhat conservative, in the sense it 
+      a) supports (upto) $d = 2$ and $s = 3$, 
+         optionally using implied specification option for destinations: 
+         one register address is explicit and the other can be implied,
+      b) can have short register addresses than normal, due to the use
+         of a $16$-entry co-processor register file.
+      It does not explore the potential for, and trade-offs wrt. larger 
+      $d$ or $s$: doing so is demonstrably useful, but, equally implies
+      a range of drawbacks (e.g., overhead wrt. co-processor register 
+      file size, complexity in instruction en/decoding, requirement for
+      multi-cycle instruction execution).
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection*{Compatibility}
+
+\begin{itemize}
+
+\item Per the current list\footnote{
+      See, e.g., \url{http://workspace.riscv.org}
+      } of (public) RISC-V working groups, 
+      \ISE relates to elements of (at least) the following:
+
+      \begin{enumerate}
+      \item Cryptographic Extensions Task Group,
+      \item BitManip                      Group,
+            and
+      \item P             Extension  Task Group (i.e., the embedded DSP-like ISE).
+      \end{enumerate}
+
+      \noindent
+      In some cases overlap exists, potentially representing an opportunity
+      for unification; in other cases the underlying goal, approach, and/or
+      ethos is distinct.
+
+\item \ISE makes use of the $custom-1$~\cite[Table 19.1]{SCARV:RV:ISA:I:17}
+      instruction encoding space 
+      (i.e., the $25$-bit space with prefix $\RADIX{0101011}{2}$).
+
+\item The current design is intended to be agnostic wrt. the host core it
+      is coupled to, and there is, conceptually, no reason they cannot be 
+      used within RV64I and RV128I.
+      Likewise, if treated as a prototype, many constituent concepts could
+      be mapped onto alternative, brownfield extensions to RV32I or RV32E.
+      As an example, consider the multi-precision integer instructions 
+      (per \REFSEC{sec:XXX})
+      which {\em could} be adopted in RV32I (having been re-specified to
+      operate on the general-purpose register file).
+
+\end{itemize}
+
+% =============================================================================
+
+\section{Related work}
+
+% co-processor/accelerator
+\cite{SCARV:Gutmann:00}
+% ISEs
+\cite{SCARV:FazLopOli:18}
+\cite{SCARV:RegIen:16}
+\cite{SCARV:BarGioMar:09}
+
+% =============================================================================
 
 \section{Introduction}
 \import{./}{crypto-ise.introduction.tex}
@@ -37,10 +434,15 @@ Instruction Set Extension for the RISC-V Instruction Set Architecture.
 \section{Instruction Specifications}
 \import{./}{crypto-ise.specification.tex}
 
+% =============================================================================
 
 \printbibliography
+
+% =============================================================================
 
 \newpage
 \section{Changelog}
 \import{./}{crypto-ise.changelog.tex}
 \end{document}
+
+% =============================================================================
