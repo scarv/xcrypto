@@ -260,6 +260,12 @@ wire [63:0] pmul_add_a ; // LHS operand for shared adder
 wire [63:0] pmul_add_b ; // RHS operand for shared adder
 wire [63:0] pmul_add_c ; // RHS operand for shared adder
 wire [63:0] pmul_result; // Result of the multiplication.
+    
+wire [31:0] pshf_a    ; // LHS input
+wire [ 5:0] pshf_shamt; // RHS input
+wire        pshf_sl   ; // shift left / n shift right
+wire        pshf_r    ; // rotate / n shift
+wire [31:0] pshf_c    ; // Result
 
 assign padd_a = is_mul_px ? pmul_add_a[31:0] : palu_rs1;
 assign padd_b = is_mul_px ? pmul_add_b[31:0] : palu_rs2;
@@ -269,17 +275,33 @@ assign pmul_b       = palu_rs2;
 assign pmul_add_c   = padd_c;
 assign pmul_start   = is_mul_px && is_parith_insn;
 
-assign padd_ci = is_sub_px;
-assign padd_sub= is_sub_px;
+wire   shift_imm    = is_slli_px || is_srli_px || is_roti_px;
+assign pshf_a       = palu_rs1;
+assign pshf_shamt   = shift_imm ? {1'b0,id_imm[4:0]} : palu_rs2[5:0];
+assign pshf_r       = is_rot_px || is_roti_px;
+assign pshf_sl      = is_sll_px || is_slli_px;
 
-wire is_add_px = id_subclass == SCARV_COP_SCLASS_ADD_PX;
-wire is_sub_px = id_subclass == SCARV_COP_SCLASS_SUB_PX;
-wire is_mul_px = id_subclass == SCARV_COP_SCLASS_MUL_PX;
+assign padd_ci      = is_sub_px;
+assign padd_sub     = is_sub_px;
+
+wire is_add_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ADD_PX;
+wire is_sub_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SUB_PX;
+wire is_mul_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_MUL_PX;
+wire is_sll_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLL_PX;
+wire is_srl_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRL_PX;
+wire is_rot_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROT_PX;
+wire is_slli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLLI_PX;
+wire is_srli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRLI_PX;
+wire is_roti_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROTI_PX;
+
+wire is_shift   =  is_sll_px  || is_srl_px  || is_rot_px  || is_slli_px ||
+                   is_srli_px || is_roti_px ;
 
 assign result_parith =
     {32{is_mul_px}} & pmul_result   |
     {32{is_add_px}} & padd_c        |
-    {32{is_sub_px}} & padd_c        ;
+    {32{is_sub_px}} & padd_c        |
+    {32{is_shift }} & pshf_c        ;
 
 
 scarv_cop_palu_adder i_palu_adder(
@@ -292,6 +314,14 @@ scarv_cop_palu_adder i_palu_adder(
 .co (padd_co)   // Carry out
 );
 
+scarv_cop_palu_shifter i_palu_shifter (
+.a    (pshf_a    ), // LHS input
+.shamt(pshf_shamt), // RHS input
+.pw   (id_pw     ), // Current operation pack width
+.sl   (pshf_sl   ), // shift left / n shift right
+.r    (pshf_r    ), // rotate / n shift
+.c    (pshf_c    )  // Result
+);
 
 scarv_cop_palu_multiplier i_palu_multiplier (
 .g_clk   (g_clk      ),   // Global clock.

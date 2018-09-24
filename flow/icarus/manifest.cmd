@@ -3,6 +3,7 @@ $(COP_HOME)/rtl/scarv_cop_cprs.v
 $(COP_HOME)/rtl/scarv_cop_idecode.v
 $(COP_HOME)/rtl/scarv_cop_palu.v
 $(COP_HOME)/rtl/scarv_cop_palu_adder.v
+$(COP_HOME)/rtl/scarv_cop_palu_shifter.v
 $(COP_HOME)/rtl/scarv_cop_palu_multiplier.v
 $(COP_HOME)/rtl/scarv_cop_malu.v
 $(COP_HOME)/rtl/scarv_cop_rng.v
