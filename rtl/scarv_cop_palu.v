@@ -260,6 +260,9 @@ wire [63:0] pmul_add_a ; // LHS operand for shared adder
 wire [63:0] pmul_add_b ; // RHS operand for shared adder
 wire [63:0] pmul_add_c ; // RHS operand for shared adder
 wire [63:0] pmul_result; // Result of the multiplication.
+wire [ 4:0] pmul_shf_sham;   // Shifter shift amount.
+wire [31:0] pmul_shf_a   ;   // Shifter input operand.
+wire [31:0] pmul_shf_c   ;   // Shifter output result.
     
 wire [31:0] pshf_a    ; // LHS input
 wire [ 5:0] pshf_shamt; // RHS input
@@ -274,12 +277,15 @@ assign pmul_a       = palu_rs1;
 assign pmul_b       = palu_rs2;
 assign pmul_add_c   = padd_c;
 assign pmul_start   = is_mul_px && is_parith_insn;
+assign pmul_shf_c   = pshf_c;
 
 wire   shift_imm    = is_slli_px || is_srli_px || is_roti_px;
-assign pshf_a       = palu_rs1;
-assign pshf_shamt   = shift_imm ? {1'b0,id_imm[4:0]} : palu_rs2[5:0];
+assign pshf_a       = is_mul_px ? pmul_shf_a : palu_rs1;
+assign pshf_shamt   = is_mul_px ? pmul_shf_sham      :
+                      shift_imm ? {1'b0,id_imm[4:0]} :
+                                  palu_rs2[5:0]      ;
 assign pshf_r       = is_rot_px || is_roti_px;
-assign pshf_sl      = is_sll_px || is_slli_px;
+assign pshf_sl      = is_mul_px || is_sll_px || is_slli_px;
 
 assign padd_ci      = is_sub_px;
 assign padd_sub     = is_sub_px;
@@ -333,6 +339,9 @@ scarv_cop_palu_multiplier i_palu_multiplier (
 .add_a   (pmul_add_a ),   // ADDER LHS operand
 .add_b   (pmul_add_b ),   // ADDER RHS operand
 .add_c   (pmul_add_c ),   // ADDER result
+.shf_sham(pmul_shf_sham), // SHIFTER LHS operand
+.shf_a   (pmul_shf_a   ), // SHIFTER RHS operand
+.shf_c   (pmul_shf_c   ), // SHIFTER result
 .pw      (id_pw      ),   // Pack width.
 .result  (pmul_result)    // Result of the multiplication.
 );
