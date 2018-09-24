@@ -265,15 +265,15 @@ packed field, then the result of the \ASM{SRL[I].px} instruction is
 {
 The instruction \ASM{ROT[I].px} treats the source and destination registers as
 1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
-left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
+{\em right} by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 (for \ASM{ROT.px}).
 }{
 \begin{itemize}
 \item \INST{ROT.px pw, crd, crs1, crs2}{
-    $PackedShift(crs1,\CPR[*][crs2],crd,pw, <<<)$
+    $PackedShift(crs1,\CPR[*][crs2],crd,pw, >>>)$
 }
 \item \INST{ROTI.px pw, crd, crs1, cshamt}{
-    $PackedShift(crs1,cshamt,crd,pw, <<<)$
+    $PackedShift(crs1,cshamt,crd,pw, >>>)$
 }
 \end{itemize}
 }{}

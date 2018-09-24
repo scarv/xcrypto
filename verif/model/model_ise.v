@@ -222,49 +222,49 @@ end \
 //      Applies "OP" to the right sizes of data type and then writes
 //      the results back,
 //
-`define PACK_WIDTH_ROTATE_LEFT_OPERATION(AMNT) begin \
+`define PACK_WIDTH_ROTATE_RIGHT_OPERATION(AMNT) begin \
     if(!pw_valid) begin \
         model_do_invalid_opcode(); \
     end else if(pw == 32) begin \
-        result = (crs1 << AMNT) | (crs1 >> (32-AMNT)); \
+        result = (crs1 >> AMNT) | (crs1 << (32-AMNT)); \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw == 16) begin \
-        result = {(crs1[31:16] << AMNT) | (crs1[31:16] >> (16-AMNT)), \
-                  (crs1[15: 0] << AMNT) | (crs1[15: 0] >> (16-AMNT))}; \
+        result = {(crs1[31:16] >> AMNT) | (crs1[31:16] << (16-AMNT)), \
+                  (crs1[15: 0] >> AMNT) | (crs1[15: 0] << (16-AMNT))}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  8) begin \
-        result = {(crs1[31:24] << AMNT) | (crs1[31:24] >> (8-AMNT)), \
-                  (crs1[23:16] << AMNT) | (crs1[23:16] >> (8-AMNT)), \
-                  (crs1[15: 8] << AMNT) | (crs1[15: 8] >> (8-AMNT)), \
-                  (crs1[ 7: 0] << AMNT) | (crs1[ 7: 0] >> (8-AMNT))}; \
+        result = {(crs1[31:24] >> AMNT) | (crs1[31:24] << (8-AMNT)), \
+                  (crs1[23:16] >> AMNT) | (crs1[23:16] << (8-AMNT)), \
+                  (crs1[15: 8] >> AMNT) | (crs1[15: 8] << (8-AMNT)), \
+                  (crs1[ 7: 0] >> AMNT) | (crs1[ 7: 0] << (8-AMNT))}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  4) begin \
-        result = {(crs1[31:28] << AMNT) | (crs1[31:28] >> (4-AMNT)), \
-                  (crs1[27:24] << AMNT) | (crs1[27:24] >> (4-AMNT)), \
-                  (crs1[23:20] << AMNT) | (crs1[23:20] >> (4-AMNT)), \
-                  (crs1[19:16] << AMNT) | (crs1[19:16] >> (4-AMNT)), \
-                  (crs1[15:12] << AMNT) | (crs1[15:12] >> (4-AMNT)), \
-                  (crs1[11: 8] << AMNT) | (crs1[11: 8] >> (4-AMNT)), \
-                  (crs1[ 7: 4] << AMNT) | (crs1[ 7: 4] >> (4-AMNT)), \
-                  (crs1[ 3: 0] << AMNT) | (crs1[ 3: 0] >> (4-AMNT))}; \
+        result = {(crs1[31:28] >> AMNT) | (crs1[31:28] << (4-AMNT)), \
+                  (crs1[27:24] >> AMNT) | (crs1[27:24] << (4-AMNT)), \
+                  (crs1[23:20] >> AMNT) | (crs1[23:20] << (4-AMNT)), \
+                  (crs1[19:16] >> AMNT) | (crs1[19:16] << (4-AMNT)), \
+                  (crs1[15:12] >> AMNT) | (crs1[15:12] << (4-AMNT)), \
+                  (crs1[11: 8] >> AMNT) | (crs1[11: 8] << (4-AMNT)), \
+                  (crs1[ 7: 4] >> AMNT) | (crs1[ 7: 4] << (4-AMNT)), \
+                  (crs1[ 3: 0] >> AMNT) | (crs1[ 3: 0] << (4-AMNT))}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  2) begin \
-        result = {(crs1[31:30] << AMNT) | (crs1[31:30] >> (4-AMNT)), \
-                  (crs1[29:28] << AMNT) | (crs1[29:28] >> (4-AMNT)), \
-                  (crs1[27:26] << AMNT) | (crs1[27:26] >> (4-AMNT)), \
-                  (crs1[25:24] << AMNT) | (crs1[25:24] >> (4-AMNT)), \
-                  (crs1[23:22] << AMNT) | (crs1[23:22] >> (4-AMNT)), \
-                  (crs1[21:20] << AMNT) | (crs1[21:20] >> (4-AMNT)), \
-                  (crs1[19:18] << AMNT) | (crs1[19:18] >> (4-AMNT)), \
-                  (crs1[17:16] << AMNT) | (crs1[17:16] >> (4-AMNT)), \
-                  (crs1[15:14] << AMNT) | (crs1[15:14] >> (4-AMNT)), \
-                  (crs1[13:12] << AMNT) | (crs1[13:12] >> (4-AMNT)), \
-                  (crs1[11:10] << AMNT) | (crs1[11:10] >> (4-AMNT)), \
-                  (crs1[ 9: 8] << AMNT) | (crs1[ 9: 8] >> (4-AMNT)), \
-                  (crs1[ 7: 6] << AMNT) | (crs1[ 7: 6] >> (4-AMNT)), \
-                  (crs1[ 5: 4] << AMNT) | (crs1[ 5: 4] >> (4-AMNT)), \
-                  (crs1[ 3: 2] << AMNT) | (crs1[ 3: 2] >> (4-AMNT)), \
-                  (crs1[ 1: 0] << AMNT) | (crs1[ 1: 0] >> (4-AMNT))}; \
+        result = {(crs1[31:30] >> AMNT) | (crs1[31:30] << (2-AMNT)), \
+                  (crs1[29:28] >> AMNT) | (crs1[29:28] << (2-AMNT)), \
+                  (crs1[27:26] >> AMNT) | (crs1[27:26] << (2-AMNT)), \
+                  (crs1[25:24] >> AMNT) | (crs1[25:24] << (2-AMNT)), \
+                  (crs1[23:22] >> AMNT) | (crs1[23:22] << (2-AMNT)), \
+                  (crs1[21:20] >> AMNT) | (crs1[21:20] << (2-AMNT)), \
+                  (crs1[19:18] >> AMNT) | (crs1[19:18] << (2-AMNT)), \
+                  (crs1[17:16] >> AMNT) | (crs1[17:16] << (2-AMNT)), \
+                  (crs1[15:14] >> AMNT) | (crs1[15:14] << (2-AMNT)), \
+                  (crs1[13:12] >> AMNT) | (crs1[13:12] << (2-AMNT)), \
+                  (crs1[11:10] >> AMNT) | (crs1[11:10] << (2-AMNT)), \
+                  (crs1[ 9: 8] >> AMNT) | (crs1[ 9: 8] << (2-AMNT)), \
+                  (crs1[ 7: 6] >> AMNT) | (crs1[ 7: 6] << (2-AMNT)), \
+                  (crs1[ 5: 4] >> AMNT) | (crs1[ 5: 4] << (2-AMNT)), \
+                  (crs1[ 3: 2] >> AMNT) | (crs1[ 3: 2] << (2-AMNT)), \
+                  (crs1[ 1: 0] >> AMNT) | (crs1[ 1: 0] << (2-AMNT))}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end \
 end \
@@ -775,6 +775,8 @@ begin: t_model_mul_px
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(*)
+    $display("mul.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+        dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
@@ -791,6 +793,8 @@ begin: t_model_sll_px
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
+    $display("sll.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+        dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
@@ -807,6 +811,8 @@ begin: t_model_srl_px
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
+    $display("srl.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+        dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
@@ -822,7 +828,9 @@ begin: t_model_rot_px
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_decode_pack_widths(pw,pw_valid);
-    `PACK_WIDTH_ROTATE_LEFT_OPERATION(crs2[4:0])
+    `PACK_WIDTH_ROTATE_RIGHT_OPERATION(crs2[4:0])
+    $display("rot.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+        dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
@@ -867,7 +875,7 @@ begin: t_model_roti_px
     reg         pw_valid;
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_decode_pack_widths(pw,pw_valid);
-    `PACK_WIDTH_ROTATE_LEFT_OPERATION(dec_arg_cshamt)
+    `PACK_WIDTH_ROTATE_RIGHT_OPERATION(dec_arg_cshamt)
 end endtask
 
 

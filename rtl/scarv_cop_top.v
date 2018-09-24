@@ -360,6 +360,8 @@ scarv_cop_cprs i_scarv_cop_cprs(
 //  - INS expects crd value to be in palu_rs3
 //
 scarv_cop_palu i_scarv_cop_palu (
+.g_clk            (g_clk           ), // Global clock
+.g_resetn         (g_resetn        ), // Synchronous active low reset.
 .palu_ivalid      (palu_ivalid      ), // Valid instruction input
 .palu_idone       (palu_idone       ), // Instruction complete
 .gpr_rs1          (cpu_rs1          ), // GPR rs1
