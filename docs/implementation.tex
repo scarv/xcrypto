@@ -1,13 +1,14 @@
 \documentclass{article}
 
-\usepackage{shared}
+\usepackage{shared} \addbibresource{shared.bib}
 
-\usepackage{biblatex}
-\addbibresource{shared.bib}
-
-\title{SCARV: RISC-V Crypto ISE \\ Reference Implementation}
+\title{RISC-V \ISE ISE \\ Reference Implementation}
 
 \begin{document}
+
+\maketitle \tableofcontents
+
+% =============================================================================
 
 %% Custom Commands %%
 
@@ -46,14 +47,6 @@
 \newcommand{\cpucopif}{\nameref{sec:cpu-cop-if} }
 
 %% End Custom Commands %%
-
-\maketitle
-
-\abstract{
-This document contains the micro-architectural specification for an
-implementation of the RISC-V Crypto ISE.
-}
-\tableofcontents
 
 \section{Introduction}
 
@@ -805,9 +798,13 @@ TBD
 
 \section{Verification}
 \label{sec:verification}
-\import{./}{ise-verification.tex}
+\import{./implementation/}{verify.tex}
 
+% =============================================================================
+
+\newpage
 \printbibliography
 
+% =============================================================================
 
 \end{document}

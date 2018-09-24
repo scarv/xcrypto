@@ -1,70 +1,11 @@
-\documentclass{article}
-
-\usepackage{shared}
-
-\usepackage{biblatex}
-\addbibresource{shared.bib}
-
-\import{../work/}{crypto-ise.encodings.tex}
-
-\title{SCARV: RISC-V Crypto ISE \\ Specification}
-
-\begin{document}
-
-\maketitle
-
-\tableofcontents
-
 % =============================================================================
 
-\section{Introduction}
-
-Versus a general case, cryptographic workloads are challenging in that they
-typically
-a) require computationally intensive, somewhat niche functionality,
-   and
-b) form a central target in what is a complex, evolving attack surface.
-The former is a particular issue, in the sense cryptography is typically an
-enabling technology vs. a feature per se: from the perspective of the user,
-it represents pure overhead.  Efficiency is a goal in and of itself, but is
-also as an enabler for security: one cannot (or at least {\em should} not)
-compromise security to meet efficiency requirements, so delivering higher
-efficiency can be pitched as an enabler for countermeasures against attack
-(since there is more margin in which to do so).
-
-This document acts as a specification for a 
-greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
-to the RISC-V 
-RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}
-or
-RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}
-base 
-ISA, which we dub \ISE.
-The \ISE ISE aims to support software implementations of both symmetric and 
-asymmetric cryptographic primitives.  By analogy, one could view this remit
-as similar to that of a floating-point co-processor, but for cryptography: 
-per the above, it aims to enable
-a) efficient
-   and
-b) secure
-execution of said implementations.
-
-Note that this specification, and any associated implementation, should be
-viewed as a prototype or draft; statements such as 
-``\ISE is   X'' 
-or
-``\ISE does Y''
-should be carefully qualified with {\em currently} vs. {\em definitively}.  
-In particular, we expect some degree of fine-tuning to emerge from ongoing
-implementation and evaluation effort.
-
-% =============================================================================
-
-\section{Design decisions and discussion}
+\subsection{Design and discussion}
+\label{sec:bg:design}
 
 % -----------------------------------------------------------------------------
 
-\subsection*{Concept}
+\subsubsection{Concept}
 
 \begin{itemize}
 
@@ -170,10 +111,10 @@ implementation and evaluation effort.
             for complex hardware or invasive alteration to the host core.
 
       \item {\bf    Measurability}.
-            Given the remit of extending RV32I or RV32E, any feature in \ISE
-            should offer reproducible, demonstrable value vs. this baseline; 
-            for a given feature, this goal should be supported by provision
-            of associated reference implementations of cryptographically 
+            Given the remit of extending RV32I, any feature in \ISE should 
+            offer reproducible, demonstrable value vs. this baseline; for 
+            a given feature, this goal should be supported by provision of 
+            associated reference implementations of cryptographically 
             interesting benchmark kernels.
 
       \end{itemize}
@@ -191,7 +132,7 @@ implementation and evaluation effort.
 
 % -----------------------------------------------------------------------------
 
-\subsection*{Assumptions}
+\subsubsection{Assumptions}
 
 \begin{itemize}
 
@@ -214,7 +155,7 @@ implementation and evaluation effort.
 
 % -----------------------------------------------------------------------------
 
-\subsection*{Content}
+\subsubsection{Content}
 
 \begin{itemize}
 
@@ -261,7 +202,8 @@ implementation and evaluation effort.
       implementations that, e.g., have a $32$-bit instructions but a $32$-,
       $64$-, or $128$-bit general-purpose register file (and address space).
       The same concept is useful wrt. the co-processor, and indeed, for the
-      multi-precision integer instructions (per \REFSEC{sec:XXX})
+      multi-precision integer instructions 
+      (per \REFSEC{sec:spec:instr:mp})
       in particular.
 
       The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
@@ -366,7 +308,7 @@ implementation and evaluation effort.
 
 % -----------------------------------------------------------------------------
 
-\subsection*{Compatibility}
+\subsubsection{Compatibility}
 
 \begin{itemize}
 
@@ -395,54 +337,12 @@ implementation and evaluation effort.
       is coupled to, and there is, conceptually, no reason they cannot be 
       used within RV64I and RV128I.
       Likewise, if treated as a prototype, many constituent concepts could
-      be mapped onto alternative, brownfield extensions to RV32I or RV32E.
+      be mapped onto alternative, brownfield extensions to RV32I.
       As an example, consider the multi-precision integer instructions 
-      (per \REFSEC{sec:XXX})
+      (per \REFSEC{sec:spec:instr:mp})
       which {\em could} be adopted in RV32I (having been re-specified to
       operate on the general-purpose register file).
 
 \end{itemize}
-
-% =============================================================================
-
-\section{Related work}
-
-% co-processor/accelerator
-\cite{SCARV:Gutmann:00}
-% ISEs
-\cite{SCARV:FazLopOli:18}
-\cite{SCARV:RegIen:16}
-\cite{SCARV:BarGioMar:09}
-
-% =============================================================================
-
-\section{Introduction}
-\import{./}{crypto-ise.introduction.tex}
-
-\section{Concepts \& Ideas}
-\import{./}{crypto-ise.concepts.tex}
-
-\section{Notation}
-\import{./}{crypto-ise.notation.tex}
-
-\section{ISE State}
-\import{./}{crypto-ise.state.tex}
-
-\section{ISE Feature Sets}
-\import{./}{crypto-ise.featuresets.tex}
-
-\section{Instruction Specifications}
-\import{./}{crypto-ise.specification.tex}
-
-% =============================================================================
-
-\printbibliography
-
-% =============================================================================
-
-\newpage
-\section{Changelog}
-\import{./}{crypto-ise.changelog.tex}
-\end{document}
 
 % =============================================================================

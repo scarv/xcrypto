@@ -1,0 +1,209 @@
+% =============================================================================
+
+\subsection{Feature overview}
+\label{sec:bg:feature}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$1$: randomness}
+\label{sec:bg:feature:1}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2$: packed                  operations}
+\label{sec:bg:feature:2}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$3$: bit-wise                operations}
+\label{sec:bg:feature:3}
+
+As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
+a) a non-standard {\em representation} of data,
+   and
+b) a non-standard {\em implementation} of functions, which operate on
+   said representations:
+essentially it describes some cryptographic primitive (e.g., a block
+cipher) as a  ``software circuit'' comprising a sequence of bit-wise 
+instructions (e.g., NOT, AND, and OR).  Although not general-purpose,
+bit-slicing offers advantages including constant-time execution and 
+hence immunity from cache-based side-channel attacks.
+
+The proposal of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98} includes 
+a suggestion for accelerating bit-sliced implementations through use 
+of a ``BITSLICE instruction''; this suggestion was later investigated 
+in a more concrete sense by Grabher et al.~\cite{SCARV:GraGroPag:08}.
+In both, the idea is to ``compress'' a sub-circuit, i.e., a sequence 
+of bit-wise instructions representing an $n$-input Boolean function,
+into a Look-Up Table (LUT): essentially, the LUT is first configured 
+with a truth table for the function, and then accessed to apply said
+function.  
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$4$: multi-precision integer operations}
+\label{sec:bg:feature:4}
+
+Multi-precision (modular) integer arithmetic represents the foundation
+of many cryptographic use-cases, e.g., asymmetric algorithms such as
+RSA (relying on arithmetic in $\B{Z}_N$ for large $N$),
+and
+ECC (relying on arithmetic in $\B{F}_p$ for large $p$).
+As such, there is a large body of literature on the implementation of
+said arithmetic; this includes {\em support} for implementations via
+ISEs defined for RISC-based processors
+(see, e.g.,\cite{SCARV:GroKam:03,SCARV:GroKam:04}).
+
+The following ISE mirrors a set of ``long arithmetic'' instructions in
+XS1~\cite[Section 18]{SCARV:XS1:09}, which, in turn, mirror the set of
+primitive operations typical of multi-precision integer arithmetic.  
+A central design principle is that each instruction explicitly accepts 
+all operands required: no additional state, e.g., accumulator register
+or status flags (e.g., carry or borrow), is required.  Note that such
+an approach is particularly attractive within the context of RV32I, as
+a result of it omitting status flags in favour of software-based carry
+and overflow detection.
+
+% =============================================================================
+
+% TODO: integrate or cut
+%
+%\subsection{Packed ALU Operations}
+%
+%It is common for some CPUs / DSP extensions to allow packed ALU operations.
+%This is essentially using the normal GPRs to do SIMD operations on multiple
+%pieces of data which are either a halfword or a byte in size. We include
+%variants of such instructions which operate on data widths commonly
+%found in cryptographic algorithms, particularly block ciphers.
+%
+%\subsection{Scatter / Gather}
+%
+%Many algorithms rely on bringing together non-contiguous data from memory,
+%operating on it as a unit, then placing the results non-contiguously back
+%into memory. Scatter / Gather instructions are variants of normal load/store
+%instructions which allow a set of offsets (rather that just one) to be
+%specified and the data at each offset loaded/stored into a single word
+%as appropriate.
+%
+%\subsection{Multi-precision Integer Operations}
+%
+%Public key cryptography often relies on manipulating very large integers.
+%This necessitates efficient overflow handling. RISC-V has no support for
+%hardware overflow or carry out detection, making some performance critical
+%parts of public key algorithms slower than on equivalent architectures
+%with such support.
+%
+%\subsection{Bit-sliced Cryptography}
+%
+%Bit-slicing is a technique which treats a CPU with an $N$ bit data-path as
+%a set of $N$ SIMD lanes. Bit-slicing is an effective countermeasure to some
+%side-channel attacks, but can be cumbersome to implement in a standard set of
+%RISC instructions. We introduce a small set of instructions to accelerate
+%bit-sliced implementations, similar to \cite{grabher2008light}.
+
+%The Crypto ISE is split into a base feature set, and several optional
+%features which can be included only if the implementation needs them.
+%This is done because while some of the instructions are useful across a
+%broad range of cryptographic kernels, some are more specific, and are only
+%relevant to certain algorithms or primitives.
+%
+%Software can determine which features of the ISE are implemented by
+%interrogating the {\tt CISEF} register detailed in section
+%\ref{sec:csr-mccr}.
+%
+%All of the optional features within the ISE can be emulated using the
+%base RISC-V ISE and the Crypto ISE.
+%
+%\subsection{Base Features}
+%
+%The base features present in all implementations of the Crypto ISE are:
+%\begin{itemize}
+%\item The {\em move} instructions listed in section
+%    \ref{sec:move-instructions}.
+%\item The memory access instructions listed in section
+%    \ref{sec:memory-instructions}, {\em excluding all scatter and gather
+%    variants}.
+%\item All {\em bitwise} instructions listed in section
+%    \ref{sec:bitwise-instructions}.
+%\item All {\em packed field} instructions listed in section
+%    \ref{sec:packed-field-instructions}.
+%\end{itemize}
+%
+%\subsection{Packed Arithmetic Widths}
+%
+%By default, the packed arithmetic width instructions detailed in
+%section \ref{sec:packed-arithmetic-instructions} support operations on
+%packed bit-fields of widths $2$, $4$, $8$, $16$ and $32$.
+%
+%For extremely resource constrained or application specific implementations,
+%some unnecessary pack widths (as defined by the implementer) may be omitted.
+%
+%Supported pack widths are indicated by the {\tt pX} bits of the
+%\nameref{sec:csr-mccr}.
+%
+%Packed arithmetic instructions operating on supported pack widths are
+%executed as normal. If a packed arithmetic instruction operating on an
+%unsupported pack width is encountered, the implementation should raise an
+%{\em Illegal Instruction} exception.
+%
+%\subsection{Randomness}
+%
+%Implementations can optionally implement the Crypto ISE randomness interface
+%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
+%
+%The inclusion of these instructions in an implementation is indicated by the
+%{\tt R} bit of the \nameref{sec:csr-mccr}.
+%
+%If the random interface instructions are not implemented, then their opcodes
+%will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+%
+%\subsection{Scatter/Gather}
+%
+%The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
+%in section \ref{sec:scatter-gather} may be omitted to reduce implementation
+%complexity.
+%
+%The inclusion of these instructions in an implementation is indicated by the
+%{\tt SG} bit of the \nameref{sec:csr-mccr}.
+%
+%An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
+%or none.
+%
+%If {\tt SCATTER} and {\tt GATHER} instructions are not implemented, then their
+%opcodes will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+%
+%\subsection{Multi-precision Arithmetic}
+%
+%All of the multi-precision arithmetic instructions listed in section
+%\ref{sec:multi-precision-instructions} may be optionally included or omitted
+%as a group.
+%
+%Inclusion of the multi-precision arithmetic instructions is indicated by
+%the {\tt MP} bit of the  \nameref{sec:csr-mccr}.
+%
+%If the multi-precision arithmetic instructions are not implemented, then their
+%opcodes will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+%
+%\subsection{Example Feature Sets}
+%
+%This section lists some example combinations of feature sets and their
+%potential use cases.
+%
+%\begin{enumerate}
+%\item Base + Randomness + Multi-precision Arithmetic. Such a subset would
+%    act as a very efficient accelerator to any device performing public
+%    key cryptography.
+%\item Base + Scatter/Gather. This subset works as a compact extension to
+%    a core making use of block ciphers such as AES.
+%\item Base + All Others. A complete implementation works as a general
+%    purpose cryptographic instruction set extension. Inclusion of the
+%    packed arithmetic instructions makes efficient bit-sliced implementations
+%    easier to express.
+%\end{enumerate}
+%
+%It is anticipated that most cores will implement all of the features of the
+%Crypto ISE, and that only small resource constrained implementations will
+%pick and choose the ones they need.

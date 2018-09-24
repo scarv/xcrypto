@@ -1,5 +1,5 @@
 ETABLE  = $(COP_WORK)/crypto-ise.encodings.tex
-SOURCES = crypto-ise.tex ise-implementation.tex
+SOURCES = specification.tex implementation.tex
 TARGETS = $(patsubst %.tex, %.pdf, ${SOURCES})
 
 DIA_IN  = $(shell find -name "*.dot")
@@ -25,8 +25,6 @@ diagrams/%.eps : diagrams/%.dot
 	dot -Tps $< > $@
 
 clean    :
-	@rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.pdf *.version *.xml *.toc \
-        *.bak
-
+	@rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.pdf *.version *.xml *.toc *.bak
 spotless : clean
 	@rm -f *.pdf 

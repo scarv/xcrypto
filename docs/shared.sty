@@ -1,3 +1,5 @@
+% =============================================================================
+
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage[plain,shortend]{algorithm2e}
@@ -6,10 +8,14 @@
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{currfile}
+\usepackage{fancyhdr}
 \usepackage{float}
-\usepackage[margin={2cm}]{geometry}
+\usepackage[a4paper,margin={2cm}]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{import}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{multirow}
 \usepackage{pbox}
 \usepackage{ragged2e}
 \usepackage{tabularx}
@@ -19,15 +25,6 @@
 \usepackage{xspace}
 \usepackage{xstring}
 \usepackage{xcolor}
-\usepackage{import}
-\usepackage[hidelinks]{hyperref}
-\usepackage{multirow}
-\hypersetup{
-    colorlinks,
-    linkcolor={red!90!black},
-    citecolor={blue!50!black},
-    urlcolor={blue!80!black}
-}
 
 \usetikzlibrary{arrows}
 \usetikzlibrary{arrows.meta}
@@ -38,6 +35,28 @@
 \usetikzlibrary{decorations.shapes}
 \usetikzlibrary{decorations.text}
 \usetikzlibrary{fit}
+
+% =============================================================================
+
+\hypersetup{colorlinks,linkcolor={red!90!black},citecolor={blue!50!black},urlcolor={blue!80!black}}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+      
+  \renewcommand{\headrulewidth}{0.5pt}
+  \renewcommand{\footrulewidth}{0.5pt}
+
+  \fancyhead[L]{}
+  \fancyhead[C]{}
+  \fancyhead[R]{}
+  \fancyfoot[L]{\url{http://www.scarv.org}}
+  \fancyfoot[C]{}
+  \fancyfoot[R]{\thepage}
+}
+  
+\pagestyle{plain}
+
+\setcounter{tocdepth}{3}
 
 % =============================================================================
 
@@ -92,7 +111,7 @@
 % =============================================================================
 
 % ISE name
-\newcommandx{\ISE}{XCrypto}
+\newcommandx{\ISE}{{\sf XCrypto}\xspace}
 % calligraphic (e.g., for mathematical spaces)
 \newcommandx{\C}[1]{\ensuremath{\mathcal #1}\xspace}
 % black board  (e.g., for mathematical structures)
