@@ -117,48 +117,72 @@ end
 //      the results back,
 //
 `define PACK_WIDTH_ARITH_OPERATION(OP) begin \
+    reg [31:0] result15; \
+    reg [31:0] result14; \
+    reg [31:0] result13; \
+    reg [31:0] result12; \
+    reg [31:0] result11; \
+    reg [31:0] result10; \
+    reg [31:0] result9 ; \
+    reg [31:0] result8 ; \
+    reg [31:0] result7 ; \
+    reg [31:0] result6 ; \
+    reg [31:0] result5 ; \
+    reg [31:0] result4 ; \
+    reg [31:0] result3 ; \
+    reg [31:0] result2 ; \
+    reg [31:0] result1 ; \
+    reg [31:0] result0 ; \
     if(!pw_valid) begin \
         model_do_invalid_opcode(); \
     end else if(pw == 32) begin \
         result = crs1 OP crs2; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw == 16) begin \
-        result = {crs1[31:16] OP crs2[31:16], \
-                  crs1[15: 0] OP crs2[15: 0]}; \
+        result1 = crs1[31:16] OP crs2[31:16]; \
+        result0 = crs1[15: 0] OP crs2[15: 0]; \
+        result = {result1[15: 0],result0[15: 0]}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  8) begin \
-        result = {crs1[31:24] OP crs2[31:24], \
-                  crs1[23:16] OP crs2[23:16], \
-                  crs1[15: 8] OP crs2[15: 8], \
-                  crs1[ 7: 0] OP crs2[ 7: 0]}; \
+        result3 = crs1[31:24] OP crs2[31:24]; \
+        result2 = crs1[23:16] OP crs2[23:16]; \
+        result1 = crs1[15: 8] OP crs2[15: 8]; \
+        result0 = crs1[ 7: 0] OP crs2[ 7: 0]; \
+        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  4) begin \
-        result = {crs1[31:28] OP crs2[31:28], \
-                  crs1[27:24] OP crs2[27:24], \
-                  crs1[23:20] OP crs2[23:20], \
-                  crs1[19:16] OP crs2[19:16], \
-                  crs1[15:12] OP crs2[15:12], \
-                  crs1[11: 8] OP crs2[11: 8], \
-                  crs1[ 7: 4] OP crs2[ 7: 4], \
-                  crs1[ 3: 0] OP crs2[ 3: 0]}; \
+        result7 = crs1[31:28] OP crs2[31:28]; \
+        result6 = crs1[27:24] OP crs2[27:24]; \
+        result5 = crs1[23:20] OP crs2[23:20]; \
+        result4 = crs1[19:16] OP crs2[19:16]; \
+        result3 = crs1[15:12] OP crs2[15:12]; \
+        result2 = crs1[11: 8] OP crs2[11: 8]; \
+        result1 = crs1[ 7: 4] OP crs2[ 7: 4]; \
+        result0 = crs1[ 3: 0] OP crs2[ 3: 0]; \
+        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+                   result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end else if(pw ==  2) begin \
-        result = {crs1[31:30] OP crs2[31:30], \
-                  crs1[29:28] OP crs2[29:28], \
-                  crs1[27:26] OP crs2[27:26], \
-                  crs1[25:24] OP crs2[25:24], \
-                  crs1[23:22] OP crs2[23:22], \
-                  crs1[21:20] OP crs2[21:20], \
-                  crs1[19:18] OP crs2[19:18], \
-                  crs1[17:16] OP crs2[17:16], \
-                  crs1[15:14] OP crs2[15:14], \
-                  crs1[13:12] OP crs2[13:12], \
-                  crs1[11:10] OP crs2[11:10], \
-                  crs1[ 9: 8] OP crs2[ 9: 8], \
-                  crs1[ 7: 6] OP crs2[ 7: 6], \
-                  crs1[ 5: 4] OP crs2[ 5: 4], \
-                  crs1[ 3: 2] OP crs2[ 3: 2], \
-                  crs1[ 1: 0] OP crs2[ 1: 0]}; \
+        result15 = crs1[31:30] OP crs2[31:30]; \
+        result14 = crs1[29:28] OP crs2[29:28]; \
+        result13 = crs1[27:26] OP crs2[27:26]; \
+        result12 = crs1[25:24] OP crs2[25:24]; \
+        result11 = crs1[23:22] OP crs2[23:22]; \
+        result10 = crs1[21:20] OP crs2[21:20]; \
+        result9  = crs1[19:18] OP crs2[19:18]; \
+        result8  = crs1[17:16] OP crs2[17:16]; \
+        result7  = crs1[15:14] OP crs2[15:14]; \
+        result6  = crs1[13:12] OP crs2[13:12]; \
+        result5  = crs1[11:10] OP crs2[11:10]; \
+        result4  = crs1[ 9: 8] OP crs2[ 9: 8]; \
+        result3  = crs1[ 7: 6] OP crs2[ 7: 6]; \
+        result2  = crs1[ 5: 4] OP crs2[ 5: 4]; \
+        result1  = crs1[ 3: 2] OP crs2[ 3: 2]; \
+        result0  = crs1[ 1: 0] OP crs2[ 1: 0]; \
+        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
+                   result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
+                   result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
+                   result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
         model_do_write_cpr(dec_arg_crd, result[31:0]); \
     end \
 end \

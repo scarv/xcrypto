@@ -50,39 +50,39 @@ assign result_1 = sl ? a << shamt : shin >> shamt;
 `define PACKSHIFT(HI,LO, WIDTH) sl ? a[HI:LO] << shamt : \
                             {r ? shin[HI:LO] : WIDTH'b0, shin[HI:LO]} >> shamt
 
-wire [31:0] result_2_0   = `PACKSHIFT(31, 16, 16);
-wire [31:0] result_2_1   = `PACKSHIFT(15,  0, 16);
+wire [31:0] result_2_1   = `PACKSHIFT(31, 16, 16);
+wire [31:0] result_2_0   = `PACKSHIFT(15,  0, 16);
 
-wire [15:0] result_4_0   = `PACKSHIFT(31, 24, 8 );
-wire [15:0] result_4_1   = `PACKSHIFT(23, 16, 8 );
-wire [15:0] result_4_2   = `PACKSHIFT(15,  8, 8 );
-wire [15:0] result_4_3   = `PACKSHIFT( 7,  0, 8 );
+wire [15:0] result_4_3   = `PACKSHIFT(31, 24, 8 );
+wire [15:0] result_4_2   = `PACKSHIFT(23, 16, 8 );
+wire [15:0] result_4_1   = `PACKSHIFT(15,  8, 8 );
+wire [15:0] result_4_0   = `PACKSHIFT( 7,  0, 8 );
 
-wire [ 7:0] result_8_0   = `PACKSHIFT(31, 28, 4 );
-wire [ 7:0] result_8_1   = `PACKSHIFT(27, 24, 4 );
-wire [ 7:0] result_8_2   = `PACKSHIFT(23, 20, 4 );
-wire [ 7:0] result_8_3   = `PACKSHIFT(19, 16, 4 );
-wire [ 7:0] result_8_4   = `PACKSHIFT(15, 12, 4 );
-wire [ 7:0] result_8_5   = `PACKSHIFT(11,  8, 4 );
-wire [ 7:0] result_8_6   = `PACKSHIFT( 7,  4, 4 );
-wire [ 7:0] result_8_7   = `PACKSHIFT( 3,  0, 4 );
+wire [ 7:0] result_8_7   = `PACKSHIFT(31, 28, 4 );
+wire [ 7:0] result_8_6   = `PACKSHIFT(27, 24, 4 );
+wire [ 7:0] result_8_5   = `PACKSHIFT(23, 20, 4 );
+wire [ 7:0] result_8_4   = `PACKSHIFT(19, 16, 4 );
+wire [ 7:0] result_8_3   = `PACKSHIFT(15, 12, 4 );
+wire [ 7:0] result_8_2   = `PACKSHIFT(11,  8, 4 );
+wire [ 7:0] result_8_1   = `PACKSHIFT( 7,  4, 4 );
+wire [ 7:0] result_8_0   = `PACKSHIFT( 3,  0, 4 );
 
-wire [ 3:0] result_16_0  = `PACKSHIFT(31, 30, 2 );
-wire [ 3:0] result_16_1  = `PACKSHIFT(29, 28, 2 );
-wire [ 3:0] result_16_2  = `PACKSHIFT(27, 26, 2 );
-wire [ 3:0] result_16_3  = `PACKSHIFT(25, 24, 2 );
-wire [ 3:0] result_16_4  = `PACKSHIFT(23, 22, 2 );
-wire [ 3:0] result_16_5  = `PACKSHIFT(21, 20, 2 );
-wire [ 3:0] result_16_6  = `PACKSHIFT(19, 18, 2 );
-wire [ 3:0] result_16_7  = `PACKSHIFT(17, 16, 2 );
-wire [ 3:0] result_16_8  = `PACKSHIFT(15, 14, 2 );
-wire [ 3:0] result_16_9  = `PACKSHIFT(13, 12, 2 );
-wire [ 3:0] result_16_10 = `PACKSHIFT(11, 10, 2 );
-wire [ 3:0] result_16_11 = `PACKSHIFT( 9,  8, 2 );
-wire [ 3:0] result_16_12 = `PACKSHIFT( 7,  6, 2 );
-wire [ 3:0] result_16_13 = `PACKSHIFT( 5,  4, 2 );
-wire [ 3:0] result_16_14 = `PACKSHIFT( 3,  2, 2 );
-wire [ 3:0] result_16_15 = `PACKSHIFT( 1,  0, 2 );
+wire [ 3:0] result_16_15 = `PACKSHIFT(31, 30, 2 );
+wire [ 3:0] result_16_14 = `PACKSHIFT(29, 28, 2 );
+wire [ 3:0] result_16_13 = `PACKSHIFT(27, 26, 2 );
+wire [ 3:0] result_16_12 = `PACKSHIFT(25, 24, 2 );
+wire [ 3:0] result_16_11 = `PACKSHIFT(23, 22, 2 );
+wire [ 3:0] result_16_10 = `PACKSHIFT(21, 20, 2 );
+wire [ 3:0] result_16_9  = `PACKSHIFT(19, 18, 2 );
+wire [ 3:0] result_16_8  = `PACKSHIFT(17, 16, 2 );
+wire [ 3:0] result_16_7  = `PACKSHIFT(15, 14, 2 );
+wire [ 3:0] result_16_6  = `PACKSHIFT(13, 12, 2 );
+wire [ 3:0] result_16_5  = `PACKSHIFT(11, 10, 2 );
+wire [ 3:0] result_16_4  = `PACKSHIFT( 9,  8, 2 );
+wire [ 3:0] result_16_3  = `PACKSHIFT( 7,  6, 2 );
+wire [ 3:0] result_16_2  = `PACKSHIFT( 5,  4, 2 );
+wire [ 3:0] result_16_1  = `PACKSHIFT( 3,  2, 2 );
+wire [ 3:0] result_16_0  = `PACKSHIFT( 1,  0, 2 );
 
 assign result_2 = {
 result_2_1[15:0],
