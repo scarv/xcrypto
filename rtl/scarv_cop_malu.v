@@ -33,26 +33,35 @@ output wire [ 3:0]  malu_cpr_rd_ben  , // Writeback byte enable
 output wire [31:0]  malu_cpr_rd_wdata  // Writeback data
 );
 
+`include "scarv_cop_common.vh"
+
 //
-// All MP instructions take two cycles
-reg  cycle2     ;
-wire n_cycle2   = malu_ivalid && !malu_idone;
+// MP instructions take two or three cycles
+reg  [1:0] mp_fsm;
+wire [1:0] n_mp_fsm = mp_fsm + 1;
 
 always @(posedge g_clk) begin
-    if(!g_resetn)
-        cycle2 <= 1'b0;
-    else begin
-        cycle2 <= n_cycle2;
+    if(!g_resetn || malu_idone)
+        mp_fsm <= 0;
+    else if(malu_ivalid && !malu_idone) begin
+        mp_fsm <= n_mp_fsm;
     end
 end
 
-assign malu_idone = cycle2;
+assign malu_idone = 
+    mp_fsm == 1 && (is_add2_mp) ||
+    mp_fsm == 2;
 
 // 64 bit result of all MALU instructions.
-wire [63:0] malu_result = adder2_result;
+wire [63:0] malu_result = !malu_ivalid ? 0 :
+    adder1_result;
 
-assign malu_cpr_rd_ben   = malu_idone || malu_ivalid && !cycle2;
-assign malu_cpr_rd_wdata = cycle2 ? malu_result[31:0] : malu_result[63:32];
+wire wb_hi = 
+    mp_fsm == 3 && is_add3_mp ||
+    mp_fsm == 1 && is_add2_mp ;
+
+assign malu_cpr_rd_ben   = {4{malu_idone || malu_ivalid}};
+assign malu_cpr_rd_wdata = wb_hi ? malu_result[63:32] : malu_result[31: 0];
 
 //
 // Individual instruction decoding.
@@ -78,11 +87,21 @@ wire is_mac_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MAC_MP ;
 // Utility wires for controlling the number of operators we implement.
 //
 
-assign adder1_lhs = {32'b0,malu_rs1};
-assign adder1_rhs = {32'b0,malu_rs2};
-
 wire [63:0] adder1_lhs;
 wire [63:0] adder1_rhs;
-wire [64:0] adder2_result = adder1_lhs + adder1_rhs;
+wire [64:0] adder1_result = adder1_lhs + adder1_rhs;
+
+reg  [33:0] malu_intermediate;
+
+assign ld_intermediate = mp_fsm == 1 && is_add3_mp;
+
+always @(posedge g_clk) begin
+    if(ld_intermediate) begin
+        malu_intermediate <= adder1_result[33:0];
+    end
+end
+
+assign adder1_lhs = {32'b0,malu_rs1};
+assign adder1_rhs = {32'b0,malu_rs2};
 
 endmodule
