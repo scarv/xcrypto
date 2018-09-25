@@ -1,6 +1,6 @@
 
 # Read the design
-read_verilog -formal ../../rtl/scarv_cop_palu_adder.v
+read_verilog -formal ../../rtl/coprocessor/scarv_cop_palu_adder.v
 
 # Dump pre-synthesis schematic to file
 show -format svg -prefix ../../work/adder-schematic-bhav
