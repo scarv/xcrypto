@@ -1,6 +1,6 @@
 
 # Read in the design
-read_verilog -I../../work/ ../../rtl/*
+read_verilog -I../../work/ ../../rtl/coprocessor/*
 
 # Synthesise processes ready for SCC check.
 proc

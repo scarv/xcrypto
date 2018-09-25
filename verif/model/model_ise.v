@@ -485,8 +485,8 @@ task model_do_decode_rdm;
     output [ 3:0]   rd2;
     output [ 3:0]   rd1;
 begin
-    rd1 = {dec_arg_crdm,2'b00};
-    rd2 = {dec_arg_crdm,2'b01};
+    rd1 = {dec_arg_crdm,1'b0};
+    rd2 = {dec_arg_crdm,1'b1};
 end endtask
 
 //
@@ -1260,11 +1260,18 @@ end endtask
 //
 task model_do_add3_mp;
 begin: t_model_add3_mp
-    reg  [31:0] crs1, crs2, crs3;
+    reg  [31:0] crs1, crs2,crs3;
+    reg   [3:0] rd1,rd2;
+    reg  [63:0] result;
+    model_do_decode_rdm(rd2,rd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_do_read_cpr(dec_arg_crs3, crs3);
-    $display("ISE> ERROR: Instruction add3.mp not implemented");
+    result = crs1 + crs2 + crs3;
+    model_do_write_cpr(rd1, result[31: 0]);
+    model_do_write_cpr(rd2, result[63:32]);
+    $display("add3.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+        rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 
@@ -1274,9 +1281,16 @@ end endtask
 task model_do_add2_mp;
 begin: t_model_add2_mp
     reg  [31:0] crs1, crs2;
+    reg   [3:0] rd1,rd2;
+    reg  [63:0] result;
+    model_do_decode_rdm(rd2,rd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction add2.mp not implemented");
+    result = crs1 + crs2;
+    model_do_write_cpr(rd1, result[31: 0]);
+    model_do_write_cpr(rd2, result[63:32]);
+    $display("add2.mp (c%0d,c%0d), c%0d(%h), c%0d(%h)",
+        rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 

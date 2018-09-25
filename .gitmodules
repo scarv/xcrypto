@@ -1,3 +1,6 @@
 [submodule "external/riscv-opcodes"]
 	path = external/riscv-opcodes
 	url = git@github.com:riscv/riscv-opcodes.git
+[submodule "external/picorv32"]
+	path = external/picorv32
+	url = https://github.com/cliffordwolf/picorv32.git

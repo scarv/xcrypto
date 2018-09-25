@@ -7,7 +7,7 @@ YS_SCRIPT   ?= write-smt-tb.ys
 YS_SOLVER   ?= z3
 YS_VCD      ?= $(COP_HOME)/work/yosys.vcd
 
-SRC_RTL     ?= $(find $(COP_HOME) -path "rtl/*.v")
+SRC_RTL     ?= $(find $(COP_HOME) -path "rtl/coprocessor/*.v")
 SRC_VERIF   ?= $(find $(COP_HOME) -path "verif/*.v")
 
 SMT2_out    = $(COP_HOME)/work/yosys_tb.smt2
@@ -31,7 +31,7 @@ $(VLOG_out) : $(YS_SCRIPT) $(SRC_RTL)
 
 .PHONY: adder
 adder       : YS_SCRIPT = adder.ys
-adder       : ../../rtl/scarv_cop_palu_adder.v
+adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 	$(YS) -QT $(YS_SCRIPT)
 
 formal-trace:

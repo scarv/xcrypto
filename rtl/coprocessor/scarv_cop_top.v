@@ -159,7 +159,9 @@ assign crd_wen   = palu_cpr_rd_ben |
                    malu_cpr_rd_ben |
                    rng_cpr_rd_ben  ;
 
-assign crd_addr  = id_crd;
+assign crd_addr  = !malu_ivalid ? id_crd :
+                   !malu_idone  ? id_crd1:
+                                  id_crd2;
 
 assign crd_wdata = palu_cpr_rd_wdata |
                    mem_cpr_rd_wdata  |

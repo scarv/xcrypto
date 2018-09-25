@@ -2,7 +2,7 @@
 # Read in the design
 read_verilog -formal -I../../work/ ../../verif/model/model_ise.v
 read_verilog -formal -I../../work/ ../../verif/model/model_checks.v
-read_verilog -formal -I../../work/ ../../rtl/*
+read_verilog -formal -I../../work/ ../../rtl/coprocessor/*
 read_verilog -formal -I../../work/ ../../verif/tb/tb_formal.v
 
 # Translate into netlist. Required for SCC analysis

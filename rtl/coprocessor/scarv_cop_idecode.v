@@ -72,8 +72,8 @@ assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
 
 assign id_crd  = dec_arg_crd ;
 assign id_rs1  = dec_arg_rs1;
-assign id_crd1 = {dec_arg_crdm, 2'b00};
-assign id_crd2 = {dec_arg_crdm, 2'b01};
+assign id_crd1 = {dec_arg_crdm, 1'b0};
+assign id_crd2 = {dec_arg_crdm, 1'b1};
 assign id_rd   = dec_arg_rd;
 assign id_pw   = {dec_arg_ca, dec_arg_cb, dec_arg_cc};
 
@@ -137,7 +137,7 @@ wire [3:0] subclass_load_store =
     {4{dec_lbu_cr   }} & {SCARV_COP_SCLASS_LB_CR    } ;
 
 wire [3:0] subclass_mp =
-    {encoded[19] ? 2'b00 : encoded[11:10], encoded[29:28]};
+    {encoded[19] ? 2'b11 : encoded[11:10], encoded[29:28]};
 
 wire [3:0] subclass_bitwise =
     {4{dec_lmix_cr}} & {SCARV_COP_SCLASS_LMIX_CR} |

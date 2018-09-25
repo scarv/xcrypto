@@ -573,7 +573,7 @@ sequence.
 synchronous to \SIGREF{g\_clk}.}
 {tab:sigs-multi-arith-block}
 
-The block contains a single 64-bit {\tt scratch} register.
+The block contains a single 64-bit {\tt tmp} register.
 This is used to store intermediate results during computation.
 
 The table below shows roughly what the ALU does in each cycle during
@@ -582,18 +582,18 @@ instruction execution.
 \begin{table}[H]
 \begin{tabularx}{\textwidth}{l Y Y Y }
 \toprule
-\textbf{Instruction}& \textbf{Cycle 0}& \textbf{Cycle 1}& \textbf{Cycle 2} \\
+\textbf{}& \textbf{Cycle 0}& \textbf{Cycle 1}& \textbf{Cycle 2} \\
 \midrule
 ADD2.mp&
-    $scratch \ASN rs1+rs2;$\newline 
-    $rdm0\ASN scratch[31:0]$ 
- &  $rdm1\ASN scratch[32]$ 
+    $tmp \ASN rs1+rs2;$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[32]$ 
  & \\
 ADD3.mp&
-   $scratch \ASN rs1 + rs2$
- & $scratch \ASN scratch + rs3;$\newline
-   $rdm0\ASN scratch[31:0]$ 
- & $rdm1\ASN scratch[63:32]$ 
+   $tmp \ASN rs1 + rs2$
+ & $tmp \ASN tmp + rs3;$\newline
+   $rdm0\ASN tmp[31:0]$ 
+ & $rdm1\ASN tmp[63:32]$ 
 \\
 SUB2.mp&
  &
@@ -604,35 +604,46 @@ SUB3.mp&
  &
 \\
 ACC1.mp&
- &
+    $tmp \ASN (crd1 \CONS crd0) + rs1$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
  &
 \\
 ACC2.mp&
- &
- &
+    $tmp \ASN (crd1 \CONS crd0) + rs1$\newline 
+ &  $tmp \ASN tmp + rs2;$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
 \\
 MAC.mp &
- &
- &
-\\
-MAA.mp &
- &
- &
+    $tmp \ASN rs1 * rs2$ \newline 
+ &  
+    $tmp \ASN tmp + rs3$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
 \\
 SLLI.mp&
- &
+    $tmp \ASN (rs1 \CONS rs2) \LSH cmshamt$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
  &
 \\
 SLLR.mp&
- &
+    $tmp \ASN (rs1 \CONS rs2) \LSH rs3[5:0]$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
  &
 \\
 SRLI.mp&
- &
+    $tmp \ASN (rs1 \CONS rs2) \RSH cmshamt$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
  &
 \\
 SRLR.mp&
- &
+    $tmp \ASN (rs1 \CONS rs2) \RSH rs3[5:0]$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
  &
 \\
 EQU.mp &
@@ -793,8 +804,7 @@ the implementation.}
 
 \section{Integration Guide}
 \label{sec:integration}
-
-TBD
+\import{./implementation/}{integration.tex}
 
 \section{Verification}
 \label{sec:verification}
