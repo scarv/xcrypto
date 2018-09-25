@@ -93,6 +93,20 @@ work/unit/%.vcd : $(COP_WORK)/unit/%.hex icarus_build
 	@mv $(COP_WORK)/icarus/waves.vcd $@
 
 #
+# Build the icarus integration testbench
+#
+.PHONY: icarus_integ_tb
+icarus_integ_tb:
+	$(MAKE) -C $(COP_HOME)/flow/icarus integ-sim
+
+#
+# Build the icarus integration testbench
+#
+.PHONY: icarus_run_integ
+icarus_run_integ: icarus_integ_tb
+	$(MAKE) -C $(COP_HOME)/flow/icarus integ-run
+
+#
 # Build the ISE unit tests into hex files for use with the Icarus
 # simulation model.
 #
