@@ -69,8 +69,8 @@ assign cpu_insn_ack  = 1'b1; // PicoRV accepts all responses immediately.
 //  all writeback register addresses in the XCrypto ISE align with the
 //  standard RISC-V destination register fields.
 //
-assign pcpi_wr       =  cop_insn_wen;
-assign pcpi_rd       =  cop_insn_wdata;
+assign pcpi_wr       =  cop_wen;
+assign pcpi_rd       =  cop_wdata;
 assign pcpi_wait     = !cop_insn_rsp;
 assign pcpi_ready    =  cop_insn_rsp;
 
