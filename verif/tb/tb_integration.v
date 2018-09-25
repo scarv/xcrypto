@@ -72,10 +72,10 @@ always @(posedge g_clk) begin
     if(cycle_count > TB_MAX_CYCLES) begin
         $display("TIMEOUT. Cycle count > %d", TB_MAX_CYCLES);
         $finish;
-    end else if(M_AXI_I_ARADDR == TB_PASS_ADDRESS) begin
+    end else if(prv_axi_araddr == TB_PASS_ADDRESS) begin
         $display("Simulation pass address hit - SIM PASS");
         $finish;
-    end else if(M_AXI_I_ARADDR == TB_FAIL_ADDRESS) begin
+    end else if(prv_axi_araddr == TB_FAIL_ADDRESS) begin
         $display("Simulation fail address hit - SIM FAIL");
         $finish;
     end else begin
@@ -165,24 +165,24 @@ wire [35:0] prv_trace_data    ;
 //
 //  PicoRV memory model.
 //
-module axi_sram i_sram_pico(
+axi_sram i_sram_pico(
 .memfile      (tb_imemfile    ),  
 .ACLK         (g_clk          ), // Master clock for the AXI interface.
 .ARESETn      (g_resetn       ), // Active low asynchronous reset.
 .M_AXI_ARADDR (prv_axi_araddr ), // 
 .M_AXI_ARREADY(prv_axi_arready), // 
-.M_AXI_ARSIZE (prv_axi_arsize ), // 
+.M_AXI_ARSIZE (3'b010         ), // 
 .M_AXI_ARVALID(prv_axi_arvalid), // 
 .M_AXI_AWADDR (prv_axi_awaddr ), // 
 .M_AXI_AWREADY(prv_axi_awready), // 
-.M_AXI_AWSIZE (prv_axi_awsize ), // 
+.M_AXI_AWSIZE (3'b010         ), // 
 .M_AXI_AWVALID(prv_axi_awvalid), // 
 .M_AXI_BREADY (prv_axi_bready ), // 
-.M_AXI_BRESP  (prv_axi_bresp  ), // 
+//.M_AXI_BRESP  (prv_axi_bresp  ), // 
 .M_AXI_BVALID (prv_axi_bvalid ), // 
 .M_AXI_RDATA  (prv_axi_rdata  ), // 
 .M_AXI_RREADY (prv_axi_rready ), // 
-.M_AXI_RRESP  (prv_axi_rresp  ), // 
+//.M_AXI_RRESP  (prv_axi_rresp  ), // 
 .M_AXI_RVALID (prv_axi_rvalid ), // 
 .M_AXI_WDATA  (prv_axi_wdata  ), // 
 .M_AXI_WREADY (prv_axi_wready ), // 
@@ -193,29 +193,29 @@ module axi_sram i_sram_pico(
 //
 //  Crypto co-processor memory model.
 //
-module axi_sram i_sram_cop(
+axi_sram i_sram_cop(
 .memfile      (tb_imemfile    ),  
 .ACLK         (g_clk          ), // Master clock for the AXI interface.
 .ARESETn      (g_resetn       ), // Active low asynchronous reset.
-.M_AXI_ARADDR (prv_axi_araddr ), // 
-.M_AXI_ARREADY(prv_axi_arready), // 
-.M_AXI_ARSIZE (prv_axi_arsize ), // 
-.M_AXI_ARVALID(prv_axi_arvalid), // 
-.M_AXI_AWADDR (prv_axi_awaddr ), // 
-.M_AXI_AWREADY(prv_axi_awready), // 
-.M_AXI_AWSIZE (prv_axi_awsize ), // 
-.M_AXI_AWVALID(prv_axi_awvalid), // 
-.M_AXI_BREADY (prv_axi_bready ), // 
-.M_AXI_BRESP  (prv_axi_bresp  ), // 
-.M_AXI_BVALID (prv_axi_bvalid ), // 
-.M_AXI_RDATA  (prv_axi_rdata  ), // 
-.M_AXI_RREADY (prv_axi_rready ), // 
-.M_AXI_RRESP  (prv_axi_rresp  ), // 
-.M_AXI_RVALID (prv_axi_rvalid ), // 
-.M_AXI_WDATA  (prv_axi_wdata  ), // 
-.M_AXI_WREADY (prv_axi_wready ), // 
-.M_AXI_WSTRB  (prv_axi_wstrb  ), // 
-.M_AXI_WVALID (prv_axi_wvalid )  // 
+.M_AXI_ARADDR (cop_axi_araddr ), // 
+.M_AXI_ARREADY(cop_axi_arready), // 
+.M_AXI_ARSIZE (3'b010         ), // 
+.M_AXI_ARVALID(cop_axi_arvalid), // 
+.M_AXI_AWADDR (cop_axi_awaddr ), // 
+.M_AXI_AWREADY(cop_axi_awready), // 
+.M_AXI_AWSIZE (3'b010         ), // 
+.M_AXI_AWVALID(cop_axi_awvalid), // 
+.M_AXI_BREADY (cop_axi_bready ), // 
+//.M_AXI_BRESP  (cop_axi_bresp  ), // 
+.M_AXI_BVALID (cop_axi_bvalid ), // 
+.M_AXI_RDATA  (cop_axi_rdata  ), // 
+.M_AXI_RREADY (cop_axi_rready ), // 
+//.M_AXI_RRESP  (cop_axi_rresp  ), // 
+.M_AXI_RVALID (cop_axi_rvalid ), // 
+.M_AXI_WDATA  (cop_axi_wdata  ), // 
+.M_AXI_WREADY (cop_axi_wready ), // 
+.M_AXI_WSTRB  (cop_axi_wstrb  ), // 
+.M_AXI_WVALID (cop_axi_wvalid )  // 
 );
 
 // --------------------- Subsystem Model ---------------------------------
@@ -227,47 +227,47 @@ module axi_sram i_sram_cop(
 //  Co-Processor.
 //
 scarv_prv_xcrypt_top i_dut(
-g_clk          (g_clk          ),
-g_resetn       (g_resetn       ),
-prv_trap       (prv_trap       ), // PicoRV32 Exception
-prv_axi_awvalid(prv_axi_awvalid),
-prv_axi_awready(prv_axi_awready),
-prv_axi_awaddr (prv_axi_awaddr ),
-prv_axi_awprot (prv_axi_awprot ),
-prv_axi_wvalid (prv_axi_wvalid ),
-prv_axi_wready (prv_axi_wready ),
-prv_axi_wdata  (prv_axi_wdata  ),
-prv_axi_wstrb  (prv_axi_wstrb  ),
-prv_axi_bvalid (prv_axi_bvalid ),
-prv_axi_bready (prv_axi_bready ),
-prv_axi_arvalid(prv_axi_arvalid),
-prv_axi_arready(prv_axi_arready),
-prv_axi_araddr (prv_axi_araddr ),
-prv_axi_arprot (prv_axi_arprot ),
-prv_axi_rvalid (prv_axi_rvalid ),
-prv_axi_rready (prv_axi_rready ),
-prv_axi_rdata  (prv_axi_rdata  ),
-cop_axi_awvalid(cop_axi_awvalid),
-cop_axi_awready(cop_axi_awready),
-cop_axi_awaddr (cop_axi_awaddr ),
-cop_axi_awprot (cop_axi_awprot ),
-cop_axi_wvalid (cop_axi_wvalid ),
-cop_axi_wready (cop_axi_wready ),
-cop_axi_wdata  (cop_axi_wdata  ),
-cop_axi_wstrb  (cop_axi_wstrb  ),
-cop_axi_bvalid (cop_axi_bvalid ),
-cop_axi_bready (cop_axi_bready ),
-cop_axi_arvalid(cop_axi_arvalid),
-cop_axi_arready(cop_axi_arready),
-cop_axi_araddr (cop_axi_araddr ),
-cop_axi_arprot (cop_axi_arprot ),
-cop_axi_rvalid (cop_axi_rvalid ),
-cop_axi_rready (cop_axi_rready ),
-cop_axi_rdata  (cop_axi_rdata  ),
-prv_irq        (prv_irq        ),
-prv_eoi        (prv_eoi        ),
-prv_trace_valid(prv_trace_valid),
-prv_trace_data (prv_trace_data )
+.g_clk          (g_clk          ),
+.g_resetn       (g_resetn       ),
+.prv_trap       (prv_trap       ), // PicoRV32 Exception
+.prv_axi_awvalid(prv_axi_awvalid),
+.prv_axi_awready(prv_axi_awready),
+.prv_axi_awaddr (prv_axi_awaddr ),
+.prv_axi_awprot (prv_axi_awprot ),
+.prv_axi_wvalid (prv_axi_wvalid ),
+.prv_axi_wready (prv_axi_wready ),
+.prv_axi_wdata  (prv_axi_wdata  ),
+.prv_axi_wstrb  (prv_axi_wstrb  ),
+.prv_axi_bvalid (prv_axi_bvalid ),
+.prv_axi_bready (prv_axi_bready ),
+.prv_axi_arvalid(prv_axi_arvalid),
+.prv_axi_arready(prv_axi_arready),
+.prv_axi_araddr (prv_axi_araddr ),
+.prv_axi_arprot (prv_axi_arprot ),
+.prv_axi_rvalid (prv_axi_rvalid ),
+.prv_axi_rready (prv_axi_rready ),
+.prv_axi_rdata  (prv_axi_rdata  ),
+.cop_axi_awvalid(cop_axi_awvalid),
+.cop_axi_awready(cop_axi_awready),
+.cop_axi_awaddr (cop_axi_awaddr ),
+.cop_axi_awprot (cop_axi_awprot ),
+.cop_axi_wvalid (cop_axi_wvalid ),
+.cop_axi_wready (cop_axi_wready ),
+.cop_axi_wdata  (cop_axi_wdata  ),
+.cop_axi_wstrb  (cop_axi_wstrb  ),
+.cop_axi_bvalid (cop_axi_bvalid ),
+.cop_axi_bready (cop_axi_bready ),
+.cop_axi_arvalid(cop_axi_arvalid),
+.cop_axi_arready(cop_axi_arready),
+.cop_axi_araddr (cop_axi_araddr ),
+.cop_axi_arprot (cop_axi_arprot ),
+.cop_axi_rvalid (cop_axi_rvalid ),
+.cop_axi_rready (cop_axi_rready ),
+.cop_axi_rdata  (cop_axi_rdata  ),
+.prv_irq        (prv_irq        ),
+.prv_eoi        (prv_eoi        ),
+.prv_trace_valid(prv_trace_valid),
+.prv_trace_data (prv_trace_data )
 );
 
 endmodule
