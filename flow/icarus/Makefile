@@ -61,19 +61,19 @@ $(INTEG_SIM) :
 # This has to be done since the unit-testbench expects memory words,
 # while the integration testbench expects bytes.
 #
-$(INTEG_HEX_TMP) : $(SIM_UNIT_TEST)
+$(SIM_UNIT_TEST:%.hex=%.integ.hex) : $(SIM_UNIT_TEST)
 	sed 's/\(..\)\(..\)\(..\)\(..\)/\4\n\3\n\2\n\1/g' $< > $@
 
 #
 # Run the integration testbench.
 #
 integ-run: RTL_WAVES=$(COP_HOME)/work/icarus/integ-waves.vcd
-integ-run: $(INTEG_SIM) $(INTEG_HEX_TMP)
+integ-run: $(INTEG_SIM) $(SIM_UNIT_TEST:%.hex=%.integ.hex)
 	$(IRUN) -l $(INTEG_SIM_LOG) \
         $(INTEG_SIM) \
         +TIMEOUT=$(RTL_TIMEOUT) \
         +WAVES=$(RTL_WAVES) \
-        +IMEM=$(INTEG_HEX_TMP) \
+        +IMEM=$(SIM_UNIT_TEST:%.hex=%.integ.hex) \
         +TRACE=$(RTL_TRACE)
 
 .PHONY: clean

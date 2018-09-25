@@ -106,7 +106,7 @@ parameter  [ 0:0] PRV_REGS_INIT_ZERO        = 1;
 parameter  [31:0] PRV_MASKED_IRQ            = 32'h 0000_0000;
 parameter  [31:0] PRV_LATCHED_IRQ           = 32'h ffff_ffff;
 parameter  [31:0] PRV_PROGADDR_RESET        = 32'h 0000_0000;
-parameter  [31:0] PRV_PROGADDR_IRQ          = 32'h 0000_0010;
+parameter  [31:0] PRV_PROGADDR_IRQ          = 32'h 0000_0004;
 parameter  [31:0] PRV_STACKADDR             = 32'h ffff_ffff;
 
 

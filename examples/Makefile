@@ -1,22 +1,21 @@
 
 
-AS      = $(COP_HOME)/work/riscv-binutils-gdb/build/gas/as-new
-OBJDUMP = $(COP_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
+export CC       = $(RISCV)/bin/riscv64-unknown-elf-gcc
+export AS       = $(RISCV)/bin/riscv64-unknown-elf-as
+export LD       = $(RISCV)/bin/riscv64-unknown-elf-ld
+export X_AS     = $(COP_HOME)/work/riscv-binutils-gdb/build/gas/as-new
+export X_OBJDUMP= $(COP_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
 
-ASFLAGS += -march=rv32imx -mabi=ilp32 -fpic
+export INC_DIR  = $(COP_HOME)/examples/common
 
-SRC     ?= cop-instructions.S
-OUT_OBJ := $(addprefix $(COP_WORK)/,$(SRC:%.S=%.o))
-OUT_DIS := $(addprefix $(COP_WORK)/,$(SRC:%.S=%.dis))
+export ASFLAGS  += -march=rv32ix -mabi=ilp32 
 
-all: $(OUT_OBJ) $(OUT_DIS)
+export CFLAGS   += -mabi=ilp32 -march=rv32i -O2 -Wall -I$(INC_DIR) \
+                  -nostartfiles -nostdlib
 
-${COP_WORK}/%.o : %.S
-	$(AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
+export LDSCRIPT ?= $(COP_HOME)/examples/common/linker.ld
 
-${COP_WORK}/%.dis : $(COP_WORK)/%.o
-	$(OBJDUMP) -j.text -dt $< > $@
+export LDFLAGS  += -T$(LDSCRIPT)
 
-.PHONY: clean
-clean:
-	echo $(OUT_OBJ) $(OUT_DIS)
+all:
+	$(MAKE) -C integration-test all

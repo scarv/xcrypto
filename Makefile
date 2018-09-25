@@ -103,6 +103,8 @@ icarus_integ_tb:
 # Build the icarus integration testbench
 #
 .PHONY: icarus_run_integ
+icarus_run_integ: RTL_TIMEOUT = 3000
+icarus_run_integ: examples
 icarus_run_integ: icarus_integ_tb
 	$(MAKE) -C $(COP_HOME)/flow/icarus integ-run
 
