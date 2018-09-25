@@ -36,34 +36,6 @@ output wire [31:0]  malu_cpr_rd_wdata  // Writeback data
 `include "scarv_cop_common.vh"
 
 //
-// MP instructions take two or three cycles
-reg  [1:0] mp_fsm;
-wire [1:0] n_mp_fsm = mp_fsm + 1;
-
-always @(posedge g_clk) begin
-    if(!g_resetn || malu_idone)
-        mp_fsm <= 0;
-    else if(malu_ivalid && !malu_idone) begin
-        mp_fsm <= n_mp_fsm;
-    end
-end
-
-assign malu_idone = 
-    mp_fsm == 1 && (is_add2_mp) ||
-    mp_fsm == 2;
-
-// 64 bit result of all MALU instructions.
-wire [63:0] malu_result = !malu_ivalid ? 0 :
-    adder1_result;
-
-wire wb_hi = 
-    mp_fsm == 3 && is_add3_mp ||
-    mp_fsm == 1 && is_add2_mp ;
-
-assign malu_cpr_rd_ben   = {4{malu_idone || malu_ivalid}};
-assign malu_cpr_rd_wdata = wb_hi ? malu_result[63:32] : malu_result[31: 0];
-
-//
 // Individual instruction decoding.
 //
 
@@ -81,6 +53,38 @@ wire is_srl_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_SRL_MP ;
 wire is_acc2_mp = malu_ivalid && id_subclass == SCARV_COP_SCLASS_ACC2_MP;
 wire is_acc1_mp = malu_ivalid && id_subclass == SCARV_COP_SCLASS_ACC1_MP;
 wire is_mac_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MAC_MP ;
+
+//
+// MP instructions take two or three cycles
+reg  [1:0] mp_fsm;
+wire [1:0] n_mp_fsm = mp_fsm + 1;
+
+always @(posedge g_clk) begin
+    if(!g_resetn || malu_idone)
+        mp_fsm <= 0;
+    else if(malu_ivalid && !malu_idone) begin
+        mp_fsm <= n_mp_fsm;
+    end
+end
+
+assign malu_idone = 
+    mp_fsm == 1 && (is_add2_mp) ||
+    mp_fsm == 2;
+
+// 64 bit result of all MALU instructions.
+wire [63:0] malu_result = 0;
+
+// writeback the high word or low word of the result?
+wire wb_hi = 
+    mp_fsm == 3 && is_add3_mp ||
+    mp_fsm == 1 && is_add2_mp ;
+
+// Write byte enable and write data selection,
+assign malu_cpr_rd_ben   = 
+    {4{malu_idone || malu_ivalid}};
+
+assign malu_cpr_rd_wdata = 
+    wb_hi ? malu_result[63:32] : malu_result[31: 0];
 
 
 //
