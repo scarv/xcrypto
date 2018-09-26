@@ -1325,9 +1325,16 @@ end endtask
 task model_do_slli_mp;
 begin: t_model_slli_mp
     reg  [31:0] crs1, crs2;
+    reg  [63:0] result;
+    reg  [63:0] toshift;
+    reg  [4:0] crd1,crd2;
+    model_do_decode_rdm(crd2,crd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction slli.mp not implemented");
+    toshift= {crs1,crs2};
+    result = toshift << dec_arg_cmshamt;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
 end endtask
 
 
