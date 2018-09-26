@@ -55,7 +55,9 @@ wire is_acc1_mp = malu_ivalid && id_subclass == SCARV_COP_SCLASS_ACC1_MP;
 wire is_mac_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MAC_MP ;
 
 //
-// MP instructions take two or three cycles
+// MP instruction control FSM
+//
+
 reg  [1:0] mp_fsm;
 wire [1:0] n_mp_fsm = mp_fsm + 1;
 
@@ -68,20 +70,41 @@ always @(posedge g_clk) begin
 end
 
 assign malu_idone = 
-    mp_fsm == 1 && (is_add2_mp) ||
-    mp_fsm == 2;
+    mp_fsm == 1 && (is_add2_mp)  
+||  mp_fsm == 2 && (is_add3_mp) ;
 
 // 64 bit result of all MALU instructions.
-wire [63:0] malu_result = 0;
+
+wire malu_result_inter =
+    mp_fsm == 1 && (is_add2_mp              )     
+||  mp_fsm == 2 && (is_add3_mp              )    ;
+
+wire malu_result_adder = 
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp)     
+||  mp_fsm == 1 && (is_add2_mp || is_add3_mp)    ;
+
+wire malu_result_shift = 1'b0;
+
+wire malu_result_mul   = 1'b0;
+
+wire [63:0] malu_result = 
+    {63{malu_result_inter}} & malu_intermediate |
+    {63{malu_result_adder}} & adder1_result     |     
+    {63{malu_result_shift}} & shift1_result     | 
+    {63{malu_result_mul  }} & mul1_result       ;
 
 // writeback the high word or low word of the result?
 wire wb_hi = 
-    mp_fsm == 3 && is_add3_mp ||
-    mp_fsm == 1 && is_add2_mp ;
+    mp_fsm == 0 && (1'b0                    )
+||  mp_fsm == 1 && (is_add2_mp              )  
+||  mp_fsm == 2 && (is_add3_mp              ) ;
 
 // Write byte enable and write data selection,
-assign malu_cpr_rd_ben   = 
-    {4{malu_idone || malu_ivalid}};
+assign malu_cpr_rd_ben   = {4{
+    mp_fsm == 0 && (is_add2_mp)
+||  mp_fsm == 1 && (is_add2_mp || is_add3_mp)  
+||  mp_fsm == 2 && (is_add3_mp)  
+}};
 
 assign malu_cpr_rd_wdata = 
     wb_hi ? malu_result[63:32] : malu_result[31: 0];
@@ -91,21 +114,65 @@ assign malu_cpr_rd_wdata =
 // Utility wires for controlling the number of operators we implement.
 //
 
+// 64-bit adder.
 wire [63:0] adder1_lhs;
 wire [63:0] adder1_rhs;
 wire [64:0] adder1_result = adder1_lhs + adder1_rhs;
 
-reg  [33:0] malu_intermediate;
+wire   adder1_lhs_rs1 =
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp)
+||  mp_fsm == 1 && (1'b0                    );
 
-assign ld_intermediate = mp_fsm == 1 && is_add3_mp;
+wire   adder1_lhs_inter = 
+    mp_fsm == 0 && (1'b0                    )
+||  mp_fsm == 1 && (is_add3_mp              );
+
+wire   adder1_rhs_rs2 =
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp)
+||  mp_fsm == 1 && (1'b0                    );
+
+wire   adder1_rhs_rs3 =
+    mp_fsm == 0 && (1'b0                    )
+||  mp_fsm == 1 && (is_add3_mp              );
+
+assign adder1_lhs = 
+    {63{adder1_lhs_rs1  }} & {32'b0,malu_rs1    } |
+    {63{adder1_lhs_inter}} & {malu_intermediate } ;
+
+assign adder1_rhs = 
+    {63{adder1_rhs_rs2}} & {32'b0,malu_rs2      } |
+    {63{adder1_rhs_rs3}} & {32'b0,malu_rs3      } ;
+
+// Left/right barrel shifter
+wire [63:0] shift1_lhs;
+wire [ 5:0] shift1_rhs;
+wire        shift1_right;
+wire [63:0] shift1_result = shift1_right ? shift1_lhs >> shift1_rhs :
+                                           shift1_lhs << shift1_rhs ;
+
+// Multiplier
+wire [31:0] mul1_lhs;
+wire [31:0] mul1_rhs;
+wire [63:0] mul1_result = mul1_lhs * mul1_rhs;
+
+//
+// Intermediate value storage
+reg  [63:0] malu_intermediate;
+wire [63:0] n_malu_intermediate;
+
+assign n_malu_intermediate = adder1_result;
+
+// load enable for malu_intermediate;
+assign ld_intermediate =
+    mp_fsm == 0 && (is_add2_mp  || is_add3_mp )
+||  mp_fsm == 1 && (is_add3_mp );
 
 always @(posedge g_clk) begin
-    if(ld_intermediate) begin
-        malu_intermediate <= adder1_result[33:0];
+    if(!g_resetn) begin
+        malu_intermediate <= 32'b0;
+    end else if(ld_intermediate) begin
+        malu_intermediate <= n_malu_intermediate;
     end
 end
 
-assign adder1_lhs = {32'b0,malu_rs1};
-assign adder1_rhs = {32'b0,malu_rs2};
-
-endmodule
+ endmodule
