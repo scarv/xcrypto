@@ -90,7 +90,7 @@ work/unit/%.vcd : $(COP_WORK)/unit/%.hex icarus_build
 	$(MAKE) -C $(COP_HOME)/flow/icarus run \
         SIM_UNIT_TEST=$< \
         SIM_LOG=$(COP_WORK)/unit/$(notdir $@).log
-	@mv $(COP_WORK)/icarus/waves.vcd $@
+	@mv $(COP_WORK)/icarus/unit-waves.vcd $@
 
 #
 # Build the icarus integration testbench
