@@ -1335,6 +1335,8 @@ begin: t_model_slli_mp
     result = toshift << dec_arg_cmshamt;
     model_do_write_cpr(crd1,result[31: 0]);
     model_do_write_cpr(crd2,result[63:32]);
+    $display("slli (c%0d,c%0d) <- {c%0d (%h),c%0d (%h)} << %d",
+        crd2,crd1,dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_cmshamt);
 end endtask
 
 
@@ -1343,11 +1345,21 @@ end endtask
 //
 task model_do_sll_mp;
 begin: t_model_sll_mp
-    reg  [31:0] crs1, crs2, crs3;
+    reg  [31:0] crs1, crs2,crs3;
+    reg  [63:0] result;
+    reg  [63:0] toshift;
+    reg  [4:0] crd1,crd2;
+    model_do_decode_rdm(crd2,crd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_do_read_cpr(dec_arg_crs3, crs3);
-    $display("ISE> ERROR: Instruction sll.mp not implemented");
+    toshift= {crs1,crs2};
+    result = toshift << crs3;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
+    $display("sll (c%0d,c%0d) <- {c%0d (%h),c%0d (%h)} << c%0d(%0d)",
+        crd2,crd1,dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,
+            crs3);
 end endtask
 
 
@@ -1357,9 +1369,18 @@ end endtask
 task model_do_srli_mp;
 begin: t_model_srli_mp
     reg  [31:0] crs1, crs2;
+    reg  [63:0] result;
+    reg  [63:0] toshift;
+    reg  [4:0] crd1,crd2;
+    model_do_decode_rdm(crd2,crd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction srli.mp not implemented");
+    toshift= {crs1,crs2};
+    result = toshift >> dec_arg_cmshamt;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
+    $display("srli (c%0d,c%0d) <- {c%0d (%h),c%0d (%h)} >> %d",
+        crd2,crd1,dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_cmshamt);
 end endtask
 
 
@@ -1368,11 +1389,21 @@ end endtask
 //
 task model_do_srl_mp;
 begin: t_model_srl_mp
-    reg  [31:0] crs1, crs2, crs3;
+    reg  [31:0] crs1, crs2,crs3;
+    reg  [63:0] result;
+    reg  [63:0] toshift;
+    reg  [4:0] crd1,crd2;
+    model_do_decode_rdm(crd2,crd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
     model_do_read_cpr(dec_arg_crs3, crs3);
-    $display("ISE> ERROR: Instruction srl.mp not implemented");
+    toshift= {crs1,crs2};
+    result = toshift >> crs3;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
+    $display("srl (c%0d,c%0d) <- {c%0d (%h),c%0d (%h)} >> c%0d(%0d)",
+        crd2,crd1,dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,
+            crs3);
 end endtask
 
 

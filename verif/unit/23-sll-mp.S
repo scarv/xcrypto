@@ -9,30 +9,40 @@ test_start:
     lli.cr  c1, 0x1111
     lui.cr  c9, 0xFFFF
     lli.cr  c9, 0xFFFF
+
+    lui.cr  c15, 0
+    lli.cr  c15, 1
     
     mv2gpr  x1, c0
     mv2gpr  x1, c1
 
-    sll.mp  (c2,c3), c0, c1, 1
+    sll.mp  (c2,c3), c0, c1, c15
     mv2gpr  x1, c2
     mv2gpr  x1, c3
 
-    sll.mp  (c4,c5), c1, c0, 2
+    lli.cr  c15, 2
+    sll.mp  (c4,c5), c1, c0, c15
     mv2gpr  x1, c4
     mv2gpr  x1, c5
 
-    sll.mp  (c6,c7), c9, c1, 4
+    lli.cr  c15, 4
+    sll.mp  (c6,c7), c9, c1, c15
     mv2gpr  x1, c6
     mv2gpr  x1, c7
 
-    sll.mp  (c8,c9), c0, c9, 8
+    lli.cr  c15, 8
+    sll.mp  (c8,c9), c0, c9, c15
     mv2gpr  x1, c8
     mv2gpr  x1, c9
 
-    sll.mp  (c2,c3), c0, c1, 3
-    sll.mp  (c4,c5), c1, c0, 5
-    sll.mp  (c6,c7), c9, c1, 12
-    sll.mp  (c8,c9), c0, c9, 15
+    lli.cr  c15, 2
+    sll.mp  (c2,c3), c0, c1, c15
+    lli.cr  c15, 3
+    sll.mp  (c4,c5), c1, c0, c15
+    lli.cr  c15, 7
+    sll.mp  (c6,c7), c9, c1, c15
+    lli.cr  c15, 15
+    sll.mp  (c8,c9), c0, c9, c15
 
     mv2gpr  x1, c0
     mv2gpr  x1, c1
