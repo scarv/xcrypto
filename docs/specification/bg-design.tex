@@ -1,6 +1,6 @@
 % =============================================================================
 
-\subsection{Design and discussion}
+\subsection{Design overview}
 \label{sec:bg:design}
 
 % -----------------------------------------------------------------------------
@@ -18,10 +18,12 @@
          or
       c) software-only
       techniques.
-      \ISE focuses on an approach which supports the latter two cases.
+      The remit of \XCID is strictly focused on an approach that supports the
+      latter techniques; one could view said remit as focused on maximising
+      the viability of software-based cryptographic implementations.
 
-\item \ISE is best described as a general-purpose cryptographic ISE, and so
-      specified along those lines.  However, the implementation of \ISE is,
+\item \XCID is best described as a general-purpose cryptographic ISE, and so
+      specified along those lines.  However, the implementation of \XCID is,
       by design, left more open-ended: one could consider options including
       a) a highly   invasive extension to an existing host core,
       b) a somewhat invasive, tightly-coupled co-processor,
@@ -29,13 +31,25 @@
       c) a      non-invasive, loosely-coupled co-processor.
 
 \item Although all cited implementation options are viable, in {\em concept}
-      we view \ISE as a co-processor technology: wlog. we adopt terminology 
-      associated with that option from here on.
-      By doing so, we aim to present a clean(er) separation between roles of
-      the host core and \ISE co-processor: the latter is tasked with support
-      for execution of cryptography (and therefore, in a sense, represents a 
-      security boundary), whereas the latter is not.
-      Consider, for example and in a general sense, ARM {\sf big.LITTLE}
+      we view \XCID as a co-processor technology: wlog. we adopt terminology 
+      associated with that option from here on.  By doing so, the aim is to 
+      present a clean(er) separation between the intended roles of host core 
+      and \XCID co-processor.
+
+      For example, at a high level one could view the co-processor as being 
+      tasked with support for execution of cryptography; such a task is not
+      expected of the host core.  Along the same lines, the host core would
+      be tasked with orchestrating control-flow, off-loading computation to
+      the co-processor: wrt. cryptographic workloads, one could view the
+      former as a general-purpose control-path for a (more) special-purpose 
+      data-path represented by the latter.  Finally, note that considering
+      physically separate (or at least separatable) implementations offers
+      the potential to use differing physical technologies; one motivation
+      for this could be the (selected) use of a secure logic style (see, 
+      e.g.,~\cite{SCARV:MayMur:16}), which then aligns with design concepts 
+      such as PowerTrust~\cite{SCARV:TilKirSze:10}.
+
+\item Consider, for example and in a general sense, ARM {\sf big.LITTLE}
       (an instance of the general Asymmetric Multi-core Processor (AMP)~\cite{SCARV:Mittal:16} concept),
       which can be viewed as combining and switching between
       use of
@@ -49,46 +63,44 @@
       an ``efficient'' core (which ignores   security, focusing on delivery of efficiency)
       and
       a  ``secure''    core (which ignores efficiency, focusing on delivery of   security),
-      instantiated by the host core and \ISE co-processor respectively.
+      instantiated by the host core and \XCID co-processor respectively.
+
+      Phrased as such, \XCID is a general-purpose co-processor: although an
+      implicit focus on micro-controller class host cores may be assumed, 
+      the concept and utility of \XCID is broader.
 
 \item The following design criteria rationalise this approach, some of which
       are related (or even stem directly from one and other):
 
       \begin{itemize}
       \item {\bf      Consistency}.
-            As far as is reasonable, \ISE should remain consistent with the
-            RISC-V philosophy, and associated base ISA; doing so suggests,
-            for example, minimising deviation from the existing instruction
-            encoding formats and introduction of additional state.
-
+            As far as is reasonable, \XCID should remain consistent with the
+            RISC-V philosophy, and associated base ISA; doing so will demand 
+            considered compromises vs. a clean-slate design, but, equally,
+            should maximise the resulting utility.
+            For example,
+            we attempt to avoid or minimise 
+            a) deviation from the existing instruction encoding formats,
+               and 
+            b) introduction of additional state.
       \item {\bf       Generality}.
-            \ISE deliberately avoids inclusion of any functionality-specific 
-            features (and therefore associated hardware).  For example, it
-            would be trivial to add dedicated support for AES
-            (e.g., following~\cite{SCARV:TilGro:06})
-            but such support would be AES-specific and is therefore avoided.
-
+            Bar some controlled instances, \XCID endevours to avoid inclusion
+            any (overly) functionality-specific features (and, therefore, any
+            associated hardware).  
       \item {\bf         Security}.
             An unfortunate fact is that security is commonly relegated to a 
             second-class design metric, and so, by implication, viewed as 
             being of secondary importance;
             see, e.g., \cite{SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
-            In contrast, \ISE treats security as a first-class metric, and
-            so {\em at least} as important as more traditional alternatives; 
-            it is reasonable, for example, to trade-off improved security 
-            against degradation of instruction throughput.
-
-      \item {\bf    Composability}.
-            To mitigate a given attack, a layered approach (cf. defence in 
-            depth) is normally preferred: this favours the use of multiple
-            countermeasures, vs. a single, perfect panacea.  As such, \ISE
-            a) should be viewed as one option for or layer in a solution,
-               and
-            b) prefers features that can co-exist over those which cannot.
+            In contrast, \XCID treats security as a first-class metric, and
+            so {\em at least} as important as more traditional alternatives.
+            For example,
+            within the context of \XCID we deem it reasonable to trade-off 
+            improved security vs. degradation of instruction throughput.
 
       \item {\bf      Flexibility}. 
             Modulo the status of security as a first-class design metric, a
-            goal of \ISE remains to avoid, or at least minimise any ``baked 
+            goal of \XCID remains to avoid, or at least minimise any ``baked 
             in'' (or hard coded) trade-offs.  Put another way, although the 
             approach used clearly {\em will} imply trade-offs 
             (e.g., vs. efficiency typically delivered by hardware-only techniques), 
@@ -100,18 +112,35 @@
             \item instrumentation of appropriate countermeasures.
             \end{itemize}
 
+      \item {\bf    Composability}.
+            To mitigate a given attack, a layered approach (cf. defence in 
+            depth) is normally preferred: this favours the use of multiple
+            countermeasures, vs. a single, perfect panacea.  The same form
+            of argument applies to efficiency, in the sense that efficiency 
+            requirements may render software-only implementation techniques,
+            even {\em with} support of \XCID, insufficient.
+            As such, \XCID
+            a) should be viewed as one option for or layer in a solution,
+               and
+            b) prefers features that can co-exist over those which cannot.
+            For example, 
+            Grabher et al.~\cite{SCARV:GGHJPTW:11} have explored the use of 
+            an embedded FPGA fabric\footnote{
+            See, e.g., \url{http://www.flex-logix.com}
+            } to support cryptographic workloads: \XCID composes with such 
+            an approach.
       \item {\bf Implementability}. 
-            To use useful, it should be possible to implement \ISE with as
+            To use useful, it should be possible to implement \XCID with as
             little
             a) overhead   (e.g., wrt. additional logic),
                and
             b) difficulty (e.g., wrt. outright complexity, or complicating factors such as verification)
-            as possible.
-            This implies a preference for features that avoid a requirement 
-            for complex hardware or invasive alteration to the host core.
+            as possible.  This implies a preference for features that avoid 
+            a {\em requirement} for complex hardware or invasive alteration 
+            to the host core.
 
       \item {\bf    Measurability}.
-            Given the remit of extending RV32I, any feature in \ISE should 
+            Given the remit of extending RV32I, any feature in \XCID should 
             offer reproducible, demonstrable value vs. this baseline; for 
             a given feature, this goal should be supported by provision of 
             associated reference implementations of cryptographically 
@@ -119,8 +148,14 @@
 
       \end{itemize}
 
+\item Aligning with several cited design criteria, \XCID could be viewed as 
+      a form of {\em meta}-extension in the sense it captures feature sets
+      that can be selected from to suit.  \REFSEC{sec:bg:feature} outlines 
+      said feature sets, the presence or absence of which is reflected in 
+      the associated CSR outlined in \REFSEC{sec:spec:state:csr}.
+
 \item All that said, such an approach may naturally be deemed inappropriate 
-      for some use-cases; we pitch \ISE as {\em an} approach, not {\em the}
+      for some use-cases; we pitch \XCID as {\em an} approach, not {\em the}
       approach.  In particular, note that many commercialised SoCs 
       (e.g., Google Titan, Rambus CryptoManager) 
       adopt the {\em opposite} approach by preferring to couple a dedicated
@@ -136,8 +171,14 @@
 
 \begin{itemize}
 
-\item \ISE demands some interaction with an RNG, the concrete instanciation 
-      of which is unspecified.
+\item Since \XCID is an explicitly an extension of RV32I, we retain the use
+      of \RVXLEN as a general placeholder but assume $\RVXLEN = 32$.
+
+\item \XCID demands interaction with an RNG, the concrete instantiation of 
+      which is unspecified: we assume the RNG design follows best-practice,
+      e.g., per NIST~\cite{SCARV:NIST:SP:800_90a,SCARV:NIST:SP:800_90b,SCARV:NIST:SP:800_90c},
+      and has an interface per \cite[Section 6.4]{SCARV:NIST:SP:800_90c}.
+
       On one hand, doing so affords flexibility in an implementation; this 
       is important, in that an RNG selection and implementation will likely 
       be technology-specific (e.g., differ for a given FPGA, vs. an ASIC).  
@@ -145,28 +186,73 @@
       security: the (difficult) challenge of selecting and implementing 
       a robust RNG instance is assumed.
 
-\item \ISE assumes a memory interface that is shared between the host core 
-      and co-processor.  As such, any attack vector
+\item \XCID assumes a byte-addressable memory, the interface to which will
+      be shared between the host core and co-processor.  As such, {\em all}
+      attack vectors
       (see, e.g.,~\cite{SCARV:GYCH:18})
       that (ab)uses the memory interface {\em must} be robustly mitigated, 
-      as would be the case without \ISE (i.e., using the host core alone).
+      as would be the case without \XCID (i.e., using the host core alone).
 
 \end{itemize}
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Content}
+\subsubsection{Compatibility}
 
 \begin{itemize}
 
-\item \ISE attempts to follow the RISC-V philosophy of avoiding unnecessary 
+\item Per the current list\footnote{
+      See, e.g., \url{http://workspace.riscv.org}
+      } of (public) RISC-V working groups, 
+      \XCID relates to elements of (at least) the following:
+
+      \begin{enumerate}
+      \item Cryptographic Extensions Task Group,
+      \item BitManip                      Group,
+            and
+      \item P             Extension  Task Group (i.e., the embedded DSP-like ISE).
+      \end{enumerate}
+
+      \noindent
+      In some cases overlap exists, potentially representing an opportunity
+      for unification; in other cases the underlying goal, approach, and/or
+      ethos is distinct.
+
+\item Several features of \XCID are intended to avoid conflicts with existing 
+      or future extensions:
+
+      \begin{itemize}
+      \item the instruction encoding is constrained to the 
+            \RVCUSTOM{1}~\cite[Table 19.1]{SCARV:RV:ISA:I:17}
+            space, i.e., a $25$-bit space with prefix $\RADIX{0101011}{2}$,
+      \item all instruction mnemonics have a domain separation prefix; for
+            example \VERB[RV]{add} becomes \VERB[RV]{xc.add}.
+      \end{itemize}
+      
+      \noindent
+      Note that these should be considered flexible placeholders; they can
+      be changed to suit future constraints without little or no impact.
+
+\item \XCID is intended to be agnostic wrt. implementation for a given host 
+      core.  As such, there is no conceptual reason preventing use within
+      RV64I or RV128I (vs. RV32I as specified).  
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Discussion}
+
+\begin{itemize}
+
+\item \XCID attempts to follow the RISC-V philosophy of avoiding unnecessary 
       additional state.  Even so, it does introduce
 
       \begin{itemize}
       \item $1$ additional $16$-entry co-processor register file,
             and
       \item $2$ additional CSRs: one is used to report on features in, and 
-            the other to control an implementation of \ISE.
+            the other to control an implementation of \XCID.
       \end{itemize}
 
       \noindent
@@ -228,7 +314,7 @@
       which produces a $(2 \cdot w )$-bit product and therefore demands use 
       of {\em two} $w$-bit destination registers.
    
-      One of the strategies underlying \ISE is support for larger $s$ and/or 
+      One of the strategies underlying \XCID is support for larger $s$ and/or 
       $d$.  This is rationalised by a (ideally positive) trade-off between
       a) increased register file complexity, as a result of the requirement
          to support $n$ ports, or, alternatively, multi-cycle operations,
@@ -303,45 +389,6 @@
       a range of drawbacks (e.g., overhead wrt. co-processor register 
       file size, complexity in instruction en/decoding, requirement for
       multi-cycle instruction execution).
-
-\end{itemize}
-
-% -----------------------------------------------------------------------------
-
-\subsubsection{Compatibility}
-
-\begin{itemize}
-
-\item Per the current list\footnote{
-      See, e.g., \url{http://workspace.riscv.org}
-      } of (public) RISC-V working groups, 
-      \ISE relates to elements of (at least) the following:
-
-      \begin{enumerate}
-      \item Cryptographic Extensions Task Group,
-      \item BitManip                      Group,
-            and
-      \item P             Extension  Task Group (i.e., the embedded DSP-like ISE).
-      \end{enumerate}
-
-      \noindent
-      In some cases overlap exists, potentially representing an opportunity
-      for unification; in other cases the underlying goal, approach, and/or
-      ethos is distinct.
-
-\item \ISE makes use of the $custom-1$~\cite[Table 19.1]{SCARV:RV:ISA:I:17}
-      instruction encoding space 
-      (i.e., the $25$-bit space with prefix $\RADIX{0101011}{2}$).
-
-\item The current design is intended to be agnostic wrt. the host core it
-      is coupled to, and there is, conceptually, no reason they cannot be 
-      used within RV64I and RV128I.
-      Likewise, if treated as a prototype, many constituent concepts could
-      be mapped onto alternative, brownfield extensions to RV32I.
-      As an example, consider the multi-precision integer instructions 
-      (per \REFSEC{sec:spec:instr:mp})
-      which {\em could} be adopted in RV32I (having been re-specified to
-      operate on the general-purpose register file).
 
 \end{itemize}
 

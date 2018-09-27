@@ -4,7 +4,9 @@
 
 \import{../work/}{crypto-ise.encodings.tex}
 
-\title{RISC-V \ISE ISE \\ Specification}
+\title{RISC-V \XCID ISE \\ Specification}
+\author{\input{shared-authors.tex}}
+\date{Version $\input{shared-version.tex}$ (\today)}
 
 \begin{document}
 
@@ -17,17 +19,16 @@
 
 \import{./specification/}{intro.tex}
 
-% -----------------------------------------------------------------------------
-
 \section{Background}
 \label{sec:bg}
 
 \import{./specification/}{bg-design.tex}
 \import{./specification/}{bg-feature.tex}
-\import{./specification/}{bg-related.tex}
-\import{./specification/}{bg-notation.tex}
 
-% -----------------------------------------------------------------------------
+\section{Notation}
+\label{sec:notation}
+
+\import{./specification/}{notation.tex}
 
 \section{Specification}
 \label{sec:spec}
@@ -45,16 +46,22 @@
 \appendix
 
 \newpage
-\section{Instruction syntax}
+\section{Instruction syntax   overview}
 \label{appx:syntax}
 
 \import{./specification/}{appx-syntax.tex}
 
 \newpage
-\section{Instruction encoding}
+\section{Instruction encoding overview} 
 \label{appx:encoding}
 
 \import{./specification/}{appx-encoding.tex}
+
+\newpage
+\section{Related work}
+\label{appx:related}
+
+\import{./specification/}{appx-related.tex}
 
 \newpage
 \section{Changelog}

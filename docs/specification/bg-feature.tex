@@ -1,121 +1,81 @@
 % =============================================================================
 
-\subsection{Feature overview}
+\subsection{Feature classification}
 \label{sec:bg:feature}
 
-% -----------------------------------------------------------------------------
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{|l|cc|}
+\hline
+Feature class                      & Numeric ID & Mnemonic ID \\
+\hline
+Core                               & $1$        & C           \\
+Scatter/Gather                     & $2.1$      & S           \\
+Randomness                         & $2.2$      & R           \\
+Bit-oriented            operations & $2.3$      & B           \\
+Packed                  operations & $2.4$      & P           \\
+Multi-precision integer operations & $2.5$      & M           \\
+\hline
+\end{tabular}
+\end{center}
+\caption{A list of feature classes, plus their associated numeric and mnemonic identifiers.}
+\label{tab:feature}
+\end{table}
 
-\subsubsection{Class-$1$: randomness}
-\label{sec:bg:feature:1}
+As noted in \REFSEC{sec:bg:design}, \XCID is a {\em meta}-extension in the
+sense it has 
+a) one     class of   core     (or baseline) features,
+   which must {\em always} be supported,
+   plus
+b) several classes of optional               features,
+   which can be {\em selectively} supported to suit.
 
-% -----------------------------------------------------------------------------
-
-\subsubsection{Class-$2$: packed                  operations}
-\label{sec:bg:feature:2}
-
-% -----------------------------------------------------------------------------
-
-\subsubsection{Class-$3$: bit-wise                operations}
-\label{sec:bg:feature:3}
-
-As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
-a) a non-standard {\em representation} of data,
-   and
-b) a non-standard {\em implementation} of functions, which operate on
-   said representations:
-essentially it describes some cryptographic primitive (e.g., a block
-cipher) as a  ``software circuit'' comprising a sequence of bit-wise 
-instructions (e.g., NOT, AND, and OR).  Although not general-purpose,
-bit-slicing offers advantages including constant-time execution and 
-hence immunity from cache-based side-channel attacks.
-
-The proposal of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98} includes 
-a suggestion for accelerating bit-sliced implementations through use 
-of a ``BITSLICE instruction''; this suggestion was later investigated 
-in a more concrete sense by Grabher et al.~\cite{SCARV:GraGroPag:08}.
-In both, the idea is to ``compress'' a sub-circuit, i.e., a sequence 
-of bit-wise instructions representing an $n$-input Boolean function,
-into a Look-Up Table (LUT): essentially, the LUT is first configured 
-with a truth table for the function, and then accessed to apply said
-function.  
-
-% -----------------------------------------------------------------------------
-
-\subsubsection{Class-$4$: multi-precision integer operations}
-\label{sec:bg:feature:4}
-
-Multi-precision (modular) integer arithmetic represents the foundation
-of many cryptographic use-cases, e.g., asymmetric algorithms such as
-RSA (relying on arithmetic in $\B{Z}_N$ for large $N$),
-and
-ECC (relying on arithmetic in $\B{F}_p$ for large $p$).
-As such, there is a large body of literature on the implementation of
-said arithmetic; this includes {\em support} for implementations via
-ISEs defined for RISC-based processors
-(see, e.g.,\cite{SCARV:GroKam:03,SCARV:GroKam:04}).
-
-The following ISE mirrors a set of ``long arithmetic'' instructions in
-XS1~\cite[Section 18]{SCARV:XS1:09}, which, in turn, mirror the set of
-primitive operations typical of multi-precision integer arithmetic.  
-A central design principle is that each instruction explicitly accepts 
-all operands required: no additional state, e.g., accumulator register
-or status flags (e.g., carry or borrow), is required.  Note that such
-an approach is particularly attractive within the context of RV32I, as
-a result of it omitting status flags in favour of software-based carry
-and overflow detection.
-
-% =============================================================================
-
-% TODO: integrate or cut
-%
-%\subsection{Packed ALU Operations}
-%
-%It is common for some CPUs / DSP extensions to allow packed ALU operations.
-%This is essentially using the normal GPRs to do SIMD operations on multiple
-%pieces of data which are either a halfword or a byte in size. We include
-%variants of such instructions which operate on data widths commonly
-%found in cryptographic algorithms, particularly block ciphers.
-%
-%\subsection{Scatter / Gather}
-%
-%Many algorithms rely on bringing together non-contiguous data from memory,
-%operating on it as a unit, then placing the results non-contiguously back
-%into memory. Scatter / Gather instructions are variants of normal load/store
-%instructions which allow a set of offsets (rather that just one) to be
-%specified and the data at each offset loaded/stored into a single word
-%as appropriate.
-%
-%\subsection{Multi-precision Integer Operations}
-%
-%Public key cryptography often relies on manipulating very large integers.
-%This necessitates efficient overflow handling. RISC-V has no support for
-%hardware overflow or carry out detection, making some performance critical
-%parts of public key algorithms slower than on equivalent architectures
-%with such support.
-%
-%\subsection{Bit-sliced Cryptography}
-%
-%Bit-slicing is a technique which treats a CPU with an $N$ bit data-path as
-%a set of $N$ SIMD lanes. Bit-slicing is an effective countermeasure to some
-%side-channel attacks, but can be cumbersome to implement in a standard set of
-%RISC instructions. We introduce a small set of instructions to accelerate
-%bit-sliced implementations, similar to \cite{grabher2008light}.
-
-%The Crypto ISE is split into a base feature set, and several optional
-%features which can be included only if the implementation needs them.
 %This is done because while some of the instructions are useful across a
 %broad range of cryptographic kernels, some are more specific, and are only
 %relevant to certain algorithms or primitives.
-%
+
+%All of the optional features within the ISE can be emulated using the
+%base RISC-V ISE and the Crypto ISE.
+
+The RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17} for ISEs
+uses a string of single-character identifiers to specify features realised
+in an implementation.  We adopt a variant of this approach, wherein
+\[
+\XCID[x/y/z]
+\]
+denotes a concrete implementation of \XCID which supports feature classes 
+$x$, $y$, and $z$: we assign a numeric and a mnemonic identifier to each
+feature class (summarised by \REFTAB{tab:feature}), preferring\footnote{
+One disadvantage of this preference is the conflict with mnemonic used by
+the RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17}; based
+on the notation, we assume it is reasonably easy to disambiguate.
+} use of the latter (since it yields a more descriptive result).  
+For example,
+\[
+\XCID[1/2.1/2.2/2.3/2.4] ~\equiv~ \XCID[C/S/R/B/P]
+\]
+describes an implementation which supports
+a) the core features,
+b) features relating to advanced memory access, namely scatter/gather
+   style store and load operations,
+c) features relating to generation of randomness,
+d) features relating to bit-oriented (i.e., Boolean) operations,
+   plus
+e) features relating to packed (or DSP-like) arithmetic operations:
+such an implementation is tailored to suit symmetric cryptography (e.g.,
+AES), but {\em not} asymmetric cryptography (e.g., RSA).
+
 %Software can determine which features of the ISE are implemented by
 %interrogating the {\tt CISEF} register detailed in section
 %\ref{sec:csr-mccr}.
-%
-%All of the optional features within the ISE can be emulated using the
-%base RISC-V ISE and the Crypto ISE.
-%
-%\subsection{Base Features}
-%
+
+% =============================================================================
+
+\subsubsection{Class-$1$:   core}
+\label{sec:bg:feature:1}
+
+% constrained by assumed memory interface
+
 %The base features present in all implementations of the Crypto ISE are:
 %\begin{itemize}
 %\item The {\em move} instructions listed in section
@@ -129,6 +89,215 @@ and overflow detection.
 %    \ref{sec:packed-field-instructions}.
 %\end{itemize}
 %
+%The ISE contains several instructions listed below which allow memory
+%accesses to directly address the $\CPR$ register file. This means we do
+%not need to first load to the $\GPR$ register file, then move data into
+%the $\CPR$s.
+%
+%All ISE memory access instructions source their base address from the
+%$\GPR$ register file, but read and write data in the $\CPR$s. This
+%prevents address manipulation needing to be done in the $\CPR$s.
+%\designnote{
+%The decision to source the base address from the $\GPR$ set rather
+%than a $\CPR$ was because all of the RISC-V address calculation
+%instructions work perfectly well on the $\GPR$s and there is no sense
+%in duplicating that functionality for this ISE. This free's up
+%encoding space, and lets the $\CPR$ state be used for the compute
+%work it was designed for rather than mundane address calculation.
+%While care must be
+%taken to avoid hazards between the different register sets, we
+%believe this decision makes sense overall.
+%}
+%
+%ISE load and store instructions must obey the all ordering rules and
+%behaviour with regard to {\tt fence} instructions set out in the
+%RISC-V user and privilidged manuals.
+%
+%There is no requirement for the ISE memory instructions to share the same
+%address space as the standard ISA. One may wish to completely separate
+%the physical memory used to store cryptographic secrets from the rest of
+%the virtual / logical memory space, and the ISE does not stop implementers
+%from doing so. This allows for hardware root-of-trust type devices to keep
+%their keys in tamper-proof memory, while still letting the rest of the
+%program exist in standard RAM/Flash.
+%
+%Generally, the memory access instructions are analogous to
+%the standard RISC-V variants but with the following differences:
+%
+%\begin{itemize}
+%\item The halfword and byte variants can specify which halfword or byte of
+%      the register they are reading or writing.
+%\item There is no sign-extending equivalent of the \ASM{LHU} and \ASM{LBU}
+%      instructions.
+%\item The base address is taken from the normal RISC-V $\GPR$ set, while the
+%      target register is always in the $\CPR$ set.
+%\end{itemize}
+%
+%These instructions will raise a {\em load/store address misaligned} exception
+%if: the final source address is not aligned to the data type the instruction
+%is loading {\em and} the implementation does not support misaligned accesses.
+%The general rule here is that the \ASM{L*.cr} instructions should behave in
+%the same way as their RISC-V cousins in terms of exception handling,
+%interrupt behaviour and atomicity rules.
+
+% =============================================================================
+
+\subsubsection{Class-$2$:   general-purpose}
+\label{sec:bg:feature:2}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.1$: scatter/gather}
+\label{sec:bg:feature:2:1}
+
+%The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
+%in section \ref{sec:scatter-gather} may be omitted to reduce implementation
+%complexity.
+%
+%The inclusion of these instructions in an implementation is indicated by the
+%{\tt SG} bit of the \nameref{sec:csr-mccr}.
+%
+%An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
+%or none.
+%
+%If {\tt SCATTER} and {\tt GATHER} instructions are not implemented, then their
+%opcodes will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+
+%Many algorithms rely on bringing together non-contiguous data from memory,
+%operating on it as a unit, then placing the results non-contiguously back
+%into memory. Scatter / Gather instructions are variants of normal load/store
+%instructions which allow a set of offsets (rather that just one) to be
+%specified and the data at each offset loaded/stored into a single word
+%as appropriate.
+
+%%%The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
+%%%s-box lookup instructions. The {\tt .b} variants allow four separate lookups
+%%%per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
+%%%variants allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
+%%%will move the looked-up values from memory into a register, while \ASM{SCATTER}
+%%%will move bytes of a register word back into the LUT in memory.
+%%%\designnote{
+%%%    While it is of-course possible to emulate the {\tt .h} variants of
+%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
+%%%    the performance and efficency savings to be had from telling the hardware
+%%%    explicitly to work on halfwords were worth the extra instructions.
+%%%}
+%%%
+%%%The address $a_x$ of each byte/halfword to be loaded or stored is computed by
+%%%adding an offset $x$ from the {\tt offsets} $\CPR$ register, and adding it
+%%%to the $base$ $\GPR$ register. For the {\tt .b} variants, there are four
+%%%offsets each corresponding to the four bytes of the offsets source register
+%%%word. For the {\tt .h} variant, there are two offsets corresponding to the
+%%%upper and lower halfwords of the registers.
+%%%
+%%%Both instructions use the $\GPR$s to source their base address, while the
+%%%offset indices into the LUT come from the $\CPR$ registers. This mirrors
+%%%how the ISE load and store instructions compute their addresses.
+%%%
+%%%The scatter instruction requires three register file reads.
+%%%Because the reads are split across the $\GPR$ and $\CPR$ registers,
+%%%no {\em extra} ports are needed on the RISC-V register file beyond the
+%%%standard two-read-one-write set.
+%%%
+%%%An implementation may perform the memory accesses in any order. The instructions
+%%%will raise address misalignment exceptions in line with how misalignment is
+%%%handled in the rest of the ISA.
+%%%
+%%%If any of the memory accesses cause
+%%%a {\em load access fault, load page fault, store page fault} or
+%%%{\em store access fault} then the address of the access which caused the
+%%%exception is written to the {\tt MTVAL} csr. The value taken by the
+%%%destination register bytes should an exception occur at any point in the
+%%%instruction is {\em implementation dependent}.
+%%%
+%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
+%%%though in order to service an interrupt. If the instructions are aborted
+%%%early, the value taken by the destination register bytes is {\em
+%%%implementation dependent}. The implementation is responsible for ensuring
+%%%that the {\tt EPC} register is set appropriately depending on whether the
+%%%interrupt is taken during, or at the end of, the instruction.
+%%%\designnote{Implementation of these instructions should consider the impact of
+%%%shared memory systems, since it will be possible for other agents in the
+%%%system to access memory during the execution of this instruction. In systems
+%%%possessing a cache, programmers must be mindful that these instructions
+%%%can cause odd behaviour due to the non-linear access pattern the instruction
+%%%creates.}
+%%%
+%%%The rationale for these instructions is two fold. They help with code density,
+%%%since at-least four instructions worth of work can now be done
+%%%in one instruction. They can also help with energy efficiency, since fewer
+%%%instructions need to be fetched and travel through an execution pipeline in
+%%%order to achieve the same goal. They are not designed to enhance performance
+%%%(in terms of cycles to complete an operation), but this may be a side-effect
+%%%of some implementations.
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.2$: randomness}
+\label{sec:bg:feature:2:2}
+
+%\subsection{Randomness}
+%
+%Implementations can optionally implement the Crypto ISE randomness interface
+%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
+%
+%The inclusion of these instructions in an implementation is indicated by the
+%{\tt R} bit of the \nameref{sec:csr-mccr}.
+%
+%If the random interface instructions are not implemented, then their opcodes
+%will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.3$: bit-oriented            operations}
+\label{sec:bg:feature:2:3}
+
+Particularly wrt. symmetric primitives, the use of bit-oriented operations 
+is common in implementations of cryptography.  At a high level, and though 
+counterexamples do exist 
+(see, e.g., IDEA~\cite{SCARV:LaiMas:90}, RC6~\cite{SCARV:RRSY:98}),
+this fact can be explained by use of alternative (i.e., not word-oriented
+and/or not supported by arithmetic in most ISAs) structures and concepts,
+and thus operations, in relevant designs.  Associated design rationale may
+include
+a) security
+   (e.g., use of $\B{F}_{2^8}$ in AES~\cite{SCARV:FIPS:197}),
+   or
+b) efficiency
+   (e.g., use of hardware-friendly bit-permutations in DES~\cite{SCARV:FIPS:46_3})
+As a result, numerous proposals for associated ISEs exist; these typically
+act to accelerate in software what would otherwise represent a high (even 
+prohibitive) overhead.  \XCID adopts a similar approach.
+
+Beyond this general argument, the implementation technique of bit-slicing
+offers secondary, albeit related motivation for rich(er) support in \XCID.
+As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
+a) a non-standard {\em representation} of data,
+   and
+b) a non-standard {\em implementation} of functions, which operate on
+   said representations:
+it essentially describes a given cryptographic primitive as a  ``software 
+circuit'' comprising a sequence of bit-wise instructions (e.g., NOT, AND, 
+and OR).  Although not a general-purpose technique, when applicable, use
+of bit-slicing can offer advantages that include constant-time execution 
+and hence immunity from cache-based side-channel attacks
+(see, e.g.,~\cite{SCARV:KasSch:09}).
+In the design of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98}, there is a
+suggestion for accelerating bit-sliced implementations via a ``BITSLICE 
+instruction'' or ISE; the suggestion was later investigated in detail by 
+Grabher et al.~\cite{SCARV:GraGroPag:08}.  In both cases, the idea is to 
+``compress'' a sub-circuit, i.e., the sequence of bit-wise instructions 
+representing an $n$-input Boolean function, into a Look-Up Table (LUT): 
+the LUT is first configured with a truth table for the function, and then 
+accessed to apply said function.  
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.4$: packed                  operations}
+\label{sec:bg:feature:2:4}
+
 %\subsection{Packed Arithmetic Widths}
 %
 %By default, the packed arithmetic width instructions detailed in
@@ -145,37 +314,20 @@ and overflow detection.
 %executed as normal. If a packed arithmetic instruction operating on an
 %unsupported pack width is encountered, the implementation should raise an
 %{\em Illegal Instruction} exception.
-%
-%\subsection{Randomness}
-%
-%Implementations can optionally implement the Crypto ISE randomness interface
-%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
-%
-%The inclusion of these instructions in an implementation is indicated by the
-%{\tt R} bit of the \nameref{sec:csr-mccr}.
-%
-%If the random interface instructions are not implemented, then their opcodes
-%will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
-%
-%\subsection{Scatter/Gather}
-%
-%The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
-%in section \ref{sec:scatter-gather} may be omitted to reduce implementation
-%complexity.
-%
-%The inclusion of these instructions in an implementation is indicated by the
-%{\tt SG} bit of the \nameref{sec:csr-mccr}.
-%
-%An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
-%or none.
-%
-%If {\tt SCATTER} and {\tt GATHER} instructions are not implemented, then their
-%opcodes will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
-%
-%\subsection{Multi-precision Arithmetic}
-%
+
+%It is common for some CPUs / DSP extensions to allow packed ALU operations.
+%This is essentially using the normal GPRs to do SIMD operations on multiple
+%pieces of data which are either a halfword or a byte in size. We include
+%variants of such instructions which operate on data widths commonly
+%found in cryptographic algorithms, particularly block ciphers.
+
+% case in point, PRESENT; post-quantum schemes mod 2^{16}
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.5$: multi-precision integer operations}
+\label{sec:bg:feature:2:5}
+
 %All of the multi-precision arithmetic instructions listed in section
 %\ref{sec:multi-precision-instructions} may be optionally included or omitted
 %as a group.
@@ -186,24 +338,32 @@ and overflow detection.
 %If the multi-precision arithmetic instructions are not implemented, then their
 %opcodes will cause the implementation to raise an {\em Illegal Instruction}
 %exception.
-%
-%\subsection{Example Feature Sets}
-%
-%This section lists some example combinations of feature sets and their
-%potential use cases.
-%
-%\begin{enumerate}
-%\item Base + Randomness + Multi-precision Arithmetic. Such a subset would
-%    act as a very efficient accelerator to any device performing public
-%    key cryptography.
-%\item Base + Scatter/Gather. This subset works as a compact extension to
-%    a core making use of block ciphers such as AES.
-%\item Base + All Others. A complete implementation works as a general
-%    purpose cryptographic instruction set extension. Inclusion of the
-%    packed arithmetic instructions makes efficient bit-sliced implementations
-%    easier to express.
-%\end{enumerate}
-%
-%It is anticipated that most cores will implement all of the features of the
-%Crypto ISE, and that only small resource constrained implementations will
-%pick and choose the ones they need.
+
+Modular, multi-precision integer arithmetic forms a foundation for various
+cryptographic use-cases, but particularly asymmetric primitives; examples 
+include
+RSA (relying on arithmetic in $\B{Z}_N$ for large $N$),
+and
+ECC (relying on arithmetic in $\B{F}_p$ for large $p$).
+As such, there is a large body of literature on the implementation of said 
+arithmetic; this includes support for implementations via ISEs defined for 
+RISC-based processors
+(see, e.g.,\cite{SCARV:GroKam:03,SCARV:GroKam:04}).
+
+\XCID includes a set of instructions that mirror the low-level steps found
+in higher-level algorithms for multi-precision integer arithmetic; in part,
+these mirror features in XS1~\cite[Section 18]{SCARV:XS1:09} for what there
+is termed ``long arithmetic''.  In either case, a central design principle 
+is that each instruction explicitly accepts {\em all} input required: there
+is no additional state (e.g., accumulator register) nor status flags (e.g., 
+for carry or borrow).  Such an approach is particularly attractive when set
+within the context of RV32I, because it avoids inclusion of status flags
+and so forces (somewhat high overhead) software-based carry and overflow 
+detection.
+
+% =============================================================================
+
+\subsubsection{Class-$3$:   special-purpose}
+\label{sec:bg:feature:3}
+
+% =============================================================================

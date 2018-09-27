@@ -8,6 +8,7 @@
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{currfile}
+\usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{float}
 \usepackage[a4paper,margin={2cm}]{geometry}
@@ -19,6 +20,7 @@
 \usepackage{pbox}
 \usepackage{ragged2e}
 \usepackage{tabularx}
+\usepackage{titlesec}
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{xargs}
@@ -57,6 +59,16 @@
 \pagestyle{plain}
 
 \setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{4}
+
+\titleformat{\section}[block]{\Large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}[block]{\normalfont\bfseries}{\thesubsection.}{1em}{}
+\titleformat{\subsubsection}[block]{\normalfont\bfseries}{\thesubsubsection.}{1em}{}
+\titleformat{\paragraph}[block]{\normalfont\bfseries}{\theparagraph.}{1em}{}
+
+\setlength{\algomargin}{0em}
+\SetArgSty{textnormal}
+\DontPrintSemicolon
 
 % =============================================================================
 
@@ -110,8 +122,54 @@
 
 % =============================================================================
 
-% ISE name
-\newcommandx{\ISE}{{\sf XCrypto}\xspace}
+\newcommandx{\RVXLEN}{\mbox{XLEN}\xspace}
+\newcommandx{\RVCUSTOM}[1]{\mbox{\em custom-#1}\xspace}
+
+% -----------------------------------------------------------------------------
+
+\newcommandx{\XCID}[1][1={}]{{\sf XCrypto}\IfEq{#1}{}{}{[#1]}\xspace}
+
+\newcommandx{\XCINSTR}[6][6={}]{
+  \paragraph{\VERB[RV]{#1}}
+  
+  \begin{itemize}[labelindent=0pt,align=left,noitemsep]
+  \item {\bf Description:} 
+        #4
+  \item {\bf Encoding:}
+
+        \begin{center}
+        \begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+        \bitheader{0-31}
+        \\
+        #3
+        \end{bytefield}
+        \end{center}
+
+  \item {\bf Syntax and semantics:}
+        \[
+        \VERB[RV]{#1 #2} 
+        ~~~\mapsto~~~
+        \left\{
+        \begin{array}{c}
+        \begin{algorithm}[H]
+        \Begin {
+          #5
+        }
+        \end{algorithm}
+        \end{array}
+        \right.
+        \]
+  \end{itemize}
+}
+
+% -----------------------------------------------------------------------------
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\DeclareMathOperator{\abs}{abs}
+\DeclareMathOperator{\ext}{ext}
+
 % calligraphic (e.g., for mathematical spaces)
 \newcommandx{\C}[1]{\ensuremath{\mathcal #1}\xspace}
 % black board  (e.g., for mathematical structures)
@@ -120,33 +178,44 @@
 \newcommandx{\ALG}[1]{\textsc{#1}}
 % instruction operand
 \newcommandx{\OPER}[1]{\mbox{\tt #1}}
-% scoping
-\newcommandx{\FIELD}[2]{\ensuremath{#1}[{#2}]\xspace}
-\newcommandx{\SCOPE}[2]{\ensuremath{#1}.{#2}\xspace}
+% index in object
+\newcommandx{\INDEX}[3][1={}]{\ensuremath{{#2}_{#3}^{#1}}\xspace}
+% field in object
+\newcommandx{\FIELD}[2]{\ensuremath{{#1}[{#2}]}\xspace}
+% field in namepace
+\newcommandx{\SCOPE}[2]{\ensuremath{{#1}.{#2}}\xspace}
 % truth values
 \newcommandx{\TRUE}{\mbox{\rm\bf true}\xspace}
 \newcommandx{\FALSE}{\mbox{\rm\bf false}\xspace}
-% radix and representation
+% radix
 \newcommandx{\RADIX}[2]{\ensuremath{{#1}_{({#2})}}\xspace}
-\newcommandx{\REP}[1]{\ensuremath{\hat{#1}}\xspace}
 % assignment and definition
 \newcommandx{\ASN}{\ensuremath{\leftarrow}\xspace}
 \newcommandx{\DEF}{\ensuremath{:=}\xspace}
 % random sample
-\newcommandx{\RAND}{\xleftarrow{\$}}
+\newcommandx{\RAND}{\ensuremath{\xleftarrow{\$}}\xspace}
 % test
-\newcommandx{\TEST}[1]{\overset{?}{#1}}
-% least- or most-significant bits
+\newcommandx{\TEST}[1]{\ensuremath{\overset{?}{#1}}\xspace}
+% range
+\newcommandx{\RANGE}{\ensuremath{:}\xspace}
+% cardinality
+\newcommandx{\CARD}[1]{\ensuremath{|#1|}\xspace}
+% least- and most-significant bits
 \newcommandx{\LSB}[2][1={1}]{\ensuremath\textsc{LSB}_{\IfEq{#1}{1}{}{#1}}( #2 )\xspace}
 \newcommandx{\MSB}[2][1={1}]{\ensuremath\textsc{MSB}_{\IfEq{#1}{1}{}{#1}}( #2 )\xspace}
-% parity, Hamming weight, and Hamming distance
+% parity
 \newcommandx{\PARITY}[1][1={}]{\ensuremath{\mathcal P}^{#1}\xspace}
+% Hamming weight and distance
 \newcommandx{\HW}{\ensuremath{\mathcal H}\xspace}
 \newcommandx{\HD}{\ensuremath{\mathcal D}\xspace}
-% signed vs. unsigned operator
-\newcommandx{\SOP}[2]{\ensuremath{#1}_{#2}\xspace}
-% sign extension
-\newcommandx{\EXT}[2][1={}]{\ensuremath\ext^{#2}_{#1}\xspace}
+% qualified operator, wrt. size plus signed vs. unsigned
+\newcommandx{\OP}[3][1={},2={}]{\ensuremath{#3}^{#1}_{#2}\xspace}
+% zero or sign extension
+\newcommandx{\EXT}[2][1={}]{\ensuremath\ext^{#1}_{#2}\xspace}
+% concatination
+\newcommandx{\CONS}{\ensuremath{\;\parallel\;}\xspace}
+% set builder st.
+\newcommandx{\ST}{\ensuremath{\;|\;}\xspace}
 % left- and right-shift, and left- and right-rotate
 \newcommandx{\LSH}{\ensuremath{\ll}\xspace}
 \newcommandx{\RSH}{\ensuremath{\gg}\xspace}
@@ -173,15 +242,8 @@
 \newcommandx{\TABLE}[1]{\ensuremath{[{#1}]}\xspace}
 \newcommandx{\LIST}[1]{\ensuremath{\langle{#1}\rangle}\xspace}
 \newcommandx{\SET}[1]{\ensuremath{\{{#1}\}}\xspace}
-% concatination
-\newcommandx{\CONS}{\ensuremath{\;\parallel\;}\xspace}
-% set builder st.
-\newcommandx{\ST}{\ensuremath{\;|\;}\xspace}
-% something within a given round (e.g., of a block cipher)
-\newcommandx{\ROUND}[2]{\ensuremath{#1}^{(#2)}}
-% word size
-\newcommandx{\W}{\ensuremath{w}\xspace}
-% memory, general-purpose and special-purpose registers
+% memory, general-purpose and special-purpose registers, etc.
+\newcommandx{\RNG}{{\ensuremath{\sf RNG}}\xspace}
 \newcommandx{\MEM}[3][1={},2={},3={}]{{\ensuremath\IfEq{#1}{*}{{\sf  MEM}[{#2}]^{#3}}{{\sf   MEM}}}\xspace}
 \newcommandx{\GPR}[2][1={},2={}     ]{{\ensuremath\IfEq{#1}{*}{{\sf  GPR}[{#2}]     }{{\sf   GPR}}}\xspace}
 \newcommandx{\CPR}[2][1={},2={}     ]{{\ensuremath\IfEq{#1}{*}{{\sf  CPR}[{#2}]     }{{\sf   CPR}}}\xspace}
