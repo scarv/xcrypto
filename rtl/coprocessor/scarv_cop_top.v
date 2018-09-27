@@ -84,13 +84,13 @@ wire          id_wb_h         ; // Halfword index (load/store)
 wire          id_wb_b         ; // Byte index (load/store)
 
 wire          crs1_ren   = 1'b1   ; // CPR Port 1 read enable
-wire [ 3:0]   crs1_addr  = id_crs1; // CPR Port 1 address
+wire [ 3:0]   crs1_addr  = malu_rdm_in_rs ? id_crd1 : id_crs1; // CPR Port 1
 
 wire          crs2_ren   = 1'b1   ; // CPR Port 2 read enable
-wire [ 3:0]   crs2_addr  = id_crs2; // CPR Port 2 address
+wire [ 3:0]   crs2_addr  = malu_rdm_in_rs ? id_crd2 : id_crs2; // CPR Port 2
 
 wire          crs3_ren   = 1'b1   ; // CPR Port 3 read enable
-wire [ 3:0]   crs3_addr  = id_crs3; // CPR Port 3 address
+wire [ 3:0]   crs3_addr  = malu_rdm_in_rs ? id_crs1 : id_crs3; // CPR Port 3
 
 wire [31:0]   crs1_rdata      ; // CPR Port 1 read data
 wire [31:0]   crs2_rdata      ; // CPR Port 2 read data
@@ -113,6 +113,7 @@ wire          mem_bus_error    ; // Memory bus exception
 wire [ 3:0]   mem_cpr_rd_ben   ; // Writeback byte enable
 wire [31:0]   mem_cpr_rd_wdata ; // Writeback data
 
+wire          malu_rdm_in_rs   ; // Source destination registers in rs1/rs2
 wire          malu_ivalid      ; // Valid instruction input
 wire          malu_idone       ; // Instruction complete
 wire [ 3:0]   malu_cpr_rd_ben  ; // Writeback byte enable
@@ -424,6 +425,7 @@ scarv_cop_malu i_scarv_cop_malu (
 .g_resetn         (g_resetn        ), // Synchronous active low reset.
 .malu_ivalid      (malu_ivalid      ), // Valid instruction input
 .malu_idone       (malu_idone       ), // Instruction complete
+.malu_rdm_in_rs   (malu_rdm_in_rs   ),
 .malu_rs1         (crs1_rdata       ), // Source register 1
 .malu_rs2         (crs2_rdata       ), // Source register 2
 .malu_rs3         (crs3_rdata       ), // Source register 3

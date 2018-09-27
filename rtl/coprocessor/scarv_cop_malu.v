@@ -21,6 +21,8 @@ input  wire         g_resetn         , // Synchronous active low reset.
 input  wire         malu_ivalid      , // Valid instruction input
 output wire         malu_idone       , // Instruction complete
 
+output wire         malu_rdm_in_rs   , // Source destination regs in rs1/2
+
 input  wire [31:0]  malu_rs1         , // Source register 1
 input  wire [31:0]  malu_rs2         , // Source register 2
 input  wire [31:0]  malu_rs3         , // Source register 3
@@ -58,6 +60,8 @@ wire is_mac_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MAC_MP ;
 // MP instruction control FSM
 //
 
+assign malu_rdm_in_rs = mp_fsm == 0 && is_acc2_mp || is_acc1_mp;
+
 reg  [1:0] mp_fsm;
 wire [1:0] n_mp_fsm = mp_fsm + 1;
 
@@ -70,20 +74,20 @@ always @(posedge g_clk) begin
 end
 
 assign malu_idone = 
-    mp_fsm == 1 && (is_add2_mp || is_shift)  
-||  mp_fsm == 2 && (is_add3_mp) ;
+    mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp)  
+||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp || is_acc1_mp) ;
 
 // 64 bit result of all MALU instructions.
 
 wire is_shift = is_sll_mp || is_slli_mp || is_srl_mp || is_srli_mp;
 
 wire malu_result_inter =
-    mp_fsm == 1 && (is_add2_mp || is_shift  )     
-||  mp_fsm == 2 && (is_add3_mp              )    ;
+    mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp  )     
+||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp)    ;
 
 wire malu_result_adder = 
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp)     
-||  mp_fsm == 1 && (is_add2_mp || is_add3_mp)    ;
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp || is_acc1_mp)     
+||  mp_fsm == 1 && (is_add2_mp || is_add3_mp || is_acc2_mp)    ;
 
 wire malu_result_shift = 
     mp_fsm == 0 && (is_shift                )    ;
@@ -99,14 +103,15 @@ wire [63:0] malu_result =
 // writeback the high word or low word of the result?
 wire wb_hi = 
     mp_fsm == 0 && (1'b0                    )
-||  mp_fsm == 1 && (is_add2_mp || is_shift  )  
-||  mp_fsm == 2 && (is_add3_mp              ) ;
+||  mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp )  
+||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp) ;
 
 // Write byte enable and write data selection,
 assign malu_cpr_rd_ben   = {4{
-    mp_fsm == 0 && (is_add2_mp || is_shift  )
-||  mp_fsm == 1 && (is_add2_mp || is_add3_mp || is_shift)
-||  mp_fsm == 2 && (is_add3_mp)  
+    mp_fsm == 0 && (is_add2_mp || is_shift   || is_acc1_mp                  )
+||  mp_fsm == 1 && (is_add2_mp || is_add3_mp || is_shift || is_acc1_mp ||
+                    is_acc2_mp                                              )
+||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp                                )  
 }};
 
 assign malu_cpr_rd_wdata = 
@@ -123,28 +128,38 @@ wire [63:0] adder1_rhs;
 wire [64:0] adder1_result = adder1_lhs + adder1_rhs;
 
 wire   adder1_lhs_rs1 =
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp)
-||  mp_fsm == 1 && (1'b0                    );
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp    )
+||  mp_fsm == 1 && (1'b0                        );
+
+wire   adder1_lhs_crd =
+    mp_fsm == 0 && (is_acc2_mp || is_acc1_mp    );
 
 wire   adder1_lhs_inter = 
-    mp_fsm == 0 && (1'b0                    )
-||  mp_fsm == 1 && (is_add3_mp              );
+    mp_fsm == 0 && (1'b0                                    )
+||  mp_fsm == 1 && (is_add3_mp || is_acc2_mp                )
+||  mp_fsm == 2 && (is_add3_mp                              );
+
+wire   adder1_rhs_rs1 =
+    mp_fsm == 1 && (1'b0                     );
 
 wire   adder1_rhs_rs2 =
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp)
-||  mp_fsm == 1 && (1'b0                    );
+    mp_fsm == 0 && (is_add2_mp || is_add3_mp )
+||  mp_fsm == 1 && (is_acc2_mp               )
+||  mp_fsm == 2 && (1'b0                     );
 
 wire   adder1_rhs_rs3 =
-    mp_fsm == 0 && (1'b0                    )
-||  mp_fsm == 1 && (is_add3_mp              );
+    mp_fsm == 0 && (is_acc1_mp || is_acc2_mp    )
+||  mp_fsm == 1 && (is_add3_mp                  );
 
 assign adder1_lhs = 
-    {63{adder1_lhs_rs1  }} & {32'b0,malu_rs1    } |
-    {63{adder1_lhs_inter}} & {malu_intermediate } ;
+    {64{adder1_lhs_rs1  }} & {32'b0   ,malu_rs1 } |
+    {64{adder1_lhs_crd  }} & {malu_rs2,malu_rs1 } |
+    {64{adder1_lhs_inter}} & {malu_intermediate } ;
 
 assign adder1_rhs = 
-    {63{adder1_rhs_rs2}} & {32'b0,malu_rs2      } |
-    {63{adder1_rhs_rs3}} & {32'b0,malu_rs3      } ;
+    {64{adder1_rhs_rs1}} & {32'b0,malu_rs1      } |
+    {64{adder1_rhs_rs2}} & {32'b0,malu_rs2      } |
+    {64{adder1_rhs_rs3}} & {32'b0,malu_rs3      } ;
 
 // Left/right barrel shifter
 
@@ -170,16 +185,19 @@ wire [63:0] mul1_result = mul1_lhs * mul1_rhs;
 reg  [63:0] malu_intermediate;
 wire [63:0] n_malu_intermediate;
 
-wire save_add = is_add2_mp || is_add3_mp;
+wire save_add = is_add2_mp || is_add3_mp ||
+                (is_acc2_mp || is_acc1_mp) && mp_fsm == 0 ||
+                (is_acc2_mp || is_acc1_mp) && mp_fsm == 1;
 
 assign n_malu_intermediate = 
-    {64{is_shift}} & shift1_result  |
-    {64{save_add}} & adder1_result  ;
+    {64{is_shift}} & shift1_result          |
+    {64{save_add}} & adder1_result          ;
 
 // load enable for malu_intermediate;
 assign ld_intermediate =
-    mp_fsm == 0 && (is_add2_mp  || is_add3_mp || is_shift)
-||  mp_fsm == 1 && (is_add3_mp );
+    mp_fsm == 0 && (is_add2_mp  || is_add3_mp || is_shift || is_acc2_mp ||
+                    is_acc1_mp                                              )
+||  mp_fsm == 1 && (is_add3_mp || is_acc2_mp);
 
 always @(posedge g_clk) begin
     if(!g_resetn) begin

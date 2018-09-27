@@ -1392,7 +1392,7 @@ begin: t_model_srl_mp
     reg  [31:0] crs1, crs2,crs3;
     reg  [63:0] result;
     reg  [63:0] toshift;
-    reg  [4:0] crd1,crd2;
+    reg  [3:0] crd1,crd2;
     model_do_decode_rdm(crd2,crd1);
     model_do_read_cpr(dec_arg_crs1, crs1);
     model_do_read_cpr(dec_arg_crs2, crs2);
@@ -1413,9 +1413,19 @@ end endtask
 task model_do_acc2_mp;
 begin: t_model_acc2_mp
     reg  [31:0] crs1, crs2;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    $display("ISE> ERROR: Instruction acc2.mp not implemented");
+    reg  [3:0] crd1,crd2;
+    reg  [31:0] crd1_v,crd2_v;
+    reg  [63:0] result;
+    model_do_decode_rdm(crd2,crd1);
+    model_do_read_cpr(dec_arg_crs1, crs1  );
+    model_do_read_cpr(dec_arg_crs2, crs2  );
+    model_do_read_cpr(crd1        , crd1_v);
+    model_do_read_cpr(crd2        , crd2_v);
+    result = {crd2_v,crd1_v} + crs1 + crs2;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
+    $display("acc2.mp (c%0d,c%0d) <- {c%0d(%h),c%0d(%h)} + c%0d(%h) + c%0d(%h)",
+        crd2,crd1,crd2,crd2_v,crd1,crd1_v,dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 
@@ -1425,8 +1435,18 @@ end endtask
 task model_do_acc1_mp;
 begin: t_model_acc1_mp
     reg  [31:0] crs1;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    $display("ISE> ERROR: Instruction acc1.mp not implemented");
+    reg  [3:0] crd1,crd2;
+    reg  [31:0] crd1_v,crd2_v;
+    reg  [63:0] result;
+    model_do_decode_rdm(crd2,crd1);
+    model_do_read_cpr(dec_arg_crs1, crs1  );
+    model_do_read_cpr(crd1        , crd1_v);
+    model_do_read_cpr(crd2        , crd2_v);
+    result = {crd2_v,crd1_v} + crs1;
+    model_do_write_cpr(crd1,result[31: 0]);
+    model_do_write_cpr(crd2,result[63:32]);
+    $display("acc1.mp (c%0d,c%0d) <- {c%0d,c%0d} + c%0d",
+        crd2,crd1,crd2,crd1,crs1);
 end endtask
 
 
