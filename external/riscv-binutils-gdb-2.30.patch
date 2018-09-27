@@ -213,7 +213,7 @@ index f60bea15c8..25bd17903c 100644
 +        if(reg_lookup(&s,RCLASS_CPR,&regno2)){
 +            if((regno | 0x1) == regno2 &&
 +                regno != regno2) {
-+                INSERT_OPERAND(XCRDM,*ip,regno>>2);
++                INSERT_OPERAND(XCRDM,*ip,regno>>1);
 +                EAT_ARG_TOKENS;
 +                continue;
 +            }

@@ -13,8 +13,13 @@ Setup the project workspace first:
 ```sh
 $> git clone git@github.com:scarv/hw-crypto-cop.git
 $> cd hw-crypto-cop
+$> git submodule update --init --recursive
 $> source ./bin/source.me.sh
 ```
+
+Note that one must run the `git submodule update` command in order to
+pull the external repositories (like PicoRV32) required for the integration
+testbench.
 
 Build the documentation by running `make docs`
 

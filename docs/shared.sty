@@ -120,10 +120,22 @@
 \end{bytefield}
 \end{figure}}
 
+
+% For multi-line autoflowed table cells
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+
 % =============================================================================
 
 \newcommandx{\RVXLEN}{\mbox{XLEN}\xspace}
 \newcommandx{\RVCUSTOM}[1]{\mbox{\em custom-#1}\xspace}
+
+
+
+% ISE name
+\newcommandx{\ISE}{{\sf XCrypto}\xspace}
+% Co-processor name
+\newcommandx{\COP}{\ISE Co-Processor}
 
 % -----------------------------------------------------------------------------
 

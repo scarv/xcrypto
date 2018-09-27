@@ -90,7 +90,23 @@ work/unit/%.vcd : $(COP_WORK)/unit/%.hex icarus_build
 	$(MAKE) -C $(COP_HOME)/flow/icarus run \
         SIM_UNIT_TEST=$< \
         SIM_LOG=$(COP_WORK)/unit/$(notdir $@).log
-	@mv $(COP_WORK)/icarus/waves.vcd $@
+	@mv $(COP_WORK)/icarus/unit-waves.vcd $@
+
+#
+# Build the icarus integration testbench
+#
+.PHONY: icarus_integ_tb
+icarus_integ_tb:
+	$(MAKE) -C $(COP_HOME)/flow/icarus integ-sim
+
+#
+# Build the icarus integration testbench
+#
+.PHONY: icarus_run_integ
+icarus_run_integ: RTL_TIMEOUT = 3000
+icarus_run_integ: examples
+icarus_run_integ: icarus_integ_tb
+	$(MAKE) -C $(COP_HOME)/flow/icarus integ-run
 
 #
 # Build the ISE unit tests into hex files for use with the Icarus
@@ -102,6 +118,7 @@ unit_tests:
 
 
 #
-# Build the yosys and icarus models but don't run anything yet.
+# Build the unit tests, examples yosys and icarus models but don't run 
+# anything yet.
 #
-build_all: yosys_smt2 icarus_build
+build_all: yosys_smt2 icarus_build unit_tests icarus_integ_tb examples docs
