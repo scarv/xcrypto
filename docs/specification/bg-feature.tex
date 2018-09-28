@@ -7,14 +7,14 @@
 \begin{center}
 \begin{tabular}{|l|cc|}
 \hline
-Feature class                      & Numeric ID & Mnemonic ID \\
+Feature class   & Numeric ID & Mnemonic ID \\
 \hline
-Baseline                           & $1$        & BASE        \\
-Randomness                         & $2.1$      & RND         \\
-Memory-related          operations & $2.2$      & MEM         \\
-Bit-oriented            operations & $2.3$      & BIT         \\
-Packed                  operations & $2.4$      & PACK        \\
-Multi-precision integer operations & $2.5$      & MP          \\
+Baseline        & $1$        & BASE        \\
+Randomness      & $2.1$      & RND         \\
+Memory          & $2.2$      & MEM         \\
+Bit-oriented    & $2.3$      & BIT         \\
+Packed          & $2.4$      & PACK        \\
+Multi-precision & $2.5$      & MP          \\
 \hline
 \end{tabular}
 \end{center}
@@ -164,8 +164,10 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.2$: memory-related operations}
+\subsubsection{Class-$2.2$: memory}
 \label{sec:bg:feature:2:2}
+
+%\cite{SCARV:FisLee:01}
 
 %The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
 %in section \ref{sec:scatter-gather} may be omitted to reduce implementation
@@ -251,7 +253,7 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.3$: bit-oriented operations}
+\subsubsection{Class-$2.3$: bit-oriented}
 \label{sec:bg:feature:2:3}
 
 Particularly wrt. symmetric primitives, the use of bit-oriented operations 
@@ -273,7 +275,7 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.4$: packed operations}
+\subsubsection{Class-$2.4$: packed}
 \label{sec:bg:feature:2:4}
 
 %\subsection{Packed Arithmetic Widths}
@@ -303,7 +305,7 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.5$: multi-precision integer operations}
+\subsubsection{Class-$2.5$: multi-precision}
 \label{sec:bg:feature:2:5}
 
 %All of the multi-precision arithmetic instructions listed in section

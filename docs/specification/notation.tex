@@ -57,6 +57,17 @@
 
 \begin{itemize}
 
+\item The following terms refer to fixed-length (sub-)sequences of $n$ bits
+      \[
+      \begin{array}{lcc@{\;}c@{\;}r}
+      \mbox{crumb}    & \leadsto & n &=&  2 \\
+      \mbox{nibble}   & \leadsto & n &=&  4 \\
+      \mbox{byte}     & \leadsto & n &=&  8 \\
+      \mbox{halfword} & \leadsto & n &=& 16 \\
+      \mbox    {word} & \leadsto & n &=& 32 \\
+      \end{array}
+      \]
+      where perhaps all but the first are fairly standard.
 \item The operators $\NOT$, $\AND$, $\IOR$ and $\XOR$ denote Boolean NOT, AND,
       OR and XOR respectively, with $\NAND$, $\NIOR$ and $\NXOR$ denoting NAND,
       NOR and NXOR; all of these may be overloaded to cater for bit-sequences
