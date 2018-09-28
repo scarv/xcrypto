@@ -75,9 +75,9 @@
       \[
       X = \LIST{ \INDEX{X}{n-1}, \ldots, \INDEX{X}{1}, \INDEX{X}{0} } 
       \]
-      and assuming that $w | \CARD{X}$, $\INDEX[w]{X}{i}$ is used to denote the 
-      $i$-th sub-sequence of length $w$ in $X$: for $n = 16$, for example, we
-      have that
+      and assuming $w$ divides $\CARD{X}$, $\INDEX[w]{X}{i}$ is used to denote 
+      the $i$-th sub-sequence of length $w$ in $X$: for $n = 16$, for example, 
+      we have that
       \[
       \begin{array}{lcl}
       \INDEX[4]{X}{0} &=& \LIST{ \INDEX{X}{ 3}, \INDEX{X}{ 2}, \INDEX{X}{ 1}, \INDEX{X}{ 0}                                                             } \\
@@ -86,7 +86,10 @@
       \INDEX[8]{X}{1} &=& \LIST{ \INDEX{X}{15}, \INDEX{X}{14}, \INDEX{X}{13}, \INDEX{X}{12}, \INDEX{X}{11}, \INDEX{X}{10}, \INDEX{X}{ 9}, \INDEX{X}{ 8} } \\
       \end{array}
       \]
-      for example.
+      for example.  In essence, this is a short-hand st.
+      \[
+      \INDEX[w]{X}{i} \equiv \LIST{ \INDEX[w]{X}{w \cdot i}, \INDEX[w]{X}{w \cdot i + 1}, \ldots, \INDEX[w]{X}{w \cdot i + w - 1} } .
+      \]
 \item $\LSB[l]{X}$ (resp. $\MSB[l]{X}$) denotes the $l$ least- (resp. most-)
       significant bits of $X$ (where we assume $l = 1$ if omitted): given a
       bit-sequence
@@ -156,13 +159,15 @@
       denotes the $i$-th,
       $\RVXLEN$-bit
       entry in said register file.
-\item $\CPR$ 
+\item $\XCR$ 
       denotes the 
       special-purpose, \XCID register file;
-      $\CPR[*][i]$ 
+      $\XCR[*][i]$ 
       denotes the $i$-th,
            $32$-bit 
       entry in said register file.
+
+% TODO: XCCR, XCSR
 
 \end{itemize}
 

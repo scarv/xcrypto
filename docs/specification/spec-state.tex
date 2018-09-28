@@ -11,7 +11,7 @@ is used exclusively by the instructions in this ISE.
 It is to the crypto ISE what the floating-point register file is to the
 RISC-V F extension.
 
-Unlike the RISC-V $\GPR$s, the zeroth $\CPR$ is not tied to zero.
+Unlike the RISC-V $\GPR$s, the zeroth $\XCR$ is not tied to zero.
 
 The register file addressing is shown in table \ref{tab:state-addr}.
 
@@ -44,7 +44,7 @@ The register with address $0$ will preserve writes.}
 \end{table}
 
 \note{
-A smart programmer will remember to clear their $\CPR$s of any secret data
+A smart programmer will remember to clear their $\XCR$s of any secret data
 before returning execution to some part of the system they did not write.
 }
 
@@ -186,17 +186,17 @@ All of the state added in the Crypto ISE is considered {\em callee save}
 for the purposes of the ABI.
 That is, if {\tt function1} calls 
 {\tt function2}, then {\tt function2} is responsible for saving to the
-stack any $\CPR$ registers it needs, and popping them off before returning.
+stack any $\XCR$ registers it needs, and popping them off before returning.
 
-The $\CPR$ registers $0..8$ are considered as function arguments
+The $\XCR$ registers $0..8$ are considered as function arguments
 and/or return values. 
-All other $\CPR$ registers are considered temporaries.
+All other $\XCR$ registers are considered temporaries.
 
 Any registers pushed to the stack should be written in ascending order.
 That is, as the stack grows downwards, $c1$ should be written (if needed)
 to the address following $c0$.
 
-The $\CPR$ registers which are written to the stack during function calls
+The $\XCR$ registers which are written to the stack during function calls
 should be written {\em after} all of the $\GPR$ and floating-point registers
 (if the {\tt F} extension is implemented) have been written.
 

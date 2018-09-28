@@ -23,18 +23,18 @@
       the viability of software-based cryptographic implementations.
 
 \item \XCID is best described as a general-purpose cryptographic ISE, and so
-      specified along those lines.  However, the implementation of \XCID is,
-      by design, left more open-ended: one could consider options including
+      specified along those lines.  However, the implementation of \XCID is
+      left more open-ended: one could consider approaches including
       a) a highly   invasive extension to an existing host core,
       b) a somewhat invasive, tightly-coupled co-processor,
          or
       c) a      non-invasive, loosely-coupled co-processor.
 
-\item Although all cited implementation options are viable, in {\em concept}
+\item All cited implementation approaches are viable, but, in {\em concept},
       we view \XCID as a co-processor technology: wlog. we adopt terminology 
       associated with that option from here on.  By doing so, the aim is to 
-      present a clean(er) separation between the intended roles of host core 
-      and \XCID co-processor.
+      present a clean(er) separation between the intended roles of some host 
+      core and associated \XCID co-processor.
 
       For example, at a high level one could view the co-processor as being 
       tasked with support for execution of cryptography; such a task is not
@@ -44,10 +44,10 @@
       former as a general-purpose control-path for a (more) special-purpose 
       data-path represented by the latter.  Finally, note that considering
       physically separate (or at least separatable) implementations offers
-      the potential to use differing physical technologies; one motivation
-      for this could be the (selected) use of a secure logic style (see, 
-      e.g.,~\cite{SCARV:MayMur:16}), which then aligns with design concepts 
-      such as PowerTrust~\cite{SCARV:TilKirSze:10}.
+      the potential to use differing technologies; one motivation for this 
+      could be the (selected) use of a secure logic style 
+      (see, e.g.,~\cite{SCARV:MayMur:16})
+      and thus design concepts such as PowerTrust~\cite{SCARV:TilKirSze:10}.
 
 \item Consider, for example and in a general sense, ARM {\sf big.LITTLE}
       (an instance of the general Asymmetric Multi-core Processor (AMP)~\cite{SCARV:Mittal:16} concept),
@@ -130,7 +130,7 @@
             } to support cryptographic workloads: \XCID composes with such 
             an approach.
       \item {\bf Implementability}. 
-            To use useful, it should be possible to implement \XCID with as
+            To be useful, it should be possible to implement \XCID with as
             little
             a) overhead   (e.g., wrt. additional logic),
                and
@@ -148,11 +148,11 @@
 
       \end{itemize}
 
-\item Aligning with several cited design criteria, \XCID could be viewed as 
-      a form of {\em meta}-extension in the sense it captures feature sets
+\item Aligning with several cited design criteria, \XCID can be viewed as a
+      form of {\em meta}-extension in the sense it captures feature classes
       that can be selected from to suit.  \REFSEC{sec:bg:feature} outlines 
-      said feature sets, the presence or absence of which is reflected in 
-      the associated CSR outlined in \REFSEC{sec:spec:state:csr}.
+      said feature classes, the presence or absence of which is reflected 
+      in an associated CSR outlined in \REFSEC{sec:spec:state:csr}.
 
 \item All that said, such an approach may naturally be deemed inappropriate 
       for some use-cases; we pitch \XCID as {\em an} approach, not {\em the}
@@ -162,6 +162,8 @@
       IP core 
       (e.g., a hardware-based AES accelerator) 
       to a RISC-V host core.
+
+% TODO: note diff. re. crypto. WG
 
 \end{itemize}
 
@@ -184,7 +186,7 @@
       be technology-specific (e.g., differ for a given FPGA, vs. an ASIC).  
       On the other hand, however, the RNG used is critically important wrt. 
       security: the (difficult) challenge of selecting and implementing 
-      a robust RNG instance is assumed.
+      a robust RNG instance is assumed to be addressed.
 
 \item \XCID assumes a byte-addressable memory, the interface to which will
       be shared between the host core and co-processor.  As such, {\em all}
@@ -225,10 +227,12 @@
       \item the instruction encoding is constrained to the 
             \RVCUSTOM{1}~\cite[Table 19.1]{SCARV:RV:ISA:I:17}
             space, i.e., a $25$-bit space with prefix $\RADIX{0101011}{2}$,
-      \item all instruction mnemonics have a domain separation prefix; for
-            example \VERB[RV]{add} becomes \VERB[RV]{xc.add}.
+      \item all instruction mnemonics include a domain separation prefix,
+            meaning, for example \VERB[RV]{foo} becomes \VERB[RV]{xc.foo}.
       \end{itemize}
       
+% TODO: mnemonic suffix strategy
+
       \noindent
       Note that these should be considered flexible placeholders; they can
       be changed to suit future constraints with little or no impact.

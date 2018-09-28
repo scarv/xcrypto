@@ -6,9 +6,34 @@
 \cite{SCARV:TheSisPne:09}
 \cite{SCARV:MTRGS:99}
 % ISEs
-\cite{SCARV:LeeShiYan:01,SCARV:LSYRR:04}
 \cite{SCARV:BarGioMar:09}
 \cite{SCARV:RegIen:16}
 \cite{SCARV:FazLopOli:18}
+
+% bit-permitation
+
+\cite{SCARV:LeeShiYan:01,SCARV:LSYRR:04}
+
+% bit-slicing
+
+As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
+a) a non-standard {\em representation} of data,
+   and
+b) a non-standard {\em implementation} of functions, which operate on
+   said representations:
+it essentially describes a given cryptographic primitive as a  ``software 
+circuit'' comprising a sequence of bit-wise instructions (e.g., NOT, AND, 
+and OR).  Although not a general-purpose technique, when applicable, use
+of bit-slicing can offer advantages that include constant-time execution 
+and hence immunity from cache-based side-channel attacks
+(see, e.g.,~\cite{SCARV:KasSch:09}).
+In the design of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98}, there is a
+suggestion for accelerating bit-sliced implementations via a ``BITSLICE 
+instruction'' or ISE; the suggestion was later investigated in detail by 
+Grabher et al.~\cite{SCARV:GraGroPag:08}.  In both cases, the idea is to 
+``compress'' a sub-circuit, i.e., the sequence of bit-wise instructions 
+representing an $n$-input Boolean function, into a Look-Up Table (LUT): 
+the LUT is first configured with a truth table for the function, and then 
+accessed to apply said function.  
 
 % =============================================================================

@@ -9,12 +9,12 @@
 \hline
 Feature class                      & Numeric ID & Mnemonic ID \\
 \hline
-Core                               & $1$        & C           \\
-Scatter/Gather                     & $2.1$      & S           \\
-Randomness                         & $2.2$      & R           \\
-Bit-oriented            operations & $2.3$      & B           \\
-Packed                  operations & $2.4$      & P           \\
-Multi-precision integer operations & $2.5$      & M           \\
+Baseline                           & $1$        & BASE        \\
+Randomness                         & $2.1$      & RND         \\
+Memory-related          operations & $2.2$      & MEM         \\
+Bit-oriented            operations & $2.3$      & BIT         \\
+Packed                  operations & $2.4$      & PACK        \\
+Multi-precision integer operations & $2.5$      & MP          \\
 \hline
 \end{tabular}
 \end{center}
@@ -24,7 +24,7 @@ Multi-precision integer operations & $2.5$      & M           \\
 
 As noted in \REFSEC{sec:bg:design}, \XCID is a {\em meta}-extension in the
 sense it has 
-a) one     class of   core     (or baseline) features,
+a) one baseline class of features,
    which must {\em always} be supported,
    plus
 b) several classes of optional               features,
@@ -43,7 +43,7 @@ in an implementation.  We adopt a variant of this approach, wherein
 \[
 \XCID[x/y/z]
 \]
-denotes a concrete implementation of \XCID which supports feature classes 
+denotes a concrete implementation of \XCID that supports feature classes 
 $x$, $y$, and $z$: we assign a numeric and a mnemonic identifier to each
 feature class (summarised by \REFTAB{tab:feature}), preferring\footnote{
 One disadvantage of this preference is the conflict with mnemonic used by
@@ -52,13 +52,13 @@ on the notation, we assume it is reasonably easy to disambiguate.
 } use of the latter (since it yields a more descriptive result).  
 For example,
 \[
-\XCID[1/2.1/2.2/2.3/2.4] ~\equiv~ \XCID[C/S/R/B/P]
+\XCID[1/2.1/2.2/2.3/2.4] ~\equiv~ \XCID[BASE/RND/MEM/BIT/PACK]
 \]
 describes an implementation which supports
 a) the core features,
-b) features relating to advanced memory access, namely scatter/gather
+b) features relating to generation of randomness,
+c) features relating to advanced memory access, namely scatter/gather
    style store and load operations,
-c) features relating to generation of randomness,
 d) features relating to bit-oriented (i.e., Boolean) operations,
    plus
 e) features relating to packed (or DSP-like) arithmetic operations:
@@ -71,7 +71,7 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
 % =============================================================================
 
-\subsubsection{Class-$1$:   core}
+\subsubsection{Class-$1$:   baseline}
 \label{sec:bg:feature:1}
 
 % constrained by assumed memory interface
@@ -90,19 +90,19 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 %\end{itemize}
 %
 %The ISE contains several instructions listed below which allow memory
-%accesses to directly address the $\CPR$ register file. This means we do
+%accesses to directly address the $\XCR$ register file. This means we do
 %not need to first load to the $\GPR$ register file, then move data into
-%the $\CPR$s.
+%the $\XCR$s.
 %
 %All ISE memory access instructions source their base address from the
-%$\GPR$ register file, but read and write data in the $\CPR$s. This
-%prevents address manipulation needing to be done in the $\CPR$s.
+%$\GPR$ register file, but read and write data in the $\XCR$s. This
+%prevents address manipulation needing to be done in the $\XCR$s.
 %\designnote{
 %The decision to source the base address from the $\GPR$ set rather
-%than a $\CPR$ was because all of the RISC-V address calculation
+%than a $\XCR$ was because all of the RISC-V address calculation
 %instructions work perfectly well on the $\GPR$s and there is no sense
 %in duplicating that functionality for this ISE. This free's up
-%encoding space, and lets the $\CPR$ state be used for the compute
+%encoding space, and lets the $\XCR$ state be used for the compute
 %work it was designed for rather than mundane address calculation.
 %While care must be
 %taken to avoid hazards between the different register sets, we
@@ -130,7 +130,7 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 %\item There is no sign-extending equivalent of the \ASM{LHU} and \ASM{LBU}
 %      instructions.
 %\item The base address is taken from the normal RISC-V $\GPR$ set, while the
-%      target register is always in the $\CPR$ set.
+%      target register is always in the $\XCR$ set.
 %\end{itemize}
 %
 %These instructions will raise a {\em load/store address misaligned} exception
@@ -147,8 +147,25 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.1$: scatter/gather}
+\subsubsection{Class-$2.1$: randomness}
 \label{sec:bg:feature:2:1}
+
+%\subsection{Randomness}
+%
+%Implementations can optionally implement the Crypto ISE randomness interface
+%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
+%
+%The inclusion of these instructions in an implementation is indicated by the
+%{\tt R} bit of the \nameref{sec:csr-mccr}.
+%
+%If the random interface instructions are not implemented, then their opcodes
+%will cause the implementation to raise an {\em Illegal Instruction}
+%exception.
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$2.2$: memory-related operations}
+\label{sec:bg:feature:2:2}
 
 %The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
 %in section \ref{sec:scatter-gather} may be omitted to reduce implementation
@@ -185,18 +202,18 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 %%%}
 %%%
 %%%The address $a_x$ of each byte/halfword to be loaded or stored is computed by
-%%%adding an offset $x$ from the {\tt offsets} $\CPR$ register, and adding it
+%%%adding an offset $x$ from the {\tt offsets} $\XCR$ register, and adding it
 %%%to the $base$ $\GPR$ register. For the {\tt .b} variants, there are four
 %%%offsets each corresponding to the four bytes of the offsets source register
 %%%word. For the {\tt .h} variant, there are two offsets corresponding to the
 %%%upper and lower halfwords of the registers.
 %%%
 %%%Both instructions use the $\GPR$s to source their base address, while the
-%%%offset indices into the LUT come from the $\CPR$ registers. This mirrors
+%%%offset indices into the LUT come from the $\XCR$ registers. This mirrors
 %%%how the ISE load and store instructions compute their addresses.
 %%%
 %%%The scatter instruction requires three register file reads.
-%%%Because the reads are split across the $\GPR$ and $\CPR$ registers,
+%%%Because the reads are split across the $\GPR$ and $\XCR$ registers,
 %%%no {\em extra} ports are needed on the RISC-V register file beyond the
 %%%standard two-read-one-write set.
 %%%
@@ -234,24 +251,7 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.2$: randomness}
-\label{sec:bg:feature:2:2}
-
-%\subsection{Randomness}
-%
-%Implementations can optionally implement the Crypto ISE randomness interface
-%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
-%
-%The inclusion of these instructions in an implementation is indicated by the
-%{\tt R} bit of the \nameref{sec:csr-mccr}.
-%
-%If the random interface instructions are not implemented, then their opcodes
-%will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
-
-% -----------------------------------------------------------------------------
-
-\subsubsection{Class-$2.3$: bit-oriented            operations}
+\subsubsection{Class-$2.3$: bit-oriented operations}
 \label{sec:bg:feature:2:3}
 
 Particularly wrt. symmetric primitives, the use of bit-oriented operations 
@@ -263,7 +263,7 @@ and/or not supported by arithmetic in most ISAs) structures and concepts,
 and thus operations, in relevant designs.  Associated design rationale may
 include
 a) security
-   (e.g., use of $\B{F}_{2^8}$ in AES~\cite{SCARV:FIPS:197}),
+   (e.g., bit-sliced implementation~\cite{SCARV:KasSch:09} AES~\cite{SCARV:FIPS:197} to mitigate cache-based side-channel attacks),
    or
 b) efficiency
    (e.g., use of hardware-friendly bit-permutations in DES~\cite{SCARV:FIPS:46_3})
@@ -271,31 +271,9 @@ As a result, numerous proposals for associated ISEs exist; these typically
 act to accelerate in software what would otherwise represent a high (even 
 prohibitive) overhead.  \XCID adopts a similar approach.
 
-Beyond this general argument, the implementation technique of bit-slicing
-offers secondary, albeit related motivation for rich(er) support in \XCID.
-As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
-a) a non-standard {\em representation} of data,
-   and
-b) a non-standard {\em implementation} of functions, which operate on
-   said representations:
-it essentially describes a given cryptographic primitive as a  ``software 
-circuit'' comprising a sequence of bit-wise instructions (e.g., NOT, AND, 
-and OR).  Although not a general-purpose technique, when applicable, use
-of bit-slicing can offer advantages that include constant-time execution 
-and hence immunity from cache-based side-channel attacks
-(see, e.g.,~\cite{SCARV:KasSch:09}).
-In the design of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98}, there is a
-suggestion for accelerating bit-sliced implementations via a ``BITSLICE 
-instruction'' or ISE; the suggestion was later investigated in detail by 
-Grabher et al.~\cite{SCARV:GraGroPag:08}.  In both cases, the idea is to 
-``compress'' a sub-circuit, i.e., the sequence of bit-wise instructions 
-representing an $n$-input Boolean function, into a Look-Up Table (LUT): 
-the LUT is first configured with a truth table for the function, and then 
-accessed to apply said function.  
-
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$2.4$: packed                  operations}
+\subsubsection{Class-$2.4$: packed operations}
 \label{sec:bg:feature:2:4}
 
 %\subsection{Packed Arithmetic Widths}

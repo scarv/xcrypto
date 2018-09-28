@@ -3,7 +3,7 @@
 
 % =============================================================================
 
-\subsubsection{Class-$1$:   core}
+\subsubsection{Class-$1$:   baseline}
 \label{sec:spec:instr:1}
 
 % -----------------------------------------------------------------------------
@@ -11,9 +11,9 @@
 \XCINSTR{MV2GPR}{rd, crs1}{
   \iencmvtwogpr
 }{
-  Move a $\CPR$ register to a $\GPR$ register.
+  Move a $\XCR$ register to a $\GPR$ register.
 }{ 
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN \CPR[*][{\VERB[RV]{crs1}}]$\;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \XCR[*][{\VERB[RV]{crs1}}]$\;
 }
 
 % -----------------------------------------------------------------------------
@@ -21,9 +21,9 @@
 \XCINSTR{MV2COP}{crd, rs1}{
   \iencmvtwocop
 }{
-  Move a $\GPR$ register to a $\CPR$ register.
+  Move a $\GPR$ register to a $\XCR$ register.
 }{
-  $\CPR[*][{\VERB[RV]{crd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}]$\;
+  $\XCR[*][{\VERB[RV]{crd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}]$\;
 }
 
 % -----------------------------------------------------------------------------
@@ -31,10 +31,10 @@
 \XCINSTR{CMOV.cr}{crd, crs1, crs2}{
   \ienccmovcr
 }{
-  Conditionally move one $\CPR$ register to another.
+  Conditionally move one $\XCR$ register to another.
 }{
-  \If{$\CPR[*][{\VERB[RV]{crs2}}] =    0$}{
-    $\CPR[*][{\VERB[RV]{crd}}] \ASN \CPR[*][{\VERB[RV]{crs1}}]$\;
+  \If{$\XCR[*][{\VERB[RV]{crs2}}] =    0$}{
+    $\XCR[*][{\VERB[RV]{crd}}] \ASN \XCR[*][{\VERB[RV]{crs1}}]$\;
   }
 }
 
@@ -43,10 +43,10 @@
 \XCINSTR{CMOVN.cr}{crd, crs1, crs2}{
   \ienccmovncr
 }{
-  Conditionally move one $\CPR$ register to another.
+  Conditionally move one $\XCR$ register to another.
 }{
-  \If{$\CPR[*][{\VERB[RV]{crs2}}] \neq 0$}{
-    $\CPR[*][{\VERB[RV]{crd}}] \ASN \CPR[*][{\VERB[RV]{crs1}}]$\;
+  \If{$\XCR[*][{\VERB[RV]{crs2}}] \neq 0$}{
+    $\XCR[*][{\VERB[RV]{crd}}] \ASN \XCR[*][{\VERB[RV]{crs1}}]$\;
   }
 }
 
@@ -56,11 +56,11 @@
   \ienclbucr
 }{
   Load a     byte from memory
-  into a specific     byte of a $\CPR$ register,
+  into a specific     byte of a $\XCR$ register,
   leaving the other     bytes in said register un-modified.
 }{
   $addr                                                                    \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS \VERB[RV]{cd}} \ASN \MEM[*][{addr  }]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS \VERB[RV]{cd}} \ASN \MEM[*][{addr  }]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -69,12 +69,12 @@
   \ienclhucr
 }{
   Load a halfword from memory
-  into a specific halfword of a $\CPR$ register,
+  into a specific halfword of a $\XCR$ register,
   leaving the other halfword  in said register un-modified.
 }{
   $addr                                                                    \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             0} \ASN \MEM[*][{addr+0}]$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             1} \ASN \MEM[*][{addr+1}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             0} \ASN \MEM[*][{addr+0}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             1} \ASN \MEM[*][{addr+1}]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -83,13 +83,13 @@
   \ienclwcr
 }{
   Load a     word from memory 
-  into                        a $\CPR$ register.
+  into                        a $\XCR$ register.
 }{
   $addr                                                                    \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                0} \ASN \MEM[*][{addr+0}]$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                1} \ASN \MEM[*][{addr+1}]$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                2} \ASN \MEM[*][{addr+2}]$ \;
-  $\INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                3} \ASN \MEM[*][{addr+3}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                0} \ASN \MEM[*][{addr+0}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                1} \ASN \MEM[*][{addr+1}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                2} \ASN \MEM[*][{addr+2}]$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                3} \ASN \MEM[*][{addr+3}]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -97,14 +97,14 @@
 \XCINSTR{SB.cr}{rs2, h, b, imm11(rs1)}{
   \iencsbcr
 }{
-  Store a specific     byte of a $\CPR$ register into memory.
+  Store a specific     byte of a $\XCR$ register into memory.
   Note that
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
 }{
   $addr            \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\MEM[*][addr  ] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS \VERB[RV]{cd}}$ \;
+  $\MEM[*][addr  ] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS \VERB[RV]{cd}}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -112,15 +112,15 @@
 \XCINSTR{SH.cr}{rs2, h,    imm11(rs1)}{
   \iencshcr
 }{
-  Store a specific halfword of a $\CPR$ register into memory.
+  Store a specific halfword of a $\XCR$ register into memory.
   Note that
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
 }{
   $addr            \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\MEM[*][addr+0] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             0}$ \;
-  $\MEM[*][addr+1] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             1}$ \;
+  $\MEM[*][addr+0] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             0}$ \;
+  $\MEM[*][addr+1] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{\VERB[RV]{cc} \CONS             1}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -128,23 +128,48 @@
 \XCINSTR{SW.cr}{rs2,       imm11(rs1)}{
   \iencswcr
 }{
-  Store                        a $\CPR$ register into memory.
+  Store                        a $\XCR$ register into memory.
   Note that
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
 }{
  $addr             \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $\MEM[*][addr+0] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                0}$ \;
-  $\MEM[*][addr+1] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                1}$ \;
-  $\MEM[*][addr+2] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                2}$ \;
-  $\MEM[*][addr+3] \ASN \INDEX[8]{\CPR[*][{\VERB[RV]{crd}}]}{                                3}$ \;
+  $\MEM[*][addr+0] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                0}$ \;
+  $\MEM[*][addr+1] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                1}$ \;
+  $\MEM[*][addr+2] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                2}$ \;
+  $\MEM[*][addr+3] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{                                3}$ \;
 }
 
 % =============================================================================
 
-\subsubsection{Class-$2.1$: scatter/gather}
+\subsubsection{Class-$2.1$: randomness}
 \label{sec:spec:instr:2:1}
+
+% -----------------------------------------------------------------------------
+
+\XCINSTR{RSEED.cr}{crs1}{
+  \iencrseedcr
+}{
+  Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\XCR$ register.
+}{
+  $\RNG \ASN \XCR[*][{\VERB[RV]{crs1}}]$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCINSTR{RSAMP.cr}{crd}{
+  \iencrsampcr
+}{
+  Sample           $32$-bits of entropy from the RNG, writing to   a $\XCR$ register.
+}{
+  $\XCR[*][{\VERB[RV]{crd}}] \ASN \RNG$ \;
+}
+
+% =============================================================================
+
+\subsubsection{Class-$2.2$: memory-related operations}
+\label{sec:spec:instr:2:2}
 
 % TODO: crd should be a source?
 \XCINSTR{SCATTER.b}{rs, base, offsets}{
@@ -152,14 +177,14 @@
 }{
 
 }{
-  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{0}$ \;
-  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{1}$ \;
-  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{2}$ \;
-  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{3}$ \;
-  $\MEM[*][addr_0  ]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{0}$ \;
-  $\MEM[*][addr_1  ]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{1}$ \;
-  $\MEM[*][addr_2  ]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{2}$ \;
-  $\MEM[*][addr_3  ]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{3}$ \;
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
+  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{2}$ \;
+  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{3}$ \;
+  $\MEM[*][addr_0  ]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{0}$ \;
+  $\MEM[*][addr_1  ]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{1}$ \;
+  $\MEM[*][addr_2  ]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{2}$ \;
+  $\MEM[*][addr_3  ]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{3}$ \;
 }
 
 % TODO: crd should be a source?
@@ -168,12 +193,12 @@
 }{
 
 }{
-  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\CPR[*][{\VERB[RV]{crs2}}]}{0}$ \;
-  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\CPR[*][{\VERB[RV]{crs2}}]}{1}$ \;
-  $\MEM[*][addr_0+0]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{0}$ \;
-  $\MEM[*][addr_0+1]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{1}$ \;
-  $\MEM[*][addr_1+0]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{2}$ \;
-  $\MEM[*][addr_1+1]                        \ASN \INDEX[ 8]{\CPR[*][{\VERB[RV]{rs}}]}{3}$ \;
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
+  $\MEM[*][addr_0+0]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{0}$ \;
+  $\MEM[*][addr_0+1]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{1}$ \;
+  $\MEM[*][addr_1+0]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{2}$ \;
+  $\MEM[*][addr_1+1]                        \ASN \INDEX[ 8]{\XCR[*][{\VERB[RV]{rs}}]}{3}$ \;
 }
 
 \XCINSTR{GATHER.b}{crd, rs1, crs2}{
@@ -181,14 +206,14 @@
 }{
 
 }{
-  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{0}$ \;
-  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{1}$ \;
-  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{2}$ \;
-  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\CPR[*][{\VERB[RV]{crs2}}]}{3}$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{0} \ASN \MEM[*][addr_0  ]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{1} \ASN \MEM[*][addr_1  ]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{2} \ASN \MEM[*][addr_2  ]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{3} \ASN \MEM[*][addr_3  ]$ \;
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
+  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{2}$ \;
+  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{3}$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{0} \ASN \MEM[*][addr_0  ]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{1} \ASN \MEM[*][addr_1  ]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{2} \ASN \MEM[*][addr_2  ]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{3} \ASN \MEM[*][addr_3  ]$ \;
 }
 
 \XCINSTR{GATHER.h}{rd, rs1, crs2}{
@@ -196,63 +221,38 @@
 }{
 
 }{
-  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\CPR[*][{\VERB[RV]{crs2}}]}{0}$ \;
-  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\CPR[*][{\VERB[RV]{crs2}}]}{1}$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{0} \ASN \MEM[*][addr_0+0]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{1} \ASN \MEM[*][addr_0+1]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{2} \ASN \MEM[*][addr_1+0]$ \;
-  $\INDEX[ 8]{\CPR[*][{\VERB[RV]{crd}}]}{3} \ASN \MEM[*][addr_1+1]$ \;
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{0} \ASN \MEM[*][addr_0+0]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{1} \ASN \MEM[*][addr_0+1]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{2} \ASN \MEM[*][addr_1+0]$ \;
+  $\INDEX[ 8]{\XCR[*][{\VERB[RV]{crd}}]}{3} \ASN \MEM[*][addr_1+1]$ \;
 }
 
 % =============================================================================
 
-\subsubsection{Class-$2.2$: randomness}
-\label{sec:spec:instr:2:2}
-
-% -----------------------------------------------------------------------------
-
-\XCINSTR{RSEED.cr}{crs1}{
-  \iencrseedcr
-}{
-  Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\CPR$ register.
-}{
-  $\RNG \ASN \CPR[*][{\VERB[RV]{crs1}}]$ \;
-}
-
-% -----------------------------------------------------------------------------
-
-\XCINSTR{RSAMP.cr}{crd}{
-  \iencrsampcr
-}{
-  Sample           $32$-bits of entropy from the RNG, writing to   a $\CPR$ register.
-}{
-  $\CPR[*][{\VERB[RV]{crd}}] \ASN \RNG$ \;
-}
-
-% =============================================================================
-
-\subsubsection{Class-$2.3$: bit-oriented            operations}
+\subsubsection{Class-$2.3$: bit-oriented operations}
 \label{sec:spec:instr:2:3}
 
 \XCINSTR{LLI.cr}{crd, imm16}{
   \iencllicr
 }{
   Load an immediate halfword
-  into the lower (or least-significant) halfword of a $\CPR$ register, 
+  into the lower (or least-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
   Note that
   $
   \VERB[RV]{imm16} = \VERB[RV]{imm11} \CONS \VERB[RV]{imm5} .
   $
 }{
-  $\INDEX[16]{\CPR[*][{\VERB[RV]{crd}}]}{0} \ASN \VERB[RV]{imm16}$ \;
+  $\INDEX[16]{\XCR[*][{\VERB[RV]{crd}}]}{0} \ASN \VERB[RV]{imm16}$ \;
 }
 
 \XCINSTR{LUI.cr}{crd, imm16}{
   \iencluicr
 }{
   Load an immediate halfword
-  into the upper (or  most-significant) halfword of a $\CPR$ register, 
+  into the upper (or  most-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
   Note that
   $
@@ -268,7 +268,7 @@
 %with, we can then use only one instruction to create masks which fit
 %into only a single halfword.}
 }{
-  $\INDEX[16]{\CPR[*][{\VERB[RV]{crd}}]}{1} \ASN \VERB[RV]{imm16}$ \;
+  $\INDEX[16]{\XCR[*][{\VERB[RV]{crd}}]}{1} \ASN \VERB[RV]{imm16}$ \;
 }
 
 \XCINSTR{BOP.cr}{crd, crs1, crs2, lut4}{
@@ -278,7 +278,7 @@
 %amenable to bit-sliced implementations of cryptographic functions.
 %
 %BOP.cr takes a 4-bit immediate {\tt lut4}, and uses the concatenated
-%$i$'th bits of register inputs $\CPR[*][crs1]$ and  $\CPR[*][crs2]$
+%$i$'th bits of register inputs $\XCR[*][crs1]$ and  $\XCR[*][crs2]$
 %as the inputs, writing the output bit of the lut to the $i$'th bit of the
 %destination register.
 %\designnote{
@@ -288,8 +288,8 @@
 %}
 }{
   \For{$i = 0$ {\bf upto} $31$} {
-    $index \ASN \INDEX{\CPR[*][crs1]}{i} \CONS \INDEX{\CPR[*][crs2]}{i}$ \;
-    $\INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\VERB[RV]{lut4}}{index}$ \;
+    $index \ASN \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
+    $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\VERB[RV]{lut4}}{index}$ \;
   }
 }
 
@@ -315,7 +315,7 @@
 %\item \INST{EXT.cr rd, rs, s, l}{
 %    $b \ASN 2*s$\\
 %    $e \ASN 2*l + b$\\
-%    $\CPR[*][rd][e:0] \ASN \CPR[*][rs][e:b]$
+%    $\XCR[*][rd][e:0] \ASN \XCR[*][rs][e:b]$
 %}
 %\end{itemize}
 %}{}
@@ -326,14 +326,14 @@
 %{
 %This instruction allows for insertion of a contiguous sequences of two-bit
 %pairs into words.
-%It takes the low $2*l$ bits of $\CPR[*][rs]$ and inserts them
-%into $\CPR[*][rd]$, starting at bit position $2*s$.
+%It takes the low $2*l$ bits of $\XCR[*][rs]$ and inserts them
+%into $\XCR[*][rd]$, starting at bit position $2*s$.
 %}{
 %\begin{itemize}
 %\item \INST{INS.cr rd, rs, s, l}{
 %    $b \ASN 2*s$\\
 %    $e \ASN 2*l + b$\\
-%    $\CPR[*][rd][e:b] \ASN \CPR[*][rs][e:0]$
+%    $\XCR[*][rd][e:b] \ASN \XCR[*][rs][e:0]$
 %}
 %\end{itemize}
 %}{}
@@ -355,12 +355,12 @@
 %more efficient to re-use the 4-bit lut field of the BOP.cr
 %instruction.}
 }{
-  $t \ASN \CPR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{shamt}       $ \;
+  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{shamt}       $ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \eIf{$\INDEX{\CPR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
-      $\INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
+    \eIf{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
     }{
-      $\INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i}$
+      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i}$
     }
   }
 }
@@ -382,12 +382,12 @@
 %more efficient to re-use the 4-bit lut field of the BOP.cr
 %instruction.}
 }{
-  $t \ASN \CPR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 )$ \;
+  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 )$ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \eIf{$\INDEX{\CPR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
-      $\INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
+    \eIf{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
     }{
-      $\INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\CPR[*][{\VERB[RV]{crd}}]}{i}$
+      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i}$
     }
   }
 }
@@ -407,7 +407,7 @@
 
 % =============================================================================
 
-\subsubsection{Class-$2.4$: packed                  operations}
+\subsubsection{Class-$2.4$: packed operations}
 \label{sec:spec:instr:2:4}
 
 %When coding these instructions as assembly mnemonics, the {\tt x} in the
@@ -422,10 +422,13 @@
 %together ignoring any carry bits.
 %
 %No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{+}      \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{+}      \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -437,10 +440,13 @@
 %from the corresponding {\tt rs1} fields.
 %
 %No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{-}      \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{-}      \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -452,10 +458,13 @@
 %by the corresponding {\tt rs1} fields.
 %
 %No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\times} \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\times} \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -470,10 +479,13 @@
 %If the distance to shift by is greater than or equal to the size of each
 %packed field, then the result of the \ASM{SLL[I].px} instruction is
 %{\em implementation dependent}.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LSH}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -488,10 +500,13 @@
 %If the distance to shift by is greater than or equal to the size of each
 %packed field, then the result of the \ASM{SLL[I].px} instruction is
 %{\em implementation dependent}.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \VERB[RV]{cshamt}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LSH}   \VERB[RV]{cshamt}$ \;
   }
 }
 
@@ -506,10 +521,13 @@
 %If the distance to shift by is greater than or equal to the size of each
 %packed field, then the result of the \ASM{SRL[I].px} instruction is
 %{\em implementation dependent}.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\RSH}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -524,10 +542,13 @@
 %If the distance to shift by is greater than or equal to the size of each
 %packed field, then the result of the \ASM{SRL[I].px} instruction is
 %{\em implementation dependent}.
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \VERB[RV]{cshamt}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\RSH}   \VERB[RV]{cshamt}$ \;
   }
 }
 
@@ -538,10 +559,13 @@
 %1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
 %left by the value in {\tt CCSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 %(for \ASM{ROT.px}).
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LRT}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -552,10 +576,13 @@
 %1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
 %left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
 %(for \ASM{ROT.px}).
+  Note that
+  $
+  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  $
 }{
-  $w \ASN \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc}$\;
-  \For{$i = 0$ {\bf upto} $( 32 / w ) - 1$}{
-    $\INDEX[w]{\CPR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\CPR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \VERB[RV]{cshamt}$ \;
+  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
+    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LRT}   \VERB[RV]{cshamt}$ \;
   }
 }
 
@@ -569,11 +596,11 @@
 %}{
 %\begin{itemize}
 %\item \INST{TWID.B crd, crs1, b0, b1, b2, b3}{
-%    $bytes \ASN \LIST{\CPR[*][crs1][31:24],
-%                      \CPR[*][crs1][23:16],
-%                      \CPR[*][crs1][15: 8],
-%                      \CPR[*][crs1][ 7: 0]}$\\
-%    $ \CPR[*][{\VERB[RV]{crd}}] \ASN bytes[\VERB[RV]{b3}] \CONS
+%    $bytes \ASN \LIST{\XCR[*][crs1][31:24],
+%                      \XCR[*][crs1][23:16],
+%                      \XCR[*][crs1][15: 8],
+%                      \XCR[*][crs1][ 7: 0]}$\\
+%    $ \XCR[*][{\VERB[RV]{crd}}] \ASN bytes[\VERB[RV]{b3}] \CONS
 %                               bytes[\VERB[RV]{b2}] \CONS
 %                               bytes[\VERB[RV]{b1}] \CONS
 %                               bytes[\VERB[RV]{b0}] $ 
@@ -591,15 +618,15 @@
 %}{
 %\begin{itemize}
 %\item \INST{TWID.N0 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][15: 0] \ASN nibbles[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][15: 0] \ASN nibbles[\VERB[RV]{b3}] \CONS
 %                               nibbles[\VERB[RV]{b2}] \CONS
 %                               nibbles[\VERB[RV]{b1}] \CONS
 %                               nibbles[\VERB[RV]{b0}] $ \\
-%$ \CPR[*][{\VERB[RV]{crd}}][31:16] \ASN \CPR[*][\VERB[RV]{crs1}][31:16]$ \\
+%$ \XCR[*][{\VERB[RV]{crd}}][31:16] \ASN \XCR[*][\VERB[RV]{crs1}][31:16]$ \\
 %}
 %\item \INST{TWID.N1 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][15: 0] \ASN \CPR[*][\VERB[RV]{crs1}][15: 0]$ \\
-%$ \CPR[*][{\VERB[RV]{crd}}][31:16] \ASN nibbles[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][15: 0] \ASN \XCR[*][\VERB[RV]{crs1}][15: 0]$ \\
+%$ \XCR[*][{\VERB[RV]{crd}}][31:16] \ASN nibbles[\VERB[RV]{b3}] \CONS
 %                               nibbles[\VERB[RV]{b2}] \CONS
 %                               nibbles[\VERB[RV]{b1}] \CONS
 %                               nibbles[\VERB[RV]{b0}] $ \\
@@ -619,31 +646,31 @@
 %}{
 %\begin{itemize}
 %\item \INST{TWID.C0 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][ 7: 0] \ASN crumbs[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][ 7: 0] \ASN crumbs[\VERB[RV]{b3}] \CONS
 %                                  crumbs[\VERB[RV]{b2}] \CONS
 %                                  crumbs[\VERB[RV]{b1}] \CONS
 %                                  crumbs[\VERB[RV]{b0}] $ \\
-%$ \CPR[*][{\VERB[RV]{crd}}][31: 8] \ASN \CPR[*][\VERB[RV]{crs1}][31: 8]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][31: 8] \ASN \XCR[*][\VERB[RV]{crs1}][31: 8]$\\
 %}
 %\item \INST{TWID.C1 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][ 7: 0] \ASN \CPR[*][\VERB[RV]{crs1}][ 7: 0]$\\
-%$ \CPR[*][{\VERB[RV]{crd}}][15: 8] \ASN crumbs[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][ 7: 0] \ASN \XCR[*][\VERB[RV]{crs1}][ 7: 0]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][15: 8] \ASN crumbs[\VERB[RV]{b3}] \CONS
 %                                  crumbs[\VERB[RV]{b2}] \CONS
 %                                  crumbs[\VERB[RV]{b1}] \CONS
 %                                  crumbs[\VERB[RV]{b0}] $ \\
-%$ \CPR[*][{\VERB[RV]{crd}}][31:16] \ASN \CPR[*][\VERB[RV]{crs1}][31:16]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][31:16] \ASN \XCR[*][\VERB[RV]{crs1}][31:16]$\\
 %}
 %\item \INST{TWID.C2 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][15: 0] \ASN \CPR[*][\VERB[RV]{crs1}][15: 0]$\\
-%$ \CPR[*][{\VERB[RV]{crd}}][23:16] \ASN crumbs[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][15: 0] \ASN \XCR[*][\VERB[RV]{crs1}][15: 0]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][23:16] \ASN crumbs[\VERB[RV]{b3}] \CONS
 %                                  crumbs[\VERB[RV]{b2}] \CONS
 %                                  crumbs[\VERB[RV]{b1}] \CONS
 %                                  crumbs[\VERB[RV]{b0}] $ \\
-%$ \CPR[*][{\VERB[RV]{crd}}][31:24] \ASN \CPR[*][\VERB[RV]{crs1}][31:24]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][31:24] \ASN \XCR[*][\VERB[RV]{crs1}][31:24]$\\
 %}
 %\item \INST{TWID.C3 crd, crs1, b0, b1, b2, b3}{
-%$ \CPR[*][{\VERB[RV]{crd}}][23: 0] \ASN \CPR[*][\VERB[RV]{crs1}][23: 0]$\\
-%$ \CPR[*][{\VERB[RV]{crd}}][31:24] \ASN crumbs[\VERB[RV]{b3}] \CONS
+%$ \XCR[*][{\VERB[RV]{crd}}][23: 0] \ASN \XCR[*][\VERB[RV]{crs1}][23: 0]$\\
+%$ \XCR[*][{\VERB[RV]{crd}}][31:24] \ASN crumbs[\VERB[RV]{b3}] \CONS
 %                                  crumbs[\VERB[RV]{b2}] \CONS
 %                                  crumbs[\VERB[RV]{b1}] \CONS
 %                                  crumbs[\VERB[RV]{b0}] $ \\
@@ -716,9 +743,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{+} \CPR[*][{\VERB[RV]{crs2}}] )$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{+} \XCR[*][{\VERB[RV]{crs2}}] )$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -731,10 +758,10 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{+} \CPR[*][{\VERB[RV]{crs2}}] ) 
-                                                                \OP[32]{u}{+} \CPR[*][{\VERB[RV]{crs3}}]  $ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{+} \XCR[*][{\VERB[RV]{crs2}}] ) 
+                                                                \OP[32]{u}{+} \XCR[*][{\VERB[RV]{crs3}}]  $ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -747,9 +774,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{-} \CPR[*][{\VERB[RV]{crs2}}] )$\;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{-} \XCR[*][{\VERB[RV]{crs2}}] )$\;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -762,10 +789,10 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{-} \CPR[*][{\VERB[RV]{crs2}}] ) 
-                                                                \OP[32]{u}{-} \CPR[*][{\VERB[RV]{crs3}}]  $ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{-} \XCR[*][{\VERB[RV]{crs2}}] ) 
+                                                                \OP[32]{u}{-} \XCR[*][{\VERB[RV]{crs3}}]  $ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -778,9 +805,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crd2}}] \CONS \CPR[*][{\VERB[RV]{crd1}}] ) \OP[{64}]{u}{+} \CPR[*][{\VERB[RV]{crs1}}]$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crd2}}] \CONS \XCR[*][{\VERB[RV]{crd1}}] ) \OP[{64}]{u}{+} \XCR[*][{\VERB[RV]{crs1}}]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -793,10 +820,10 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crd2}}] \CONS \CPR[*][{\VERB[RV]{crd1}}] ) \OP[64]{u}{+} \CPR[*][{\VERB[RV]{crs1}}] 
-                                                                                                   \OP[64]{u}{+} \CPR[*][{\VERB[RV]{crs2}}]$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crd2}}] \CONS \XCR[*][{\VERB[RV]{crd1}}] ) \OP[64]{u}{+} \XCR[*][{\VERB[RV]{crs1}}] 
+                                                                                                   \OP[64]{u}{+} \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -809,10 +836,10 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{\cdot} \CPR[*][{\VERB[RV]{crs2}}] ) 
-                                                                \OP[32]{u}{+}     \CPR[*][{\VERB[RV]{crs3}}]$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32]{u}{\cdot} \XCR[*][{\VERB[RV]{crs2}}] ) 
+                                                                \OP[32]{u}{+}     \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -825,9 +852,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \CONS \CPR[*][{\VERB[RV]{crs2}}] ) \LSH \CPR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \LSH \XCR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
 
 }
 
@@ -841,9 +868,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \CONS \CPR[*][{\VERB[RV]{crs2}}] ) \LSH shamt$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \LSH shamt$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -856,9 +883,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN ( \CPR[*][{\VERB[RV]{crs1}}] \CONS \CPR[*][{\VERB[RV]{crs2}}] ) \RSH \CPR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \RSH \XCR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
 
 }
 
@@ -872,9 +899,9 @@
   \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } \mapsto \VERB[RV]{crdm} .
   $
 }{
-  $t                          \ASN (\CPR[*][{\VERB[RV]{crs1}}] \CONS \CPR[*][{\VERB[RV]{crs2}}]) \RSH shamt$ \;
-  $\CPR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\CPR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
+  $t                          \ASN (\XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}]) \RSH shamt$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
 
 }
 
@@ -885,7 +912,7 @@
 }{
 
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \CPR[*][{\VERB[RV]{crs1}}] = \CPR[*][{\VERB[RV]{crs2}}])                                                                     \AND \CPR[*][{\VERB[RV]{crs3}}]  $ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}])                                                                     \AND \XCR[*][{\VERB[RV]{crs3}}]  $ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -895,7 +922,7 @@
 }{
 
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \CPR[*][{\VERB[RV]{crs1}}] < \CPR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \CPR[*][{\VERB[RV]{crs1}}] = \CPR[*][{\VERB[RV]{crs2}}] ) \AND \CPR[*][{\VERB[RV]{crs3}}] )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] < \XCR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}] ) \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -905,7 +932,7 @@
 }{
 
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \CPR[*][{\VERB[RV]{crs1}}] > \CPR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \CPR[*][{\VERB[RV]{crs1}}] = \CPR[*][{\VERB[RV]{crs2}}] ) \AND \CPR[*][{\VERB[RV]{crs3}}] )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] > \XCR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}] ) \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
 }
 
 % =============================================================================
