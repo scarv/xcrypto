@@ -52,11 +52,17 @@ $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 
 
 #
-# Build the SMT2 model of the design using yosys for later feeding into
-# the formal flow.
+# Run the yosys formal flow
+#
+.PHONY: yosys_formal
+yosys_formal: $(RTL_DECODER)
+	$(MAKE) -C $(COP_HOME)/flow/yosys formal
+
+#
+# Generate the SMT2 representation for the formal testbench.
 #
 .PHONY: yosys_smt2
-yosys_smt2: $(RTL_DECODER)
+yosys_smt2: 
 	$(MAKE) -C $(COP_HOME)/flow/yosys smt2
 
 #

@@ -5,19 +5,10 @@ read_verilog -formal -I../../work/ ../../verif/model/model_checks.v
 read_verilog -formal -I../../work/ ../../rtl/coprocessor/*
 read_verilog -formal -I../../work/ ../../verif/tb/tb_formal.v
 
-# Translate into netlist. Required for SCC analysis
-proc
-
-# Check that there are no logic loops in the design early on.
-tee -o ../../work/logic-loops.rpt scc
-
 # Get setup to use the yosys_tb as the top module. The -nordff flag stops
 # the memory_dff command (run as part of prep) from merging flipflops into
 # memory read ports.
-prep -nordff
-
-# Do some "trivial" optimisation passes in preparation for SMT2 generation
-opt -keepdc -fast
+prep -flatten -top tb_formal
 
 # Write out the SMT2 code which can then be loaded into a solver engine.
-write_smt2 -wires ../../work/yosys_tb.smt2
+write_smt2 -wires ../../work/smt2/formal.smt2

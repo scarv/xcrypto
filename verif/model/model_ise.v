@@ -116,7 +116,7 @@ end
 //      Applies "OP" to the right sizes of data type and then writes
 //      the results back,
 //
-`define PACK_WIDTH_ARITH_OPERATION(OP) begin \
+`define PACK_WIDTH_ARITH_OPERATION(OP) begin : ise_model_pack_op \
     reg [31:0] result15; \
     reg [31:0] result14; \
     reg [31:0] result13; \
@@ -327,6 +327,18 @@ wire [31:0] encoded = cop_insn_enc;
 //
 
 reg  [31:0] model_cprs [15:0];
+reg  [31:0] n_model_cprs [15:0];
+
+genvar mc;
+generate for(mc = 0; mc < 16; mc = mc + 1) begin
+    always @(posedge g_clk) begin
+        if(!g_resetn && ISE_RESET_CPRS) begin
+            model_cprs[mc] <= 0;
+        end else if(cop_cprs_written[mc]) begin
+            model_cprs[mc] <= n_model_cprs[mc];
+        end
+    end
+end endgenerate
 
 wire [31:0] model_cpr_c0  = model_cprs[ 0];
 wire [31:0] model_cpr_c1  = model_cprs[ 1];
@@ -344,6 +356,16 @@ wire [31:0] model_cpr_c12 = model_cprs[12];
 wire [31:0] model_cpr_c13 = model_cprs[13];
 wire [31:0] model_cpr_c14 = model_cprs[14];
 wire [31:0] model_cpr_c15 = model_cprs[15];
+
+wire [31:0] model_crs1    = model_cprs[dec_arg_crs1];
+wire [31:0] model_crs2    = model_cprs[dec_arg_crs2];
+wire [31:0] model_crs3    = model_cprs[dec_arg_crs3];
+
+wire [4:0]  model_rdm1    = {dec_arg_crdm,1'b0};
+wire [4:0]  model_rdm2    = {dec_arg_crdm,1'b1};
+
+wire [31:0] model_crdm1   = model_cprs[model_rdm1];
+wire [31:0] model_crdm2   = model_cprs[model_rdm2];
 
 reg        model_mccr_c0 = ISE_MCCR_C0_R;
 reg        model_mccr_c1 = ISE_MCCR_C1_R;
@@ -380,25 +402,6 @@ begin
     model_mccr_c7 = ISE_MCCR_C7_R;
     model_mccr_s  = ISE_MCCR_S_R; 
     model_mccr_u  = ISE_MCCR_U_R; 
-
-    if (ISE_RESET_CPRS) begin
-        model_cprs[ 0] = 0;
-        model_cprs[ 1] = 0;
-        model_cprs[ 2] = 0;
-        model_cprs[ 3] = 0;
-        model_cprs[ 4] = 0;
-        model_cprs[ 5] = 0;
-        model_cprs[ 6] = 0;
-        model_cprs[ 7] = 0;
-        model_cprs[ 8] = 0;
-        model_cprs[ 9] = 0;
-        model_cprs[10] = 0;
-        model_cprs[11] = 0;
-        model_cprs[12] = 0;
-        model_cprs[13] = 0;
-        model_cprs[14] = 0;
-        model_cprs[15] = 0;
-    end
 
     model_do_clear_outputs();
 
@@ -460,7 +463,7 @@ task model_do_write_cpr;
     input  [ 3:0] cpr_addr;
     input  [31:0] cpr_data;
 begin
-    model_cprs[cpr_addr] = cpr_data;
+    n_model_cprs[cpr_addr] = cpr_data;
     cop_cprs_written[cpr_addr] = 1'b1;
     $display("\tCPR[%d] <- %h", cpr_addr, cpr_data);
 end endtask
@@ -732,7 +735,7 @@ end endtask
 task model_do_mv2gpr;
 begin: t_model_mv2gpr
     reg  [31:0] crs1;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     model_do_write_gpr(dec_arg_rd, crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
     $display("ISE> mv2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
@@ -759,8 +762,8 @@ begin: t_model_add_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(+)
     $display("add.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -777,8 +780,8 @@ begin: t_model_sub_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(-)
     $display("sub.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -795,8 +798,8 @@ begin: t_model_mul_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(*)
     $display("mul.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -813,8 +816,8 @@ begin: t_model_sll_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
     $display("sll.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -831,8 +834,8 @@ begin: t_model_srl_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
     $display("srl.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -849,8 +852,8 @@ begin: t_model_rot_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ROTATE_RIGHT_OPERATION(crs2[4:0])
     $display("rot.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
@@ -867,7 +870,7 @@ begin: t_model_slli_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(<<, dec_arg_cshamt)
 end endtask
@@ -882,7 +885,7 @@ begin: t_model_srli_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(>>, dec_arg_cshamt)
 end endtask
@@ -897,7 +900,7 @@ begin: t_model_roti_px
     reg  [31:0] result;
     reg  [ 5:0] pw;
     reg         pw_valid;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ROTATE_RIGHT_OPERATION(dec_arg_cshamt)
 end endtask
@@ -909,7 +912,7 @@ end endtask
 task model_do_rseed_cr;
 begin: t_model_rseed_cr
     reg  [31:0] crs1;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     $display("ISE> rseed.cr %d", dec_arg_crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
@@ -932,8 +935,8 @@ end endtask
 task model_do_cmov_cr;
 begin: t_model_cmov_cr
     reg  [31:0] crs1, crs2;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     if(crs2 == 0) begin
         model_do_write_cpr(dec_arg_crd,crs1);
     end else begin
@@ -951,8 +954,8 @@ end endtask
 task model_do_cmovn_cr;
 begin: t_model_cmovn_cr
     reg  [31:0] crs1, crs2;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     if(crs2 == 0) begin
         // Do nothing
     end else begin
@@ -979,7 +982,7 @@ begin: t_model_scatter_b
     
     txn_cnt = 0;
     errors  = {p_error[1],p_error[2],p_error[3],p_error[4]};
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
 
     addr0 = cop_rs1 + crs2[ 7: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
@@ -1034,7 +1037,7 @@ begin: t_model_gather_b
     
     txn_cnt = 0;
     errors  = {p_error[1],p_error[2],p_error[3],p_error[4]};
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
 
     addr0 = cop_rs1 + crs2[ 7: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
@@ -1084,7 +1087,7 @@ begin: t_model_scatter_h
     
     txn_cnt = 0;
     errors  = {p_error[1],p_error[2]};
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
 
     addr0 = cop_rs1 + crs2[15: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
@@ -1129,7 +1132,7 @@ begin: t_model_gather_h
     
     txn_cnt = 0;
     errors  = {p_error[1],p_error[2]};
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
 
     addr0 = cop_rs1 + crs2[15: 0]; wadd0 = addr0 & 32'hFFFF_FFFC;
@@ -1170,8 +1173,8 @@ begin: t_model_lmix_cr
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
     result  = (~crs2 & crd) | (crs2 & t0);
@@ -1188,8 +1191,8 @@ begin: t_model_hmix_cr
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
     result  = (~crs2 & crd) | (crs2 & t0);
@@ -1206,8 +1209,8 @@ begin: t_model_bop_cr
     reg  [31:0] crs1, crs2;
     integer i;
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     for(i = 0; i < 32; i = i + 1)
         result[i] = dec_arg_lut4[{crs1[i],crs2[2]}];
     model_do_write_cpr(dec_arg_crd, result);
@@ -1222,9 +1225,9 @@ end endtask
 task model_do_equ_mp;
 begin: t_model_equ_mp
     reg  [31:0] crs1, crs2, crs3;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     $display("ISE> ERROR: Instruction equ.mp not implemented");
 end endtask
 
@@ -1235,9 +1238,9 @@ end endtask
 task model_do_ltu_mp;
 begin: t_model_ltu_mp
     reg  [31:0] crs1, crs2, crs3;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     $display("ISE> ERROR: Instruction ltu.mp not implemented");
 end endtask
 
@@ -1248,9 +1251,9 @@ end endtask
 task model_do_gtu_mp;
 begin: t_model_gtu_mp
     reg  [31:0] crs1, crs2, crs3;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     $display("ISE> ERROR: Instruction gtu.mp not implemented");
 end endtask
 
@@ -1264,9 +1267,9 @@ begin: t_model_add3_mp
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
     model_do_decode_rdm(rd2,rd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     result = crs1 + crs2 + crs3;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
@@ -1284,8 +1287,8 @@ begin: t_model_add2_mp
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
     model_do_decode_rdm(rd2,rd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     result = crs1 + crs2;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
@@ -1300,9 +1303,9 @@ end endtask
 task model_do_sub3_mp;
 begin: t_model_sub3_mp
     reg  [31:0] crs1, crs2, crs3;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     $display("ISE> ERROR: Instruction sub3.mp not implemented");
 end endtask
 
@@ -1313,8 +1316,8 @@ end endtask
 task model_do_sub2_mp;
 begin: t_model_sub2_mp
     reg  [31:0] crs1, crs2;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     $display("ISE> ERROR: Instruction sub2.mp not implemented");
 end endtask
 
@@ -1329,8 +1332,8 @@ begin: t_model_slli_mp
     reg  [63:0] toshift;
     reg  [4:0] crd1,crd2;
     model_do_decode_rdm(crd2,crd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     toshift= {crs1,crs2};
     result = toshift << dec_arg_cmshamt;
     model_do_write_cpr(crd1,result[31: 0]);
@@ -1350,9 +1353,9 @@ begin: t_model_sll_mp
     reg  [63:0] toshift;
     reg  [4:0] crd1,crd2;
     model_do_decode_rdm(crd2,crd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     toshift= {crs1,crs2};
     result = toshift << crs3;
     model_do_write_cpr(crd1,result[31: 0]);
@@ -1373,8 +1376,8 @@ begin: t_model_srli_mp
     reg  [63:0] toshift;
     reg  [4:0] crd1,crd2;
     model_do_decode_rdm(crd2,crd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs1=model_crs1;
+    crs2=model_crs2;
     toshift= {crs1,crs2};
     result = toshift >> dec_arg_cmshamt;
     model_do_write_cpr(crd1,result[31: 0]);
@@ -1394,9 +1397,9 @@ begin: t_model_srl_mp
     reg  [63:0] toshift;
     reg  [3:0] crd1,crd2;
     model_do_decode_rdm(crd2,crd1);
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     toshift= {crs1,crs2};
     result = toshift >> crs3;
     model_do_write_cpr(crd1,result[31: 0]);
@@ -1456,9 +1459,9 @@ end endtask
 task model_do_mac_mp;
 begin: t_model_mac_mp
     reg  [31:0] crs1, crs2, crs3;
-    model_do_read_cpr(dec_arg_crs1, crs1);
-    model_do_read_cpr(dec_arg_crs2, crs2);
-    model_do_read_cpr(dec_arg_crs3, crs3);
+    crs1=model_crs1;
+    crs2=model_crs2;
+    crs2=model_crs3;
     $display("ISE> ERROR: Instruction mac.mp not implemented");
 end endtask
 
@@ -1622,7 +1625,7 @@ begin: t_model_twid_b
     reg  [31:0] crs1;
     reg  [ 7:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     split[3] = crs1[31:24];    split[2] = crs1[23:16];
     split[1] = crs1[15: 8];    split[0] = crs1[ 7: 0];
     result   = {split[dec_arg_b3], split[dec_arg_b2],
@@ -1642,7 +1645,7 @@ begin: t_model_twid_n0
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     split[3] = crs1[15:12];    split[2] = crs1[11: 8];
     split[1] = crs1[ 7: 4];    split[0] = crs1[ 3: 0];
     result   = {crs1[31:16],
@@ -1663,7 +1666,7 @@ begin: t_model_twid_n1
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     split[3] = crs1[31:28];    split[2] = crs1[27:24];
     split[1] = crs1[23:20];    split[0] = crs1[19:16];
     result   = {split[dec_arg_b3], split[dec_arg_b2],
@@ -1685,7 +1688,7 @@ begin: t_model_twid_c0
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     ibyte    = crs1[7:0];
     split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
     split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
@@ -1708,7 +1711,7 @@ begin: t_model_twid_c1
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     ibyte    = crs1[15:8];
     split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
     split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
@@ -1732,7 +1735,7 @@ begin: t_model_twid_c2
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     ibyte    = crs1[23:16];
     split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
     split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
@@ -1756,7 +1759,7 @@ begin: t_model_twid_c3
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     ibyte    = crs1[31:24];
     split[3] = ibyte[ 7: 6]; split[2] = ibyte[ 5: 4];
     split[1] = ibyte[ 3: 2]; split[0] = ibyte[ 1: 0];
@@ -1781,7 +1784,7 @@ begin: t_model_ins_cr
     reg  [5:0]  l;
     reg  [31:0] mask;
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     model_do_read_cpr(dec_arg_crd , crd );
     s = {dec_arg_cs, 1'b0};
     l = {dec_arg_cl, 1'b0};
@@ -1802,7 +1805,7 @@ begin: t_model_ext_cr
     reg  [5:0]  s;
     reg  [5:0]  l;
     reg  [31:0] result;
-    model_do_read_cpr(dec_arg_crs1, crs1);
+    crs1=model_crs1;
     s = {dec_arg_cs, 1'b0};
     l = {dec_arg_cl, 1'b0};
     result = (crs1 >> s) & (~(32'hFFFF_FFFF << l));
@@ -1826,7 +1829,7 @@ begin: t_model_sb_cr
     reg         txn_correct;
     reg  [31:0] ardata;
 
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
 
     exp_addr  =
         cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
@@ -1866,7 +1869,7 @@ begin: t_model_sh_cr
     reg         txn_correct;
     reg  [31:0] ardata;
 
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
 
     exp_addr  =
         cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
@@ -1901,7 +1904,7 @@ begin: t_model_sw_cr
     reg         txn_correct;
     reg  [31:0] ardata;
 
-    model_do_read_cpr(dec_arg_crs2, crs2);
+    crs2=model_crs2;
 
     exp_addr  =
         cop_rs1+{{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
@@ -1932,6 +1935,24 @@ end endtask
 //  clock tick, and models a single instruction or action every cycle.
 //
 always @(posedge g_clk) begin : p_model_control
+
+    n_model_cprs[ 0] = model_cprs[ 0];
+    n_model_cprs[ 1] = model_cprs[ 1];
+    n_model_cprs[ 2] = model_cprs[ 2];
+    n_model_cprs[ 3] = model_cprs[ 3];
+    n_model_cprs[ 4] = model_cprs[ 4];
+    n_model_cprs[ 5] = model_cprs[ 5];
+    n_model_cprs[ 6] = model_cprs[ 6];
+    n_model_cprs[ 7] = model_cprs[ 7];
+    n_model_cprs[ 8] = model_cprs[ 8];
+    n_model_cprs[ 9] = model_cprs[ 9];
+    n_model_cprs[10] = model_cprs[10];
+    n_model_cprs[11] = model_cprs[11];
+    n_model_cprs[12] = model_cprs[12];
+    n_model_cprs[13] = model_cprs[13];
+    n_model_cprs[14] = model_cprs[14];
+    n_model_cprs[15] = model_cprs[15];
+    cop_cprs_written = 0;
 
     if(!g_resetn) begin
         
