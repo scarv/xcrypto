@@ -17,17 +17,20 @@ SMT_STEPS   = 10
 SMT_SOLVER  = z3
 SMT_VCD     = $(COP_WORK)/smt.vcd
 
+LOG_SYNTH   = $(COP_HOME)/work/yosys-synth.log
+LOG_TB      = $(COP_HOME)/work/yosys-tb.log
+
 all: $(SMT2_out) $(VLOG_out)
 
 smt2        : $(SMT2_out)
 $(SMT2_out) : YS_SCRIPT = write-smt-tb.ys
 $(SMT2_out) : $(YS_SCRIPT) $(SRC_RTL) $(SRC_VERIF)
-	$(YS) -QT -l $(COP_HOME)/work/yosys-tb.log $(YS_SCRIPT)
+	$(YS) -QT -l $(LOG_TB) $(YS_SCRIPT)
 
 synthesise: $(VLOG_out)
 $(VLOG_out) : YS_SCRIPT = write-verilog.ys
 $(VLOG_out) : $(YS_SCRIPT) $(SRC_RTL)
-	$(YS) -QT -l $(COP_HOME)/work/yosys-synth.log $(YS_SCRIPT)
+	$(YS) -QT -l $(LOG_SYNTH) $(YS_SCRIPT)
 
 .PHONY: adder
 adder       : YS_SCRIPT = adder.ys
@@ -43,4 +46,5 @@ formal-trace:
         $(SMT2_out)
 
 clean:
-	rm -rf $(YS_VCD) $(SMT2_out)
+	rm -rf $(YS_VCD) $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
+        $(COP_WORK)/*.log $(COP_WORK)/*.rpt $(LOG_TB)

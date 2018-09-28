@@ -30,6 +30,8 @@ clean:
 	$(MAKE) -C $(COP_HOME)/docs     clean
 	$(MAKE) -C $(COP_HOME)/examples clean
 	$(MAKE) -C $(COP_HOME)/verif/unit clean
+	$(MAKE) -C $(COP_HOME)/flow/icarus clean
+	$(MAKE) -C $(COP_HOME)/flow/yosys clean
 	rm -f $(RTL_DECODER)
 
 #
