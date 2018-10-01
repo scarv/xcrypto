@@ -20,13 +20,23 @@ VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
 LOG_SYNTH   = $(COP_HOME)/work/yosys-synth.log
 LOG_SMT2    = $(COP_HOME)/work/smt2/synthesis.log
 
-FML_CHECK_NAME  ?= correct_result_encodings
-FML_TMP_FILE     = $(COP_WORK)/smt2/tmp.$(FML_CHECK_NAME)
-SMT2_out        ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).smt2
-SMT2_TRACE      ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).vcd
-SMT2_VTB        ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).v
+SMTDIR          ?= $(COP_WORK)/smt2
+CHECKS_DIR       = $(COP_HOME)/verif/formal
 
-all: $(VLOG_out)
+FML_CHECK_NAME  ?= correct_invalid_opcode_response \
+                   correct_result_encodings \
+                   instr_mv2cop \
+                   instr_mv2gpr
+
+FML_CHECK_SRC = $(addsuffix .v,$(addprefix $(CHECKS_DIR)/fml_chk_, $(FML_CHECK_NAME)))
+SMT2_out     ?= $(addsuffix .smt2,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_RPTS    ?= $(addsuffix .rpt ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_TRACE   ?= $(addsuffix .vcd ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_VTB     ?= $(addsuffix .v   ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+
+all: $(VLOG_out) formal-checks
+
+formal-checks: $(SMT2_out) $(SMT2_RPTS)
 
 synthesise: $(VLOG_out)
 $(VLOG_out) : YS_SCRIPT = write-verilog.ys
@@ -38,17 +48,14 @@ adder       : YS_SCRIPT = adder.ys
 adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 	$(YS) -QT $(YS_SCRIPT)
 
-$(FML_TMP_FILE):
-	touch $(FML_TMP_FILE)
-
 .PHONY: smt2
 smt2: $(SMT2_out)
-$(SMT2_out) : $(SRC_RTL) $(SRC_VERIF) $(FML_TMP_FILE)
+$(SMTDIR)/%.smt2 : $(SRC_RTL) $(SRC_VERIF)
 	-mkdir -p $(dir $(SMT2_out))
-	$(YS) -QT -l $(LOG_SMT2) \
-        -p"verilog_defaults -add -DFML_CHECK_NAME=$(FML_CHECK_NAME)" \
+	$(YS) -qQT -l $@.log \
+        -p"verilog_defaults -add -DFML_CHECK_NAME=$(basename $(notdir $@))" \
         -p"script $(YS_SCRIPT)" \
-        -p"write_smt2 -wires $(SMT2_out)"
+        -p"write_smt2 -wires $@"
 
 smt2-trace: $(SMT2_out)
 	$(YSMTBMC) -t $(BMC_STEPS) \
@@ -57,6 +64,16 @@ smt2-trace: $(SMT2_out)
                --dump-vcd $(SMT2_TRACE) \
                -s z3 \
                $(SMT2_out)
+
+$(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
+	rm -f $@
+	$(YSMTBMC) -t $(BMC_STEPS) \
+               --presat \
+               --dump-vcd $@.vcd \
+               --noprogress \
+               -s z3 \
+               $<
+	echo "PASSED" > $@
 
 .PHONY: formal
 formal: $(SMT2_out)
