@@ -192,12 +192,12 @@ assign n_cop_wdata = palu_cpr_rd_wdata;
 //  and/or the result of the instruction together. Note
 //  SCARV_COP_INSN_SUCCESS == 0
 assign n_cop_result= 
-    {3{id_exception                  }} & SCARV_COP_INSN_BAD_INS |
+    id_exception ?  SCARV_COP_INSN_BAD_INS : (
     {3{!mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_LAD |
     {3{!mem_is_store & mem_bus_error }} & SCARV_COP_INSN_LD_ERR  |
     {3{ mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_SAD |
     {3{ mem_is_store & mem_bus_error }} & SCARV_COP_INSN_ST_ERR  |
-                                          SCARV_COP_INSN_SUCCESS ;
+                                          SCARV_COP_INSN_SUCCESS );
 
 always @(posedge g_clk) if(!g_resetn) begin
     cop_wen    <= 1'b0; // COP write enable
