@@ -12,6 +12,10 @@
 `include "fml_common.vh"
 `include "scarv_cop_common.vh"
 
+`ifdef FORMAL
+`include "fml_common.vh"
+`endif
+
 //
 // module: fml_checks_top
 //
@@ -73,6 +77,18 @@ wire [31:0] vtx_cprs_post[15:0];
         assert(vtx_instr_result != SCARV_COP_INSN_BAD_INS);
     end
 `VTX_CHECK_END(correct_invalid_opcode_response)
+
+
+// ----------------------------------------------------------------------
+//
+// Instruction Checks
+//
+
+`VTX_CHECK_INSTR_BEGIN(mv2cop) 
+    assert(vtx_cprs_post[dec_arg_crd] == vtx_instr_rs1);
+    assert(vtx_instr_result == SCARV_COP_INSN_SUCCESS);
+    assert(vtx_instr_wen    == 1'b0);
+`VTX_CHECK_INSTR_END
 
 endmodule
 

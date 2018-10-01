@@ -184,7 +184,7 @@ wire mem_txn_error = mem_bus_error || mem_addr_error;
 // Is the instruction finished, and how did it finish.
 
 assign mem_bus_error =
-     p_cen && !cop_mem_stall && cop_mem_error;
+     mem_ivalid && p_cen && !cop_mem_stall && cop_mem_error;
 
 
 // Compute address errors based on inputs to the address computation, not
@@ -203,8 +203,8 @@ assign mem_addr_error   =
     (is_ga_h || is_sc_h) && (sgh_0_addr_err || sgh_1_addr_err);
 
 assign mem_idone        = 
-    mem_txn_good && n_mem_fsm == FSM_IDLE       ||
-    mem_txn_error                                ;
+    mem_ivalid && mem_txn_good && n_mem_fsm == FSM_IDLE       ||
+    mem_ivalid && mem_txn_error                                ;
 
 //
 // Writeback data assignment.
@@ -270,7 +270,7 @@ always @(*) begin
 end
 
 assign mem_cpr_rd_wdata  = 
-    {32{mem_txn_good}} & 
+    {32{mem_txn_good && mem_ivalid}} & 
     {wb_bytes[3],
      wb_bytes[2],
      wb_bytes[1],

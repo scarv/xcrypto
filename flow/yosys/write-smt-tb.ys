@@ -1,6 +1,7 @@
 
 # Read in the design
-read_verilog -formal -I../../work/ ../../rtl/coprocessor/*
+read_verilog -formal -I../../work/ -I../../verif/formal \
+    ../../rtl/coprocessor/*
 
 # Top level formal testbench.
 read_verilog -formal -I../../work/ -I../../rtl/coprocessor \

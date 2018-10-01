@@ -72,8 +72,8 @@ always @(posedge g_clk) if(!g_resetn) begin
     end else if($past(cpu_insn_req && !cop_insn_ack)) begin
         
         assume(cpu_insn_req);
-        assume($stable(cpu_insn_enc));
-        assume($stable(cpu_rs1     ));
+        assume($past(cpu_insn_enc) == cpu_insn_enc);
+        assume($past(cpu_rs1     ) == cpu_rs1     );
 
     end else if($past( cpu_insn_req &&  cop_insn_ack)) begin
 
@@ -120,6 +120,7 @@ reg [31:0] vtx_instr_wdata          ;
 reg [ 4:0] vtx_instr_waddr          ;
 reg [ 0:0] vtx_instr_wen            ;
 
+wire[31:0] vtx_cprs_snoop   [15:0]  ;
 reg [31:0] vtx_cprs_pre     [15:0]  ;
 reg [31:0] vtx_cprs_post    [15:0]  ;
 
@@ -129,27 +130,6 @@ always @(posedge g_clk) vtx_reset <= g_resetn;
 
 initial assume(vtx_valid == 0);
 
-//
-// Capture CPR values pre each instruction
-//
-generate for(i=0; i < 16; i = i + 1) begin
-    always @(posedge g_clk) if(!g_resetn) begin
-        vtx_cprs_pre[i] <= 0;
-    end else if(cpu_insn_req && cop_insn_ack) begin
-        vtx_cprs_pre[i] <= i_dut.i_scarv_cop_cprs.cprs[i];
-    end
-end endgenerate
-
-//
-// Capture CPR values post each instruction
-//
-generate for(i=0; i < 16; i = i + 1) begin
-    always @(posedge g_clk) if(!g_resetn) begin
-        vtx_cprs_post[i] <= 0;
-    end else if(cop_insn_rsp && cpu_insn_ack) begin
-        vtx_cprs_post[i] <= i_dut.i_scarv_cop_cprs.cprs[i];
-    end
-end endgenerate
 
 //
 // Capture input instructions to the COP
@@ -204,6 +184,7 @@ scarv_cop_top i_dut(
 .g_clk         (g_clk        ) , // Global clock
 .g_clk_req     (g_clk_req    ) , // Clock request
 .g_resetn      (g_resetn     ) , // Synchronous active low reset.
+`VTX_REGISTER_PORTS_CON(cprs_snoop, vtx_cprs_snoop)
 .cpu_insn_req  (cpu_insn_req ) , // Instruction request
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
 .cpu_abort_req (cpu_abort_req) , // Abort Instruction
@@ -227,6 +208,27 @@ scarv_cop_top i_dut(
 .cop_mem_error (cop_mem_error)   // Error
 );
 
+//
+// Capture CPR values pre each instruction
+//
+generate for(i=0; i < 16; i = i + 1) begin
+    always @(posedge g_clk) if(!g_resetn) begin
+        vtx_cprs_pre[i] <= 0;
+    end else if(cpu_insn_req && cop_insn_ack) begin
+        vtx_cprs_pre[i] <= vtx_cprs_snoop[i];
+    end
+end endgenerate
+
+//
+// Capture CPR values post each instruction
+//
+generate for(i=0; i < 16; i = i + 1) begin
+    always @(posedge g_clk) if(!g_resetn) begin
+        vtx_cprs_post[i] <= 0;
+    end else if(cop_insn_rsp && cpu_insn_ack) begin
+        vtx_cprs_post[i] <= vtx_cprs_snoop[i];
+    end
+end endgenerate
 
 endmodule
 
