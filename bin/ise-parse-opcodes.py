@@ -422,6 +422,20 @@ def make_verilog_extra(match,mask):
         print("")
         print("")
 
+def make_verilog_formal(match,mask):
+    
+    for instr in namelist:
+        print("//")
+        print("// Formal checks for %s" % instr)
+        print("//")
+        print("`VTX_CHECK_INSTR_BEGIN(%s)" % instr.lower().replace(".","_"))
+        if("rd" in arguments[instr]):
+            print("    `VTX_ASSERT_WEN_IS_SET")
+        else:
+            print("    `VTX_ASSERT_WEN_IS_CLEAR")
+        print("`VTX_CHECK_END")
+        print("\n")
+
 ##################################
 
 for line in sys.stdin:
@@ -501,5 +515,7 @@ elif sys.argv[1] == '-verilog':
   make_verilog(match,mask)
 elif sys.argv[1] == '-verilog-extra':
   make_verilog_extra(match,mask)
+elif sys.argv[1] == '-verilog-formal':
+  make_verilog_formal(match,mask)
 else:
   assert 0
