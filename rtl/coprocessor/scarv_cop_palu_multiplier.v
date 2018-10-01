@@ -48,20 +48,20 @@ wire   pw_8          = pw == SCARV_COP_PW_8 ; // 8   4-bit nibbles
 wire   pw_16         = pw == SCARV_COP_PW_16; // 16  2-bit crumbs
 
 `define AMSK_BIT(C,N,B,H,W) \
-    pw_16 && b[ C | n_ctr[0  ]] || pw_8 && b[ N | n_ctr[1:0]] || \
-    pw_4  && b[ B | n_ctr[2:0]] || pw_2 && b[ H | n_ctr[3:0]] || \
-    pw_1  && b[ W | n_ctr[4:0]],                                    \
-    pw_16 && b[ C | n_ctr[0  ]] || pw_8 && b[ N | n_ctr[1:0]] || \
-    pw_4  && b[ B | n_ctr[2:0]] || pw_2 && b[ H | n_ctr[3:0]] || \
-    pw_1  && b[ W | n_ctr[4:0]] 
+    pw_16 && (b>>(C|n_ctr[0  ]))&1 || pw_8 && (b>>(N|n_ctr[1:0]))&1 || \
+    pw_4  && (b>>(B|n_ctr[2:0]))&1 || pw_2 && (b>>(H|n_ctr[3:0]))&1 || \
+    pw_1  && (b>>(W|n_ctr[4:0]))&1,                                       \
+    pw_16 && (b>>(C|n_ctr[0  ]))&1 || pw_8 && (b>>(N|n_ctr[1:0]))&1 || \
+    pw_4  && (b>>(B|n_ctr[2:0]))&1 || pw_2 && (b>>(H|n_ctr[3:0]))&1 || \
+    pw_1  && (b>>(W|n_ctr[4:0]))&1 
 
 `define AMSK_BIT0(C,N,B,H,W) \
-    pw_16 && b[ C ] || pw_8 && b[ N ] || \
-    pw_4  && b[ B ] || pw_2 && b[ H ] || \
-    pw_1  && b[ W ],                        \
-    pw_16 && b[ C ] || pw_8 && b[ N ] || \
-    pw_4  && b[ B ] || pw_2 && b[ H ] || \
-    pw_1  && b[ W ] 
+    pw_16 && b[C] || pw_8 && b[N] || \
+    pw_4  && b[B] || pw_2 && b[H] || \
+    pw_1  && b[W],                      \
+    pw_16 && b[C] || pw_8 && b[N] || \
+    pw_4  && b[B] || pw_2 && b[H] || \
+    pw_1  && b[W] 
 
 wire [31:0]  add_mask      = {
     `AMSK_BIT(30, 28, 24, 16, 0),
