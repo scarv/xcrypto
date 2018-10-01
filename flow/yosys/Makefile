@@ -10,10 +10,6 @@ SBY         ?= sby
 SBY_SCRIPT  ?= proofs.sby
 SBY_WORK    ?= $(COP_WORK)/sby
 
-SMT2_out    ?= $(COP_WORK)/smt2/formal.smt2
-SMT2_TRACE  ?= $(COP_WORK)/smt2/trace.vcd
-SMT2_VTB    ?= $(COP_WORK)/smt2/vtb.v
-
 SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v") \
 	           $(shell find ../../ -path "*rtl/*.vh")
 SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.vh") \
@@ -24,7 +20,11 @@ VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
 LOG_SYNTH   = $(COP_HOME)/work/yosys-synth.log
 LOG_SMT2    = $(COP_HOME)/work/smt2/synthesis.log
 
-PREP_MODEL  = $(COP_WORK)/model_ise_prep.ilang
+FML_CHECK_NAME  ?= correct_result_encodings
+FML_TMP_FILE     = $(COP_WORK)/smt2/tmp.$(FML_CHECK_NAME)
+SMT2_out        ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).smt2
+SMT2_TRACE      ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).vcd
+SMT2_VTB        ?= $(COP_WORK)/smt2/$(FML_CHECK_NAME).v
 
 all: $(VLOG_out)
 
@@ -38,14 +38,17 @@ adder       : YS_SCRIPT = adder.ys
 adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 	$(YS) -QT $(YS_SCRIPT)
 
-$(PREP_MODEL) : $(COP_HOME)/verif/model/model_ise.v
-	$(YS) -QT prep_ise_model.ys
+$(FML_TMP_FILE):
+	touch $(FML_TMP_FILE)
 
 .PHONY: smt2
 smt2: $(SMT2_out)
-$(SMT2_out) : $(SRC_RTL) $(SRC_VERIF)
+$(SMT2_out) : $(SRC_RTL) $(SRC_VERIF) $(FML_TMP_FILE)
 	-mkdir -p $(dir $(SMT2_out))
-	$(YS) -QT -l $(LOG_SMT2) $(YS_SCRIPT)
+	$(YS) -QT -l $(LOG_SMT2) \
+        -p"verilog_defaults -add -DFML_CHECK_NAME=$(FML_CHECK_NAME)" \
+        -p"script $(YS_SCRIPT)" \
+        -p"write_smt2 -wires $(SMT2_out)"
 
 smt2-trace: $(SMT2_out)
 	$(YSMTBMC) -t $(BMC_STEPS) \
@@ -65,5 +68,5 @@ formal: $(SMT2_out)
                $(SMT2_out)
 
 clean:
-	rm -rf $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
+	rm -rf $(COP_WORK)/smt2 $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
         $(COP_WORK)/*.log $(COP_WORK)/*.rpt

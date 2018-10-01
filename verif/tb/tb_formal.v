@@ -162,7 +162,7 @@ end
 //
 // Checker Instance
 //
-fml_checks_top i_fml_checks_top(
+`FML_CHECK_NAME i_fml_checks(
 .vtx_clk         (g_clk           ),
 .vtx_reset       (vtx_reset       ),
 `VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre )
@@ -231,4 +231,5 @@ generate for(i=0; i < 16; i = i + 1) begin
 end endgenerate
 
 endmodule
+
 

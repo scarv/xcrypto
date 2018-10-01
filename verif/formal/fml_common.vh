@@ -18,17 +18,19 @@
 `define VTX_CLK_NAME vtx_clk
 
 // Start a checker block
-`define VTX_CHECK_BEGIN(NAME) always @(posedge `VTX_CLK_NAME) \
-    if(vtx_valid) begin : NAME
+`define VTX_CHECK_BEGIN(NAME) \
+    always @(posedge `VTX_CLK_NAME) \
+        if(vtx_valid) begin
 
 // End a checker block
-`define VTX_CHECK_END(NAME) end
+`define VTX_CHECK_END(NAME) end 
 
 // Start an instruction checker block.
-`define VTX_CHECK_INSTR_BEGIN(NAME) always @(posedge `VTX_CLK_NAME) \
-    if(vtx_valid && dec_``NAME) begin : check_instr_``NAME
+`define VTX_CHECK_INSTR_BEGIN(NAME)   \
+    always @(posedge `VTX_CLK_NAME) \
+        if(vtx_valid && dec_``NAME) begin
 
-`define VTX_CHECK_INSTR_END(NAME) end
+`define VTX_CHECK_INSTR_END(NAME) end 
 
 // -------------------------------------------------------------------
 
@@ -51,6 +53,18 @@
     assert(vtx_cprs_post[dec_arg_crd] == VAL);
 
 // -------------------------------------------------------------------
+
+
+`define VTX_COMMON_INPUTS \
+input wire [ 0:0] vtx_reset                , \
+input wire [ 0:0] vtx_valid                , \
+input wire [31:0] vtx_instr_enc            , \
+input wire [31:0] vtx_instr_rs1            , \
+input wire [ 2:0] vtx_instr_result         , \
+input wire [31:0] vtx_instr_wdata          , \
+input wire [ 4:0] vtx_instr_waddr          , \
+input wire [ 0:0] vtx_instr_wen            ,
+
 
 // Name of arrays to registers ports.
 `define VTX_REGISTER_PORT_NAME(NAME,IDX) _``IDX``_``NAME``
@@ -147,4 +161,22 @@
     assign `VTX_REGISTER_PORT_NAME(TO, 13) = FROM[13]; \
     assign `VTX_REGISTER_PORT_NAME(TO, 14) = FROM[14]; \
     assign `VTX_REGISTER_PORT_NAME(TO, 15) = FROM[15]; \
+
+
+`define VTX_CHECKER_MODULE_BEGIN(NAME) \
+module NAME( \
+input wire        vtx_clk                  , \
+`VTX_REGISTER_PORTS_IN(vtx_cprs_pre ) \
+`VTX_REGISTER_PORTS_IN(vtx_cprs_post) \
+`VTX_COMMON_INPUTS \
+); \
+wire [31:0] encoded = vtx_instr_enc; \
+`include "ise_decode.v" \
+wire [31:0] vtx_cprs_pre [15:0]; \
+wire [31:0] vtx_cprs_post[15:0]; \
+`VTX_REGISTER_PORTS_ASSIGN(vtx_cprs_pre , vtx_cprs_pre ) \
+`VTX_REGISTER_PORTS_ASSIGN(vtx_cprs_post, vtx_cprs_post) 
+
+`define VTX_CHECKER_MODULE_END(NAME) \
+endmodule // NAME
 

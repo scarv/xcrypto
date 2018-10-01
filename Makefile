@@ -10,6 +10,8 @@ RTL_DECODER   = $(COP_WORK)/ise_decode.v
 UNIT_TESTS    = $(shell find . -path "./work/unit/*.hex")
 UNIT_WAVES    = $(UNIT_TESTS:%.hex=%.vcd)
 
+export FML_CHECK_NAME = PLEASE_SPECIFY_FORMAL_CHECK
+
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
 export RTL_TIMEOUT   ?= 300
 
