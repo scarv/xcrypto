@@ -84,10 +84,24 @@ wire [31:0] vtx_cprs_post[15:0];
 // Instruction Checks
 //
 
+//
+// mv2cop
+//
 `VTX_CHECK_INSTR_BEGIN(mv2cop) 
-    assert(vtx_cprs_post[dec_arg_crd] == vtx_instr_rs1);
-    assert(vtx_instr_result == SCARV_COP_INSN_SUCCESS);
-    assert(vtx_instr_wen    == 1'b0);
+    `VTX_ASSERT_CRD_VALUE_IS(vtx_instr_rs1)
+    `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
+    `VTX_ASSERT_WEN_IS_CLEAR
+`VTX_CHECK_INSTR_END
+
+
+//
+// mv2gpr
+//
+`VTX_CHECK_INSTR_BEGIN(mv2gpr) 
+    `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
+    `VTX_ASSERT_WEN_IS_SET
+    `VTX_ASSERT_WDATA_IS(vtx_cprs_pre[dec_arg_crs1])
+    `VTX_ASSERT_WADDR_IS(dec_arg_rd                )
 `VTX_CHECK_INSTR_END
 
 endmodule

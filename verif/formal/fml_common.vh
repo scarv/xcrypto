@@ -30,6 +30,28 @@
 
 `define VTX_CHECK_INSTR_END(NAME) end
 
+// -------------------------------------------------------------------
+
+`define VTX_ASSERT_RESULT_IS(RESULT) \
+    assert(vtx_instr_result == RESULT);
+
+`define VTX_ASSERT_WEN_IS(VAL) \
+    assert(vtx_instr_wen    == VAL);
+
+`define VTX_ASSERT_WEN_IS_CLEAR `VTX_ASSERT_WEN_IS(1'b0)
+`define VTX_ASSERT_WEN_IS_SET   `VTX_ASSERT_WEN_IS(1'b1)
+
+`define VTX_ASSERT_WDATA_IS(VAL) \
+    assert(vtx_instr_wdata == VAL);
+
+`define VTX_ASSERT_WADDR_IS(VAL) \
+    assert(vtx_instr_waddr == VAL);
+
+`define VTX_ASSERT_CRD_VALUE_IS(VAL) \
+    assert(vtx_cprs_post[dec_arg_crd] == VAL);
+
+// -------------------------------------------------------------------
+
 // Name of arrays to registers ports.
 `define VTX_REGISTER_PORT_NAME(NAME,IDX) _``IDX``_``NAME``
 
