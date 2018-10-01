@@ -66,6 +66,13 @@ yosys_smt2:
 	$(MAKE) -C $(COP_HOME)/flow/yosys smt2
 
 #
+# Create an example trace from the SMT2 file.
+#
+.PHONY: yosys_trace
+yosys_trace: 
+	$(MAKE) -C $(COP_HOME)/flow/yosys smt2-trace
+
+#
 # Synthesis the verilog design using yosys
 #
 .PHONY: yosys_synth

@@ -4,11 +4,14 @@ YS          ?= $(YS_INSTALL)yosys
 YSMTBMC     ?= $(YS_INSTALL)yosys-smtbmc
 YS_SCRIPT   ?= write-smt-tb.ys
 
+BMC_STEPS   ?= 10
+
 SBY         ?= sby
 SBY_SCRIPT  ?= proofs.sby
 SBY_WORK    ?= $(COP_WORK)/sby
 
 SMT2_out    ?= $(COP_WORK)/smt2/formal.smt2
+SMT2_TRACE  ?= $(COP_WORK)/smt2/trace.vcd
 
 SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v")
 SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.v")
@@ -41,13 +44,21 @@ $(SMT2_out) : $(SRC_RTL) $(SRC_VERIF)
 	-mkdir -p $(dir $(SMT2_out))
 	$(YS) -QT -l $(LOG_SMT2) $(YS_SCRIPT)
 
+smt2-trace: $(SMT2_out)
+	$(YSMTBMC) -t $(BMC_STEPS) \
+               -g \
+               --presat \
+               --dump-vcd $(SMT2_TRACE) \
+               -s z3 \
+               $(SMT2_out)
+
 .PHONY: formal
-formal:
-	-rm -rf $(SBY_WORK)
-	sby -d $(SBY_WORK) \
-        --yosys $(YS) \
-        --smtbmc $(YSMTBMC) \
-        $(SBY_SCRIPT)
+formal: $(SMT2_out)
+	$(YSMTBMC) -t $(BMC_STEPS) \
+               --presat \
+               --dump-vcd $(SMT2_TRACE) \
+               -s z3 \
+               $(SMT2_out)
 
 clean:
 	rm -rf $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
