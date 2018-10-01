@@ -52,7 +52,9 @@ assign g_clk_req = crd_wen;
 // Storage for the registers
 reg [31:0] cprs [15:0];
 
+`ifdef FORMAL
 `VTX_REGISTER_PORTS_ASSIGNR(cprs_snoop,cprs)
+`endif
 
 //
 // Read port logic
