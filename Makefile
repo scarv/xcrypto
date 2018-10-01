@@ -58,6 +58,7 @@ $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 yosys_formal: $(RTL_DECODER)
 	$(MAKE) -C $(COP_HOME)/flow/yosys formal
 
+
 #
 # Generate the SMT2 representation for the formal testbench.
 #

@@ -212,6 +212,27 @@ end else if(insn_finish) begin
 end
 
 //
+// Register inputs to the COP
+reg  [31:0] r_insn_enc;
+reg  [31:0] r_rs1;
+
+wire [31:0] u_insn_enc;
+wire [31:0] u_rs1;
+
+assign u_insn_enc = (insn_accept) ? cpu_insn_enc : r_insn_enc;
+assign u_rs1      = (insn_accept) ? cpu_rs1      : r_rs1     ;
+
+always @(posedge g_clk) if(!g_resetn) begin
+        r_insn_enc <= 32'b0;
+    end else if(cpu_insn_req && cop_insn_ack)
+        r_insn_enc <= cpu_insn_enc;    
+
+always @(posedge g_clk) if(!g_resetn) begin
+        r_rs1      <= 32'b0;
+    end else if(cpu_insn_req && cop_insn_ack)
+        r_rs1      <= cpu_rs1     ;    
+
+//
 // BEGIN PIPELINE PROGRESSION CONTROL
 
 wire    fu_done         = 
@@ -310,7 +331,7 @@ end
 //  The instruction decoder for the ISE.
 //
 scarv_cop_idecode i_scarv_cop_idecode (
-.id_encoded  (cpu_insn_enc), // Encoding 32-bit instruction
+.id_encoded  (u_insn_enc  ), // Encoding 32-bit instruction
 .id_exception(id_exception), // Illegal instruction exception.
 .id_class    (id_class    ), // Instruction class.
 .id_subclass (id_subclass ), // Instruction subclass.
@@ -367,7 +388,7 @@ scarv_cop_palu i_scarv_cop_palu (
 .g_resetn         (g_resetn        ), // Synchronous active low reset.
 .palu_ivalid      (palu_ivalid      ), // Valid instruction input
 .palu_idone       (palu_idone       ), // Instruction complete
-.gpr_rs1          (cpu_rs1          ), // GPR rs1
+.gpr_rs1          (u_rs1            ), // GPR rs1
 .palu_rs1         (crs1_rdata       ), // Source register 1
 .palu_rs2         (crs2_rdata       ), // Source register 2
 .palu_rs3         (crs3_rdata       ), // Source register 3
@@ -393,7 +414,7 @@ scarv_cop_mem i_scarv_cop_mem (
 .mem_is_store    (mem_is_store    ), // Is the instruction a store?
 .mem_addr_error  (mem_addr_error  ), // Memory address exception
 .mem_bus_error   (mem_bus_error   ), // Memory bus exception
-.gpr_rs1         (cpu_rs1         ), // Source register 1
+.gpr_rs1         (u_rs1           ), // Source register 1
 .cpr_rs1         (crs1_rdata      ), // Source register 2
 .cpr_rs2         (crs2_rdata      ), // Source register 3
 .cpr_rs3         (crs3_rdata      ), // Source register 3

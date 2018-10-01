@@ -12,6 +12,7 @@ SBY_WORK    ?= $(COP_WORK)/sby
 
 SMT2_out    ?= $(COP_WORK)/smt2/formal.smt2
 SMT2_TRACE  ?= $(COP_WORK)/smt2/trace.vcd
+SMT2_VTB    ?= $(COP_WORK)/smt2/vtb.v
 
 SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v")
 SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.v")
@@ -57,6 +58,7 @@ formal: $(SMT2_out)
 	$(YSMTBMC) -t $(BMC_STEPS) \
                --presat \
                --dump-vcd $(SMT2_TRACE) \
+               --dump-vlogtb $(SMT2_VTB) \
                -s z3 \
                $(SMT2_out)
 
