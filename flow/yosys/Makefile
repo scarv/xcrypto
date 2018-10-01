@@ -14,8 +14,10 @@ SMT2_out    ?= $(COP_WORK)/smt2/formal.smt2
 SMT2_TRACE  ?= $(COP_WORK)/smt2/trace.vcd
 SMT2_VTB    ?= $(COP_WORK)/smt2/vtb.v
 
-SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v")
-SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.v")
+SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v") \
+	           $(shell find ../../ -path "*rtl/*.vh")
+SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.vh") \
+	           $(shell find ../../ -path "*verif/*.v") 
 
 VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
 
