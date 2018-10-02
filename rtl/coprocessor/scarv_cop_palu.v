@@ -282,8 +282,8 @@ assign pmul_shf_c   = pshf_c;
 wire   shift_imm    = is_slli_px || is_srli_px || is_roti_px;
 assign pshf_a       = is_mul_px ? pmul_shf_a : palu_rs1;
 assign pshf_shamt   = is_mul_px ? pmul_shf_sham      :
-                      shift_imm ? {1'b0,id_imm[4:0]} :
-                                  palu_rs2[5:0]      ;
+                      shift_imm ? {1'b0,id_imm[4:0]  } :
+                                  {1'b0,palu_rs2[4:0]} ;
 assign pshf_r       = is_rot_px || is_roti_px;
 assign pshf_sl      = is_mul_px || is_sll_px || is_slli_px;
 

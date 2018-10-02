@@ -77,7 +77,9 @@ assign id_crd2 = {dec_arg_crdm, 1'b1};
 assign id_rd   = dec_arg_rd;
 assign id_pw   = {dec_arg_ca, dec_arg_cb, dec_arg_cc};
 
-wire bad_pack_width = id_pw[2] && |id_pw[1:0];
+wire bad_pack_width = 
+    (id_pw[2] && |id_pw[1:0]) &&
+    id_class == SCARV_COP_ICLASS_PACKED_ARITH;
 
 assign id_exception = 
     dec_invalid_opcode || 

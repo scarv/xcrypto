@@ -48,6 +48,10 @@ verification flow.
 \item Memory bus errors being raised when no memory instruction was active.
 \item Pack width instructions not raising invalid opcode exceptions for
     invalid pack widths.
+\item Raising invalid pack width exceptions for instructions with no pack width
+    fields.
+\item Design shift amound fields 1 bit too big resulting in different results only
+    when the pack width is 1.
 \end{itemize}
 
 \subsection{Constrained Random Flow}

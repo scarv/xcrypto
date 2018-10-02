@@ -42,6 +42,55 @@
 `define CRS2 vtx_crs2_val_pre
 
 //
+// Shift pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_SHIFT_OPERATION_RESULT(OP,AMNT) \
+reg [31:0] result  ; \
+always @(*) begin \
+    result = 0; \
+    if(pw == SCARV_COP_PW_1) begin \
+        result = `CRS1 OP AMNT; \
+    end else if(pw == SCARV_COP_PW_2) begin \
+        result = {`CRS1[31:16] OP AMNT, \
+                  `CRS1[15: 0] OP AMNT}; \
+    end else if(pw ==  SCARV_COP_PW_4) begin \
+        result = {`CRS1[31:24] OP AMNT, \
+                  `CRS1[23:16] OP AMNT, \
+                  `CRS1[15: 8] OP AMNT, \
+                  `CRS1[ 7: 0] OP AMNT}; \
+    end else if(pw ==  SCARV_COP_PW_8) begin \
+        result = {`CRS1[31:28] OP AMNT, \
+                  `CRS1[27:24] OP AMNT, \
+                  `CRS1[23:20] OP AMNT, \
+                  `CRS1[19:16] OP AMNT, \
+                  `CRS1[15:12] OP AMNT, \
+                  `CRS1[11: 8] OP AMNT, \
+                  `CRS1[ 7: 4] OP AMNT, \
+                  `CRS1[ 3: 0] OP AMNT}; \
+    end else if(pw ==  SCARV_COP_PW_16) begin \
+        result = {`CRS1[31:30] OP AMNT, \
+                  `CRS1[29:28] OP AMNT, \
+                  `CRS1[27:26] OP AMNT, \
+                  `CRS1[25:24] OP AMNT, \
+                  `CRS1[23:22] OP AMNT, \
+                  `CRS1[21:20] OP AMNT, \
+                  `CRS1[19:18] OP AMNT, \
+                  `CRS1[17:16] OP AMNT, \
+                  `CRS1[15:14] OP AMNT, \
+                  `CRS1[13:12] OP AMNT, \
+                  `CRS1[11:10] OP AMNT, \
+                  `CRS1[ 9: 8] OP AMNT, \
+                  `CRS1[ 7: 6] OP AMNT, \
+                  `CRS1[ 5: 4] OP AMNT, \
+                  `CRS1[ 3: 2] OP AMNT, \
+                  `CRS1[ 1: 0] OP AMNT}; \
+    end \
+end \
+
+//
 // Arithmetic pack width operation macro
 //
 //      Applies "OP" to the right sizes of data type and then writes
