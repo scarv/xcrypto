@@ -34,41 +34,20 @@ The formal flow will use Yosys as a model checker to ensure that for any
 sequence of inputs, the outputs of the implementation and the GRM will remain
 the same.
 
-The following is a non-exhaustive list of checks which the formal flow
-will include.
+\subsubsection{Formal Flow Bug List}
 
-\subsubsection{CPU/COP Interface}
-
-\begin{itemize}
-\item Valid transitions for instruction request / acknowledge signals.
-\item Data signals stable during instruction request stall.
-\item Valid transitions for instruction response  / acknowledge signals.
-\item Data signals stable during instruction response stall.
-\item Response signal values match between model and DUT. Specificaly:
-    write address, write data, COP result.
-\item No exception response if instruction does not cause exception.
-\item Only get an exception response iff exception occured.
-\item No responses without corresponding request.
-\end{itemize}
-
-\subsubsection{COP Memory Interface}
+This section is a {\em trophy cabinet} of bugs found using the formal
+verification flow.
 
 \begin{itemize}
-\item Correct number of memory transactions per instruction.
-\item Correct address per transaction.
-\item Correct write data per transaction.
-\item Write Data/Address/Byte enable lines all stable during a stall.
-\item Byte enable valid values / never all zeros during transaction.
-\item Memory error / stall never asserted when chip enable is low.
-\end{itemize}
-
-\subsubsection{CPR Register Writes}
-
-\begin{itemize}
-\item Only expected registers are written too.
-\item Only expected registers are read from.
-\item Correct values are written.
-\item Correct values are read.
+\item Input instruction and RS1 data not registered properly by the COP during
+    stalled or multi-cycle execution.
+\item Memory read data polluting other writeback data when no memory instruction
+    was active.
+\item Memory bus error exception raised ahead of invalid opcode exception.
+\item Memory bus errors being raised when no memory instruction was active.
+\item Pack width instructions not raising invalid opcode exceptions for
+    invalid pack widths.
 \end{itemize}
 
 \subsection{Constrained Random Flow}

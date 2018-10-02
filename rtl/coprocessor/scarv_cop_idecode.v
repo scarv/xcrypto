@@ -77,8 +77,11 @@ assign id_crd2 = {dec_arg_crdm, 1'b1};
 assign id_rd   = dec_arg_rd;
 assign id_pw   = {dec_arg_ca, dec_arg_cb, dec_arg_cc};
 
+wire bad_pack_width = id_pw[2] && |id_pw[1:0];
+
 assign id_exception = 
-    dec_invalid_opcode; // FIXME: Add feature switches to this expression.
+    dec_invalid_opcode || 
+    bad_pack_width      ; // FIXME: Add feature switches to this expression.
 
 
 //
