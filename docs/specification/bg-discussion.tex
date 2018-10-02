@@ -1,0 +1,188 @@
+% =============================================================================
+
+\subsection{Discussion}
+\label{sec:bg:discussion}
+
+\begin{itemize}
+
+\item It is important to recognise 
+      the overhead, wrt. both 
+      time (e.g., due to it needing to be context switched) 
+      and 
+      space (e.g., due to the logic required),
+      relating to state added to RV32I by \XCID.
+      However, it seems reasonable to align this overhead with that of any
+      extension for floating-point arithmetic (which, in the same way, will
+      typically make use of a dedicated floating-point register file): many 
+      of the trade-offs involved, e.g., provision of
+      a) clear separation of duty,
+      b) additional capacity,
+         and
+      c) additional (specialised) functionality,
+      are the same, but motivated by cryptographic workloads.
+      Due to the nature of such workloads, however, attack vectors such as
+      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
+      the overhead of context switching, {\em must} be robustly mitigated.
+
+\item Lee and Fiskiran introduce (e.g., see~\cite{SCARV:LeeFis:05}) the PLX
+      design, which, among other concepts, supports 
+      a) sub-word parallelism (cf. packed, or SWAR-like operations),
+         and
+      b) word size scalability (or data-path scalability).
+      First, 
+      note that a fully sub-word parallel ISA is orthogonal wrt. all useful
+      sub-word sizes; PLX supports $n$-byte sub-word sizes for sane $n$.
+      Second,
+      note that, in a sense, RISC-V is word size scalable: it can cater for
+      implementations that, e.g., have a $32$-bit instructions but a $32$-,
+      $64$-, or $128$-bit general-purpose register file (and address space).
+      The same concept is useful wrt. the co-processor, and indeed, for the
+      multi-precision integer instructions 
+      (per \REFSEC{sec:spec:instr:mp})
+      in particular.
+
+      The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
+      sizes; doing so is motivated, e.g., by their utility in some classes 
+      of light-weight block cipher.  However, it does not currently explore 
+      the potential of a scalable word size: it assumes the general-purpose
+      and co-processor register file word sizes are {\em both} $32$ bits.
+
+\item Consider a general case, wherein a given ISA has instruction formats
+      to allow access to $n$ general-purpose registers, st. 
+      $
+      n = s + d
+      $ 
+      for $s$ sources and $d$ destinations, meaning an associated encoding 
+      must somehow specify $n$ register addresses.  The special case
+      $
+      n = 3 = 2 + 1 
+      $
+      is common, and adopted by RISC-V, but it should nevertheless be clear
+      that {\em other} cases can also be useful.  A common ``wrinkle'' in a 
+      strict $3$-address case is (full) $( w \times w )$-bit multiplication, 
+      which produces a $(2 \cdot w )$-bit product and therefore demands use 
+      of {\em two} $w$-bit destination registers.
+   
+      One of the strategies underlying \XCID is support for larger $s$ and/or 
+      $d$.  This is rationalised by a (ideally positive) trade-off between
+      a) increased register file complexity, as a result of the requirement
+         to support $n$ ports, or, alternatively, multi-cycle operations,
+         vs.
+      b) increased register file bandwidth.
+      The latter enables each instruction to perform more, or richer forms 
+      of computation, aligning well with the demands of many cryptographic 
+      workloads.  Even {\em if} said trade-off is acceptable, however, it 
+      also implies some challenges wrt. instruction encoding.  There seem
+      to be several possible options:
+
+      \begin{enumerate}
+      \item One could make all  register addresses {\em explicit}.
+            For example, XS1 uses a long (i.e., $32$-bit) $6$-address 
+            instruction format~\cite[Page 246]{SCARV:XS1:09} 
+            to encode
+            {\tt lmul}~\cite[Page 146]{SCARV:XS1:09}.
+      \item One could make some register addresses {\em implicit}.  
+            For example, the x86 $( 32 \times 32 )$-bit multiplication 
+            instruction 
+            {\tt mul}~\cite[Page 4-144--4-145]{SCARV:X86:2:18} 
+            makes implicit uses of {\tt edx} and {\tt edx} as destinations.
+      \item One could make some register addresses {\em implied}.
+            For example, this approach has been considered within the
+            specific context of support for cryptography: 
+            Lee and Choi~\cite{SCARV:LeeCho:08} propose Register File
+            Extension for Multi-word and Long-word Operation (RFEMLO), 
+            where a group of $n$ contiguous registers is identified by 
+            one register address plus a group size (or level in their terminology): 
+            address $i$ and level $n$ implies use of registers
+            \[
+            i, i + 1, i + 2, \ldots i + 2^n - 1 .
+            \]
+            Note that this approach potentially causes an issue wrt.
+            registers with specific semantics.  For example, in many
+            RISC-like ISAs (including RISC-V), $\GPR[0]$ is fixed to 
+            $0$; it may be difficult to include or exclude $\GPR[0]$ 
+            in a group as need be.
+      \item One could make some register addresses {\em overloaded}.
+            For example, ARMv7-A includes a so-called ``unsigned multiply,
+            accumulate accumulate'' instruction 
+            {\tt umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
+            whose format {\em suggests} $n = 4 = 2 + 2$ but in fact 
+            reuses the two destination as additional sources.
+      \end{enumerate}
+      
+      \noindent
+      Note that several of these approaches have an implication for the
+      difficulty of register allocation; the obvious example is that of
+      implicit register addresses.  Likewise, there are various generic
+      ways to mitigate the encoding pressure (i.e., the availability of 
+      at most $w$ bits) given an approach.  For example one could
+      
+      \begin{enumerate}
+      \item restrict access to some subset of the register file 
+            (cf. ARM Thumb or RV32E) 
+            thereby reducing the number of bits required to encode each  
+            register address,
+            or
+      \item use some form of instruction prefix.
+      \end{enumerate}
+      
+      \noindent
+      The current design is somewhat conservative, in the sense it 
+      a) supports (upto) $d = 2$ and $s = 3$, 
+         optionally using implied specification option for destinations: 
+         one register address is explicit and the other can be implied,
+      b) can have short register addresses than normal, due to the use
+         of a $16$-entry co-processor register file.
+      It does not explore the potential for, and trade-offs wrt. larger 
+      $d$ or $s$: doing so is demonstrably useful, but, equally implies
+      a range of drawbacks (e.g., overhead wrt. co-processor register 
+      file size, complexity in instruction en/decoding, requirement for
+      multi-cycle instruction execution).
+
+% TODO
+%\designnote{
+%The decision to source the base address from the $\GPR$ set rather
+%than a $\XCR$ was because all of the RISC-V address calculation
+%instructions work perfectly well on the $\GPR$s and there is no sense
+%in duplicating that functionality for this ISE. This free's up
+%encoding space, and lets the $\XCR$ state be used for the compute
+%work it was designed for rather than mundane address calculation.
+%While care must be
+%taken to avoid hazards between the different register sets, we
+%believe this decision makes sense overall.
+%}
+
+% TODO
+%There is no requirement for the ISE memory instructions to share the same
+%address space as the standard ISA. One may wish to completely separate
+%the physical memory used to store cryptographic secrets from the rest of
+%the virtual / logical memory space, and the ISE does not stop implementers
+%from doing so. This allows for hardware root-of-trust type devices to keep
+%their keys in tamper-proof memory, while still letting the rest of the
+%program exist in standard RAM/Flash.
+
+% TODO
+%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
+%(in tandem with \ASM{ORI} and loading addresses.
+%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
+%for addresses, we remove this functionality in favour of leaving the
+%low half of the register unmodified.
+%The rationale being that two instructions can still create and 32-bit
+%immediate, but that if we know a register is zero to begin
+%with, we can then use only one instruction to create masks which fit
+%into only a single halfword.}
+
+% TODO
+%\designnote{
+%    This instruction must be implemented with care, since a naive
+%    implementation will end up with a 32-port LUT, with correspondingly
+%    poor timing performance.
+
+%\designnote{This decision was made simply to make the encoding space
+%easier to manage. Rather than adding another 5-bit immediate field, it was
+%more efficient to re-use the 4-bit lut field of the BOP.cr
+%instruction.}
+
+\end{itemize}
+
+% =============================================================================

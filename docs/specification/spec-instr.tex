@@ -1,6 +1,8 @@
 \subsection{\XCID instructions}
 \label{sec:spec:instr}
 
+% TODO: mnemonic prefix/suffix rules
+
 % =============================================================================
 
 \subsubsection{Class-$1$:   baseline}
@@ -266,15 +268,6 @@
   $
   \VERB[RV]{imm16} = \VERB[RV]{imm11} \CONS \VERB[RV]{imm5} .
   $
-%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-%(in tandem with \ASM{ORI} and loading addresses.
-%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
-%for addresses, we remove this functionality in favour of leaving the
-%low half of the register unmodified.
-%The rationale being that two instructions can still create and 32-bit
-%immediate, but that if we know a register is zero to begin
-%with, we can then use only one instruction to create masks which fit
-%into only a single halfword.}
 }{
   $\INDEX[16]{\XCR[*][{\VERB[RV]{crd}}]}{1} \ASN \VERB[RV]{imm16}$ \;
 }
@@ -284,33 +277,30 @@
 \XCINSTR{BOP.cr}{crd, crs1, crs2, lut4}{
   \iencbopcr
 }{
-%The BOP.cr instruction is designed to express all bitwise logic functions, and be
-%amenable to bit-sliced implementations of cryptographic functions.
-%
-%BOP.cr takes a 4-bit immediate {\tt lut4}, and uses the concatenated
-%$i$'th bits of register inputs $\XCR[*][crs1]$ and  $\XCR[*][crs2]$
-%as the inputs, writing the output bit of the lut to the $i$'th bit of the
-%destination register.
-%\designnote{
-%    This instruction must be implemented with care, since a naive
-%    implementation will end up with a 32-port LUT, with correspondingly
-%    poor timing performance.
-%}
+  Compute the $i$-bit of a result by apply a $2$-input, $1$-output Boolean 
+  function $f$ to corresponding $i$-th bits of two operands.  The function
+  $f$ is specified as a look-up table \VERB[RV]{lut4}, so the instruction 
+  essentially computes
+  $
+  \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i} ) = \INDEX{\VERB[RV]{lut4}}{x_i \CONS y_i}
+  $
+  for $x$, $y$, and $r$, all in $\XCR$ registers.  Note that since
+  \[
+  \begin{array}{l@{\;}c@{\;}l c l@{\;}c@{\;}l}
+  \VERB[RV]{lut4} &=& \RADIX{1000}{2} &\Longrightarrow& f &=& \AND \\
+  \VERB[RV]{lut4} &=& \RADIX{1110}{2} &\Longrightarrow& f &=& \IOR \\
+  \VERB[RV]{lut4} &=& \RADIX{0110}{2} &\Longrightarrow& f &=& \XOR \\
+  \end{array}
+  \]
+  the instructions
+  \VERB[RV]{AND.cr}, \VERB[RV]{AND.cr}, and \VERB[RV]{AND.cr}
+  can be, and are, synthesised using \VERB[RV]{BOP.cr}.
 }{
   \For{$i = 0$ {\bf upto} $31$} {
     $index \ASN \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
     $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\VERB[RV]{lut4}}{index}$ \;
   }
 }
-
-%\paragraph{Examples:}
-%\begin{itemize}
-%\item {\tt bop.cr  c1, c2, c3, 0001    // AND}
-%\item {\tt bop.cr  c1, c2, c3, 0111    // OR }
-%\item {\tt bop.cr  c1, c2, c3, 0110    // XOR}
-%\end{itemize}
-%These examples of BOP.cr show how to encode the existing
-%bitwise operation instructions found in the base RISC-V architecture.
 
 % -----------------------------------------------------------------------------
 
@@ -342,22 +332,24 @@
 
 % -----------------------------------------------------------------------------
 
-% TODO: shamt -> rtamt
+% TODO: shamt -> rtamt?
 \XCINSTR{LMIX.cr}{rd, rs1, rs2, shamt}{
   \ienclmixcr
 }{
-%The MIX.cr instruction allows an arbitrary bit-wise mixing of two
-%register values, using a mask stored in a third register.
-%It first rotates  the source register value in {\tt rs1} by the amount in
-%{\tt shamt}, and then mixes the rotated value and the source value according
-%to the mask value in {\tt rs2}.
-%
-%\ASM{LMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
-%while \ASM{HMIX.cr} will rotate to the right by $16..31$. 
-%\designnote{This decision was made simply to make the encoding space
-%easier to manage. Rather than adding another 5-bit immediate field, it was
-%more efficient to re-use the 4-bit lut field of the BOP.cr
-%instruction.}
+  Form a result by mix together bits from two operands based on a mask:
+  the instruction essentially computes  
+  \[
+  \INDEX{r}{i} = \left\{\begin{array}{ll}
+                        \INDEX{x}{i} \OP[32][u]{\RRT}   \VERB[RV]{shamt}        & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
+                        \end{array}
+                        \right.
+  \]
+  for $r$, $x$, and $m$ in $\XCR$ registers,
+  and for each 
+  $
+  0 \leq i < 32 .
+  $ 
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{shamt}       $ \;
   \For{$i = 0$ {\bf upto} $31$}{
@@ -369,37 +361,26 @@
   }
 }
 
-%\paragraph{Examples:}
-%\ASM{MIX.cr} allows us to create any mix of bits from two registers
-%using a single 3-instruction sequence:
-%
-%\begin{itemize}
-%\item{\tt LUI.cr   c0, 0xF0F0     // Load a mask into c0 which will select}
-%\item{\tt LLI.cr   c0, 0xF0F0     // alternate nibbles from each register}
-%\item{\tt LMIX.cr  c2, c1, c0, 0  // Odd nibbles from c1, even nibbles from c2.}
-%\item{\tt LMIX.cr  c3, c1, c0, 4  // Even nibbles from c1, even nibbles from c3.}
-%\item{\tt LMIX.cr  c4, c1, c0, 4  // Odd  nibbles from c1, even nibbles from c3.}
-%\end{itemize}
-%}
-
 % -----------------------------------------------------------------------------
 
-% TODO: shamt -> rtamt
+% TODO: shamt -> rtamt?
 \XCINSTR{HMIX.cr}{rd, rs1, rs2, shamt}{
   \ienchmixcr
 }{
-%The MIX.cr instruction allows an arbitrary bit-wise mixing of two
-%register values, using a mask stored in a third register.
-%It first rotates  the source register value in {\tt rs1} by the amount in
-%{\tt shamt}, and then mixes the rotated value and the source value according
-%to the mask value in {\tt rs2}.
-%
-%\ASM{LMIX.cr} will rotate the the value in {\tt rs1} to the right by $0..15$,
-%while \ASM{HMIX.cr} will rotate to the right by $16..31$. 
-%\designnote{This decision was made simply to make the encoding space
-%easier to manage. Rather than adding another 5-bit immediate field, it was
-%more efficient to re-use the 4-bit lut field of the BOP.cr
-%instruction.}
+  Form a result by mix together bits from two operands based on a mask:
+  the instruction essentially computes  
+  \[
+  \INDEX{r}{i} = \left\{\begin{array}{ll}
+                        \INDEX{x}{i} \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 ) & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
+                        \end{array}
+                        \right.
+  \]
+  for $r$, $x$, and $m$ in $\XCR$ registers,
+  and for each 
+  $
+  0 \leq i < 32 .
+  $ 
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 )$ \;
   \For{$i = 0$ {\bf upto} $31$}{
@@ -416,27 +397,46 @@
 \subsubsection{Class-$2.4$: packed}
 \label{sec:spec:instr:2:4}
 
-%When coding these instructions as assembly mnemonics, the {\tt x} in the
-%instruction names below should be replaced with the pack width. Hence
-%for pack width 4, \ASM{SLLI.px} becomes \ASM{SLL.p4}.
+Each instruction in this class computes a packed operation: for an operator
+$\odot$, register or immediate variants essentially compute
+
+\begin{enumerate}
+\item $\INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w][u]{\odot} \INDEX[w]{y}{i}$,
+      for $r$, $x$, and $y$ in $\XCR$ registers.
+      and
+\item $\INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w][u]{\odot}           y    $,
+      for $r$,      and $x$ in $\XCR$ registers, and an $y$ immediate,
+\end{enumerate}
+
+\noindent
+and for each 
+$
+0 \leq i < \VERB[RV]{n} ,
+$ 
+where the field count
+$
+\VERB[RV]{n} \in \SET{ 2, 4, 8, 16, 32 }
+$ 
+specified in the instruction encoding implies a field width of 
+$
+w = 32 / \VERB[RV]{n} .
+$
 
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ADD.px}{pw, crd, crs1, crs2}{
   \iencaddpx
 }{
-%The instruction \ASM{ADD.px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned packed fields, and adds corresponding fields
-%together ignoring any carry bits.
-%
-%No overflow conditions are tested for, and \ASM{ADD.px} raises no exceptions.
-  Note that
+  Compute a   register-based packed addition, 
+  implying $\odot = +$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{+}      \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{+}      \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -445,18 +445,16 @@
 \XCINSTR{SUB.px}{pw, crd, crs1, crs2}{
   \iencsubpx
 }{
-%The instruction \ASM{SUB.px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and subtracts the {\tt rs2} fields
-%from the corresponding {\tt rs1} fields.
-%
-%No overflow conditions are tested for, and \ASM{SUB.px} raises no exceptions.
-  Note that
+  Compute a   register-based packed subtraction, 
+  implying $\odot = -$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{-}      \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{-}      \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -465,18 +463,16 @@
 \XCINSTR{MUL.px}{pw, crd, crs1, crs2}{
   \iencmulpx
 }{
-%The instruction \ASM{MUL.px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and multiplies the {\tt rs2} fields
-%by the corresponding {\tt rs1} fields.
-%
-%No overflow conditions are tested for, and \ASM{MUL.px} raises no exceptions.
-  Note that
+  Compute a   register-based packed multiplication, 
+  implying $\odot = \times$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\times} \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\times} \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -485,44 +481,51 @@
 \XCINSTR{SLL.px}{pw, crd, crs1, crs2}{
   \iencsllpx
 }{
-%The instruction \ASM{SLL[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-%left by the value in {\tt CSHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
-%(for \ASM{SLL.px}).
-%
-%If the distance to shift by is greater than or equal to the size of each
-%packed field, then the result of the \ASM{SLL[I].px} instruction is
-%{\em implementation dependent}.
-  Note that
+  Compute a   register-based packed left-shift,
+  implying $\odot = \LSH$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LSH}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: cshamt => pshamt ?
 \XCINSTR{SLLI.px}{pw, crd, crs1, cshamt}{
   \iencsllipx
 }{
-%The instruction \ASM{SLL[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-%left by the value in {\tt CSHAMT} (for \ASM{SLLI.px}) or {\tt rs2} 
-%(for \ASM{SLL.px}).
-%
-%If the distance to shift by is greater than or equal to the size of each
-%packed field, then the result of the \ASM{SLL[I].px} instruction is
-%{\em implementation dependent}.
-  Note that
+  Compute an immediate-based packed left-shift,
+  implying $\odot = \LSH$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \VERB[RV]{cshamt} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LSH}   \VERB[RV]{cshamt}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \VERB[RV]{cshamt}$ \;
   }
 }
 
@@ -531,21 +534,24 @@
 \XCINSTR{SRL.px}{pw, crd, crs1, crs2}{
   \iencsrlpx
 }{
-%The instruction \ASM{SRL[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-%left by the value in {\tt CSHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
-%(for \ASM{SRL.px}).
-%
-%If the distance to shift by is greater than or equal to the size of each
-%packed field, then the result of the \ASM{SRL[I].px} instruction is
-%{\em implementation dependent}.
-  Note that
+  Compute a   register-based packed right-shift,
+  implying $\odot = \RSH$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\RSH}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -554,21 +560,24 @@
 \XCINSTR{SRLI.px}{pw, crd, crs1, cshamt}{
   \iencsrlipx
 }{
-%The instruction \ASM{SRL[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and shifts the {\tt rs1} fields
-%left by the value in {\tt CSHAMT} (for \ASM{SRLI.px}) or {\tt rs2} 
-%(for \ASM{SRL.px}).
-%
-%If the distance to shift by is greater than or equal to the size of each
-%packed field, then the result of the \ASM{SRL[I].px} instruction is
-%{\em implementation dependent}.
-  Note that
+  Compute an immediate-based packed left-shift,
+  implying $\odot = \RSH$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \VERB[RV]{cshamt} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\RSH}   \VERB[RV]{cshamt}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \VERB[RV]{cshamt}$ \;
   }
 }
 
@@ -577,17 +586,24 @@
 \XCINSTR{ROT.px}{pw, crd, crs1, crs2}{
   \iencrotpx
 }{
-%The instruction \ASM{ROT[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
-%left by the value in {\tt CCSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
-%(for \ASM{ROT.px}).
-  Note that
+  Compute a   register-based packed left-rotate,
+  implying $\odot = \LRT$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LRT}   \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
@@ -596,17 +612,24 @@
 \XCINSTR{ROTI.px}{pw, crd, crs1, cshamt}{
   \iencrotipx
 }{
-%The instruction \ASM{ROT[I].px} treats the source and destination registers as
-%1, 2, 4, 8 or 16 unsigned, packed fields, and rotates the {\tt rs1} fields
-%left by the value in {\tt CSHAMT} (for \ASM{ROTI.px}) or {\tt rs2} 
-%(for \ASM{ROT.px}).
-  Note that
+  Compute an immediate-based packed left-rotate,
+  implying $\odot = \LRT$.
+  Note that wrt. the encoding
   $
-  \VERB[RV]{pw} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
 }{
-  \For{$i = 0$ {\bf upto} $( 32 / \VERB[RV]{pw} ) - 1$}{
-    $\INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[{\VERB[RV]{pw}}]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[{\VERB[RV]{pw}}][u]{\LRT}   \VERB[RV]{cshamt}$ \;
+  $w = 32 / \VERB[RV]{n}$ \;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \VERB[RV]{cshamt}$ \;
   }
 }
 

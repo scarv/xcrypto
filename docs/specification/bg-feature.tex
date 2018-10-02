@@ -1,6 +1,6 @@
 % =============================================================================
 
-\subsection{Feature classification}
+\subsection{Features}
 \label{sec:bg:feature}
 
 \begin{table}[t]
@@ -22,21 +22,40 @@ Multi-precision & $2.5$      & MP          \\
 \label{tab:feature}
 \end{table}
 
-As noted in \REFSEC{sec:bg:design}, \XCID is a {\em meta}-extension in the
-sense it has 
-a) one baseline class of features,
+Per \REFSEC{sec:bg:concept}, \XCID is a {\em meta}-extension in that it has 
+a) one baseline feature class,
    which must {\em always} be supported,
    plus
-b) several classes of optional               features,
+b) several optional feature classes,
    which can be {\em selectively} supported to suit.
+It acts to mirror the extensibility afforded by RV32I itself, with similar
+motivation: doing so allows one to tailor the ISE (resp. ISA) st. it suits
+a given context, which is important because some features are applicable 
+within a broad range of cryptographic workloads whereas others are (more) 
+specifically applicable (even niche).  Although \REFSEC{sec:spec} offers a 
+precise specification, note that
 
-%This is done because while some of the instructions are useful across a
-%broad range of cryptographic kernels, some are more specific, and are only
-%relevant to certain algorithms or primitives.
+\begin{itemize}
+\item support for a given feature class can be determined programmatically 
+      using an associated CSR,
+\item all feature classes in \XCID can emulated by using RV32I alone,
+\item attempted execution of any instruction from an unsupported feature 
+      class will cause an 
+      illegal instruction exception,
+      and
+\item any instruction that accesses memory mirrors RV32I wrt. exception,
+      synchronisation (e.g., \VERB[RV]{FENCE}), and atomicity semantics: 
+      for example, if
+      a) the effective address stemming from a memory access instruction
+         is not aligned to the associated data type, 
+         {\em  and}
+      b) the implementation does not support misaligned accesses,
+         {\em then}
+         it will cause a 
+         load/store address misaligned exception.
+\end{itemize}
 
-%All of the optional features within the ISE can be emulated using the
-%base RISC-V ISE and the Crypto ISE.
-
+\noindent
 The RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17} for ISEs
 uses a string of single-character identifiers to specify features realised
 in an implementation.  We adopt a variant of this approach, wherein
@@ -45,12 +64,7 @@ in an implementation.  We adopt a variant of this approach, wherein
 \]
 denotes a concrete implementation of \XCID that supports feature classes 
 $x$, $y$, and $z$: we assign a numeric and a mnemonic identifier to each
-feature class (summarised by \REFTAB{tab:feature}), preferring\footnote{
-One disadvantage of this preference is the conflict with mnemonic used by
-the RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17}; based
-on the notation, we assume it is reasonably easy to disambiguate.
-} use of the latter (since it yields a more descriptive result).  
-For example,
+feature class (summarised by \REFTAB{tab:feature}).  For example,
 \[
 \XCID[1/2.1/2.2/2.3/2.4] ~\equiv~ \XCID[BASE/RND/MEM/BIT/PACK]
 \]
@@ -65,102 +79,68 @@ e) features relating to packed (or DSP-like) arithmetic operations:
 such an implementation is tailored to suit symmetric cryptography (e.g.,
 AES), but {\em not} asymmetric cryptography (e.g., RSA).
 
-%Software can determine which features of the ISE are implemented by
-%interrogating the {\tt CISEF} register detailed in section
-%\ref{sec:csr-mccr}.
-
 % =============================================================================
 
 \subsubsection{Class-$1$:   baseline}
 \label{sec:bg:feature:1}
 
-% constrained by assumed memory interface
+\XCID attempts to avoid unnecessary additional state.  Even so, it {\em does}
+introduce
 
-%The base features present in all implementations of the Crypto ISE are:
-%\begin{itemize}
-%\item The {\em move} instructions listed in section
-%    \ref{sec:move-instructions}.
-%\item The memory access instructions listed in section
-%    \ref{sec:memory-instructions}, {\em excluding all scatter and gather
-%    variants}.
-%\item All {\em bitwise} instructions listed in section
-%    \ref{sec:bitwise-instructions}.
-%\item All {\em packed field} instructions listed in section
-%    \ref{sec:packed-field-instructions}.
-%\end{itemize}
-%
-%The ISE contains several instructions listed below which allow memory
-%accesses to directly address the $\XCR$ register file. This means we do
-%not need to first load to the $\GPR$ register file, then move data into
-%the $\XCR$s.
-%
-%All ISE memory access instructions source their base address from the
-%$\GPR$ register file, but read and write data in the $\XCR$s. This
-%prevents address manipulation needing to be done in the $\XCR$s.
-%\designnote{
-%The decision to source the base address from the $\GPR$ set rather
-%than a $\XCR$ was because all of the RISC-V address calculation
-%instructions work perfectly well on the $\GPR$s and there is no sense
-%in duplicating that functionality for this ISE. This free's up
-%encoding space, and lets the $\XCR$ state be used for the compute
-%work it was designed for rather than mundane address calculation.
-%While care must be
-%taken to avoid hazards between the different register sets, we
-%believe this decision makes sense overall.
-%}
-%
-%ISE load and store instructions must obey the all ordering rules and
-%behaviour with regard to {\tt fence} instructions set out in the
-%RISC-V user and privilidged manuals.
-%
-%There is no requirement for the ISE memory instructions to share the same
-%address space as the standard ISA. One may wish to completely separate
-%the physical memory used to store cryptographic secrets from the rest of
-%the virtual / logical memory space, and the ISE does not stop implementers
-%from doing so. This allows for hardware root-of-trust type devices to keep
-%their keys in tamper-proof memory, while still letting the rest of the
-%program exist in standard RAM/Flash.
-%
-%Generally, the memory access instructions are analogous to
-%the standard RISC-V variants but with the following differences:
-%
-%\begin{itemize}
-%\item The halfword and byte variants can specify which halfword or byte of
-%      the register they are reading or writing.
-%\item There is no sign-extending equivalent of the \ASM{LHU} and \ASM{LBU}
-%      instructions.
-%\item The base address is taken from the normal RISC-V $\GPR$ set, while the
-%      target register is always in the $\XCR$ set.
-%\end{itemize}
-%
-%These instructions will raise a {\em load/store address misaligned} exception
-%if: the final source address is not aligned to the data type the instruction
-%is loading {\em and} the implementation does not support misaligned accesses.
-%The general rule here is that the \ASM{L*.cr} instructions should behave in
-%the same way as their RISC-V cousins in terms of exception handling,
-%interrupt behaviour and atomicity rules.
+\begin{itemize}
+\item $1$ additional $16$-entry co-processor register file,
+      and
+\item $2$ additional CSRs 
+      (one is used to report on features in, the other to control an implementation of \XCID),
+\end{itemize}
+
+\noindent
+as a baseline; most of the instructions specified in this class allow access 
+to said state.
+
+\paragraph{Register-register data transfer.}
+
+A suite of instructions
+(e.g., \VERB[RV]{MV2COP.cr})
+allow transfer of content between
+the general-purpose register file (i.e., $\GPR$)
+and
+the    co-processor register file (i.e., $\XCR$)
+is included.
+In addition, support 
+(e.g., \VERB[RV]{CMOV.cr})
+for conditional, branch'less moves of content between $\XCR$ registers 
+(cf. x86 \VERB{cmov}~\cite[Page 3-149--3-152]{SCARV:X86:2:18})
+is included; such instructions form a common, vital component
+(see, e.g., \cite[Section 5]{SCARV:RFC:7748} wrt. requirement for \VERB{cswap})
+in realisations of countermeasures against side-channel attack.
+
+\paragraph{Register-memory   data transfer.}
+
+A suite of instructions 
+(e.g., \VERB[RV]{LW.cr})
+allow transfer of content between
+   memory                         (i.e., $\MEM$)
+and
+the    co-processor register file (i.e., $\XCR$)
+is included.
+All such instructions use a base address in $\GPR$, but {\em directly} load 
+and store to and from $\XCR$; this avoids having to first load content into 
+and then subsequently transfer it from $\GPR$.
+Although most are analogous to RV32I, there are some differences: note that
+
+\begin{itemize}
+\item variants that support different access granularity (e.g., halfword or
+      byte) are included; variants that support inserting (vs. overwriting)
+      load semantics are also included,
+\item matching the context, access is considered to be unsigned throughout;
+      there are no sign-extending variants, for example.
+\end{itemize}
 
 % =============================================================================
 
-\subsubsection{Class-$2$:   general-purpose}
-\label{sec:bg:feature:2}
-
-% -----------------------------------------------------------------------------
-
 \subsubsection{Class-$2.1$: randomness}
 \label{sec:bg:feature:2:1}
-
-%\subsection{Randomness}
-%
-%Implementations can optionally implement the Crypto ISE randomness interface
-%instructions {\tt RSEED.cr} and {\tt RSAMP.cr}.
-%
-%The inclusion of these instructions in an implementation is indicated by the
-%{\tt R} bit of the \nameref{sec:csr-mccr}.
-%
-%If the random interface instructions are not implemented, then their opcodes
-%will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
 
 % -----------------------------------------------------------------------------
 
@@ -172,9 +152,6 @@ AES), but {\em not} asymmetric cryptography (e.g., RSA).
 %The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
 %in section \ref{sec:scatter-gather} may be omitted to reduce implementation
 %complexity.
-%
-%The inclusion of these instructions in an implementation is indicated by the
-%{\tt SG} bit of the \nameref{sec:csr-mccr}.
 %
 %An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
 %or none.
@@ -278,8 +255,17 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 \subsubsection{Class-$2.4$: packed}
 \label{sec:bg:feature:2:4}
 
-%\subsection{Packed Arithmetic Widths}
-%
+%It is common for some CPUs / DSP extensions to allow packed ALU operations.
+%This is essentially using the normal GPRs to do SIMD operations on multiple
+%pieces of data which are either a halfword or a byte in size. We include
+%variants of such instructions which operate on data widths commonly
+%found in cryptographic algorithms, particularly block ciphers.
+
+% case in point, PRESENT; post-quantum schemes mod 2^{16}
+
+
+
+
 %By default, the packed arithmetic width instructions detailed in
 %section \ref{sec:packed-arithmetic-instructions} support operations on
 %packed bit-fields of widths $2$, $4$, $8$, $16$ and $32$.
@@ -295,29 +281,10 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 %unsupported pack width is encountered, the implementation should raise an
 %{\em Illegal Instruction} exception.
 
-%It is common for some CPUs / DSP extensions to allow packed ALU operations.
-%This is essentially using the normal GPRs to do SIMD operations on multiple
-%pieces of data which are either a halfword or a byte in size. We include
-%variants of such instructions which operate on data widths commonly
-%found in cryptographic algorithms, particularly block ciphers.
-
-% case in point, PRESENT; post-quantum schemes mod 2^{16}
-
 % -----------------------------------------------------------------------------
 
 \subsubsection{Class-$2.5$: multi-precision}
 \label{sec:bg:feature:2:5}
-
-%All of the multi-precision arithmetic instructions listed in section
-%\ref{sec:multi-precision-instructions} may be optionally included or omitted
-%as a group.
-%
-%Inclusion of the multi-precision arithmetic instructions is indicated by
-%the {\tt MP} bit of the  \nameref{sec:csr-mccr}.
-%
-%If the multi-precision arithmetic instructions are not implemented, then their
-%opcodes will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
 
 Modular, multi-precision integer arithmetic forms a foundation for various
 cryptographic use-cases, but particularly asymmetric primitives; examples 
@@ -327,23 +294,22 @@ and
 ECC (relying on arithmetic in $\B{F}_p$ for large $p$).
 As such, there is a large body of literature on the implementation of said 
 arithmetic; this includes support for implementations via ISEs defined for 
-RISC-based processors
-(see, e.g.,\cite{SCARV:GroKam:03,SCARV:GroKam:04}).
+RISC-based processors.
 
-\XCID includes a set of instructions that mirror the low-level steps found
-in higher-level algorithms for multi-precision integer arithmetic; in part,
-these mirror features in XS1~\cite[Section 18]{SCARV:XS1:09} for what there
-is termed ``long arithmetic''.  In either case, a central design principle 
-is that each instruction explicitly accepts {\em all} input required: there
-is no additional state (e.g., accumulator register) nor status flags (e.g., 
-for carry or borrow).  Such an approach is particularly attractive when set
-within the context of RV32I, because it avoids inclusion of status flags
-and so forces (somewhat high overhead) software-based carry and overflow 
-detection.
-
-% =============================================================================
-
-\subsubsection{Class-$3$:   special-purpose}
-\label{sec:bg:feature:3}
+\XCID includes a suite of instructions 
+(e.g., \VERB[RV]{ADD3.mp})
+which mirror low-level steps in higher-level algorithms for multi-precision 
+integer arithmetic; in part, these mirror features in 
+XS1~\cite[Section 18]{SCARV:XS1:09} 
+there termed ``long arithmetic''.  A central design principle is that every
+instruction explicitly accepts {\em all} input required: this implies there
+is no additional
+explicit (e.g., accumulator register) 
+nor 
+implicit (e.g., status flags for carry or borrow)
+state.
+Such an approach is particularly attractive when set within the context of 
+RV32I, because it avoids inclusion of status flags and so forces (somewhat 
+high overhead) software-based carry and overflow detection.
 
 % =============================================================================
