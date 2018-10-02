@@ -9,6 +9,10 @@
 // 
 // 
 
+`ifdef FORMAL
+`include "fml_common.vh"
+`endif
+
 //
 // module: scarv_cop_cprs
 //
@@ -19,6 +23,10 @@ module scarv_cop_cprs (
 input  wire             g_clk         , // Global clock
 output wire             g_clk_req     , // Clock request
 input  wire             g_resetn      , // Synchronous active low reset.
+
+`ifdef FORMAL
+`VTX_REGISTER_PORTS_OUT(cprs_snoop)
+`endif
 
 input  wire             crs1_ren      , // Port 1 read enable
 input  wire [ 3:0]      crs1_addr     , // Port 1 address
@@ -43,6 +51,10 @@ assign g_clk_req = crd_wen;
 
 // Storage for the registers
 reg [31:0] cprs [15:0];
+
+`ifdef FORMAL
+`VTX_REGISTER_PORTS_ASSIGNR(cprs_snoop,cprs)
+`endif
 
 //
 // Read port logic

@@ -176,8 +176,8 @@ wire [63:0] shift1_result = shift1_right ? shift1_lhs >> shift1_rhs :
                                            shift1_lhs << shift1_rhs ;
 
 // Multiplier
-wire [31:0] mul1_lhs;
-wire [31:0] mul1_rhs;
+wire [31:0] mul1_lhs = 32'b0;
+wire [31:0] mul1_rhs = 32'b0;
 wire [63:0] mul1_result = mul1_lhs * mul1_rhs;
 
 //

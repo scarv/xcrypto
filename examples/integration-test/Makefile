@@ -33,4 +33,4 @@ $(TGT_DIR)/%.hex : $(TGT_DIR)/%.elf
 
 .PHONY: clean
 clean:
-	echo $(OUT_OBJ) $(OUT_DIS)
+	rm -f $(OUT_OBJ) $(OUT_DIS)

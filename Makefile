@@ -10,6 +10,11 @@ RTL_DECODER   = $(COP_WORK)/ise_decode.v
 UNIT_TESTS    = $(shell find . -path "./work/unit/*.hex")
 UNIT_WAVES    = $(UNIT_TESTS:%.hex=%.vcd)
 
+FORMAL_CHECKS = $(shell find ./verif/formal -name "fml_chk_*.v")
+FORMAL_CHECK_NAMES = $(basename $(notdir $(FORMAL_CHECKS)))
+
+export FML_CHECK_NAME = $(subst fml_chk_,,$(FORMAL_CHECK_NAMES))
+
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
 export RTL_TIMEOUT   ?= 300
 
@@ -30,6 +35,8 @@ clean:
 	$(MAKE) -C $(COP_HOME)/docs     clean
 	$(MAKE) -C $(COP_HOME)/examples clean
 	$(MAKE) -C $(COP_HOME)/verif/unit clean
+	$(MAKE) -C $(COP_HOME)/flow/icarus clean
+	$(MAKE) -C $(COP_HOME)/flow/yosys clean
 	rm -f $(RTL_DECODER)
 
 #
@@ -50,12 +57,11 @@ $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 
 
 #
-# Build the SMT2 model of the design using yosys for later feeding into
-# the formal flow.
+# Run the yosys formal flow
 #
-.PHONY: yosys_smt2
-yosys_smt2: $(RTL_DECODER)
-	$(MAKE) -C $(COP_HOME)/flow/yosys smt2
+.PHONY: yosys_formal
+yosys_formal: $(RTL_DECODER)
+	$(MAKE) -C $(COP_HOME)/flow/yosys formal-checks
 
 #
 # Synthesis the verilog design using yosys

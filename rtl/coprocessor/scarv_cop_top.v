@@ -30,6 +30,10 @@ output wire [31:0]      cop_random      , // The most recent random sample
 output wire             cop_rand_sample , // cop_random valid when this high.
 `endif
 
+`ifdef FORMAL
+`VTX_REGISTER_PORTS_OUT(cprs_snoop)
+`endif
+
 //
 // CPU / COP Interface
 input  wire             cpu_insn_req    , // Instruction request
@@ -192,12 +196,12 @@ assign n_cop_wdata = palu_cpr_rd_wdata;
 //  and/or the result of the instruction together. Note
 //  SCARV_COP_INSN_SUCCESS == 0
 assign n_cop_result= 
-    {3{id_exception                  }} & SCARV_COP_INSN_BAD_INS |
+    id_exception ?  SCARV_COP_INSN_BAD_INS : (
     {3{!mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_LAD |
     {3{!mem_is_store & mem_bus_error }} & SCARV_COP_INSN_LD_ERR  |
     {3{ mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_SAD |
     {3{ mem_is_store & mem_bus_error }} & SCARV_COP_INSN_ST_ERR  |
-                                          SCARV_COP_INSN_SUCCESS ;
+                                          SCARV_COP_INSN_SUCCESS );
 
 always @(posedge g_clk) if(!g_resetn) begin
     cop_wen    <= 1'b0; // COP write enable
@@ -210,6 +214,27 @@ end else if(insn_finish) begin
     cop_wdata  <= n_cop_wdata ; // COP write data
     cop_result <= n_cop_result; // COP execution result
 end
+
+//
+// Register inputs to the COP
+reg  [31:0] r_insn_enc;
+reg  [31:0] r_rs1;
+
+wire [31:0] u_insn_enc;
+wire [31:0] u_rs1;
+
+assign u_insn_enc = (insn_accept) ? cpu_insn_enc : r_insn_enc;
+assign u_rs1      = (insn_accept) ? cpu_rs1      : r_rs1     ;
+
+always @(posedge g_clk) if(!g_resetn) begin
+        r_insn_enc <= 32'b0;
+    end else if(cpu_insn_req && cop_insn_ack)
+        r_insn_enc <= cpu_insn_enc;    
+
+always @(posedge g_clk) if(!g_resetn) begin
+        r_rs1      <= 32'b0;
+    end else if(cpu_insn_req && cop_insn_ack)
+        r_rs1      <= cpu_rs1     ;    
 
 //
 // BEGIN PIPELINE PROGRESSION CONTROL
@@ -310,7 +335,7 @@ end
 //  The instruction decoder for the ISE.
 //
 scarv_cop_idecode i_scarv_cop_idecode (
-.id_encoded  (cpu_insn_enc), // Encoding 32-bit instruction
+.id_encoded  (u_insn_enc  ), // Encoding 32-bit instruction
 .id_exception(id_exception), // Illegal instruction exception.
 .id_class    (id_class    ), // Instruction class.
 .id_subclass (id_subclass ), // Instruction subclass.
@@ -338,6 +363,9 @@ scarv_cop_cprs i_scarv_cop_cprs(
 .g_clk     (g_clk     ), // Global clock
 .g_clk_req (g_clk_req ), // Clock request
 .g_resetn  (g_resetn  ), // Synchronous active low reset.
+`ifdef FORMAL
+`VTX_REGISTER_PORTS_RAISE(cprs_snoop)
+`endif
 .crs1_ren  (crs1_ren  ), // Port 1 read enable
 .crs1_addr (crs1_addr ), // Port 1 address
 .crs1_rdata(crs1_rdata), // Port 1 read data
@@ -367,7 +395,7 @@ scarv_cop_palu i_scarv_cop_palu (
 .g_resetn         (g_resetn        ), // Synchronous active low reset.
 .palu_ivalid      (palu_ivalid      ), // Valid instruction input
 .palu_idone       (palu_idone       ), // Instruction complete
-.gpr_rs1          (cpu_rs1          ), // GPR rs1
+.gpr_rs1          (u_rs1            ), // GPR rs1
 .palu_rs1         (crs1_rdata       ), // Source register 1
 .palu_rs2         (crs2_rdata       ), // Source register 2
 .palu_rs3         (crs3_rdata       ), // Source register 3
@@ -393,7 +421,7 @@ scarv_cop_mem i_scarv_cop_mem (
 .mem_is_store    (mem_is_store    ), // Is the instruction a store?
 .mem_addr_error  (mem_addr_error  ), // Memory address exception
 .mem_bus_error   (mem_bus_error   ), // Memory bus exception
-.gpr_rs1         (cpu_rs1         ), // Source register 1
+.gpr_rs1         (u_rs1           ), // Source register 1
 .cpr_rs1         (crs1_rdata      ), // Source register 2
 .cpr_rs2         (crs2_rdata      ), // Source register 3
 .cpr_rs3         (crs3_rdata      ), // Source register 3
