@@ -174,6 +174,13 @@ wire [31:0] encoded = vtx_instr_enc; \
 `include "ise_decode.v" \
 wire [31:0] vtx_cprs_pre [15:0]; \
 wire [31:0] vtx_cprs_post[15:0]; \
+wire [31:0] vtx_crd_val_pre = vtx_cprs_pre[dec_arg_crd]; \
+wire [31:0] vtx_crs1_val_pre = vtx_cprs_pre[dec_arg_crs1]; \
+wire [31:0] vtx_crs2_val_pre = vtx_cprs_pre[dec_arg_crs2]; \
+wire [31:0] vtx_crs3_val_pre = vtx_cprs_pre[dec_arg_crs3]; \
+wire [31:0] vtx_crs1_val_post = vtx_cprs_post[dec_arg_crs1]; \
+wire [31:0] vtx_crs2_val_post = vtx_cprs_post[dec_arg_crs2]; \
+wire [31:0] vtx_crs3_val_post = vtx_cprs_post[dec_arg_crs3]; \
 `VTX_REGISTER_PORTS_ASSIGN(vtx_cprs_pre , vtx_cprs_pre ) \
 `VTX_REGISTER_PORTS_ASSIGN(vtx_cprs_post, vtx_cprs_post) 
 
