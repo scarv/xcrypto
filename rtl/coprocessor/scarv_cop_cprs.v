@@ -64,7 +64,6 @@ assign crs1_rdata = {32{crs1_ren}} & cprs[crs1_addr];
 assign crs2_rdata = {32{crs2_ren}} & cprs[crs2_addr];
 assign crs3_rdata = {32{crs3_ren}} & cprs[crs3_addr];
 
-
 //
 // Generate logic for each register.
 //
@@ -74,7 +73,11 @@ generate for (i = 0; i < 16; i = i + 1) begin : gen_cprs
     always @(posedge g_clk) begin
         
         if(!g_resetn) begin
-            cprs[i] <= 32'b0;
+            `ifdef FORMAL
+                cprs[i] <= $anyconst;
+            `else
+                cprs[i] <= 32'b0;
+            `endif
 
         end else if((|crd_wen) && (crd_addr == i)) begin
             if(crd_wen[3]) cprs[i][31:24] <= crd_wdata[31:24];
