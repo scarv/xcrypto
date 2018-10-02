@@ -41,6 +41,98 @@
 `define CRS1 vtx_crs1_val_pre
 `define CRS2 vtx_crs2_val_pre
 
+
+//
+// Rotate pack width operation macro
+//
+//      Applies "OP" to the right sizes of data type and then writes
+//      the results back,
+//
+`define PACK_WIDTH_ROTATE_RIGHT_OPERATION(AMNT) \
+reg [31:0] result15; \
+reg [31:0] result14; \
+reg [31:0] result13; \
+reg [31:0] result12; \
+reg [31:0] result11; \
+reg [31:0] result10; \
+reg [31:0] result9 ; \
+reg [31:0] result8 ; \
+reg [31:0] result7 ; \
+reg [31:0] result6 ; \
+reg [31:0] result5 ; \
+reg [31:0] result4 ; \
+reg [31:0] result3 ; \
+reg [31:0] result2 ; \
+reg [31:0] result1 ; \
+reg [31:0] result0 ; \
+reg [31:0] result  ; \
+reg [31:0] result; \
+always @(*) begin \
+    result15 = 0; \
+    result14 = 0; \
+    result13 = 0; \
+    result12 = 0; \
+    result11 = 0; \
+    result10 = 0; \
+    result9  = 0; \
+    result8  = 0; \
+    result7  = 0; \
+    result6  = 0; \
+    result5  = 0; \
+    result4  = 0; \
+    result3  = 0; \
+    result2  = 0; \
+    result1  = 0; \
+    result0  = 0; \
+    result = 0; \
+    if(pw == SCARV_COP_PW_1) begin \
+        result = {2{`CRS1}} >> AMNT; \
+    end else if(pw == SCARV_COP_PW_2) begin \
+        result1 = {4{`CRS1[31:16]}} >> AMNT; \
+        result0 = {4{`CRS1[15: 0]}} >> AMNT; \
+        result = {result1[15: 0],result0[15: 0]}; \
+    end else if(pw ==  SCARV_COP_PW_4) begin \
+        result3 = {8{`CRS1[31:24]}} >> AMNT; \
+        result2 = {8{`CRS1[23:16]}} >> AMNT; \
+        result1 = {8{`CRS1[15: 8]}} >> AMNT; \
+        result0 = {8{`CRS1[ 7: 0]}} >> AMNT; \
+        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
+    end else if(pw ==  SCARV_COP_PW_8) begin \
+        result7 = {16{`CRS1[31:28]}} >> AMNT; \
+        result6 = {16{`CRS1[27:24]}} >> AMNT; \
+        result5 = {16{`CRS1[23:20]}} >> AMNT; \
+        result4 = {16{`CRS1[19:16]}} >> AMNT; \
+        result3 = {16{`CRS1[15:12]}} >> AMNT; \
+        result2 = {16{`CRS1[11: 8]}} >> AMNT; \
+        result1 = {16{`CRS1[ 7: 4]}} >> AMNT; \
+        result0 = {16{`CRS1[ 3: 0]}} >> AMNT; \
+        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+                   result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
+    end else if(pw ==  SCARV_COP_PW_16) begin \
+        result15 = {32{`CRS1[31:30]}} >> AMNT; \
+        result14 = {32{`CRS1[29:28]}} >> AMNT; \
+        result13 = {32{`CRS1[27:26]}} >> AMNT; \
+        result12 = {32{`CRS1[25:24]}} >> AMNT; \
+        result11 = {32{`CRS1[23:22]}} >> AMNT; \
+        result10 = {32{`CRS1[21:20]}} >> AMNT; \
+        result9  = {32{`CRS1[19:18]}} >> AMNT; \
+        result8  = {32{`CRS1[17:16]}} >> AMNT; \
+        result7  = {32{`CRS1[15:14]}} >> AMNT; \
+        result6  = {32{`CRS1[13:12]}} >> AMNT; \
+        result5  = {32{`CRS1[11:10]}} >> AMNT; \
+        result4  = {32{`CRS1[ 9: 8]}} >> AMNT; \
+        result3  = {32{`CRS1[ 7: 6]}} >> AMNT; \
+        result2  = {32{`CRS1[ 5: 4]}} >> AMNT; \
+        result1  = {32{`CRS1[ 3: 2]}} >> AMNT; \
+        result0  = {32{`CRS1[ 1: 0]}} >> AMNT; \
+        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
+                   result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
+                   result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
+                   result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
+    end \
+end \
+
+
 //
 // Shift pack width operation macro
 //

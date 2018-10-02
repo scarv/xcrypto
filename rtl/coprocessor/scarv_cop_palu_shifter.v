@@ -47,8 +47,9 @@ assign c =
 
 assign result_1 = sl ? a << shamt : shin >> shamt;
 
-`define PACKSHIFT(HI,LO, WIDTH) sl ? a[HI:LO] << shamt : \
-                            {r ? shin[HI:LO] : WIDTH'b0, shin[HI:LO]} >> shamt
+`define PACKSHIFT(HI,LO, WIDTH) \
+    sl ? a[HI:LO] << shamt : \
+    {r ? {32/WIDTH{shin[HI:LO]}} : WIDTH'b0, shin[HI:LO]} >> shamt
 
 wire [31:0] result_2_1   = `PACKSHIFT(31, 16, 16);
 wire [31:0] result_2_0   = `PACKSHIFT(15,  0, 16);
