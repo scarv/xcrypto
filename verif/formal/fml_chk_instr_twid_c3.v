@@ -22,7 +22,7 @@ assign split[0] = `CRS1[25:24];
 
 wire [31:0] twid_c3_result = {
     split[dec_arg_b3], split[dec_arg_b2], split[dec_arg_b1], split[dec_arg_b0],
-    `CRS1[23: 0],
+    `CRS1[23: 0]
 };
 
 //
