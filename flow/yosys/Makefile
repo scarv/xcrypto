@@ -69,12 +69,11 @@ $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
 	rm -f $@
 	echo "`date` Started $(notdir $(basename $@))" > $@
 	$(YSMTBMC) -t $(BMC_STEPS) \
-               --presat \
                --dump-vcd $@.vcd \
                --noprogress \
                -s z3 \
-               $<
-	echo "`date` PASSED $(notdir $(basename $@))" > $@
+               $< | tee -a $@
+	echo "`date` Finished $(notdir $(basename $@))" >> $@
 
 .PHONY: formal
 formal: $(SMT2_out)
