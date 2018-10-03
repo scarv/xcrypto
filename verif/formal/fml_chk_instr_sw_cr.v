@@ -15,7 +15,7 @@
 
 wire [31:0] sw_addr =
     vtx_instr_rs1 + 
-    {{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
+    {{21{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
 
 //
 // sw_cr
@@ -26,12 +26,17 @@ wire [31:0] sw_addr =
     assert(vtx_instr_result != SCARV_COP_INSN_LD_ERR);
     assert(vtx_instr_result != SCARV_COP_INSN_BAD_LAD);
 
-    // If the instruction succeeds, check it wrote the right data back
-    if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
+    if(sw_addr[1:0]) begin
+
+        `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_BAD_SAD)
+
+    end else if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
+    
+        // If the instruction succeeds, check it wrote the right data back
 
         assert(vtx_mem_cen_0  == 1'b1);
         assert(vtx_mem_wen_0  == 1'b1);
-        assert(vtx_mem_addr_0 == sw_addr);
+        assert(vtx_mem_addr_0 == {sw_addr[31:2],2'b00});
         assert(vtx_mem_wdata_0 == `CRS2);
 
     end else if(vtx_instr_result == SCARV_COP_INSN_LD_ERR) begin
@@ -39,13 +44,8 @@ wire [31:0] sw_addr =
         // Transaction should have started correctly.
         assert(vtx_mem_cen_0  == 1'b1);
         assert(vtx_mem_wen_0  == 1'b1);
-        assert(vtx_mem_addr_0 == sw_addr);
+        assert(vtx_mem_addr_0 == {sw_addr[31:2],2'b00});
         assert(vtx_mem_wdata_0 == `CRS2);
-    
-    end else if(vtx_instr_result == SCARV_COP_INSN_BAD_SAD) begin
-        
-        // No transaction should have occured.
-        assert(vtx_mem_cen_0  == 1'b0);
 
     end
 
