@@ -14,11 +14,15 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_ins_cr)
 
 wire [ 4:0] ins_begin = {dec_arg_cs,1'b0};
-wire [ 4:0] ins_end   = {dec_arg_cl,1'b0} + ins_begin;
-wire [31:0] ins_mask  = ~(32'hFFFF_FFFF << (ins_end+ins_begin));
-wire [31:0] ins_result= 
-    ((`CRS1 & ins_mask) << ins_begin) |
-    (vtx_crd_val_pre & (ins_mask  << ins_begin));
+wire [ 4:0] ins_len   = {dec_arg_cl,1'b0};
+
+wire [31:0] ins_mask    = (32'hFFFF_FFFF >> (32-ins_len));
+wire [31:0] ins_mask_sh = ins_mask << ins_begin;
+wire [31:0] to_insert   = (`CRS1 & ins_mask) << ins_begin;
+
+wire [31:0] ins_result  = 
+    (to_insert) |
+    (vtx_crd_val_pre & ~(ins_mask_sh));
     
 
 //
