@@ -111,6 +111,8 @@ wire [ 3:0] cop_mem_ben     ; // Write Byte enable
 // Transaction capture
 //
 
+wire vtx_new_instr = cpu_insn_req && cop_insn_ack;
+
 reg [ 0:0] vtx_reset                ;
 reg [ 0:0] vtx_valid                ;
 reg [31:0] vtx_instr_enc    [1:0]   ;
@@ -257,7 +259,7 @@ scarv_cop_top i_dut(
 generate for(i=0; i < 16; i = i + 1) begin
     always @(posedge g_clk) if(!g_resetn) begin
         vtx_cprs_pre[i] <= 0;
-    end else if(cpu_insn_req && cop_insn_ack) begin
+    end else if(vtx_new_instr) begin
         vtx_cprs_pre[i] <= vtx_cprs_snoop[i];
     end
 end endgenerate

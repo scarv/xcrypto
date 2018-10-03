@@ -204,6 +204,7 @@ wire [31:0] vtx_crd_val_pre = vtx_cprs_pre[dec_arg_crd]; \
 wire [31:0] vtx_crs1_val_pre = vtx_cprs_pre[dec_arg_crs1]; \
 wire [31:0] vtx_crs2_val_pre = vtx_cprs_pre[dec_arg_crs2]; \
 wire [31:0] vtx_crs3_val_pre = vtx_cprs_pre[dec_arg_crs3]; \
+wire [31:0] vtx_crd_val_post  = vtx_cprs_post[dec_arg_crd]; \
 wire [31:0] vtx_crs1_val_post = vtx_cprs_post[dec_arg_crs1]; \
 wire [31:0] vtx_crs2_val_post = vtx_cprs_post[dec_arg_crs2]; \
 wire [31:0] vtx_crs3_val_post = vtx_cprs_post[dec_arg_crs3]; \

@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Tue Oct  2 09:29:45 2018
+[*] Wed Oct  3 09:08:23 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_add_px.rpt.vcd"
-[dumpfile_mtime] "Tue Oct  2 09:05:46 2018"
-[dumpfile_size] 162544
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_cmovn_cr.rpt.vcd"
+[dumpfile_mtime] "Wed Oct  3 09:06:23 2018"
+[dumpfile_size] 142737
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/formal-flow-view.gtkw"
 [timestart] 0
-[size] 1920 1025
+[size] 1186 1025
 [pos] -1 -1
-*-4.959884 80 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.568969 60 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_formal.
 [treeopen] tb_formal.i_dut.
 [sst_width] 298
@@ -42,9 +42,7 @@ tb_formal.i_dut.i_scarv_cop_idecode.id_pw[2:0]
 -
 @28
 tb_formal.i_dut.cop_insn_rsp
-@29
 tb_formal.i_dut.cpu_insn_ack
-@28
 tb_formal.i_dut.cop_result[2:0]
 @200
 -
@@ -53,13 +51,8 @@ tb_formal.i_fml_checks.encoded[31:0]
 @28
 tb_formal.i_fml_checks.vtx_valid
 @2028
-^1 /home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/filter-pack-width.txt
-tb_formal.i_fml_checks.pw[2:0]
 ^2 /home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/filter-instr-result.txt
 tb_formal.i_fml_checks.vtx_instr_result[2:0]
-@22
-tb_formal.i_fml_checks.result[31:0]
-tb_formal.i_fml_checks.vtx_cprs_post<1>[31:0]
 @200
 -
 @24
