@@ -124,12 +124,51 @@ wire[31:0] vtx_cprs_snoop   [15:0]  ;
 reg [31:0] vtx_cprs_pre     [15:0]  ;
 reg [31:0] vtx_cprs_post    [15:0]  ;
 
+// Memory transaction tracking per instruction.
+reg        vtx_mem_cen      [3:0];
+reg        vtx_mem_wen      [3:0];
+reg [31:0] vtx_mem_addr     [3:0];
+reg [31:0] vtx_mem_wdata    [3:0];
+reg [31:0] vtx_mem_rdata    [3:0];
+reg [ 3:0] vtx_mem_ben      [3:0];
+reg        vtx_mem_error    [3:0];
+
+reg p_mem_cen;
+always @(posedge g_clk) if(!g_resetn) p_mem_cen <= 1'b0;
+    else p_mem_cen <= cop_mem_cen;
+
+wire mem_txn_finish = p_mem_cen && !(cop_mem_stall);
+    
+always @(posedge g_clk) begin
+    if($rose(cop_mem_cen)) begin
+        vtx_mem_cen  [0] <= cop_mem_cen  ;
+        vtx_mem_wen  [0] <= cop_mem_wen  ;
+        vtx_mem_addr [0] <= cop_mem_addr ;
+        vtx_mem_wdata[0] <= cop_mem_wdata;
+        vtx_mem_ben  [0] <= cop_mem_ben  ;
+    end 
+    if(mem_txn_finish) begin
+        vtx_mem_rdata[0] <= cop_mem_rdata;
+        vtx_mem_error[0] <= cop_mem_error;
+    end
+end
+
 genvar i;
+generate for (i=1 ; i < 4;i=i+1) begin
+    always @(posedge g_clk) if($rose(cop_mem_cen) && vtx_mem_cen[0]) begin
+        vtx_mem_cen  [i] <= vtx_mem_cen  [i-1];
+        vtx_mem_wen  [i] <= vtx_mem_wen  [i-1];
+        vtx_mem_addr [i] <= vtx_mem_addr [i-1];
+        vtx_mem_wdata[i] <= vtx_mem_wdata[i-1];
+        vtx_mem_rdata[i] <= cop_mem_rdata;
+        vtx_mem_ben  [i] <= vtx_mem_ben  [i-1];
+        vtx_mem_error[i] <= vtx_mem_error[i-1];
+    end
+end endgenerate
 
 always @(posedge g_clk) vtx_reset <= g_resetn;
 
 initial assume(vtx_valid == 0);
-
 
 //
 // Capture input instructions to the COP
@@ -167,6 +206,10 @@ end
 .vtx_reset       (vtx_reset       ),
 `VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre )
 `VTX_REGISTER_PORTS_CON(vtx_cprs_post, vtx_cprs_post)
+`VTX_MEM_TXN_PORTS_CONN(0)
+`VTX_MEM_TXN_PORTS_CONN(1)
+`VTX_MEM_TXN_PORTS_CONN(2)
+`VTX_MEM_TXN_PORTS_CONN(3)
 .vtx_valid       (vtx_valid       ),
 .vtx_instr_enc   (vtx_instr_enc[1]),
 .vtx_instr_rs1   (vtx_instr_rs1[1]),

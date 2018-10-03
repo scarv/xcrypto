@@ -9,6 +9,7 @@
 // 
 // 
 
+`include "fml_common.vh"
 
 `VTX_CHECKER_MODULE_BEGIN(correct_invalid_opcode_response)
 

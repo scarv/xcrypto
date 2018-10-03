@@ -30,6 +30,7 @@
 
 // Start an instruction checker block.
 `define VTX_CHECK_INSTR_BEGIN(NAME)   \
+    always @(*) restrict(dec_invalid_opcode == 1'b0); \
     always @(posedge `VTX_CLK_NAME) \
         if(vtx_valid && dec_``NAME) begin
 
@@ -58,7 +59,29 @@
 // -------------------------------------------------------------------
 
 
+`define VTX_MEM_TXN_PORTS(TXN) \
+input wire        vtx_mem_cen_``TXN   ,\
+input wire        vtx_mem_wen_``TXN   ,\
+input wire [31:0] vtx_mem_addr_``TXN  ,\
+input wire [31:0] vtx_mem_wdata_``TXN ,\
+input wire [31:0] vtx_mem_rdata_``TXN ,\
+input wire [ 3:0] vtx_mem_ben_``TXN   ,\
+input wire        vtx_mem_error_``TXN ,
+
+`define VTX_MEM_TXN_PORTS_CONN(TXN) \
+.vtx_mem_cen_``TXN   (vtx_mem_cen[``TXN  ]),\
+.vtx_mem_wen_``TXN   (vtx_mem_wen[``TXN  ]),\
+.vtx_mem_addr_``TXN  (vtx_mem_addr[``TXN ]),\
+.vtx_mem_wdata_``TXN (vtx_mem_wdata[``TXN]),\
+.vtx_mem_rdata_``TXN (vtx_mem_rdata[``TXN]),\
+.vtx_mem_ben_``TXN   (vtx_mem_ben[``TXN  ]),\
+.vtx_mem_error_``TXN (vtx_mem_error[``TXN]),\
+
 `define VTX_COMMON_INPUTS \
+`VTX_MEM_TXN_PORTS(0) \
+`VTX_MEM_TXN_PORTS(1) \
+`VTX_MEM_TXN_PORTS(2) \
+`VTX_MEM_TXN_PORTS(3) \
 input wire [ 0:0] vtx_reset                , \
 input wire [ 0:0] vtx_valid                , \
 input wire [31:0] vtx_instr_enc            , \
@@ -66,7 +89,7 @@ input wire [31:0] vtx_instr_rs1            , \
 input wire [ 2:0] vtx_instr_result         , \
 input wire [31:0] vtx_instr_wdata          , \
 input wire [ 4:0] vtx_instr_waddr          , \
-input wire [ 0:0] vtx_instr_wen            ,
+input wire [ 0:0] vtx_instr_wen            
 
 
 // Name of arrays to registers ports.
@@ -168,7 +191,7 @@ input wire [ 0:0] vtx_instr_wen            ,
 
 `define VTX_CHECKER_MODULE_BEGIN(NAME) \
 module NAME( \
-input wire        vtx_clk                  , \
+input wire        vtx_clk           , \
 `VTX_REGISTER_PORTS_IN(vtx_cprs_pre ) \
 `VTX_REGISTER_PORTS_IN(vtx_cprs_post) \
 `VTX_COMMON_INPUTS \
