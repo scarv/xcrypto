@@ -28,6 +28,7 @@ wire [31:0] lw_addr = vtx_instr_rs1 + {{21{dec_arg_imm11[10]}},dec_arg_imm11};
     if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
 
         assert(vtx_mem_cen_0  == 1'b1);
+        assert(vtx_mem_wen_0  == 1'b0);
         assert(vtx_mem_addr_0 == lw_addr);
         `VTX_ASSERT_CRD_VALUE_IS(vtx_mem_rdata_0)
 
@@ -35,6 +36,7 @@ wire [31:0] lw_addr = vtx_instr_rs1 + {{21{dec_arg_imm11[10]}},dec_arg_imm11};
         
         // Transaction should have started correctly.
         assert(vtx_mem_cen_0  == 1'b1);
+        assert(vtx_mem_wen_0  == 1'b0);
         assert(vtx_mem_addr_0 == lw_addr);
     
     end else if(vtx_instr_result == SCARV_COP_INSN_BAD_LAD) begin
