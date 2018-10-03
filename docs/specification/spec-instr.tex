@@ -100,7 +100,7 @@
   \iencsbcr
 }{
   Store a specific     byte of a $\XCR$ register into memory.
-  Note that
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
@@ -115,7 +115,7 @@
   \iencshcr
 }{
   Store a specific halfword of a $\XCR$ register into memory.
-  Note that
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
@@ -131,7 +131,7 @@
   \iencswcr
 }{
   Store                        a $\XCR$ register into memory.
-  Note that
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
   $
@@ -248,7 +248,7 @@
   Load an immediate halfword
   into the lower (or least-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
-  Note that
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{imm16} = \VERB[RV]{imm11} \CONS \VERB[RV]{imm5} .
   $
@@ -264,7 +264,7 @@
   Load an immediate halfword
   into the upper (or  most-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
-  Note that
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{imm16} = \VERB[RV]{imm11} \CONS \VERB[RV]{imm5} .
   $
@@ -353,10 +353,8 @@
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{shamt}       $ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \eIf{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
-    }{
-      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i}$
     }
   }
 }
@@ -384,10 +382,8 @@
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 )$ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \eIf{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
-    }{
-      $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i}$
     }
   }
 }
@@ -429,7 +425,7 @@ $
 }{
   Compute a   register-based packed addition, 
   implying $\odot = +$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
@@ -447,7 +443,7 @@ $
 }{
   Compute a   register-based packed subtraction, 
   implying $\odot = -$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
@@ -465,7 +461,7 @@ $
 }{
   Compute a   register-based packed multiplication, 
   implying $\odot = \times$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
   $
@@ -483,13 +479,13 @@ $
 }{
   Compute a   register-based packed left-shift,
   implying $\odot = \LSH$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
   and that any out-of-range distance
   $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs2}}]}{i} \geq w
   $
   will yield
   $
@@ -498,7 +494,7 @@ $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
-    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs2}}]}{i}$ \;
   }
 }
 
@@ -510,13 +506,13 @@ $
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \LSH$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
   and that any out-of-range distance
   $
-  \VERB[RV]{cshamt} > w
+  \VERB[RV]{cshamt} \geq w
   $
   will yield
   $
@@ -536,13 +532,13 @@ $
 }{
   Compute a   register-based packed right-shift,
   implying $\odot = \RSH$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
   and that any out-of-range distance
   $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs2}}]}{i} \geq w
   $
   will yield
   $
@@ -551,24 +547,25 @@ $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
-    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RSH}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs2}}]}{i}$ \;
   }
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: cshamt => pshamt ?
 \XCINSTR{SRLI.px}{pw, crd, crs1, cshamt}{
   \iencsrlipx
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \RSH$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
   and that any out-of-range distance
   $
-  \VERB[RV]{cshamt} > w
+  \VERB[RV]{cshamt} \geq w
   $
   will yield
   $
@@ -588,17 +585,13 @@ $
 }{
   Compute a   register-based packed left-rotate,
   implying $\odot = \LRT$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
-  and that any out-of-range distance
+  and that the effective distance is
   $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
-  $
-  will yield
-  $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \pmod{w} .
   $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
@@ -614,17 +607,13 @@ $
 }{
   Compute an immediate-based packed left-rotate,
   implying $\odot = \LRT$.
-  Note that wrt. the encoding
+  Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
   $
-  and that any out-of-range distance
+  and that the effective distance is
   $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} > w
-  $
-  will yield
-  $
-  \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
+  \VERB[RV]{cshamt} \pmod{w} .
   $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
@@ -697,69 +686,67 @@ $
 \subsubsection{Class-$2.5$: multi-precision}
 \label{sec:spec:instr:2:5}
 
-%These instructions use two destination registers and between three
-%and four source registers. Hence, some restrictions are placed on how
-%registers can be addressed.
-%
-%\begin{itemize}
-%\item
-%Destination registers are referred too as contiguous, even-odd pairs.
-%This means any two adjacently addressed registers, where the
-%first register address is even (zero being considered even for this
-%discussion) and the second address is one more than the first can be
-%used as the destination for a multi-precision instructions.
-%\designnote{
-%    This scheme means the function to compute the actual source registers
-%    from the minimum 3-bit encoding is simply to append either {\tt 00}
-%    or {\tt 01} depending on the even or odd address respectively.
-%}
-%
-%For example, $(0,1), (2,3)$ and $(10,11)$ are all valid
-%pairs of destination registers.
-%$(5,6)$ is not valid because the first
-%is an odd number. $(6,5)$ is not valid because $6 > 5$.
-%The pair $(6,9)$
-%is not valid because $6$ and $9$ are not adjacent.
-%
-%\item
-%The 3-bit encoding of pairs of registers is given in table 
-%\ref{tab:rdm-encodings}.
-%\end{itemize}
-%
-%\begin{table}[t]
-%\centering
-%\begin{tabular}{lll}
-%\hline
-%Encoding & crd2 & crd1 \\ \hline
-%0b000      & 1    & 0    \\
-%0b001      & 3    & 2    \\
-%0b010      & 5    & 4    \\
-%0b011      & 7    & 8    \\
-%0b100      & 9    & 10   \\
-%0b101      & 11   & 12   \\
-%0b110      & 13   & 14   \\
-%0b111      & 15   & 16   \\ \hline
-%\end{tabular}
-%\caption{
-%    Table showing how the {\tt rdm} field of multi-precision instructions
-%    is decoded into pairs of registers.
-%}
-%\label{tab:rdm-encodings}
-%\end{table}
-%
+Instruction in this class use upto
+$4$ source      $\XCR$ registers
+and
+$2$ destination $\XCR$ registers,
+which demands some compromises wrt. the encoding used.
+In short, a compressed specification of the destination $\XCR$ registers is
+used, whereby a single encoded \VERB[RV]{crdm} field implies (or maps to) a 
+pair 
+$
+\TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} }
+$
+of register addresses st.
+a) $\VERB[RV]{crd2} = \VERB[RV]{crd1} + 1$
+   (the contiguousness rule),
+   and
+b) $\VERB[RV]{crd2} = 1 \pmod{2}$
+   and 
+   $\VERB[RV]{crd1} = 0 \pmod{2}$
+   (the  odd-even'ness rule).
+Concretely then, this means
+\[
+\begin{array}{l@{\;}c@{\;}r c c@{\;}l@{\;}c@{\;}r@{\;}c@{\;}l@{\;}c@{\;}r@{\;}c}
+\VERB[RV]{crdm} &=& \RADIX{000}{2} &\mapsto& ( & \VERB[RV]{crd2} &=&  1 &,& \VERB[RV]{crd1} &=&  0 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{001}{2} &\mapsto& ( & \VERB[RV]{crd2} &=&  3 &,& \VERB[RV]{crd1} &=&  2 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{010}{2} &\mapsto& ( & \VERB[RV]{crd2} &=&  5 &,& \VERB[RV]{crd1} &=&  4 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{011}{2} &\mapsto& ( & \VERB[RV]{crd2} &=&  7 &,& \VERB[RV]{crd1} &=&  6 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{100}{2} &\mapsto& ( & \VERB[RV]{crd2} &=&  9 &,& \VERB[RV]{crd1} &=&  8 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{101}{2} &\mapsto& ( & \VERB[RV]{crd2} &=& 11 &,& \VERB[RV]{crd1} &=& 10 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{110}{2} &\mapsto& ( & \VERB[RV]{crd2} &=& 13 &,& \VERB[RV]{crd1} &=& 12 & ) \\
+\VERB[RV]{crdm} &=& \RADIX{111}{2} &\mapsto& ( & \VERB[RV]{crd2} &=& 15 &,& \VERB[RV]{crd1} &=& 14 & ) \\
+\end{array}
+\]
+where
+$\TUPLE{ 1, 0 }$ and $\TUPLE{ 3, 2 }$ are deemed valid pairs,
+$\TUPLE{ 3, 0 }$ is invalid because it violates the contiguousness rule,
+$\TUPLE{ 2, 3 }$ is invalid because it violates the contiguousness rule,
+and
+$\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
+
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ADD2.mp}{(crd2, crd1), crs1, crs2      }{
   \iencaddtwomp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') addition:
+  one can interpret
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$ as the addends,
+  $\XCR[*][{\VERB[RV]{crd1}}]$ as the sum,
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ as the carry-out,
+  meaning the instruction acts as a word-oriented analogue of a half-adder.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[64][u]{+}        \XCR[*][{\VERB[RV]{crs2}}] )  $ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -767,15 +754,25 @@ $
 \XCINSTR{ADD3.mp}{(crd2, crd1), crs1, crs2, crs3}{
   \iencaddthreemp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') addition:
+  one can interpret
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$ as the addends,
+  $\XCR[*][{\VERB[RV]{crs3}}]$ as the carry-in,
+  $\XCR[*][{\VERB[RV]{crd1}}]$ as the sum,
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ as the carry-out,
+  meaning the instruction acts as a word-oriented analogue of a full-adder.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[64][u]{+}        \XCR[*][{\VERB[RV]{crs2}}] ) 
                                                                 \OP[64][u]{+} \INDEX{\XCR[*][{\VERB[RV]{crs3}}]}{0}$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -783,14 +780,22 @@ $
 \XCINSTR{SUB2.mp}{(crd2, crd1), crs1, crs2      }{
   \iencsubtwomp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') subtraction:
+  one can interpret
+  $\XCR[*][{\VERB[RV]{crs1}}]$ as the    minuend,
+  $\XCR[*][{\VERB[RV]{crs2}}]$ as the subtrahend,
+  $\XCR[*][{\VERB[RV]{crd1}}]$ as the difference,
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ as the borrow-out,
+  meaning the instruction acts as a word-oriented analogue of a half-subtractor.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
-  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[64][u]{-}        \XCR[*][{\VERB[RV]{crs2}}] )  $\;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[64][u]{-}        \XCR[*][{\VERB[RV]{crs2}}] )  $ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -798,15 +803,24 @@ $
 \XCINSTR{SUB3.mp}{(crd2, crd1), crs1, crs2, crs3}{
   \iencsubthreemp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') subtraction:
+  one can interpret
+  $\XCR[*][{\VERB[RV]{crs1}}]$ as the    minuend,
+  $\XCR[*][{\VERB[RV]{crs2}}]$ as the subtrahend,
+  $\XCR[*][{\VERB[RV]{crs3}}]$ as the borrow-in,
+  $\XCR[*][{\VERB[RV]{crd1}}]$ as the difference,
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ as the borrow-out,
+  meaning the instruction acts as a word-oriented analogue of a full-subtractor.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[64][u]{-}        \XCR[*][{\VERB[RV]{crs2}}] ) 
                                                                 \OP[64][u]{-} \INDEX{\XCR[*][{\VERB[RV]{crs3}}]}{0}  $ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -814,14 +828,22 @@ $
 \XCINSTR{ACC1.mp}{(crd2, crd1), crs1      }{
   \iencacconemp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') accumulation,
+  with the
+  $32$-bit addend
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  accumulated into a $64$-bit value formed by concatenating
+  $\XCR[*][{\VERB[RV]{crd1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crd2}}] \CONS \XCR[*][{\VERB[RV]{crd1}}] ) \OP[64][u]{+} \XCR[*][{\VERB[RV]{crs1}}]$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -829,15 +851,25 @@ $
 \XCINSTR{ACC2.mp}{(crd2, crd1), crs1, crs2}{
   \iencacctwomp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') accumulation,
+  with the
+  $32$-bit addends
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$
+  accumulated into a $64$-bit value formed by concatenating
+  $\XCR[*][{\VERB[RV]{crd1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crd2}}] \CONS \XCR[*][{\VERB[RV]{crd1}}] ) \OP[64][u]{+} \XCR[*][{\VERB[RV]{crs1}}] 
                                                                                                    \OP[64][u]{+} \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -845,15 +877,27 @@ $
 \XCINSTR{MAC.mp}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmacmp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
+  the $32$-bit multiplicands
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$
+  are first used to form a $64$-bit product captured by
+  $\XCR[*][{\VERB[RV]{crd1}}]$ (the LSBs)
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ (the MSBs),
+  into which the $32$-bit addend
+  $\XCR[*][{\VERB[RV]{crs3}}]$
+  is accumulated.
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
   $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\times} \XCR[*][{\VERB[RV]{crs2}}] ) 
                                                                 \OP[64][u]{+}      \XCR[*][{\VERB[RV]{crs3}}]$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[64:32]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -861,30 +905,56 @@ $
 \XCINSTR{SLL.mp}{(crd2, crd1), crs1, crs2, crs3}{
   \iencsllmp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'')  left-shift:
+  a $64$-bit value is formed by concatenating
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$, 
+  then  left-shifted to yield a result in 
+  $\XCR[*][{\VERB[RV]{crd1}}]$ (the LSBs)
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ (the MSBs).
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs3}}]}{i} \geq 64
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd1}}]}{i} = \INDEX[w]{\XCR[*][{\VERB[RV]{crd2}}]}{i} = 0 .
   $
 }{
-  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\LSH} \XCR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
-
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\LSH} \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: why 4-bit cmshamt?
 \XCINSTR{SLLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
   \iencsllimp
 }{
-  Note that 
+  Compute an immediate-based multi-precision (or ``long'')  left-shift:
+  a $64$-bit value is formed by concatenating
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$, 
+  then  left-shifted to yield a result in 
+  $\XCR[*][{\VERB[RV]{crd1}}]$ (the LSBs)
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ (the MSBs).
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
-  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\LSH} shamt$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\LSH} \VERB[RV]{cmshamt}$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -892,61 +962,112 @@ $
 \XCINSTR{SRL.mp}{(crd2, crd1), crs1, crs2, crs3}{
   \iencsrlmp
 }{
-  Note that 
+  Compute a   register-based multi-precision (or ``long'') right-shift:
+  a $64$-bit value is formed by concatenating
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$, 
+  then right-shifted to yield a result in 
+  $\XCR[*][{\VERB[RV]{crd1}}]$ (the LSBs)
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ (the MSBs).
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } ,
+  $
+  and that any out-of-range distance
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crs3}}]}{i} \geq 64
+  $
+  will yield
+  $
+  \INDEX[w]{\XCR[*][{\VERB[RV]{crd1}}]}{i} = \INDEX[w]{\XCR[*][{\VERB[RV]{crd2}}]}{i} = 0 .
   $
 }{
-  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\RSH} \XCR[*][{\VERB[RV]{crs3}}]_{5:0}$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
-
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\RSH} \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: why 4-bit cmshamt?
 \XCINSTR{SRLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
   \iencsrlimp
 }{
-  Note that 
+  Compute an immediate-based multi-precision (or ``long'') right-shift:
+  a $64$-bit value is formed by concatenating
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$, 
+  then right-shifted to yield a result in 
+  $\XCR[*][{\VERB[RV]{crd1}}]$ (the LSBs)
+  and
+  $\XCR[*][{\VERB[RV]{crd2}}]$ (the MSBs).
+  Note that, wrt. the encoding,
   $
-  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd1}, \VERB[RV]{crd2} } .
+  \VERB[RV]{crdm} \mapsto \TUPLE{ \VERB[RV]{crd2}, \VERB[RV]{crd1} } .
   $
 }{
-  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\RSH} shamt$ \;
-  $\XCR[*][{\VERB[RV]{crd1}}] \ASN t[31: 0]$ \;
-  $\XCR[*][{\VERB[RV]{crd2}}] \ASN t[63:32]$ \;
-
+  $t                          \ASN ( \XCR[*][{\VERB[RV]{crs1}}] \CONS \XCR[*][{\VERB[RV]{crs2}}] ) \OP[64][u]{\RSH} \VERB[RV]{cmshamt}$ \;
+  $\XCR[*][{\VERB[RV]{crd1}}] \ASN \INDEX{t}{31 \RANGE  0}$ \;
+  $\XCR[*][{\VERB[RV]{crd2}}] \ASN \INDEX{t}{64 \RANGE 32}$ \;
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: crs3 -> rs3
 \XCINSTR{EQU.mp}{rd, crs1, crs2, crs3}{
   \ienceqump
 }{
-
+  Compute a ``chained'' (or ``long'') 
+  equality 
+  comparison between
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  forming some $i$-th step within a multi-precision comparison.
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}])                                                                     \AND \XCR[*][{\VERB[RV]{crs3}}]  $ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1            \AND \XCR[*][{\VERB[RV]{crs3}}]  $ \;
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: crs3 -> rs3
 \XCINSTR{LTU.mp}{rd, crs1, crs2, crs3}{
   \iencltump
 }{
-
+  Compute a ``chained'' (or ``long'') 
+     less-than
+  comparison between
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  forming some $i$-th step within a multi-precision comparison.
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] < \XCR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}] ) \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $t_1 \ASN \XCR[*][{\VERB[RV]{crs1}}] < \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
 }
 
 % -----------------------------------------------------------------------------
 
+% TODO: crs3 -> rs3
 \XCINSTR{GTU.mp}{rd, crs1, crs2, crs3}{
   \iencgtump
 }{
-
+  Compute a ``chained'' (or ``long'') 
+  greater-than
+  comparison between
+  $\XCR[*][{\VERB[RV]{crs1}}]$
+  and
+  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  forming some $i$-th step within a multi-precision comparison.
 }{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( \XCR[*][{\VERB[RV]{crs1}}] > \XCR[*][{\VERB[RV]{crs2}}] ) \IOR ( ( \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}] ) \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $t_1 \ASN \XCR[*][{\VERB[RV]{crs1}}] > \XCR[*][{\VERB[RV]{crs2}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
 }
 
 % =============================================================================

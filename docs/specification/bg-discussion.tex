@@ -183,6 +183,12 @@
 %more efficient to re-use the 4-bit lut field of the BOP.cr
 %instruction.}
 
+%\designnote{
+%    This scheme means the function to compute the actual source registers
+%    from the minimum 3-bit encoding is simply to append either {\tt 00}
+%    or {\tt 01} depending on the even or odd address respectively.
+%}
+
 \end{itemize}
 
 % =============================================================================

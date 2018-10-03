@@ -1,13 +1,13 @@
 % =============================================================================
 
-\subsection*{processor/co-processor/accelerator}
+\subsection*{Processor/co-processor/accelerator design}
 \cite{SCARV:Gutmann:00}
 \cite{SCARV:WuWeaAus:01}
 \cite{SCARV:TheSisPne:09}
 \cite{SCARV:MTRGS:99}
 \cite{SCARV:GGHJPTW:11}
 
-\subsection*{crypto/security-specific processor design}
+\subsection*{Cryptography- or security-specific processor design}
 \cite{SCARV:KocSavGro:08,SCARV:TilKirSze:10,SCARV:NREAMM:12,SCARV:YumSav:15,SCARV:RagAmbPar:15,SCARV:AweAus:17,SCARV:YHEF:18}
 
 \subsection*{ISEs: general}
@@ -15,29 +15,29 @@
 \cite{SCARV:RegIen:16}
 \cite{SCARV:FazLopOli:18}
 
-\subsection*{arith: $\B{Z}_{N}$ and general multi-precision}
+\subsection*{ISEs for arithmetic: $\B{Z}_{N}$ and general multi-precision}
 \cite{SCARV:Gro:02,SCARV:GroKam:03:a,SCARV:GAST:05,SCARV:GroTilSze:07}
-\subsection*{arith: $\B{F}_{2^m}$ and other fields}
+\subsection*{ISEs for arithmetic: $\B{F}_{2^m}$ and other fields}
 \cite{SCARV:GroKam:03:b,SCARV:FisLee:04,SCARV:GKP:04}
-\subsection*{arith: mixed purpose}
+\subsection*{ISEs for arithmetic: misc}
 \cite{SCARV:GroSav:04}
 
-\subsection*{co-design}
+\subsection*{ISEs within co-design}
 \cite{SCARV:KLWGSTW:06,SCARV:GIPTV:06}
 
-\subsection*{AES: attack resistant}
+\subsection*{ISEs for AES: security-focused}
 \cite{SCARV:TilGro:07:a}
-\subsection*{AES: efficient}
+\subsection*{ISEs for AES: efficiency-focused}
 \cite{SCARV:TilGroSze:05,SCARV:TilGro:06,SCARV:APRJ:11}
-\subsection*{AES: mixed, e.g., vs. ECC}
+\subsection*{ISEs for AES: mixed, e.g., vs. ECC}
 \cite{SCARV:TilGro:05,SCARV:TilGro:07:b}
 
-\subsection*{table look-up and memory access}
+\subsection*{ISEs for table look-up and memory access}
 \cite{SCARV:FisLee:01,SCARV:FisLee:05:a,SCARV:FisLee:05:b,SCARV:HilYinLee:08}
 
-\subsection*{bit-permutation}
+\subsection*{ISEs for bit-permutation}
 \cite{SCARV:ShiLee:00,SCARV:YanLee:00,SCARV:McGLee:01,SCARV:LeeShiYan:01,SCARV:ShiLee:02,SCARV:ShiYanLee:03,SCARV:LSYRR:04,MASCAB:LeeYanShi:05,SCARV:HilYinLee:08,SCARV:HilLee:08,SCARV:ShiYanLee:08}
-\subsection*{bit-slicing}
+\subsection*{ISEs for bit-slicing}
 As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
 a) a non-standard {\em representation} of data,
    and
@@ -55,8 +55,7 @@ instruction'' or ISE; the suggestion was later investigated in detail by
 Grabher et al.~\cite{SCARV:GraGroPag:08}.  In both cases, the idea is to 
 ``compress'' a sub-circuit, i.e., the sequence of bit-wise instructions 
 representing an $n$-input Boolean function, into a Look-Up Table (LUT): 
-
-the LUT is first configured with a truth table for the function, and then 
+the LUT is first configured with a truth table for the function, then 
 accessed to apply said function.  
 
 % =============================================================================
