@@ -4,7 +4,7 @@ YS          ?= $(YS_INSTALL)yosys
 YSMTBMC     ?= $(YS_INSTALL)yosys-smtbmc
 YS_SCRIPT   ?= write-smt-tb.ys
 
-BMC_STEPS   ?= 10
+BMC_STEPS   ?= 7 
 
 SBY         ?= sby
 SBY_SCRIPT  ?= proofs.sby
