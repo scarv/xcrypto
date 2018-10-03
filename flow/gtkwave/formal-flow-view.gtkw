@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Oct  3 09:08:23 2018
+[*] Wed Oct  3 10:16:13 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_cmovn_cr.rpt.vcd"
-[dumpfile_mtime] "Wed Oct  3 09:06:23 2018"
-[dumpfile_size] 142737
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_twid_c0.rpt.vcd"
+[dumpfile_mtime] "Wed Oct  3 10:11:10 2018"
+[dumpfile_size] 144518
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/formal-flow-view.gtkw"
 [timestart] 0
 [size] 1186 1025
 [pos] -1 -1
-*-4.568969 60 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.557785 34 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_formal.
 [treeopen] tb_formal.i_dut.
 [sst_width] 298
@@ -63,6 +63,7 @@ tb_formal.i_fml_checks.dec_arg_crs3[3:0]
 @200
 -
 @22
+tb_formal.i_fml_checks.vtx_crd_val_post[31:0]
 tb_formal.i_fml_checks.vtx_crs1_val_pre[31:0]
 tb_formal.i_fml_checks.vtx_crs2_val_pre[31:0]
 [pattern_trace] 1

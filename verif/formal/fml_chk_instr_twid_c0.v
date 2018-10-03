@@ -13,7 +13,7 @@
 
 `VTX_CHECKER_MODULE_BEGIN(instr_twid_c0)
 
-wire [7:0] split[3:0];
+wire [1:0] split[3:0];
 
 assign split[3] = `CRS1[ 7: 6];
 assign split[2] = `CRS1[ 5: 4];
