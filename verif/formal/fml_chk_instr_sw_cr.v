@@ -14,7 +14,8 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_sw_cr)
 
 wire [31:0] sw_addr =
-    vtx_instr_rs1 + 20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
+    vtx_instr_rs1 + 
+    {{20{dec_arg_imm11hi[6]}},dec_arg_imm11hi,dec_arg_imm11lo};
 
 //
 // sw_cr
