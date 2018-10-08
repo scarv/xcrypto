@@ -102,7 +102,8 @@ to said state.
 
 A suite of instructions
 (e.g., \VERB[RV]{MV2COP.cr})
-allow transfer of content between
+that allow 
+transfer of content between
 the general-purpose register file (i.e., $\GPR$)
 and
 the    co-processor register file (i.e., $\XCR$)
@@ -119,7 +120,8 @@ in realisations of countermeasures against side-channel attack.
 
 A suite of instructions 
 (e.g., \VERB[RV]{LW.cr})
-allow transfer of content between
+that allow 
+transfer of content between
    memory                         (i.e., $\MEM$)
 and
 the    co-processor register file (i.e., $\XCR$)
@@ -142,91 +144,58 @@ Although most are analogous to RV32I, there are some differences: note that
 \subsubsection{Class-$2.1$: randomness}
 \label{sec:bg:feature:2:1}
 
+% TODO
+
 % -----------------------------------------------------------------------------
 
 \subsubsection{Class-$2.2$: memory}
 \label{sec:bg:feature:2:2}
 
-%\cite{SCARV:FisLee:01}
+Consider the concept of an S-box (or substitution box), as evident in many 
+symmetric primitive designs.  Such an S-box can be described abstractly as 
+a Boolean function
+\[
+\ALG{S-box} : \SET{ 0, 1 }^{n} \rightarrow \SET{ 0, 1 }^{m} ,
+\]
+st. it substitutes an $n$-bit input for an $m$-bit output.  Both 
+the general-case of $n \neq m$
+(cf. DES~\cite{SCARV:FIPS:46_3} where $n = 6$ and $m = 4$),
+and 
+the special-case of $n =    m$
+(cf. AES~\cite{SCARV:FIPS:197}  where $n = m = 8$)
+are useful in practice, but, either way, the idea is to apply S-box(es) to
+some intermediate state to realise some form of confusion step: see, e.g., 
+\cite[Section 1.3]{SCARV:KnuRob:11}.
+From an implementation perspective, it is common to store each S-box as a
+look-up table; although said pre-computation implies some memory overhead
+(related to $n$ and $m$).
+However, as outlined by Fiskiran and Lee~\cite{SCARV:FisLee:01}, {\em if}
+such an approach is used then the addressing modes available {\em may} be
+a factor in any concrete improvement in latency.
 
-%The {\tt SCATTER} and {\tt GATHER} byte/halfword instructions described
-%in section \ref{sec:scatter-gather} may be omitted to reduce implementation
-%complexity.
-%
-%An implementation must support all variants of {\tt SCATTER} and {\tt GATHER}
-%or none.
-%
-%If {\tt SCATTER} and {\tt GATHER} instructions are not implemented, then their
-%opcodes will cause the implementation to raise an {\em Illegal Instruction}
-%exception.
-
-%Many algorithms rely on bringing together non-contiguous data from memory,
-%operating on it as a unit, then placing the results non-contiguously back
-%into memory. Scatter / Gather instructions are variants of normal load/store
-%instructions which allow a set of offsets (rather that just one) to be
-%specified and the data at each offset loaded/stored into a single word
-%as appropriate.
-
-%%%The \ASM{SCATTER} and \ASM{GATHER} instructions are designed to be used as
-%%%s-box lookup instructions. The {\tt .b} variants allow four separate lookups
-%%%per instruction into a 256 entry LUT stored in memory, while the {\tt .h}
-%%%variants allow two lookups into a 16-bit LUT stored in memory. \ASM{GATHER}
-%%%will move the looked-up values from memory into a register, while \ASM{SCATTER}
-%%%will move bytes of a register word back into the LUT in memory.
-%%%\designnote{
-%%%    While it is of-course possible to emulate the {\tt .h} variants of
-%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
-%%%    the performance and efficency savings to be had from telling the hardware
-%%%    explicitly to work on halfwords were worth the extra instructions.
-%%%}
-%%%
-%%%The address $a_x$ of each byte/halfword to be loaded or stored is computed by
-%%%adding an offset $x$ from the {\tt offsets} $\XCR$ register, and adding it
-%%%to the $base$ $\GPR$ register. For the {\tt .b} variants, there are four
-%%%offsets each corresponding to the four bytes of the offsets source register
-%%%word. For the {\tt .h} variant, there are two offsets corresponding to the
-%%%upper and lower halfwords of the registers.
-%%%
-%%%Both instructions use the $\GPR$s to source their base address, while the
-%%%offset indices into the LUT come from the $\XCR$ registers. This mirrors
-%%%how the ISE load and store instructions compute their addresses.
-%%%
-%%%The scatter instruction requires three register file reads.
-%%%Because the reads are split across the $\GPR$ and $\XCR$ registers,
-%%%no {\em extra} ports are needed on the RISC-V register file beyond the
-%%%standard two-read-one-write set.
-%%%
-%%%An implementation may perform the memory accesses in any order. The instructions
-%%%will raise address misalignment exceptions in line with how misalignment is
-%%%handled in the rest of the ISA.
-%%%
-%%%If any of the memory accesses cause
-%%%a {\em load access fault, load page fault, store page fault} or
-%%%{\em store access fault} then the address of the access which caused the
-%%%exception is written to the {\tt MTVAL} csr. The value taken by the
-%%%destination register bytes should an exception occur at any point in the
-%%%instruction is {\em implementation dependent}.
-%%%
-%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
-%%%though in order to service an interrupt. If the instructions are aborted
-%%%early, the value taken by the destination register bytes is {\em
-%%%implementation dependent}. The implementation is responsible for ensuring
-%%%that the {\tt EPC} register is set appropriately depending on whether the
-%%%interrupt is taken during, or at the end of, the instruction.
-%%%\designnote{Implementation of these instructions should consider the impact of
-%%%shared memory systems, since it will be possible for other agents in the
-%%%system to access memory during the execution of this instruction. In systems
-%%%possessing a cache, programmers must be mindful that these instructions
-%%%can cause odd behaviour due to the non-linear access pattern the instruction
-%%%creates.}
-%%%
-%%%The rationale for these instructions is two fold. They help with code density,
-%%%since at-least four instructions worth of work can now be done
-%%%in one instruction. They can also help with energy efficiency, since fewer
-%%%instructions need to be fetched and travel through an execution pipeline in
-%%%order to achieve the same goal. They are not designed to enhance performance
-%%%(in terms of cycles to complete an operation), but this may be a side-effect
-%%%of some implementations.
+This, taken as an exemplar from a richer set of examples, forms motivation
+for a richer set of addressing modes than available (by design) in RV32I.
+In particular, 
+a suite of instructions 
+(e.g., \VERB[RV]{SCATTER.b} and \VERB[RV]{GATHER.b})
+that allow 
+scatter/gather-based
+transfer of content between
+   memory                         (i.e., $\MEM$)
+and
+the    co-processor register file (i.e., $\XCR$)
+is included: the idea is to specify {\em multiple} memory accesses using a
+single base address and multiple offsets, and hence scatter sub-words into 
+(resp. gather sub-words from) memory at non-contiguous addresses.  
+This capability clearly aligns with application of an S-box, with the AES 
+{\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197} 
+round function implementable via a single \VERB[RV]{GATHER.b} instruction 
+(albeit multiple resulting memory accesses) given a suitable look-up table.
+Couching scatter/gather as a vector-oriented operation, both
+\cite[Section 3.1]{SCARV:FouMoo:05} 
+and 
+\cite[Section 3.3]{SCARV:Fournier:07}
+expand on such approach.
 
 % -----------------------------------------------------------------------------
 
@@ -254,6 +223,8 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 
 \subsubsection{Class-$2.4$: packed}
 \label{sec:bg:feature:2:4}
+
+% TODO
 
 %It is common for some CPUs / DSP extensions to allow packed ALU operations.
 %This is essentially using the normal GPRs to do SIMD operations on multiple

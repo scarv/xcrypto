@@ -1,0 +1,85 @@
+% =============================================================================
+
+\subsection{Discussion}
+\label{sec:spec:discussion}
+
+% TODO
+%\designnote{
+%The decision to source the base address from the $\GPR$ set rather
+%than a $\XCR$ was because all of the RISC-V address calculation
+%instructions work perfectly well on the $\GPR$s and there is no sense
+%in duplicating that functionality for this ISE. This free's up
+%encoding space, and lets the $\XCR$ state be used for the compute
+%work it was designed for rather than mundane address calculation.
+%While care must be
+%taken to avoid hazards between the different register sets, we
+%believe this decision makes sense overall.
+%}
+
+% TODO
+%There is no requirement for the ISE memory instructions to share the same
+%address space as the standard ISA. One may wish to completely separate
+%the physical memory used to store cryptographic secrets from the rest of
+%the virtual / logical memory space, and the ISE does not stop implementers
+%from doing so. This allows for hardware root-of-trust type devices to keep
+%their keys in tamper-proof memory, while still letting the rest of the
+%program exist in standard RAM/Flash.
+
+% TODO
+%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
+%(in tandem with \ASM{ORI} and loading addresses.
+%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
+%for addresses, we remove this functionality in favour of leaving the
+%low half of the register unmodified.
+%The rationale being that two instructions can still create and 32-bit
+%immediate, but that if we know a register is zero to begin
+%with, we can then use only one instruction to create masks which fit
+%into only a single halfword.}
+
+% TODO
+%\designnote{
+%    This instruction must be implemented with care, since a naive
+%    implementation will end up with a 32-port LUT, with correspondingly
+%    poor timing performance.
+
+%\designnote{This decision was made simply to make the encoding space
+%easier to manage. Rather than adding another 5-bit immediate field, it was
+%more efficient to re-use the 4-bit lut field of the BOP.cr
+%instruction.}
+
+%\designnote{
+%    This scheme means the function to compute the actual source registers
+%    from the minimum 3-bit encoding is simply to append either {\tt 00}
+%    or {\tt 01} depending on the even or odd address respectively.
+%}
+
+%%%\designnote{
+%%%    While it is of-course possible to emulate the {\tt .h} variants of
+%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
+%%%    the performance and efficency savings to be had from telling the hardware
+%%%    explicitly to work on halfwords were worth the extra instructions.
+%%%}
+%%%An implementation may perform the memory accesses in any order. The instructions
+%%%will raise address misalignment exceptions in line with how misalignment is
+%%%handled in the rest of the ISA.
+%%%If any of the memory accesses cause
+%%%a {\em load access fault, load page fault, store page fault} or
+%%%{\em store access fault} then the address of the access which caused the
+%%%exception is written to the {\tt MTVAL} csr. The value taken by the
+%%%destination register bytes should an exception occur at any point in the
+%%%instruction is {\em implementation dependent}.
+%%%
+%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
+%%%though in order to service an interrupt. If the instructions are aborted
+%%%early, the value taken by the destination register bytes is {\em
+%%%implementation dependent}. The implementation is responsible for ensuring
+%%%that the {\tt EPC} register is set appropriately depending on whether the
+%%%interrupt is taken during, or at the end of, the instruction.
+%%%\designnote{Implementation of these instructions should consider the impact of
+%%%shared memory systems, since it will be possible for other agents in the
+%%%system to access memory during the execution of this instruction. In systems
+%%%possessing a cache, programmers must be mindful that these instructions
+%%%can cause odd behaviour due to the non-linear access pattern the instruction
+%%%creates.}
+
+% =============================================================================

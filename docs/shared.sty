@@ -58,13 +58,14 @@
   
 \pagestyle{plain}
 
-\setcounter{tocdepth}{3}
-\setcounter{secnumdepth}{4}
-
 \titleformat{\section}[block]{\Large\bfseries}{\thesection.}{1em}{}
 \titleformat{\subsection}[block]{\normalfont\bfseries}{\thesubsection.}{1em}{}
 \titleformat{\subsubsection}[block]{\normalfont\bfseries}{\thesubsubsection.}{1em}{}
-\titleformat{\paragraph}[runin]{\normalfont\bfseries}{}{0em}{}
+\titleformat{\paragraph}[block]{\normalfont\bfseries}{\theparagraph.}{1em}{}
+\titleformat{\subparagraph}[runin]{\normalfont\bfseries}{}{0em}{}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{4}
 
 \setlength{\algomargin}{0em}
 \SetArgSty{textnormal}

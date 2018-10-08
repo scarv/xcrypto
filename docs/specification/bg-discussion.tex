@@ -139,56 +139,6 @@
       file size, complexity in instruction en/decoding, requirement for
       multi-cycle instruction execution).
 
-% TODO
-%\designnote{
-%The decision to source the base address from the $\GPR$ set rather
-%than a $\XCR$ was because all of the RISC-V address calculation
-%instructions work perfectly well on the $\GPR$s and there is no sense
-%in duplicating that functionality for this ISE. This free's up
-%encoding space, and lets the $\XCR$ state be used for the compute
-%work it was designed for rather than mundane address calculation.
-%While care must be
-%taken to avoid hazards between the different register sets, we
-%believe this decision makes sense overall.
-%}
-
-% TODO
-%There is no requirement for the ISE memory instructions to share the same
-%address space as the standard ISA. One may wish to completely separate
-%the physical memory used to store cryptographic secrets from the rest of
-%the virtual / logical memory space, and the ISE does not stop implementers
-%from doing so. This allows for hardware root-of-trust type devices to keep
-%their keys in tamper-proof memory, while still letting the rest of the
-%program exist in standard RAM/Flash.
-
-% TODO
-%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-%(in tandem with \ASM{ORI} and loading addresses.
-%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
-%for addresses, we remove this functionality in favour of leaving the
-%low half of the register unmodified.
-%The rationale being that two instructions can still create and 32-bit
-%immediate, but that if we know a register is zero to begin
-%with, we can then use only one instruction to create masks which fit
-%into only a single halfword.}
-
-% TODO
-%\designnote{
-%    This instruction must be implemented with care, since a naive
-%    implementation will end up with a 32-port LUT, with correspondingly
-%    poor timing performance.
-
-%\designnote{This decision was made simply to make the encoding space
-%easier to manage. Rather than adding another 5-bit immediate field, it was
-%more efficient to re-use the 4-bit lut field of the BOP.cr
-%instruction.}
-
-%\designnote{
-%    This scheme means the function to compute the actual source registers
-%    from the minimum 3-bit encoding is simply to append either {\tt 00}
-%    or {\tt 01} depending on the even or odd address respectively.
-%}
-
 \end{itemize}
 
 % =============================================================================
