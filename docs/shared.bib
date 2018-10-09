@@ -1,3 +1,8 @@
+%23.  A. Murat Fiskiran and Ruby B. Lee, �PAX: A Datapath-Scalable Minimalist Cryptographic Processor for Mobile Environments�, Book chapter in Embedded Cryptographic Hardware: Design and Security, Nova Science Publishers, NY, USA, 2004.
+%25.  A. Murat Fiskiran and Ruby B. Lee, �Evaluating Instruction Set Extensions for Fast Arithmetic on Binary Finite Fields�, to be published in Proceedings of the International Conference on Application-Specific Systems, Architectures, and Processors (ASAP),� Sept 2004.
+%26.  A. Murat Fiskiran and Ruby B. Lee, � Performance Scaling of Cryptography Operations in Servers and Mobile Clients�, to be published in ASPLOS/Beacon Workshop, Oct 2004.
+%27.  A. Murat Fiskiran and Ruby B. Lee, �Workload Characterization of Elliptic Curve Cryptography and other Network Security Algorithms for Constrained Environments�, Proceedings of the IEEE International Workshop on Workload Characterization, pp. 127-137, Nov 2002.
+
 % =============================================================================
 % EUROCRYPT
 
@@ -14,6 +19,16 @@
 % -----------------------------------------------------------------------------
 % CHES
 
+@inproceedings{SCARV:BerSch:12,
+  author       = {D.J. Bernstein and P. Schwabe},
+  title        = {{NEON} Crypto},
+  booktitle    = {Cryptographic Hardware and Embedded Systems (CHES)},
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 7428}, 
+  pages        = {320--339}, 
+  year         = {2012}
+}
+
 @inproceedings{SCARV:GGHJPTW:11,
   author       = {P. Grabher and J. Gro{\ss}sch\"{a}dl and S. Hoerder and K. J\"{a}rvinen and D. Page and S. Tillich and M. W\'{o}jcik},
   title        = {An exploration of mechanisms for dynamic cryptographic instruction set extension},
@@ -22,6 +37,25 @@
   series       = {LNCS 6917}, 
   pages        = {1--16}, 
   year         = {2011}
+}
+
+@inproceedings{SCARV:BosOzeSta:11,
+  author       = {J.W. Bos and O. \"{O}zen and M. Stam},
+  title        = {Efficient Hashing Using the {AES} Instruction Set},
+  booktitle    = {Cryptographic Hardware and Embedded Systems (CHES)}, 
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 6917}, 
+  pages        = {507--522}, 
+  year         = {2011}
+}
+
+@inproceedings{SCARV:RCSBKBLI:09,
+  author       = {F. Regazzoni and A. Cevrero and F.-X. Standaert and S. Badel and T. Kluter and P. Brisk and Y. Leblebici and P. Ienne},
+  title        = {A Design Flow and Evaluation Framework for {DPA}-Resistant Instruction Set Extensions},
+  booktitle    = {Cryptographic Hardware and Embedded Systems (CHES)},
+  publisher    = {Springer-Verlag LNCS 5747}, 
+  pages        = {205--219}, 
+  year         = {2009}
 }
 
 @inproceedings{SCARV:KasSch:09,
@@ -33,6 +67,15 @@
   year         = {2009}
 }
 
+@inproceedings{SCARV:Hamburg:09,
+  author       = {M. Hamburg},
+  title        = {Accelerating {AES} with Vector Permute Instructions},
+  booktitle    = {Cryptographic Hardware and Embedded Systems (CHES)},
+  publisher    = {Springer-Verlag LNCS 5747}, 
+  pages        = {18--32}, 
+  year         = {2009}
+}
+
 @inproceedings{SCARV:GraGroPag:08,
   author       = {P. Grabher and J. Gro{\ss}sch\"{a}dl and D. Page},
   title        = {Light-weight instruction set extensions for bit-sliced cryptography},
@@ -41,6 +84,16 @@
   series       = {LNCS 5154}, 
   pages        = {331--345}, 
   year         = {2008}
+}
+
+@inproceedings{SCARV:BKLPPRSV:07,
+  author       = {A. Bogdanov and L.R. Knudsen and G. Leander and C. Paar and A. Poschmann and M.J.B. Robshaw and Y. Seurin and C. Vikkelsoe},
+  title        = {{PRESENT}: An Ultra-Lightweight Block Cipher},
+  booktitle    = {Cryptographic Hardware and Embedded Systems (CHES)},
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 4727}, 
+  pages        = {450--466}, 
+  year         = {2007}
 }
 
 @inproceedings{SCARV:TilGro:07:a,
@@ -149,6 +202,14 @@
 % -----------------------------------------------------------------------------
 % ASAP
 
+@inproceedings{SCARV:ManMagGre:10,
+  author       = {R. Manley and P. Magrath and D. Gregg},
+  title        = {Code generation for hardware accelerated {AES}},
+  booktitle    = {Application-Specific Systems, Architectures, and Processors (ASAP)},
+  pages        = {345--348},
+  year         = {2010}
+}
+
 @inproceedings{SCARV:FisLee:05:a,
   author       = {A.M. Fiskiran and R.B. Lee},
   title        = {On-Chip Lookup Tables for Fast Symmetric-Key Encryption},
@@ -165,7 +226,7 @@
   year         = {2004}
 }
 
-@inproceedings{SCARV:GroKumPar:04,
+@inproceedings{SCARV:GroKumPaa:04,
   author       = {J. Gro{\ss}sch\"{a}dl and S.S. Kumar and C. Paar},
   title        = {Architectural Support for Arithmetic in Optimal Extension Fields},
   booktitle    = {Application-Specific Systems, Architectures, and Processors (ASAP)},
@@ -338,15 +399,61 @@
 } 
 
 @inproceedings{SCARV:MelElb:08,
-  author    = {S. O'Melia and A.J. Elbirt},
-  title     = {Instruction Set Extensions for Enhancing the Performance of Symmetric-Key Cryptography},
-  booktitle = {Annual Computer Security Applications Conference (ACSAC)},
-  pages     = {465--474},
-  year      = {2008}
+  author       = {S. O'Melia and A.J. Elbirt},
+  title        = {Instruction Set Extensions for Enhancing the Performance of Symmetric-Key Cryptography},
+  booktitle    = {Annual Computer Security Applications Conference (ACSAC)},
+  pages        = {465--474},
+  year         = {2008}
+}
+
+@inproceedings{SCARV:LeeYanShi:04,
+  author       = {R.B. Lee and X. Yang and Z. Shi},
+  title        = {Validating Word-Oriented Processors for Bit and Multi-word Operations},
+  booktitle    = {Annual Computer Security Applications Conference (ACSAC)},
+  pages        = {473--488},
+  year         = {2004}
 }
 
 % -----------------------------------------------------------------------------
 % misc.
+
+@inproceedings{SCARV:ManGre:10,
+ author        = {R. Manley and D. Gregg},
+ title         = {A Program Generator for {Intel} {AES-NI} Instructions},
+ booktitle     = {Progress in Cryptology (INDOCRYPT)},
+ publisher     = {Springer-Verlag},
+ series        = {LNCS 6498},
+ pages         = {311--327},
+ year          = {2010}
+} 
+
+@inproceedings{SCARV:BBGR:09,
+ author        = {R. Benadjila and O. Billet and S. Gueron M.J.B Robshaw},
+ title         = {The {Intel} {AES} Instructions Set and the {SHA-3} Candidates},
+ booktitle     = {Advances in Cryptology (ASIACRYPT)},
+ publisher     = {Springer-Verlag},
+ series        = {LNCS 5912},
+ pages         = {162--178},
+ year          = {2009}
+} 
+
+@inproceedings{SCARV:BurMcDAus:00,
+  author       = {J. Burke and J. McDonald and T. Austin},
+  title        = {Architectural Support for Fast Symmetric-key Cryptography},
+  booktitle    = {Architectural Support for Programming Languages and Operating Systems (ASPLOS)},
+  pages        = {178--189},
+  year         = {2000}
+} 
+
+@inproceedings{SCARV:KumPaa:04,
+  author       = {S.S. Kumar and C. Paar},
+  title        = {Reconfigurable Instruction Set Extension for Enabling {ECC} on an 8-Bit Processor},
+  booktitle    = {Field Programmable Logic and Application (FPL)},
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 3203},
+  pages        = {586--595},
+  year         = {2004}
+}
 
 @inproceedings{SCARV:NSSKM:17,
  author        = {M. Nemec and M. Sys and P. Svenda and D. Klinec and V. Matyas},
@@ -570,7 +677,40 @@
 }
 
 % -----------------------------------------------------------------------------
+% IEEE Micro
+
+@article{SCARV:SBBEEGHMMPRRW:17,
+  author       = {N. Stephens and S. Biles and M. Boettcher and J. Eapen and M. Eyole and G. Gabrielli and M. Horsnell and G. Magklis and A. Martinez and N. Premillieu and A. Reid and A. Rico and P. Walker},
+  title        = {The {ARM} Scalable Vector Extension},
+  journal      = {IEEE Micro},
+  volume       = {37},
+  issue        = {2},
+  pages        = {26--39},
+  year         = {2017}
+}
+
+@article{SCARV:LeeShiYan:01,
+  author       = {R.B. Lee and Z. Shi and X. Yang},
+  title        = {Cryptography Efficient Permutation Instructions for Fast Software},
+  journal      = {IEEE Micro},
+  volume       = {21},
+  number       = {6},
+  pages        = {56--69},
+  year         = {2001}
+}
+
+% -----------------------------------------------------------------------------
 % misc.
+
+@article{SCARV:BBGM:08,
+  author       = {S. Bartolini and I. Branovic and R. Giorgi and E. Martinelli},
+  title        = {Effects of Instruction-Set Extensions on an Embedded Processor: A Case Study on Elliptic Curve Cryptography over {$GF(2^m)$}},
+  journal      = {IEEE Transactions on Computers},
+  volume       = {57},
+  number       = {5},
+  pages        = {672--685},
+  year         = {2008}
+}
 
 @article{SCARV:Gro:03,
   author       = {J. Gro{\ss}sch\"{a}dl},
@@ -590,16 +730,6 @@
   number       = {10},
   pages        = {2368--2387},
   year         = {2015}
-}
-
-@article{SCARV:LeeShiYan:01,
-  author       = {R.B. Lee and Z. Shi and X. Yang},
-  title        = {Cryptography Efficient Permutation Instructions for Fast Software},
-  journal      = {IEEE Micro},
-  volume       = {21},
-  number       = {6},
-  pages        = {56--69},
-  year         = {2001}
 }
 
 @article{MASCAB:LeeYanShi:05,
@@ -753,11 +883,39 @@
 
 % =============================================================================
 
+@phdthesis{SCARV:Manley:11,
+  author       = {R. Manley},
+  title        = {Program generation for {Intel} {AES} new instructions}, 
+  school       = {Trinity College Dublin},
+  year         = {2011}
+}
+
 @phdthesis{SCARV:Fournier:07,
   author       = {J.J.A. Fournier},
   title        = {Vector microprocessors for cryptography}, 
   school       = {University of Cambridge},
-  year         = {2017}
+  year         = {2007}
+}
+
+@phdthesis{SCARV:Hilewitz:08,
+  author       = {Y. Hilewitz},
+  title        = {Advanced Bit Manipulation Instructions: Architecture, Implementation And Applications}, 
+  school       = {Princeton University},
+  year         = {2008}
+}
+
+@phdthesis{SCARV:Fiskiran:05,
+  author       = {A.M. Fiskiran},
+  title        = {Instruction set architecture for accelerating cryptographic processing in wireless computing devices}, 
+  school       = {Princeton University},
+  year         = {2005}
+}
+
+@phdthesis{SCARV:Shi:04,
+  author       = {Z. Shi},
+  title        = {Bit Permutation Instructions: Architecture, Implementation, And Cryptographic Properties}, 
+  school       = {Princeton University},
+  year         = {2004}
 }
 
 % =============================================================================

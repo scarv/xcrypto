@@ -157,19 +157,18 @@ that favour execution latency but degrade security.
 
 As a result, many ISAs now include an interface with an underlying (T)RNG
 implementation; examples include
-x86~\cite[Section 7.3.17.1 and 7.3.17.2]{SCARV:X86:2:18} 
-(see also~\cite{SCARV:JunKoc:99,SCARV:HamKocMar:12})
+x86~\cite[Section 7.3.17.1 and 7.3.17.2]{SCARV:X86:2:18} (see also~\cite{SCARV:JunKoc:99,SCARV:HamKocMar:12})
 and
 ARMv8.5-A\footnote{
 \url{https://community.arm.com/processors/b/blog/posts/arm-a-profile-architecture-2018-developments-armv85a}
 }.  \XCID mirrors such designs, including
-A suite of instructions 
+a suite of instructions 
 that allow 
 manipulation, e.g.,
  sampling entropy from (via \VERB[RV]{RSAMP.cr})
 or
-injecting entropy into (via \VERB[RV]{RSEED.cr})
-a (T)RNG implementation.
+injecting entropy into (via \VERB[RV]{RSEED.cr}),
+of a (T)RNG implementation.
 
 % -----------------------------------------------------------------------------
 
@@ -249,33 +248,52 @@ prohibitive) overhead.  \XCID adopts a similar approach.
 \subsubsection{Class-$2.4$: packed}
 \label{sec:bg:feature:2:4}
 
-% TODO
+At a high-level, the concept of packed operations can be distilled into two 
+central features:
 
-%It is common for some CPUs / DSP extensions to allow packed ALU operations.
-%This is essentially using the normal GPRs to do SIMD operations on multiple
-%pieces of data which are either a halfword or a byte in size. We include
-%variants of such instructions which operate on data widths commonly
-%found in cryptographic algorithms, particularly block ciphers.
+\begin{enumerate}
+\item the ability to consider a single $n$-bit register, 
+      say $x$, 
+      as $l = \frac{n}{w}$ separate $w$-bit sub-words, the $i$-th of which
+      we denote
+      $
+      \INDEX[w]{x}{i} ,
+      $
+      and
+\item the ability to apply an operator,
+      say $\odot$,
+      across {\em all} $l$ sub-word(s) using a single instruction, e.g.,
+      \[
+      \INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w]{\odot} \INDEX[w]{y}{i}
+      \]
+      for $0 \leq i < l$.
+\end{enumerate}
 
-% case in point, PRESENT; post-quantum schemes mod 2^{16}
+\noindent
+Note that
+a) a deliberate use of the term operation is intended to highlight the fact 
+   that non-arithmetic operations are viable instances of the same concept,
+b) care should be taken to distinguish this concept from traditional vector 
+   architectures
+   (cf. the Cray X1);
+   differences include dedicated support for vector data types, vs. what
+   could be viewed as retro-fitting packed sub-words in a scalar data type.
+It is common to describe packed arithmetic as an instance of a more general
+Single Instruction, Multiple Data (SIMD) concept, with the term SIMD Within 
+A Register (SWAR) further highlighting specifics of the instantiation;
 
-
-
-
-%By default, the packed arithmetic width instructions detailed in
-%section \ref{sec:packed-arithmetic-instructions} support operations on
-%packed bit-fields of widths $2$, $4$, $8$, $16$ and $32$.
-%
-%For extremely resource constrained or application specific implementations,
-%some unnecessary pack widths (as defined by the implementer) may be omitted.
-%
-%Supported pack widths are indicated by the {\tt pX} bits of the
-%\nameref{sec:csr-mccr}.
-%
-%Packed arithmetic instructions operating on supported pack widths are
-%executed as normal. If a packed arithmetic instruction operating on an
-%unsupported pack width is encountered, the implementation should raise an
-%{\em Illegal Instruction} exception.
+Concrete examples of support for packed operations include
+x86-based~\cite[Section 2.2.7]{SCARV:X86:2:18} MMX, SSE, and AVX,
+and
+ARM-based DSP (e.g., for lower-end Cortex-M), NEON, and SVE~\cite{SCARV:SBBEEGHMMPRRW:17}.
+Such examples are often motivated by use-cases related to, or even marketed 
+as solutions for media or signal processing.  Although it is well know that
+cryptographic workloads can take advantage of the same functionality
+(see, e.g.,~\cite{SCARV:Hamburg:09,SCARV:BerSch:12}),
+it is also true that more specific provision can assist doing so; in short,
+such provision is the aim of \XCID.  For example, it includes support for
+smaller (e.g., $4$-bit) sub-words than normal: this aligns with the demands
+of symmetric primitives such as PRESENT~\cite{SCARV:BKLPPRSV:07}.
 
 % -----------------------------------------------------------------------------
 

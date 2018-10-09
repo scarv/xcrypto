@@ -63,7 +63,7 @@
       which produces a $(2 \cdot w )$-bit product and therefore demands use 
       of {\em two} $w$-bit destination registers.
    
-      One of the strategies underlying \XCID is support for larger $s$ and/or 
+      One of the strategies underlying \XCID is support for larger $s$ and
       $d$.  This is rationalised by a (ideally positive) trade-off between
       a) increased register file complexity, as a result of the requirement
          to support $n$ ports, or, alternatively, multi-cycle operations,
@@ -71,9 +71,15 @@
       b) increased register file bandwidth.
       The latter enables each instruction to perform more, or richer forms 
       of computation, aligning well with the demands of many cryptographic 
-      workloads.  Even {\em if} said trade-off is acceptable, however, it 
-      also implies some challenges wrt. instruction encoding.  There seem
-      to be several possible options:
+      workloads: this essentially matches the concept
+      Lee et al.~\cite{SCARV:LeeYanShi:04}
+      describe as data-rich execution, supported, in their terminology, by 
+      Multi-word Operands, Multi-word Results (MOMR)
+      capable computational infrastructure.
+
+      Even {\em if} said trade-off is acceptable, however, it also implies 
+      some challenges wrt. instruction encoding.  There seem to be several 
+      possible options:
 
       \begin{enumerate}
       \item One could make all  register addresses {\em explicit}.
