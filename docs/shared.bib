@@ -1,20 +1,3 @@
-%@article{SCARV:Gro:03,
-%  author       = {J. Gro{\ss}sch\"{a}dl},
-%  title        = {Architectural Support for Long Integer Modulo Arithmetic on {RISC}-Based Smart Cards},
-%  journal      = {IJHPCA},
-%  volume       = {17},
-%  number       = {2},
-%  pages        = {135--146},
-%  year         = {2003}
-%}
-
-%
-% author       = {T. Vejda and D. Page and J. Gro{\ss}sch\"{a}dl:}
-% title        = {Instruction Set Extensions for Pairing-Based Cryptography}
-%Pairing 
-% pages        = {208--224}
-% year         = {2007}
-
 % =============================================================================
 % EUROCRYPT
 
@@ -143,6 +126,15 @@
   year         = {1998}
 }
 
+@inproceedings{SCARV:KSWH:98,
+  author       = {J. Kelsey and B. Schneier and D. Wagner and C. Hall},
+  title        = {Cryptanalytic Attacks on Pseudorandom Number Generators},
+  booktitle    = {Fast Software Encryption (FSE)},
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 1372},
+  pages        = {168--188},
+  year         = {1998}
+}
 
 @inproceedings{SCARV:Biham:97,
   author       = {E. Biham},
@@ -173,7 +165,7 @@
   year         = {2004}
 }
 
-@inproceedings{SCARV:GKP:04,
+@inproceedings{SCARV:GroKumPar:04,
   author       = {J. Gro{\ss}sch\"{a}dl and S.S. Kumar and C. Paar},
   title        = {Architectural Support for Arithmetic in Optimal Extension Fields},
   booktitle    = {Application-Specific Systems, Architectures, and Processors (ASAP)},
@@ -316,7 +308,63 @@
 }
 
 % -----------------------------------------------------------------------------
+% USENIX
+
+@inproceedings{SCARV:CosLebDev:16,
+  author       = {V. Costan and I. Lebedev and S. Devadas},
+  title        = {{Sanctum}: Minimal Hardware Extensions for Strong Software Isolation},
+  booktitle    = {USENIX Security Symposium},
+  pages        = {857--874},
+  year         = {2016}
+}
+
+@inproceedings{SCARV:Gutmann:00,
+  author       = {P. Gutmann},
+  title        = {An Open-source Cryptographic Coprocessor},
+  booktitle    = {USENIX Security Symposium},
+  pages        = {8:1--8:16},
+  year         = {2000}
+}
+
+% -----------------------------------------------------------------------------
+% ACSAC
+
+@inproceedings{SCARV:TilKirSze:10,
+  author       = {S. Tillich and M. Kirschbaum and A. Szekely},
+  title        = {{SCA}-resistant Embedded Processors: The Next Generation},
+  booktitle    = {Annual Computer Security Applications Conference (ACSAC)},
+  pages        = {211--220},
+  year         = {2010}
+} 
+
+@inproceedings{SCARV:MelElb:08,
+  author    = {S. O'Melia and A.J. Elbirt},
+  title     = {Instruction Set Extensions for Enhancing the Performance of Symmetric-Key Cryptography},
+  booktitle = {Annual Computer Security Applications Conference (ACSAC)},
+  pages     = {465--474},
+  year      = {2008}
+}
+
+% -----------------------------------------------------------------------------
 % misc.
+
+@inproceedings{SCARV:NSSKM:17,
+ author        = {M. Nemec and M. Sys and P. Svenda and D. Klinec and V. Matyas},
+ title         = {The Return of {Coppersmith's} Attack: Practical Factorization of Widely Used {RSA} Moduli},
+ booktitle     = {Computer and Communications Security (CCS)},
+ pages         = {1631--1648},
+ year          = {2017}
+} 
+
+@inproceedings{SCARV:VejPagGro:07,
+  author       = {T. Vejda and D. Page and J. Gro{\ss}sch\"{a}dl},
+  title        = {Instruction Set Extensions for Pairing-Based Cryptography},
+  booktitle    = {Pairing-Based Cryptography (Pairing)},
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 4575},
+  pages        = {208--224},
+  year         = {2007}
+}
 
 @inproceedings{SCARV:GroKam:03,
   author       = {J. Gro{\ss}sch\"{a}dl and G.-A. Kamendje},
@@ -412,28 +460,12 @@
   year         = {2001}
 } 
 
-@inproceedings{SCARV:Gutmann:00,
-  author       = {P. Gutmann},
-  title        = {An Open-source Cryptographic Coprocessor},
-  booktitle    = {USENIX Security Symposium},
-  pages        = {8:1--8:16},
-  year         = {2000}
-}
-
 @inproceedings{SCARV:FazLopOli:18,
   author       = {A. Faz-Hernandez and J. L\'{o}pez and A.K.D.S. de Oliveira},
   title        = {{SoK}: A Performance Evaluation of Cryptographic Instruction Sets on Modern Architectures},
   booktitle    = {ASIA Public-Key Cryptography Workshop (APKC)},
   pages        = {9--18},
   year         = {2018}
-} 
-
-@inproceedings{SCARV:TilKirSze:10,
-  author       = {S. Tillich and M. Kirschbaum and A. Szekely},
-  title        = {{SCA}-resistant Embedded Processors: The Next Generation},
-  booktitle    = {Annual Computer Security Applications Conference (ACSAC)},
-  pages        = {211--220},
-  year         = {2010}
 } 
 
 @inproceedings{SCARV:NREAMM:12,
@@ -450,6 +482,16 @@
   booktitle    = {Reconfigurable Computing and FPGAs (ReConFig)},
   pages        = {409--414},
   year         = {2008}
+}
+
+@inproceedings{SCARV:KPVV:16,
+  author       = {T. Kaufmann and H. Pelletier and S. Vaudenay and K. Villegas},
+  title        = {When constant-time source yields variable-time binary: Exploiting curve25519-donna built with {MSVC 2015}},
+  booktitle    = {Cryptology and Network Security (CANS)}, 
+  publisher    = {Springer-Verlag},
+  series       = {LNCS 10052},
+  pages        = {573--582}, 
+  year         = {2016}
 }
 
 @inproceedings{SCARV:SimChiAnd:18,
@@ -530,6 +572,16 @@
 % -----------------------------------------------------------------------------
 % misc.
 
+@article{SCARV:Gro:03,
+  author       = {J. Gro{\ss}sch\"{a}dl},
+  title        = {Architectural Support for Long Integer Modulo Arithmetic on {RISC}-Based Smart Cards},
+  journal      = {International Journal of High Performance Computing Applications (IJHPCA)},
+  volume       = {17},
+  number       = {2},
+  pages        = {135--146},
+  year         = {2003}
+}
+
 @article{SCARV:YumSav:15,
   author       = {K. Yumbul and E. Sava\c{s}},
   title        = {Enhancing an Embedded Processor Core for Efficient and Isolated Execution of Cryptographic Algorithms},
@@ -568,6 +620,16 @@
   number       = {1},
   pages        = {85--108},
   year         = {2005}
+}
+
+@article{SCARV:MelElb:10,
+  author       = {S. O'Melia and A.J. Elbirt},
+  title        = {Enhancing the Performance of Symmetric-Key Cryptography via Instruction Set Extensions},
+  journal      = {IEEE Transactions On Very Large Scale Integration (VLSI) Systems}, 
+  volume       = {18},
+  number       = {11},
+  pages        = {1505--1518},
+  year         = {2010}
 }
 
 @article{SCARV:HilLee:08,
@@ -639,6 +701,20 @@
   url          = {http://eprint.iacr.org/2018/808.pdf}
 }
 
+@misc{SCARV:JunKoc:99,
+  author       = {B. Jun and P.C. Kocher},
+  title        = {The {Intel} Random Number Generator},
+  howpublished = {Cryptography Research, Inc.},
+  year         = {1999}
+}
+
+@misc{SCARV:HamKocMar:12,
+  author       = {M. Hamburg and P.C. Kocher and M.E. Marson},
+  title        = {Analysis of {Intel}'s {Ivy Bridge} Digital Random Number Generator},
+  howpublished = {Cryptography Research, Inc.},
+  year         = {2012}
+}
+
 % =============================================================================
 
 @incollection{SCARV:BarGioMar:09,
@@ -654,18 +730,25 @@
 
 % =============================================================================
 
-@book{SCARV:DaeRij:02,
-  author       = {J. Daemen and V. Rijmen},
-  title        = {The Design of Rijndael},
-  publisher    = {Springer}, 
-  year         = {2002}
-}
-
 @book{SCARV:KnuRob:11,
   author       = {L.R. Knudsen and M.J.B. Robshaw},
   title        = {The Block Cipher Companion},
   publisher    = {Springer}, 
   year         = {2011}
+}
+
+@book{SCARV:ManOswPop:07,
+  author       = {S. Mangard and E. Oswald and T. Popp},
+  title        = {Power Analysis Attacks: Revealing the Secrets of Smart Cards},
+  publisher    = {Springer}, 
+  year         = {2007}
+}
+
+@book{SCARV:DaeRij:02,
+  author       = {J. Daemen and V. Rijmen},
+  title        = {The Design of Rijndael},
+  publisher    = {Springer}, 
+  year         = {2002}
 }
 
 % =============================================================================
@@ -717,6 +800,14 @@
 }
 
 % -----------------------------------------------------------------------------
+
+@misc{SCARV:RFC:4086,
+  author       = {D. Eastlake and J. Schiller and S. Crocker},
+  title        = {Randomness Requirements for Security},
+  howpublished = {Internet Engineering Task Force (IETF) Request for Comments (RFC) 4086},
+  year         = {2005},
+  url          = {http://tools.ietf.org/html/rfc4086}
+}
 
 @misc{SCARV:RFC:7748,
   author       = {A. Langley and  M. Hamburg and S. Turner},
@@ -808,7 +899,7 @@
 % -----------------------------------------------------------------------------
 % Intel
 
-@techreport{SCARV:X86:1:18,
+@techreport{SCARV:X86:RDRAND1:18,
   title        = {Intel {64} and {IA-32} architectures -- Software Developer's Manual (Volume 1: Basic Architecture)},
   number       = {253665-067US},
   institution  = {Intel Corp.},

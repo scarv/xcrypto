@@ -98,7 +98,7 @@ introduce
 as a baseline; most of the instructions specified in this class allow access 
 to said state.
 
-\paragraph{Register-register data transfer.}
+\subparagraph{Register-register data transfer.}
 
 A suite of instructions
 (e.g., \VERB[RV]{MV2COP.cr})
@@ -116,7 +116,7 @@ is included; such instructions form a common, vital component
 (see, e.g., \cite[Section 5]{SCARV:RFC:7748} wrt. requirement for \VERB{cswap})
 in realisations of countermeasures against side-channel attack.
 
-\paragraph{Register-memory   data transfer.}
+\subparagraph{Register-memory   data transfer.}
 
 A suite of instructions 
 (e.g., \VERB[RV]{LW.cr})
@@ -144,7 +144,32 @@ Although most are analogous to RV32I, there are some differences: note that
 \subsubsection{Class-$2.1$: randomness}
 \label{sec:bg:feature:2:1}
 
-% TODO
+Almost all cryptographic workloads have a strong requirement for efficient
+generation of high-quality randomness; this stems from use-cases such as
+a) generation of key material, be it ephemeral or long term,
+   or
+b) implementation of (randomised) countermeasures
+   (see, e.g., masking~\cite[Chapter 9]{SCARV:ManOswPop:07}).
+Any lack of quality can be outright catastrophic;
+for context and (more recent) real-world impact see, e.g.,~\cite{SCARV:KSWH:98,SCARV:RFC:4086} and~\cite{SCARV:NSSKM:17} respectively.
+The same is true of efficiency, the lack of which can lead to trade-offs 
+that favour execution latency but degrade security.
+
+As a result, many ISAs now include an interface with an underlying (T)RNG
+implementation; examples include
+x86~\cite[Section 7.3.17.1 and 7.3.17.2]{SCARV:X86:2:18} 
+(see also~\cite{SCARV:JunKoc:99,SCARV:HamKocMar:12})
+and
+ARMv8.5-A\footnote{
+\url{https://community.arm.com/processors/b/blog/posts/arm-a-profile-architecture-2018-developments-armv85a}
+}.  \XCID mirrors such designs, including
+A suite of instructions 
+that allow 
+manipulation, e.g.,
+ sampling entropy from (via \VERB[RV]{RSAMP.cr})
+or
+injecting entropy into (via \VERB[RV]{RSEED.cr})
+a (T)RNG implementation.
 
 % -----------------------------------------------------------------------------
 
