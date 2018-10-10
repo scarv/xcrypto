@@ -33,9 +33,12 @@ assign exp_addrs[1] = vtx_instr_rs1 + `CRS2[31:16];
     // Make sure it never gives the wrong error code.
     `VTX_ASSERT(vtx_instr_result != SCARV_COP_INSN_LD_ERR);
     `VTX_ASSERT(vtx_instr_result != SCARV_COP_INSN_BAD_LAD);
-    `VTX_ASSERT(vtx_instr_result != SCARV_COP_INSN_BAD_SAD);
 
-    if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
+    if(exp_addrs[0][0] || exp_addrs[1][0]) begin
+    
+        `VTX_ASSERT(vtx_instr_result != SCARV_COP_INSN_BAD_SAD);
+
+    end else if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
     
         // If the instruction succeeds, check it wrote the right data out
 
