@@ -19,6 +19,7 @@
 
 `define CRS1 vtx_crs1_val_pre
 `define CRS2 vtx_crs2_val_pre
+`define CRD  vtx_crd_val_pre
 
 // Start a checker block
 `define VTX_CHECK_BEGIN(NAME) \
