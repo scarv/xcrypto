@@ -36,6 +36,8 @@
 
 `define VTX_CHECK_INSTR_END(NAME) end 
 
+`define VTX_ASSERT(EXPR) assert(EXPR)
+
 // -------------------------------------------------------------------
 
 `define VTX_ASSERT_RESULT_IS(RESULT) \
