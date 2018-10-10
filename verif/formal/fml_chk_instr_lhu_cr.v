@@ -45,7 +45,7 @@ wire [15:0] lh_rdata = lh_addr[1] ? vtx_mem_rdata_0[31:16] :
         end else begin
 
             // Load to lower halfword of CPR leaving high half unmodified
-            `VTX_ASSERT_CRD_VALUE_IS({vtx_crd_val_pre[15:0], lh_rdata})
+            `VTX_ASSERT_CRD_VALUE_IS({vtx_crd_val_pre[31:16], lh_rdata})
 
         end
 
