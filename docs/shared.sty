@@ -283,9 +283,11 @@
 \newcommandx{\SEC}[1][1={}]{\IfEq{#1}{s}{Sections}{Section}\xspace}
 \newcommandx{\TAB}[1][1={}]{\IfEq{#1}{s}{Tables}{Table}\xspace}
 \newcommandx{\FIG}[1][1={}]{\IfEq{#1}{s}{Figures}{Figure}\xspace}
+\newcommandx{\APPX}[1][1={}]{\IfEq{#1}{s}{Appendices}{Appendix}\xspace}
 \newcommandx{\REFSEC}[1]{\SEC~\ref{#1}\xspace}
 \newcommandx{\REFTAB}[1]{\TAB~\ref{#1}\xspace}
 \newcommandx{\REFFIG}[1]{\FIG~\ref{#1}\xspace}
+\newcommandx{\REFAPPX}[1]{\APPX~\ref{#1}\xspace}
 
 % verbatim macro: inline
 \newcommand{\VERB}[2][]{\mbox{\lstinline[style={inline},language={#1}]`#2`}}
