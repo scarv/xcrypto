@@ -16,6 +16,7 @@
 \usepackage{import}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{longtable}
 \usepackage{multirow}
 \usepackage{pbox}
 \usepackage{ragged2e}
@@ -139,9 +140,16 @@
 
 \newcommandx{\XCID}[1][1={}]{\mbox{{\sf XCrypto}\IfEq{#1}{}{}{[#1]}}\xspace}
 
+\newcommand{\XCSYNTAXDEF}[2]{%
+  \expandafter\newcommand\csname rmk-#1\endcsname{\VERB[RV]{#1 #2}}%
+}
+
+\newcommand{\XCSYNTAXUSE}[1]{\csname rmk-#1\endcsname}
+
 \newcommandx{\XCINSTR}[6][6={}]{
   \paragraph{\VERB[RV]{#1}}
-  
+  \label{sec:spec:instr:#1} \XCSYNTAXDEF{#1}{#2}
+
   \begin{itemize}[labelindent=0pt,align=left,noitemsep]
   \item {\bf Description:} 
         #4
@@ -157,7 +165,7 @@
 
   \item {\bf Syntax and semantics:}
         \[
-        \VERB[RV]{#1 #2} 
+        \XCSYNTAXUSE{#1}
         ~~~\mapsto~~~
         \left\{
         \begin{array}{c}
