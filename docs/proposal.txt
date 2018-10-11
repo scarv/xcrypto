@@ -1,0 +1,79 @@
+rules:
+
+- prefix of xc. to avoid clashes elsewhere
+- suffix is instruction varient
+
+  - i = immediate version
+  - u = updating (vs. overwriting) version
+  - m = multiple
+  - cl = carryless version
+  - b/h/w = byte/halfword/word varient
+  - $ is a width
+
+MV2GPR    => xc.xcr2gpr
+MV2COP    => xc.gpr2xcr
+
+LUI.cr    => xc.ld.hi
+LLI.cr    => xc.ld.hi
+LBU.cr    => xc.ld.bu
+LHU.cr    => xc.ld.hu
+          => xc.ld.b
+          => xc.ld.h
+LW.cr     => xc.ld.w
+SB.cr     => xc.st.b
+SH.cr     => xc.st.h
+SW.cr     => xc.st.w
+
+RSEED.cr  => xc.rngseed
+RSAMP.cr  => xc.rngsamp
+          => xc.rngtest
+
+SCATTER.b => xc.st.bm
+SCATTER.h => xc.st.hm
+GATHER.b  => xc.ld.bm
+GATHER.h  => xc.ld.hm
+
+AND.cr    => xc.and
+OR.cr     => xc.ior
+XOR.cr    => xc.xor
+BOP.cr    => xc.bop
+EXT.cr    => xc.ext
+INS.cr    => xc.ins
+LMIX.cr   => xc.mixl
+HMIX.cr   => xc.mixh
+
+ADD.px    => xc.padd.$
+SUB.px    => xc.psub.$
+MUL.px    => xc.pmull.$
+          => xc.pmulh.$
+          => xc.pmull.$cl
+          => xc.pmulh.$cl
+SLL.px    => xc.psll.$
+SLLI.px   => xc.psll.$i
+SRL.px    => xc.psrl.$
+SRLI.px   => xc.psrl.$i
+ROT.px    => xc.prot.$
+ROTI.px   => xc.prot.$i
+
+TWID.B    => xc.pperm.b
+TWID.NN   => xc.pperm.h$
+TWID.CN   => xc.pperm.w$
+
+ADD2.mp   => xc.madd.2
+ADD3.mp   => xc.madd.3
+SUB2.mp   => xc.msub.2
+SUB3.mp   => xc.msub.3
+ACC1.mp   => xc.macc.1
+ACC2.mp   => xc.macc.2
+MAC.mp    => xc.mmul.1
+MAA.mp    => xc.mmul.2
+          => xc.mmul.1cl
+          => xc.mmul.2cl
+SLLR.mp   => xc.msll
+SLLI.mp   => xc.msll.i
+SRLR.mp   => xc.msrl
+SRLI.mp   => xc.msrl.i
+EQU.mp    => xc.mequ
+LTU.mp    => xc.mltu
+GTU.mp    => xc.mgtu
+

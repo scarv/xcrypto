@@ -7,22 +7,24 @@ a) require computationally intensive, somewhat niche functionality,
 b) form a central target in what is a complex, evolving attack surface.
 The former is a particular issue, in the sense cryptography is typically an
 enabling technology vs. a feature per se: from the perspective of the user,
-it represents pure overhead.  Efficiency is a goal in and of itself, but is
-also as an enabler for security: one cannot (or at least {\em should} not)
-compromise security to meet efficiency requirements, so delivering higher
-efficiency can be pitched as an enabler for countermeasures against attack
-(since there is more margin in which to do so).
+it represents pure overhead.  Efficiency is a goal in and of itself then, 
+but also as an enabler for security.  One cannot (or at least {\em should} 
+not) compromise security to meet efficiency requirements, and so delivering
+higher efficiency can be pitched as an enabler for countermeasures against 
+attack (since there is more margin in which to do so).
 
-This document acts as a specification for a 
+This document acts as the specification for a 
 greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
 to the RISC-V 
 RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17} (or RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17})
-base ISA, which we dub \ISE; it forms an output from the SCARV\footnote{
-\url{http://www.scarv.org}, \url{http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/R012288/1}
-} project, funded by EPSRC and NCSC as part of the UK-based RISE\footnote{
+base ISA, which we dub \XCID; it forms an output from the SCARV\footnote{
+\url{http://www.scarv.org}, \url{http://www.github.com/scarv}
+} project, funded by EPSRC\footnote{
+\url{http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/R012288/1}
+} as part of the UK-based RISE\footnote{
 \url{http://www.ukrise.org}
 } initiative.
-The \ISE ISE aims to support software implementations of both symmetric and 
+The \XCID ISE aims to support software implementations of both symmetric and 
 asymmetric cryptographic primitives.  By analogy, one could view this remit
 as similar to that of a floating-point co-processor, but for cryptography: 
 per the above, it aims to enable
@@ -31,15 +33,22 @@ a) efficient
 b) secure
 execution of said implementations.
 
-Note that this document {\em is} a specification for \ISE, but {\em is not} 
-an implementation guide: we provide a separate document for that purpose.
+Note this document {\em is} a specification for \XCID, but categorically
+{\em is not} an implementation guide: we provide a separate document for 
+that purpose.  In order to avoid the specification becoming too verbose,
+we defer coverage of related work and an detailed design notes to
+\REFAPPX{appx:related}
+and
+\REFAPPX{appx:design}
+respectively.
 Also note that it should be viewed as a prototype or draft, so statements 
 such as 
-``\ISE is   X'' 
+``\XCID is   X'' 
 or
-``\ISE does Y''
+``\XCID does Y''
 should be carefully qualified with {\em currently} vs. {\em definitively}.  
-In particular, we expect some degree of fine-tuning to emerge from ongoing
-implementation and evaluation effort.
+In particular, we expect some degree of iteration and so change to emerge 
+from work in progress wrt. design, implementation, and evaluation.
+
 
 % =============================================================================
