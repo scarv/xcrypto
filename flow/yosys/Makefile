@@ -29,10 +29,6 @@ $(VLOG_out) : $(YS_SCRIPT) $(SRC_RTL)
 
 # --------------------------------------------------------------------------
 
-FML_SWITCH_FILES =  $(shell find $(FE_DEFINES) -path "*.switches") 
-FML_CONTEXTS     = $(basename $(notdir $(FML_SWITCH_FILES)))
-FML_CONTEXT_JOBS = $(addprefix $(SMTDIR)/,$(addsuffix .fmljob,$(FML_CONTEXTS)))
-
 FML_CONTEXT     ?= generic_instr_checks
 FML_PROPERTIES   = $(shell cat $(FE_DEFINES)/$(FML_CONTEXT).switches)
 FML_CONTEXT_DIR  = $(SMTDIR)/$(FML_CONTEXT)
@@ -41,12 +37,7 @@ SMTDIR   ?= $(COP_WORK)/smt2
 SMT2_out ?= $(addsuffix .smt2,$(addprefix $(FML_CONTEXT_DIR)/,$(FML_PROPERTIES)))
 SMT2_RPT ?= $(addsuffix .rpt,$(addprefix $(FML_CONTEXT_DIR)/,$(FML_PROPERTIES)))
 
-all-context-jobs: $(SMT2_out) $(SMT2_RPT)
-
-formal-checks: $(FML_CONTEXT_JOBS)
-
-$(SMTDIR)/%.fmljob : $(FE_DEFINES)./%.switches
-	$(MAKE) all-context-jobs FML_CONTEXT=$(basename $(notdir $@))
+formal-checks: $(SMT2_out) $(SMT2_RPT)
 
 $(FML_CONTEXT_DIR)/%.smt2 : $(SRC_RTL) $(SRC_VERIF) $(FE_VERILOG) $(FE_DEFINES)
 	-mkdir -p $(dir $(SMT2_out))
