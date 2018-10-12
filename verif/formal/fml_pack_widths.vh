@@ -62,8 +62,11 @@ reg [31:0] result3 ; \
 reg [31:0] result2 ; \
 reg [31:0] result1 ; \
 reg [31:0] result0 ; \
-reg [31:0] result  ; \
-reg [31:0] result; \
+reg [31:0] result_pw1; \
+reg [31:0] result_pw2; \
+reg [31:0] result_pw4; \
+reg [31:0] result_pw8; \
+reg [31:0] result_pw16; \
 always @(*) begin \
     result15 = 0; \
     result14 = 0; \
@@ -81,19 +84,23 @@ always @(*) begin \
     result2  = 0; \
     result1  = 0; \
     result0  = 0; \
-    result = 0; \
+    result_pw1  = 0; \
+    result_pw2  = 0; \
+    result_pw4  = 0; \
+    result_pw8  = 0; \
+    result_pw16 = 0; \
     if(pw == SCARV_COP_PW_1) begin \
-        result = {2{`CRS1}} >> AMNT; \
+        result_pw1 = {2{`CRS1}} >> AMNT; \
     end else if(pw == SCARV_COP_PW_2) begin \
         result1 = {4{`CRS1[31:16]}} >> AMNT; \
         result0 = {4{`CRS1[15: 0]}} >> AMNT; \
-        result = {result1[15: 0],result0[15: 0]}; \
+        result_pw2 = {result1[15: 0],result0[15: 0]}; \
     end else if(pw ==  SCARV_COP_PW_4) begin \
         result3 = {8{`CRS1[31:24]}} >> AMNT; \
         result2 = {8{`CRS1[23:16]}} >> AMNT; \
         result1 = {8{`CRS1[15: 8]}} >> AMNT; \
         result0 = {8{`CRS1[ 7: 0]}} >> AMNT; \
-        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
+        result_pw4  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
     end else if(pw ==  SCARV_COP_PW_8) begin \
         result7 = {16{`CRS1[31:28]}} >> AMNT; \
         result6 = {16{`CRS1[27:24]}} >> AMNT; \
@@ -103,7 +110,7 @@ always @(*) begin \
         result2 = {16{`CRS1[11: 8]}} >> AMNT; \
         result1 = {16{`CRS1[ 7: 4]}} >> AMNT; \
         result0 = {16{`CRS1[ 3: 0]}} >> AMNT; \
-        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+        result_pw8  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
                    result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
     end else if(pw ==  SCARV_COP_PW_16) begin \
         result15 = {32{`CRS1[31:30]}} >> AMNT; \
@@ -122,10 +129,11 @@ always @(*) begin \
         result2  = {32{`CRS1[ 5: 4]}} >> AMNT; \
         result1  = {32{`CRS1[ 3: 2]}} >> AMNT; \
         result0  = {32{`CRS1[ 1: 0]}} >> AMNT; \
-        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
-                   result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
-                   result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
-                   result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
+        result_pw16 = \
+            {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
+            result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
+            result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
+            result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
     end \
 end \
 
@@ -205,7 +213,11 @@ reg [31:0] result3 ; \
 reg [31:0] result2 ; \
 reg [31:0] result1 ; \
 reg [31:0] result0 ; \
-reg [31:0] result  ; \
+reg [31:0] result_pw1; \
+reg [31:0] result_pw2; \
+reg [31:0] result_pw4; \
+reg [31:0] result_pw8; \
+reg [31:0] result_pw16; \
 always @(*) begin \
     result15 = 0; \
     result14 = 0; \
@@ -223,19 +235,23 @@ always @(*) begin \
     result2  = 0; \
     result1  = 0; \
     result0  = 0; \
-    result   = 0; \
+    result_pw1  = 0; \
+    result_pw2  = 0; \
+    result_pw4  = 0; \
+    result_pw8  = 0; \
+    result_pw16 = 0; \
     if(pw == SCARV_COP_PW_1) begin \
-        result = `CRS1 OP `CRS2; \
+        result_pw1 = `CRS1 OP `CRS2; \
     end else if(pw == SCARV_COP_PW_2) begin \
         result1 = `CRS1[31:16] OP `CRS2[31:16]; \
         result0 = `CRS1[15: 0] OP `CRS2[15: 0]; \
-        result = {result1[15: 0],result0[15: 0]}; \
+        result_pw2 = {result1[15: 0],result0[15: 0]}; \
     end else if(pw ==  SCARV_COP_PW_4) begin \
         result3 = `CRS1[31:24] OP `CRS2[31:24]; \
         result2 = `CRS1[23:16] OP `CRS2[23:16]; \
         result1 = `CRS1[15: 8] OP `CRS2[15: 8]; \
         result0 = `CRS1[ 7: 0] OP `CRS2[ 7: 0]; \
-        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
+        result_pw4  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
     end else if(pw ==  SCARV_COP_PW_8) begin \
         result7 = `CRS1[31:28] OP `CRS2[31:28]; \
         result6 = `CRS1[27:24] OP `CRS2[27:24]; \
@@ -245,7 +261,7 @@ always @(*) begin \
         result2 = `CRS1[11: 8] OP `CRS2[11: 8]; \
         result1 = `CRS1[ 7: 4] OP `CRS2[ 7: 4]; \
         result0 = `CRS1[ 3: 0] OP `CRS2[ 3: 0]; \
-        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+        result_pw8  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
                    result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
     end else if(pw ==  SCARV_COP_PW_16) begin \
         result15 = `CRS1[31:30] OP `CRS2[31:30]; \
@@ -264,7 +280,8 @@ always @(*) begin \
         result2  = `CRS1[ 5: 4] OP `CRS2[ 5: 4]; \
         result1  = `CRS1[ 3: 2] OP `CRS2[ 3: 2]; \
         result0  = `CRS1[ 1: 0] OP `CRS2[ 1: 0]; \
-        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
+        result_pw16 = \
+              {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
                    result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
                    result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
                    result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\

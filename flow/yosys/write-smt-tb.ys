@@ -5,6 +5,7 @@ read_verilog -formal -I../../work/ -I../../verif/formal \
 
 # FVM generated code
 read_verilog -formal -I../../work/ -I../../rtl/coprocessor \
+    -I../../verif/formal \
     ../../work/fvm/*.v;
 
 # Top level formal testbench.

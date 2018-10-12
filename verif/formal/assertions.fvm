@@ -87,6 +87,13 @@ formal_environment fw_hw_crypto_cop {
         [31:0] _15_vtx_cprs_post;
 
     }
+    
+    //
+    // This gets pasted into the top of the formal environment.
+    //
+    fe_preamble {%
+        `include "fml_pack_widths.vh"
+    %}
 
     property_context instruction_pc (
         *default_inputs;
@@ -154,7 +161,6 @@ formal_environment fw_hw_crypto_cop {
     // regardless of what it does.
     //
     property_context generic_instr_checks extends instruction_pc(
-        *default_inputs;
     ) {
         
         on (*CLOCK) if {% vtx_valid && vtx_reset %} {
@@ -182,6 +188,76 @@ formal_environment fw_hw_crypto_cop {
                 vtx_instr_result == SCARV_COP_INSN_ST_ERR 
             %}
 
+        }
+    }
+
+
+    //
+    // Property context for pack instructions
+    //
+    property_context instr_packed extends instruction_pc (
+    ) {
+
+        helper_logic (verilog) {%
+            // Pack width of the instruction
+            wire [2:0] pw = 
+                {vtx_instr_enc[24],vtx_instr_enc[19],vtx_instr_enc[11]};
+
+            wire pw_valid = 
+                pw == SCARV_COP_PW_1  ||
+                pw == SCARV_COP_PW_2  ||
+                pw == SCARV_COP_PW_4  ||
+                pw == SCARV_COP_PW_8  ||
+                pw == SCARV_COP_PW_16  ;
+        %}
+        
+    }
+        
+
+    //
+    // Property context for add.px
+    //
+    property_context instr_add_px extends instr_packed (
+    ) {
+
+        helper_logic (verilog) {%
+            // Compute expected result into register called "result". See
+            // `verif/formal/fml_pack_widths.vh` for macro definition.
+            `PACK_WIDTH_ARITH_OPERATION_RESULT(+)
+        %}
+        
+        on (*CLOCK) if {% vtx_valid && vtx_reset && dec_add_px %} {
+            
+            //
+            // Make sure we have the correct pack widths.
+            if {% pw_valid %} {
+                assert {% vtx_instr_result == SCARV_COP_INSN_SUCCESS %}
+            } else {
+                assert {% vtx_instr_result == SCARV_COP_INSN_BAD_INS %}
+            }
+
+            //
+            // Check the correct results for a given pack width.
+
+            assert{% vtx_crd_val_post == result_pw1 %}
+                assuming {% pw == SCARV_COP_PW_1 %}
+
+            assert{% vtx_crd_val_post == result_pw2 %}
+                assuming {% pw == SCARV_COP_PW_2 %}
+
+            assert{% vtx_crd_val_post == result_pw4 %}
+                assuming {% pw == SCARV_COP_PW_4 %}
+
+            assert{% vtx_crd_val_post == result_pw8 %}
+                assuming {% pw == SCARV_COP_PW_8 %}
+
+            assert{% vtx_crd_val_post == result_pw16 %}
+                assuming {% pw == SCARV_COP_PW_16 %}
+
+            //
+            // Make sure that no packed instruction tries to write
+            // back to the GPRs
+            assert {% vtx_instr_wen == 1'b0 %}
         }
     }
 
