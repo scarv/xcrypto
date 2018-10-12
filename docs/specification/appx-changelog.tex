@@ -1,13 +1,17 @@
+% =============================================================================
+
 \paragraph{Draft-5}
 \begin{itemize}
 \item Add {\tt mccr} CSR and describe ISE feature sets.
 \item Use a single CSR to indicate feature sets and to control
     access and countermeasures. Two CSRs seemed like overkill.
-\item Explicitly state order in which $\CPR$ registers are written to 
+\item Explicitly state order in which $\XCR$ registers are written to 
     the stack.
 \item Rename registers in state table $cprX \Rightarrow cX$.
 \item Design notes about implementation specific RNG functions.
 \end{itemize}
+
+% -----------------------------------------------------------------------------
 
 \paragraph{Draft-4}
 \begin{itemize}
@@ -21,6 +25,8 @@
 \item Add support for twiddling 2-bit values (crumbs) within bytes.
 \item Revise all notation for consistency \& correctness.
 \end{itemize}
+
+% -----------------------------------------------------------------------------
 
 \paragraph{Draft-3}
 \begin{itemize}
@@ -39,6 +45,8 @@
     shift and rotate instructions.
 \end{itemize}
 
+% -----------------------------------------------------------------------------
+
 \paragraph{Draft-2}
 \begin{itemize}
 \item Added high/low nibble twiddle instructions TWID.HN,TWID.LN.
@@ -56,6 +64,8 @@
 \item General typo and spelling fixes.
 \end{itemize}
 
+% -----------------------------------------------------------------------------
+
 \paragraph{Draft-1}
 \begin{itemize}
 \item Initial draft of the ISE.
@@ -64,3 +74,5 @@
 \item Encodings missing from the multi-precision format instructions.
 \item Describe ABI handling.
 \end{itemize}
+
+% =============================================================================
