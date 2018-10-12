@@ -203,7 +203,7 @@ end
 //
 // Checker Instance
 //
-`FML_CHECK_NAME i_fml_checks(
+`PROPERTY_CONTEXT i_fml_checks(
 .vtx_clk         (g_clk           ),
 .vtx_reset       (vtx_reset       ),
 `VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre )
