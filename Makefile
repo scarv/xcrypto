@@ -13,14 +13,10 @@ UNIT_WAVES    = $(UNIT_TESTS:%.hex=%.vcd)
 FORMAL_CHECKS = $(shell find ./verif/formal -name "fml_chk_*.v")
 FORMAL_CHECK_NAMES = $(basename $(notdir $(FORMAL_CHECKS)))
 
+export FML_CHECK_NAME = $(subst fml_chk_,,$(FORMAL_CHECK_NAMES))
+
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
 export RTL_TIMEOUT   ?= 300
-
-export FVM_WORK      ?= $(COP_WORK)/fvm
-export FE_VERILOG    ?= $(FVM_WORK)/property_contexts.v
-export FE_DEFINES    ?= $(FVM_WORK)/
-export FE_MODULE_FILE?= $(FVM_WORK)/modules.txt
-export FML_CONTEXT   ?= generic_instr_checks
 
 .PHONY: docs
 docs:
@@ -59,18 +55,12 @@ rtl_decoder: $(RTL_DECODER)
 $(RTL_DECODER) : $(OPCODES_SPEC) $(PARSE_OPCODES)
 	cat $< | $(PARSE_OPCODES) -verilog > $@
 
-#
-# Generate the formal envrionment needed to run Yosys
-#
-.PHONY: fvm_generate
-fvm_generate: $(RTL_DECODER)
-	$(MAKE) -C $(COP_HOME)/flow/fvm all
 
 #
 # Run the yosys formal flow
 #
 .PHONY: yosys_formal
-yosys_formal: $(RTL_DECODER) fvm_generate
+yosys_formal: $(RTL_DECODER)
 	$(MAKE) -C $(COP_HOME)/flow/yosys formal-checks
 
 #

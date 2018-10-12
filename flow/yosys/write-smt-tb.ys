@@ -3,11 +3,10 @@
 read_verilog -formal -I../../work/ -I../../verif/formal \
     ../../rtl/coprocessor/*;
 
-# FVM generated code
-read_verilog -formal -I../../work/ -I../../rtl/coprocessor \
-    ../../work/fvm/*.v;
-
 # Top level formal testbench.
+read_verilog -formal -I../../work/ -I../../rtl/coprocessor \
+    ../../verif/formal/*.v;
+
 read_verilog -formal -I../../work/ -I../../verif/formal \
     ../../verif/tb/tb_formal.v;
 
