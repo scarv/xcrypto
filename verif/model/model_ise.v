@@ -1269,7 +1269,7 @@ begin: t_model_add3_mp
     model_do_decode_rdm(rd2,rd1);
     crs1=model_crs1;
     crs2=model_crs2;
-    crs2=model_crs3;
+    crs3=model_crs3;
     result = crs1 + crs2 + crs3;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
@@ -1315,10 +1315,17 @@ end endtask
 //
 task model_do_sub2_mp;
 begin: t_model_sub2_mp
-    reg  [31:0] crs1, crs2;
-    crs1=model_crs1;
-    crs2=model_crs2;
-    $display("ISE> ERROR: Instruction sub2.mp not implemented");
+    reg [31:0] crs1, crs2;
+    reg [ 3:0] rd1,rd2;
+    reg [63:0] result;
+    model_do_decode_rdm(rd2,rd1);
+    crs1    = model_crs1;
+    crs2    = model_crs2;
+    result  = {32'b0, crs1} - {32'b0,crs2};
+    model_do_write_cpr(rd1, result[31: 0]);
+    model_do_write_cpr(rd2, result[63:32]);
+    $display("sub2.mp (c%0d,c%0d), c%0d(%h), c%0d(%h)",
+        rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 
@@ -1355,7 +1362,7 @@ begin: t_model_sll_mp
     model_do_decode_rdm(crd2,crd1);
     crs1=model_crs1;
     crs2=model_crs2;
-    crs2=model_crs3;
+    crs3=model_crs3;
     toshift= {crs1,crs2};
     result = toshift << crs3;
     model_do_write_cpr(crd1,result[31: 0]);
@@ -1399,7 +1406,7 @@ begin: t_model_srl_mp
     model_do_decode_rdm(crd2,crd1);
     crs1=model_crs1;
     crs2=model_crs2;
-    crs2=model_crs3;
+    crs3=model_crs3;
     toshift= {crs1,crs2};
     result = toshift >> crs3;
     model_do_write_cpr(crd1,result[31: 0]);
