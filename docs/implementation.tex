@@ -595,12 +595,17 @@ ADD3.mp&
  & $rdm1\ASN tmp[63:32]$ 
 \\
 SUB2.mp&
- &
+   $tmp \ASN rs1 - rs2$ \newline
+   $rdm0\ASN tmp[31:0]$ 
+ & $rdm1\ASN tmp[63:32]$ 
  &
 \\
 SUB3.mp&
+   $tmp \ASN rs1 - rs2$ \newline
  &
- &
+   $tmp \ASN tmp - rs3$ \newline
+   $rdm0\ASN tmp[31:0]$ 
+ & $rdm1\ASN tmp[63:32]$ 
 \\
 ACC1.mp&
     $tmp \ASN (crd1 \CONS crd0) + rs1$\newline 

@@ -38,9 +38,6 @@
         `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_BAD_INS) \
     end \
 
-`define CRS1 vtx_crs1_val_pre
-`define CRS2 vtx_crs2_val_pre
-
 
 //
 // Rotate pack width operation macro

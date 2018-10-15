@@ -23,6 +23,7 @@ output wire         malu_idone       , // Instruction complete
 
 output wire         malu_rdm_in_rs   , // Source destination regs in rs1/2
 
+input  wire [31:0]  gpr_rs1          , // RS1 from the CPU.
 input  wire [31:0]  malu_rs1         , // Source register 1
 input  wire [31:0]  malu_rs2         , // Source register 2
 input  wire [31:0]  malu_rs3         , // Source register 3
@@ -59,11 +60,19 @@ wire is_mac_mp  = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MAC_MP ;
 //
 // MP instruction control FSM
 //
+//  Implemented as a 2 bit counter.
+//
 
 assign malu_rdm_in_rs = mp_fsm == 0 && is_acc2_mp || is_acc1_mp;
 
 reg  [1:0] mp_fsm;
 wire [1:0] n_mp_fsm = mp_fsm + 1;
+
+// Which step of the FSM are we in?
+wire    fsm0 = mp_fsm == 0;
+wire    fsm1 = mp_fsm == 1;
+wire    fsm2 = mp_fsm == 2;
+wire    fsm3 = mp_fsm == 3;
 
 always @(posedge g_clk) begin
     if(!g_resetn || malu_idone)
@@ -73,138 +82,174 @@ always @(posedge g_clk) begin
     end
 end
 
+// Signal the instruction has finished.
 assign malu_idone = 
-    mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp)  
-||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp || is_acc1_mp) ;
-
-// 64 bit result of all MALU instructions.
-
-wire is_shift = is_sll_mp || is_slli_mp || is_srl_mp || is_srli_mp;
-
-wire malu_result_inter =
-    mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp  )     
-||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp)    ;
-
-wire malu_result_adder = 
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp || is_acc1_mp)     
-||  mp_fsm == 1 && (is_add2_mp || is_add3_mp || is_acc2_mp)    ;
-
-wire malu_result_shift = 
-    mp_fsm == 0 && (is_shift                )    ;
-
-wire malu_result_mul   = 1'b0;
-
-wire [63:0] malu_result = 
-    {64{malu_result_inter}} & malu_intermediate |
-    {64{malu_result_adder}} & adder1_result     |     
-    {64{malu_result_shift}} & shift1_result     | 
-    {64{malu_result_mul  }} & mul1_result       ;
-
-// writeback the high word or low word of the result?
-wire wb_hi = 
-    mp_fsm == 0 && (1'b0                    )
-||  mp_fsm == 1 && (is_add2_mp || is_shift || is_acc1_mp )  
-||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp) ;
-
-// Write byte enable and write data selection,
-assign malu_cpr_rd_ben   = {4{
-    mp_fsm == 0 && (is_add2_mp || is_shift   || is_acc1_mp                  )
-||  mp_fsm == 1 && (is_add2_mp || is_add3_mp || is_shift || is_acc1_mp ||
-                    is_acc2_mp                                              )
-||  mp_fsm == 2 && (is_add3_mp || is_acc2_mp                                )  
-}};
-
-assign malu_cpr_rd_wdata = 
-    wb_hi ? malu_result[63:32] : malu_result[31: 0];
-
+    fsm0 && (is_equ_mp  || is_ltu_mp  || is_gtu_mp                      ) ||
+    fsm1 && (is_add2_mp || is_sub2_mp || is_acc1_mp || is_slli_mp ||
+             is_srli_mp || is_sll_mp  || is_srl_mp                      ) ||
+    fsm2 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
 
 //
-// Utility wires for controlling the number of operators we implement.
+// Utility wires
 //
 
-// 64-bit adder.
-wire [63:0] adder1_lhs;
-wire [63:0] adder1_rhs;
-wire [64:0] adder1_result = adder1_lhs + adder1_rhs;
+wire        wb_en; // Writeback to CPR enable
 
-wire   adder1_lhs_rs1 =
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp    )
-||  mp_fsm == 1 && (1'b0                        );
+// Should we do a subtract on the adder inputs?
+wire        do_sub      = is_sub2_mp || is_sub3_mp;
 
-wire   adder1_lhs_crd =
-    mp_fsm == 0 && (is_acc2_mp || is_acc1_mp    );
+// Results for each of the major arithmetic operations.
+wire [63:0] result_add;
+wire [63:0] result_mul;
+wire [63:0] result_shf;
 
-wire   adder1_lhs_inter = 
-    mp_fsm == 0 && (1'b0                                    )
-||  mp_fsm == 1 && (is_add3_mp || is_acc2_mp                )
-||  mp_fsm == 2 && (is_add3_mp                              );
+// Inputs for each of the major arithmetic operations
+wire [63:0] add_lhs, add_rhs;
+wire [31:0] mul_lhs, mul_rhs;
+wire [63:0] shf_lhs         ;
 
-wire   adder1_rhs_rs1 =
-    mp_fsm == 1 && (1'b0                     );
+// Writeback high word of tmp register.
+wire wb_tmp_hi = 
+    fsm1 && (is_add2_mp || is_sub2_mp || is_acc1_mp || is_slli_mp || 
+             is_sll_mp  || is_srli_mp || is_srl_mp                      ) ||
+    fsm2 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
 
-wire   adder1_rhs_rs2 =
-    mp_fsm == 0 && (is_add2_mp || is_add3_mp )
-||  mp_fsm == 1 && (is_acc2_mp               )
-||  mp_fsm == 2 && (1'b0                     );
+// Writeback low word of adder result.
+wire wb_add_lo =
+    fsm0 && (is_add2_mp || is_sub2_mp || is_acc1_mp                     ) ||
+    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
 
-wire   adder1_rhs_rs3 =
-    mp_fsm == 0 && (is_acc1_mp || is_acc2_mp    )
-||  mp_fsm == 1 && (is_add3_mp                  );
+// Writeback low word of shifter result.
+wire wb_shf_lo =
+    fsm0 && (is_slli_mp || is_sll_mp  || is_srli_mp || is_srl_mp        ) ;
 
-assign adder1_lhs = 
-    {64{adder1_lhs_rs1  }} & {32'b0   ,malu_rs1 } |
-    {64{adder1_lhs_crd  }} & {malu_rs2,malu_rs1 } |
-    {64{adder1_lhs_inter}} & {malu_intermediate } ;
-
-assign adder1_rhs = 
-    {64{adder1_rhs_rs1}} & {32'b0,malu_rs1      } |
-    {64{adder1_rhs_rs2}} & {32'b0,malu_rs2      } |
-    {64{adder1_rhs_rs3}} & {32'b0,malu_rs3      } ;
-
-// Left/right barrel shifter
-
-wire shift1_rhs_reg = is_srl_mp  || is_sll_mp ;
-wire shift1_rhs_imm = is_srli_mp || is_slli_mp;
-wire shift1_right   = is_srl_mp  || is_srli_mp;
-
-wire [63:0] shift1_lhs = {malu_rs1,malu_rs2};
-wire [ 5:0] shift1_rhs = 
-    {6{shift1_rhs_reg}} & malu_rs3[5:0] |
-    {6{shift1_rhs_imm}} & id_imm  [5:0] ;
-
-wire [63:0] shift1_result = shift1_right ? shift1_lhs >> shift1_rhs :
-                                           shift1_lhs << shift1_rhs ;
-
-// Multiplier
-wire [31:0] mul1_lhs = 32'b0;
-wire [31:0] mul1_rhs = 32'b0;
-wire [63:0] mul1_result = mul1_lhs * mul1_rhs;
+// Writeback comparison result bit.
+wire wb_cmp    =
+    fsm0 && (is_equ_mp || is_gtu_mp || is_ltu_mp                        ) ;
 
 //
-// Intermediate value storage
-reg  [63:0] malu_intermediate;
-wire [63:0] n_malu_intermediate;
+// Temporary value register
+//
 
-wire save_add = is_add2_mp || is_add3_mp ||
-                (is_acc2_mp || is_acc1_mp) && mp_fsm == 0 ||
-                (is_acc2_mp || is_acc1_mp) && mp_fsm == 1;
+reg  [63:0] tmp;
+wire [63:0] n_tmp;
 
-assign n_malu_intermediate = 
-    {64{is_shift}} & shift1_result          |
-    {64{save_add}} & adder1_result          ;
+// Load adder result into tmp.
+wire       tmp_ld_add = 
+    fsm0 && (is_add2_mp || is_add3_mp || is_sub2_mp || is_sub3_mp ||
+             is_acc1_mp || is_acc2_mp                                   ) ||
+    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp                     ) ;
 
-// load enable for malu_intermediate;
-assign ld_intermediate =
-    mp_fsm == 0 && (is_add2_mp  || is_add3_mp || is_shift || is_acc2_mp ||
-                    is_acc1_mp                                              )
-||  mp_fsm == 1 && (is_add3_mp || is_acc2_mp);
+// Load multiplier result into tmp.
+wire       tmp_ld_mul =
+    fsm0 && (is_mac_mp                                                  ) ;
+
+// Load Shifter result into tmp.
+wire       tmp_ld_shf =
+    fsm0 && (is_sll_mp  || is_slli_mp || is_srl_mp  || is_srli_mp       ) ;
+
+assign n_tmp = 
+    {64{tmp_ld_add}} & {result_add} |
+    {64{tmp_ld_mul}} & {result_mul} |
+    {64{tmp_ld_shf}} & {result_shf} ;
 
 always @(posedge g_clk) begin
     if(!g_resetn) begin
-        malu_intermediate <= 32'b0;
-    end else if(ld_intermediate) begin
-        malu_intermediate <= n_malu_intermediate;
+        tmp <= 63'b0;
+    end else if(tmp_ld_add || tmp_ld_mul || tmp_ld_shf) begin
+        tmp <= n_tmp;
     end
 end
 
- endmodule
+//
+// 32-bit comparator.
+//
+
+wire is_cmp = is_equ_mp || is_ltu_mp || is_gtu_mp;
+
+wire [31:0] cmp_lhs = {32{is_cmp}} & malu_rs2;
+wire [31:0] cmp_rhs = {32{is_cmp}} & malu_rs3;
+
+wire cmp_eq = cmp_lhs == cmp_rhs;
+wire cmp_lt = cmp_lhs <  cmp_rhs;
+
+wire result_cmp =
+    (is_equ_mp && (cmp_eq && |gpr_rs1           )) ||
+    (is_ltu_mp && (cmp_eq && |gpr_rs1 ||  cmp_lt)) ||
+    (is_gtu_mp && (cmp_eq && |gpr_rs1 || !cmp_lt)) ;
+
+//
+// 64 bit adder
+//
+
+wire add_lhs_rs1 =
+    fsm0 && (is_add2_mp || is_add3_mp || is_sub2_mp || is_sub3_mp ||
+             is_acc1_mp || is_acc2_mp                                   ) ;
+
+wire add_lhs_tmp = 
+    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
+
+wire add_rhs_rs2 = 
+    fsm0 && (is_add2_mp || is_add3_mp || is_sub2_mp || is_sub3_mp       ) ||
+    fsm1 && (is_acc2_mp                                                 ) ;
+
+wire add_rhs_rs3 =
+    fsm1 && (is_mac_mp  || is_add3_mp || is_sub3_mp                     ) ;
+
+wire add_rhs_r23 =
+    fsm0 && (is_acc1_mp || is_acc2_mp                                   ) ;
+
+assign add_lhs =
+    {64{add_lhs_rs1}}   & {32'b0   , malu_rs1}   |
+    {64{add_lhs_tmp}}   & {          tmp     }   ;
+
+assign add_rhs =
+    {64{add_rhs_rs2}}   & {32'b0   , malu_rs2}   |
+    {64{add_rhs_rs3}}   & {32'b0   , malu_rs3}   |
+    {64{add_rhs_r23}}   & {malu_rs2, malu_rs3}   ;
+
+assign result_add   = do_sub ? add_lhs - add_rhs :
+                               add_lhs + add_rhs ;
+
+//
+// 32x32 multiplier
+//
+
+assign mul_lhs = {64{fsm0 && is_mac_mp}} & {32'b0, malu_rs1};
+assign mul_rhs = {64{fsm0 && is_mac_mp}} & {32'b0, malu_rs2};
+
+assign result_mul   = mul_lhs * mul_rhs ;
+
+//
+// 64 bit shifter
+//
+
+wire        shiftright  = is_srl_mp  || is_srli_mp                  ;
+
+wire [5:0]  shamt       = is_srli_mp || is_slli_mp ? id_imm[5:0]    : 
+                                                     malu_rs3[5:0]  ;
+
+wire   shf_gated        = is_srli_mp || is_slli_mp ||
+                          is_srl_mp  || is_sll_mp;
+
+assign shf_lhs          = {64{shf_gated}} & {malu_rs1, malu_rs2}    ;
+
+assign result_shf       = shiftright ? shf_lhs >> shamt             :
+                                       shf_lhs << shamt             ;
+
+//
+// MP instruction writeback data
+//
+
+assign wb_en = wb_tmp_hi || wb_add_lo || wb_shf_lo;
+
+assign malu_cpr_rd_ben  = {4{wb_en}};
+
+assign malu_cpr_rd_wdata=
+    {32{wb_tmp_hi}} & tmp[63:32]         |
+    {32{wb_add_lo}} & result_add[31:0]   |
+    {32{wb_shf_lo}} & result_shf[31:0]   |
+    {32{wb_cmp   }} & {31'b0, result_cmp};
+
+
+endmodule

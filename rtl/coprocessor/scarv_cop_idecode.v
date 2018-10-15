@@ -142,7 +142,20 @@ wire [3:0] subclass_load_store =
     {4{dec_lbu_cr   }} & {SCARV_COP_SCLASS_LB_CR    } ;
 
 wire [3:0] subclass_mp =
-    {encoded[19] ? 2'b11 : encoded[11:10], encoded[29:28]};
+    {4{dec_equ_mp }} & {SCARV_COP_SCLASS_EQU_MP  } | 
+    {4{dec_ltu_mp }} & {SCARV_COP_SCLASS_LTU_MP  } | 
+    {4{dec_gtu_mp }} & {SCARV_COP_SCLASS_GTU_MP  } | 
+    {4{dec_add3_mp}} & {SCARV_COP_SCLASS_ADD3_MP } | 
+    {4{dec_add2_mp}} & {SCARV_COP_SCLASS_ADD2_MP } | 
+    {4{dec_sub3_mp}} & {SCARV_COP_SCLASS_SUB3_MP } | 
+    {4{dec_sub2_mp}} & {SCARV_COP_SCLASS_SUB2_MP } | 
+    {4{dec_slli_mp}} & {SCARV_COP_SCLASS_SLLI_MP } | 
+    {4{dec_sll_mp }} & {SCARV_COP_SCLASS_SLL_MP  } | 
+    {4{dec_srli_mp}} & {SCARV_COP_SCLASS_SRLI_MP } | 
+    {4{dec_srl_mp }} & {SCARV_COP_SCLASS_SRL_MP  } | 
+    {4{dec_acc2_mp}} & {SCARV_COP_SCLASS_ACC2_MP } | 
+    {4{dec_acc1_mp}} & {SCARV_COP_SCLASS_ACC1_MP } | 
+    {4{dec_mac_mp }} & {SCARV_COP_SCLASS_MAC_MP  } ;
 
 wire [3:0] subclass_bitwise =
     {4{dec_lmix_cr}} & {SCARV_COP_SCLASS_LMIX_CR} |

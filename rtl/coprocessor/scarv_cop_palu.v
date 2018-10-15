@@ -117,14 +117,15 @@ endgenerate
 // Result computation for EXT / INST instructions
 wire [ 4:0] ei_start    = {id_imm[7:4],1'b0};
 wire [ 4:0] ei_len      = {id_imm[3:0],1'b0};
-wire [ 4:0] ei_ds       = 32 - (ei_start + ei_len);
 
 wire [31:0] ext_result  =
     (palu_rs1 >> ei_start) & ~(32'hFFFF_FFFF << ei_len);
 
+wire [31:0] ins_mask    = 32'hFFFF_FFFF >> (32-ei_len);
+
 wire [31:0] ins_result  =
-    (((palu_rs1) & ~(32'hFFFF_FFFF << ei_len)) << ei_start) | 
-    (  palu_rs3  & ~(32'hFFFF_FFFF << ei_start) & (32'hFFFF_FFFF >> ei_ds));
+    ((palu_rs1 & ins_mask) << ei_start) | 
+    (palu_rs3 & ~(ins_mask << ei_start));
 
 // Result computation for the MIX instructions
 wire [ 4:0] mix_ramt = {bw_hmix_cr,id_imm[3:0]};

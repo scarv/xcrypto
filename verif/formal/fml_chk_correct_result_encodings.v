@@ -16,7 +16,7 @@
 // Check we only ever get the right result encodings from instructions.
 //
 `VTX_CHECK_BEGIN(correct_result_encodings)
-    assert(
+    `VTX_ASSERT(
         vtx_instr_result == SCARV_COP_INSN_SUCCESS ||
         vtx_instr_result == SCARV_COP_INSN_ABORT   ||
         vtx_instr_result == SCARV_COP_INSN_BAD_INS ||

@@ -187,10 +187,17 @@ wire [ 2:0] n_cop_result; // COP execution result
 
 assign n_cop_waddr = id_rd;
 
-assign n_cop_wen   = id_class     == SCARV_COP_ICLASS_MOVE    &&
-                     id_subclass  == SCARV_COP_SCLASS_MV2GPR  ;
+assign n_cop_wen   = 
+    (id_class     == SCARV_COP_ICLASS_MOVE    &&
+     id_subclass  == SCARV_COP_SCLASS_MV2GPR   )  ||
+    (id_class     == SCARV_COP_ICLASS_MP      &&
+     (id_subclass == SCARV_COP_SCLASS_EQU_MP ||
+      id_subclass == SCARV_COP_SCLASS_LTU_MP ||
+      id_subclass == SCARV_COP_SCLASS_GTU_MP ) )   ;
 
-assign n_cop_wdata = palu_cpr_rd_wdata;
+assign n_cop_wdata = 
+    id_class == SCARV_COP_ICLASS_MOVE ? palu_cpr_rd_wdata : 
+                                        malu_cpr_rd_wdata ;
 
 //
 //  and/or the result of the instruction together. Note
@@ -454,6 +461,7 @@ scarv_cop_malu i_scarv_cop_malu (
 .malu_ivalid      (malu_ivalid      ), // Valid instruction input
 .malu_idone       (malu_idone       ), // Instruction complete
 .malu_rdm_in_rs   (malu_rdm_in_rs   ),
+.gpr_rs1          (u_rs1            ),
 .malu_rs1         (crs1_rdata       ), // Source register 1
 .malu_rs2         (crs2_rdata       ), // Source register 2
 .malu_rs3         (crs3_rdata       ), // Source register 3
