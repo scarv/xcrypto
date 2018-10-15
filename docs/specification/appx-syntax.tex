@@ -1,54 +1,77 @@
 % =============================================================================
 
-This section lists the assembly notation for the instructions, as well as
-their encodings.
+\vspace*{\fill}
+\begin{center}
+\begin{longtable}{|c|l|l|}
+\caption{An overview of instruction syntax, including reference to associated semantics.} \label{tab:syntax}  \\
 
-{\tt
-MV2GPR      rd, rs1                 \\
-MV2COP      rd, rs1                 \\
-TWID.B      rd, rs1, b0, b1, b2, b3 \\
-TWID.HN     rd, rs1, n0, n1, n2, n3 \\
-TWID.LN     rd, rs1, n0, n1, n2, n3 \\
-ADD.px      rd, rs1, rs2            \\
-SUB.px      rd, rs1, rs2            \\
-MUL.px      rd, rs1, rs2            \\
-SLLI.px     rd, rs1, shamt          \\
-SRLI.px     rd, rs1, shamt          \\
-ROTI.px     rd, rs1, shamt          \\
-SLL.px      rd, rs1, rs2            \\
-SRL.px      rd, rs1, rs2            \\
-ROT.px      rd, rs1, rs2            \\
-XOR.cr      rd, rs1, rs2            \\
-AND.cr      rd, rs1, rs2            \\
-OR.cr       rd, rs1, rs2            \\
-BOP.cr      rd, rs1, rs2, lut4      \\
-ADD3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-ADD2.mp     (rd1, rd2),  rs1, rs2  \\
-SUB3.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-SUB2.mp     (rd1, rd2),  rs1, rs2  \\
-ACC2.mp     (rd1, rd2),  rs1, rs2  \\
-ACC1.mp     (rd1, rd2),  rs1       \\
-MAC.mp      (rd1, rd2),  rs1, rs2, rs3 \\
-MAA.mp      (rd1, rd2),  rs1, rs2, rs3, rs4 \\
-SLLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
-SLLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-SRLI.mp     (rd1, rd2),  rs1, rs2, shamt \\
-SRLR.mp     (rd1, rd2),  rs1, rs2, rs3 \\
-EQU.mp      rd1,         rs1, rs2, rs3 \\
-LTU.mp      rd1,         rs1, rs2, rs3 \\
-GTU.mp      rd1,         rs1, rs2, rs3 \\
-LBU.cr      rd , imm(rs1)           \\
-LHU.cr      rd , imm(rs1)           \\
-LW.cr       rd , imm(rs1)           \\
-LUI.cr      rd,  imm16              \\
-LLI.cr      rd,  imm16              \\
-SB.cr       rs2, imm(rs1)           \\
-SH.cr       rs2, imm(rs1)           \\
-SW.cr       rs2, imm(rs1)           \\
-SCATTER.b   rs, base, offsets       \\
-GATHER.b    rd, base, offsets       \\
-SCATTER.h   rs, base, offsets       \\
-GATHER.h    rd, base, offsets       \\
-}
+\hline
+Class                 & Syntax                  & Section                           \\
+\hline
+\endfirsthead
+\hline
+Class                 & Syntax                  & Section                           \\
+\hline
+\endhead
+\hline
+\endlastfoot
+\endfoot
+\multirow{10}{*}{1}   & \XCSYNTAXUSE{MV2GPR}    & \REFSEC{sec:spec:instr:MV2GPR}    \\
+                      & \XCSYNTAXUSE{MV2COP}    & \REFSEC{sec:spec:instr:MV2COP}    \\
+                      & \XCSYNTAXUSE{CMOV.cr}   & \REFSEC{sec:spec:instr:CMOV.cr}   \\
+                      & \XCSYNTAXUSE{CMOVN.cr}  & \REFSEC{sec:spec:instr:CMOVN.cr}  \\
+                      & \XCSYNTAXUSE{LBU.cr}    & \REFSEC{sec:spec:instr:LBU.cr}    \\
+                      & \XCSYNTAXUSE{LHU.cr}    & \REFSEC{sec:spec:instr:LHU.cr}    \\
+                      & \XCSYNTAXUSE{LW.cr}     & \REFSEC{sec:spec:instr:LW.cr}     \\
+                      & \XCSYNTAXUSE{SB.cr}     & \REFSEC{sec:spec:instr:SB.cr}     \\
+                      & \XCSYNTAXUSE{SH.cr}     & \REFSEC{sec:spec:instr:SH.cr}     \\
+                      & \XCSYNTAXUSE{SW.cr}     & \REFSEC{sec:spec:instr:SW.cr}     \\
+\hline
+\multirow{ 2}{*}{2.1} & \XCSYNTAXUSE{RSEED.cr}  & \REFSEC{sec:spec:instr:RSEED.cr}  \\
+                      & \XCSYNTAXUSE{RSAMP.cr}  & \REFSEC{sec:spec:instr:RSAMP.cr}  \\
+\hline
+\multirow{ 4}{*}{2.2} & \XCSYNTAXUSE{SCATTER.b} & \REFSEC{sec:spec:instr:SCATTER.b} \\
+                      & \XCSYNTAXUSE{SCATTER.h} & \REFSEC{sec:spec:instr:SCATTER.h} \\
+                      & \XCSYNTAXUSE{GATHER.b}  & \REFSEC{sec:spec:instr:GATHER.b}  \\
+                      & \XCSYNTAXUSE{GATHER.h}  & \REFSEC{sec:spec:instr:GATHER.h}  \\
+\hline
+\multirow{ 7}{*}{2.2} & \XCSYNTAXUSE{LLI.cr}    & \REFSEC{sec:spec:instr:LLI.cr}    \\
+                      & \XCSYNTAXUSE{LUI.cr}    & \REFSEC{sec:spec:instr:LUI.cr}    \\
+                      & \XCSYNTAXUSE{BOP.cr}    & \REFSEC{sec:spec:instr:BOP.cr}    \\
+                      & \XCSYNTAXUSE{EXT.cr}    & \REFSEC{sec:spec:instr:EXT.cr}    \\
+                      & \XCSYNTAXUSE{INS.cr}    & \REFSEC{sec:spec:instr:INS.cr}    \\
+                      & \XCSYNTAXUSE{LMIX.cr}   & \REFSEC{sec:spec:instr:LMIX.cr}   \\
+                      & \XCSYNTAXUSE{HMIX.cr}   & \REFSEC{sec:spec:instr:HMIX.cr}   \\
+\hline
+\multirow{12}{*}{2.3} & \XCSYNTAXUSE{ADD.px}    & \REFSEC{sec:spec:instr:ADD.px}    \\
+                      & \XCSYNTAXUSE{SUB.px}    & \REFSEC{sec:spec:instr:SUB.px}    \\
+                      & \XCSYNTAXUSE{MUL.px}    & \REFSEC{sec:spec:instr:MUL.px}    \\
+                      & \XCSYNTAXUSE{SLL.px}    & \REFSEC{sec:spec:instr:SLL.px}    \\
+                      & \XCSYNTAXUSE{SLLI.px}   & \REFSEC{sec:spec:instr:SLLI.px}   \\
+                      & \XCSYNTAXUSE{SRL.px}    & \REFSEC{sec:spec:instr:SRL.px}    \\
+                      & \XCSYNTAXUSE{SRLI.px}   & \REFSEC{sec:spec:instr:SRLI.px}   \\
+                      & \XCSYNTAXUSE{ROT.px}    & \REFSEC{sec:spec:instr:ROT.px}    \\
+                      & \XCSYNTAXUSE{ROTI.px}   & \REFSEC{sec:spec:instr:ROTI.px}   \\
+                      & \XCSYNTAXUSE{TWID.B}    & \REFSEC{sec:spec:instr:TWID.B}    \\
+                      & \XCSYNTAXUSE{TWID.Nx}   & \REFSEC{sec:spec:instr:TWID.Nx}   \\
+                      & \XCSYNTAXUSE{TWID.Cx}   & \REFSEC{sec:spec:instr:TWID.Cx}   \\
+\hline
+\multirow{14}{*}{2.4} & \XCSYNTAXUSE{ADD2.mp}   & \REFSEC{sec:spec:instr:ADD2.mp}   \\
+                      & \XCSYNTAXUSE{ADD3.mp}   & \REFSEC{sec:spec:instr:ADD3.mp}   \\
+                      & \XCSYNTAXUSE{SUB2.mp}   & \REFSEC{sec:spec:instr:SUB2.mp}   \\
+                      & \XCSYNTAXUSE{SUB3.mp}   & \REFSEC{sec:spec:instr:SUB3.mp}   \\
+                      & \XCSYNTAXUSE{ACC1.mp}   & \REFSEC{sec:spec:instr:ACC1.mp}   \\
+                      & \XCSYNTAXUSE{ACC2.mp}   & \REFSEC{sec:spec:instr:ACC2.mp}   \\
+                      & \XCSYNTAXUSE{MAC.mp}    & \REFSEC{sec:spec:instr:MAC.mp}    \\
+                      & \XCSYNTAXUSE{SLL.mp}    & \REFSEC{sec:spec:instr:SLL.mp}    \\
+                      & \XCSYNTAXUSE{SLLI.mp}   & \REFSEC{sec:spec:instr:SLLI.mp}   \\
+                      & \XCSYNTAXUSE{SRL.mp}    & \REFSEC{sec:spec:instr:SRL.mp}    \\
+                      & \XCSYNTAXUSE{SRLI.mp}   & \REFSEC{sec:spec:instr:SRLI.mp}   \\
+                      & \XCSYNTAXUSE{EQU.mp}    & \REFSEC{sec:spec:instr:EQU.mp}    \\
+                      & \XCSYNTAXUSE{LTU.mp}    & \REFSEC{sec:spec:instr:LTU.mp}    \\
+                      & \XCSYNTAXUSE{GTU.mp}    & \REFSEC{sec:spec:instr:GTU.mp}    \\
+\end{longtable}
+\end{center}
+\vspace*{\fill}
 
 % =============================================================================
