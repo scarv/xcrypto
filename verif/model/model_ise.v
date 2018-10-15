@@ -1224,11 +1224,15 @@ end endtask
 //
 task model_do_equ_mp;
 begin: t_model_equ_mp
-    reg  [31:0] crs1, crs2, crs3;
-    crs1=model_crs1;
-    crs2=model_crs2;
-    crs2=model_crs3;
-    $display("ISE> ERROR: Instruction equ.mp not implemented");
+    reg [31:0] crs2, crs3;
+    reg [31:0] result;
+    crs2    = model_crs2;
+    crs3    = model_crs3;
+    result  = (crs2 == crs3) && cop_rs1;
+    model_do_write_gpr(dec_arg_rd, result);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("ISE> equ.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+        dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 
@@ -1237,11 +1241,19 @@ end endtask
 //
 task model_do_ltu_mp;
 begin: t_model_ltu_mp
-    reg  [31:0] crs1, crs2, crs3;
-    crs1=model_crs1;
-    crs2=model_crs2;
-    crs2=model_crs3;
-    $display("ISE> ERROR: Instruction ltu.mp not implemented");
+    reg [31:0] crs2, crs3;
+    reg [31:0] result ;
+    reg [31:0] result0;
+    reg [31:0] result1;
+    crs2    = model_crs2;
+    crs3    = model_crs3;
+    result0 = (crs2 == crs3);
+    result1 = (crs2 <  crs3);
+    result  = result1 && (result0 || cop_rs1);
+    model_do_write_gpr(dec_arg_rd, result);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("ISE> ltu.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+        dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 
@@ -1250,11 +1262,19 @@ end endtask
 //
 task model_do_gtu_mp;
 begin: t_model_gtu_mp
-    reg  [31:0] crs1, crs2, crs3;
-    crs1=model_crs1;
-    crs2=model_crs2;
-    crs2=model_crs3;
-    $display("ISE> ERROR: Instruction gtu.mp not implemented");
+    reg [31:0] crs2, crs3;
+    reg [31:0] result ;
+    reg [31:0] result0;
+    reg [31:0] result1;
+    crs2    = model_crs2;
+    crs3    = model_crs3;
+    result0 = (crs2 == crs3);
+    result1 = (crs2 >  crs3);
+    result  = result1 && (result0 || cop_rs1);
+    model_do_write_gpr(dec_arg_rd, result);
+    model_do_instr_result(ISE_RESULT_SUCCESS);
+    $display("ISE> gtu.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+        dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 

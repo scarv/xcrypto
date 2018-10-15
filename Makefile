@@ -89,7 +89,7 @@ icarus_run: icarus_build unit_tests
 # Run icaurus model on all unit tests
 #
 .PHONY: icarus_run_all
-icarus_run_all : $(UNIT_WAVES)
+icarus_run_all : $(UNIT_WAVES) unit_tests
 	-grep -m 1 --color -e "ERROR" $(COP_WORK)/unit/*.log
 
 work/unit/%.vcd : $(COP_WORK)/unit/%.hex icarus_build

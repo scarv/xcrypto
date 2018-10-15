@@ -23,6 +23,7 @@ output wire         malu_idone       , // Instruction complete
 
 output wire         malu_rdm_in_rs   , // Source destination regs in rs1/2
 
+input  wire [31:0]  gpr_rs1          , // RS1 from the CPU.
 input  wire [31:0]  malu_rs1         , // Source register 1
 input  wire [31:0]  malu_rs2         , // Source register 2
 input  wire [31:0]  malu_rs3         , // Source register 3
@@ -122,6 +123,10 @@ wire wb_add_lo =
 wire wb_shf_lo =
     fsm0 && (is_slli_mp || is_sll_mp  || is_srli_mp || is_srl_mp        ) ;
 
+// Writeback comparison result bit.
+wire wb_cmp    =
+    fsm0 && (is_equ_mp || is_gtu_mp || is_ltu_mp                        ) ;
+
 //
 // Temporary value register
 //
@@ -155,6 +160,23 @@ always @(posedge g_clk) begin
         tmp <= n_tmp;
     end
 end
+
+//
+// 32-bit comparator.
+//
+
+wire is_cmp = is_equ_mp || is_ltu_mp || is_gtu_mp;
+
+wire [31:0] cmp_lhs = {32{is_cmp}} & malu_rs2;
+wire [31:0] cmp_rhs = {32{is_cmp}} & malu_rs3;
+
+wire cmp_eq = cmp_lhs == cmp_rhs;
+wire cmp_lt = cmp_lhs <  cmp_rhs;
+
+wire result_cmp =
+    (is_equ_mp && (cmp_eq && |gpr_rs1           )) ||
+    (is_ltu_mp && (cmp_eq && |gpr_rs1 ||  cmp_lt)) ||
+    (is_gtu_mp && (cmp_eq && |gpr_rs1 || !cmp_lt)) ;
 
 //
 // 64 bit adder
@@ -226,7 +248,8 @@ assign malu_cpr_rd_ben  = {4{wb_en}};
 assign malu_cpr_rd_wdata=
     {32{wb_tmp_hi}} & tmp[63:32]         |
     {32{wb_add_lo}} & result_add[31:0]   |
-    {32{wb_shf_lo}} & result_shf[31:0]   ;
+    {32{wb_shf_lo}} & result_shf[31:0]   |
+    {32{wb_cmp   }} & {31'b0, result_cmp};
 
 
 endmodule

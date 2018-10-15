@@ -1016,58 +1016,55 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-% TODO: crs3 -> rs3
-\XCINSTR{EQU.mp}{rd, crs1, crs2, crs3}{
+\XCINSTR{EQU.mp}{rd, rs1, crs2, crs3}{
   \ienceqump
 }{
   Compute a ``chained'' (or ``long'') 
   equality 
   comparison between
-  $\XCR[*][{\VERB[RV]{crs1}}]$
+  $\XCR[*][{\VERB[RV]{crs2}}]$
   and
-  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  $\XCR[*][{\VERB[RV]{crs3}}]$,
   forming some $i$-th step within a multi-precision comparison.
 }{
-  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1            \AND \XCR[*][{\VERB[RV]{crs3}}]  $ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs2}}] = \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_0            \AND \GPR[*][{\VERB[RV]{rs1}}]  $ \;
 }
 
 % -----------------------------------------------------------------------------
 
-% TODO: crs3 -> rs3
-\XCINSTR{LTU.mp}{rd, crs1, crs2, crs3}{
+\XCINSTR{LTU.mp}{rd, rs1, crs2, crs3}{
   \iencltump
 }{
   Compute a ``chained'' (or ``long'') 
      less-than
   comparison between
-  $\XCR[*][{\VERB[RV]{crs1}}]$
+  $\XCR[*][{\VERB[RV]{crs2}}]$
   and
-  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  $\XCR[*][{\VERB[RV]{crs3}}]$,
   forming some $i$-th step within a multi-precision comparison.
 }{
-  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $t_1 \ASN \XCR[*][{\VERB[RV]{crs1}}] < \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs2}}] = \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $t_1 \ASN \XCR[*][{\VERB[RV]{crs2}}] < \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \GPR[*][{\VERB[RV]{rs1}}] )$ \;
 }
 
 % -----------------------------------------------------------------------------
 
-% TODO: crs3 -> rs3
-\XCINSTR{GTU.mp}{rd, crs1, crs2, crs3}{
+\XCINSTR{GTU.mp}{rd, rs1, crs2, crs3}{
   \iencgtump
 }{
   Compute a ``chained'' (or ``long'') 
   greater-than
   comparison between
-  $\XCR[*][{\VERB[RV]{crs1}}]$
+  $\XCR[*][{\VERB[RV]{crs2}}]$
   and
-  $\XCR[*][{\VERB[RV]{crs2}}]$,
+  $\XCR[*][{\VERB[RV]{crs3}}]$,
   forming some $i$-th step within a multi-precision comparison.
 }{
-  $t_0 \ASN \XCR[*][{\VERB[RV]{crs1}}] = \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $t_1 \ASN \XCR[*][{\VERB[RV]{crs1}}] > \XCR[*][{\VERB[RV]{crs2}}]$ \;
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \XCR[*][{\VERB[RV]{crs3}}] )$ \;
+  $t_0 \ASN \XCR[*][{\VERB[RV]{crs2}}] = \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $t_1 \ASN \XCR[*][{\VERB[RV]{crs2}}] > \XCR[*][{\VERB[RV]{crs3}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t_1 \IOR ( t_0 \AND \GPR[*][{\VERB[RV]{rs1}}] )$ \;
 }
 
 % =============================================================================
