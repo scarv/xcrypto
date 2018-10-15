@@ -1302,11 +1302,18 @@ end endtask
 //
 task model_do_sub3_mp;
 begin: t_model_sub3_mp
-    reg  [31:0] crs1, crs2, crs3;
+    reg  [31:0] crs1, crs2,crs3;
+    reg   [3:0] rd1,rd2;
+    reg  [63:0] result;
+    model_do_decode_rdm(rd2,rd1);
     crs1=model_crs1;
     crs2=model_crs2;
-    crs2=model_crs3;
-    $display("ISE> ERROR: Instruction sub3.mp not implemented");
+    crs3=model_crs3;
+    result = (crs1 - crs2) - crs3;
+    model_do_write_cpr(rd1, result[31: 0]);
+    model_do_write_cpr(rd2, result[63:32]);
+    $display("sub3.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+        rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 
@@ -1465,11 +1472,18 @@ end endtask
 //
 task model_do_mac_mp;
 begin: t_model_mac_mp
-    reg  [31:0] crs1, crs2, crs3;
+    reg  [31:0] crs1, crs2,crs3;
+    reg   [3:0] rd1,rd2;
+    reg  [63:0] result;
+    model_do_decode_rdm(rd2,rd1);
     crs1=model_crs1;
     crs2=model_crs2;
-    crs2=model_crs3;
-    $display("ISE> ERROR: Instruction mac.mp not implemented");
+    crs3=model_crs3;
+    result = (crs1 * crs2) + crs3;
+    model_do_write_cpr(rd1, result[31: 0]);
+    model_do_write_cpr(rd2, result[63:32]);
+    $display("mac.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+        rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 

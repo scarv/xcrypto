@@ -172,7 +172,7 @@ wire add_rhs_rs2 =
     fsm1 && (is_acc2_mp                                                 ) ;
 
 wire add_rhs_rs3 =
-    fsm1 && (is_mac_mp  || is_add3_mp                                   ) ;
+    fsm1 && (is_mac_mp  || is_add3_mp || is_sub3_mp                     ) ;
 
 wire add_rhs_r23 =
     fsm0 && (is_acc1_mp || is_acc2_mp                                   ) ;
