@@ -115,8 +115,8 @@ wire vtx_new_instr = cpu_insn_req && cop_insn_ack;
 
 reg [ 0:0] vtx_reset                ;
 reg [ 0:0] vtx_valid                ;
-reg [31:0] vtx_instr_enc    [1:0]   ;
-reg [31:0] vtx_instr_rs1    [1:0]   ;
+reg [31:0] vtx_instr_enc    [ 1:0]  ;
+reg [31:0] vtx_instr_rs1    [ 1:0]  ;
 reg [ 2:0] vtx_instr_result         ;
 reg [31:0] vtx_instr_wdata          ;
 reg [ 4:0] vtx_instr_waddr          ;
@@ -126,14 +126,20 @@ wire[31:0] vtx_cprs_snoop   [15:0]  ;
 reg [31:0] vtx_cprs_pre     [15:0]  ;
 reg [31:0] vtx_cprs_post    [15:0]  ;
 
+// Random sample tracking
+reg [31:0] vtx_rand_sample          ;
+
+always @(posedge g_clk) if (!g_resetn) vtx_rand_sample <= 32'b0;
+    else if(cop_rand_sample) vtx_rand_sample <= cop_random;
+
 // Memory transaction tracking per instruction.
-reg        vtx_mem_cen      [3:0];
-reg        vtx_mem_wen      [3:0];
-reg [31:0] vtx_mem_addr     [3:0];
-reg [31:0] vtx_mem_wdata    [3:0];
-reg [31:0] vtx_mem_rdata    [3:0];
-reg [ 3:0] vtx_mem_ben      [3:0];
-reg        vtx_mem_error    [3:0];
+reg        vtx_mem_cen      [ 3:0]  ;
+reg        vtx_mem_wen      [ 3:0]  ;
+reg [31:0] vtx_mem_addr     [ 3:0]  ;
+reg [31:0] vtx_mem_wdata    [ 3:0]  ;
+reg [31:0] vtx_mem_rdata    [ 3:0]  ;
+reg [ 3:0] vtx_mem_ben      [ 3:0]  ;
+reg        vtx_mem_error    [ 3:0]  ;
 
 reg p_mem_cen;
 always @(posedge g_clk) if(!g_resetn) p_mem_cen <= 1'b0;
@@ -218,7 +224,8 @@ end
 .vtx_instr_result(vtx_instr_result),
 .vtx_instr_wdata (vtx_instr_wdata ),
 .vtx_instr_waddr (vtx_instr_waddr ),
-.vtx_instr_wen   (vtx_instr_wen   ) 
+.vtx_instr_wen   (vtx_instr_wen   ),
+.vtx_rand_sample (vtx_rand_sample )
 );
 
 
