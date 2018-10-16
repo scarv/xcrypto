@@ -51,7 +51,7 @@ adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 .PHONY: smt2
 smt2: $(SMT2_out)
 $(SMTDIR)/%.smt2 : $(SRC_RTL) $(SRC_VERIF)
-	-mkdir -p $(dir $(SMT2_out))
+	@mkdir -p $(word 1, $(dir $(SMT2_out)))
 	$(YS) -qQT -l $@.log \
         -p"verilog_defaults -add -DFML_CHECK_NAME=$(basename $(notdir $@))" \
         -p"script $(YS_SCRIPT)" \
