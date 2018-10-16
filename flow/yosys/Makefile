@@ -23,6 +23,7 @@ LOG_SMT2    = $(COP_HOME)/work/smt2/synthesis.log
 SMTDIR          ?= $(COP_WORK)/smt2
 CHECKS_DIR       = $(COP_HOME)/verif/formal
 
+FML_ENGINE      ?= boolector
 FML_CHECK_NAME  ?= correct_invalid_opcode_response \
                    correct_result_encodings \
                    instr_mv2cop \
@@ -62,7 +63,7 @@ smt2-trace: $(SMT2_out)
                -g \
                --presat \
                --dump-vcd $(SMT2_TRACE) \
-               -s z3 \
+               -s $(FML_ENGINE) \
                $(SMT2_out)
 
 $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
@@ -71,7 +72,7 @@ $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
 	$(YSMTBMC) -t $(BMC_STEPS) \
                --dump-vcd $@.vcd \
                --noprogress \
-               -s z3 \
+               -s $(FML_ENGINE) \
                $< | tee -a $@
 	echo "`date` Finished $(notdir $(basename $@))" >> $@
 
