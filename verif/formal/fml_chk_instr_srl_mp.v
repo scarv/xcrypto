@@ -24,7 +24,16 @@ reg [63:0] value;
 
     value = {`CRS1 , `CRS2} >> `CRS3;
 
-    `VTX_ASSERT_CRDM_VALUE_IS(value)
+    if(`CRS3 >= 64) begin
+        
+        // Give zero if shift amount greater than doubleword width.
+        `VTX_ASSERT_CRDM_VALUE_IS(64'b0)
+
+    end else begin
+
+        `VTX_ASSERT_CRDM_VALUE_IS(value)
+
+    end
 
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR

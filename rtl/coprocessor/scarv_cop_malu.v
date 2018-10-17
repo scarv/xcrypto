@@ -226,16 +226,21 @@ assign result_mul   = mul_lhs * mul_rhs ;
 
 wire        shiftright  = is_srl_mp  || is_srli_mp                  ;
 
-wire [5:0]  shamt       = is_srli_mp || is_slli_mp ? id_imm[5:0]    : 
-                                                     malu_rs3[5:0]  ;
+wire [5:0]  shamt       = 
+    is_srli_mp || is_slli_mp ? {2'b0,id_imm[3:0]}    : 
+                               malu_rs3[5:0]         ;
+
+// Shift results return zero if shift amount greater than 63.
+wire        shift_ret_z = |malu_rs3[31:6];
 
 wire   shf_gated        = is_srli_mp || is_slli_mp ||
                           is_srl_mp  || is_sll_mp;
 
 assign shf_lhs          = {64{shf_gated}} & {malu_rs1, malu_rs2}    ;
 
-assign result_shf       = shiftright ? shf_lhs >> shamt             :
-                                       shf_lhs << shamt             ;
+assign result_shf       = shift_ret_z ? 64'b0                        :
+                          shiftright  ? shf_lhs >> shamt             :
+                                        shf_lhs << shamt             ;
 
 //
 // MP instruction writeback data
