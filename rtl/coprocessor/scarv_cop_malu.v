@@ -174,9 +174,9 @@ wire cmp_eq = cmp_lhs == cmp_rhs;
 wire cmp_lt = cmp_lhs <  cmp_rhs;
 
 wire result_cmp =
-    (is_equ_mp && (cmp_eq && |gpr_rs1           )) ||
-    (is_ltu_mp && (cmp_eq && |gpr_rs1 ||  cmp_lt)) ||
-    (is_gtu_mp && (cmp_eq && |gpr_rs1 || !cmp_lt)) ;
+    (is_equ_mp && ((cmp_eq && |gpr_rs1)                       )) ||
+    (is_ltu_mp && ((cmp_eq && |gpr_rs1) ||  (cmp_lt          ))) ||
+    (is_gtu_mp && ((cmp_eq && |gpr_rs1) || !(cmp_lt || cmp_eq))) ;
 
 //
 // 64 bit adder
