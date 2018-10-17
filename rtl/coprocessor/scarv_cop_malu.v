@@ -138,7 +138,7 @@ wire [63:0] n_tmp;
 wire       tmp_ld_add = 
     fsm0 && (is_add2_mp || is_add3_mp || is_sub2_mp || is_sub3_mp ||
              is_acc1_mp || is_acc2_mp                                   ) ||
-    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp                     ) ;
+    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
 
 // Load multiplier result into tmp.
 wire       tmp_ld_mul =

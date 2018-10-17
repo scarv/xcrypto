@@ -1,19 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Oct 17 09:37:05 2018
+[*] Wed Oct 17 10:24:36 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_gather_b.rpt.vcd"
-[dumpfile_mtime] "Wed Oct 17 09:25:43 2018"
-[dumpfile_size] 228343
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_srl_mp.rpt.vcd"
+[dumpfile_mtime] "Tue Oct 16 16:56:31 2018"
+[dumpfile_size] 168381
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/formal-flow-view.gtkw"
 [timestart] 0
 [size] 1411 1025
-[pos] -1 -1
-*-4.913043 51 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -51 -51
+*-4.453753 56 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_formal.
 [treeopen] tb_formal.i_dut.
 [sst_width] 298
-[signals_width] 319
+[signals_width] 359
 [sst_expanded] 1
 [sst_vpaned_height] 301
 @28
@@ -48,7 +48,6 @@ tb_formal.i_dut.cop_mem_wen
 -
 @28
 tb_formal.mem_txn_finish
-tb_formal.mem_txn_new
 @200
 -
 @28
@@ -70,30 +69,31 @@ tb_formal.i_fml_checks.vtx_valid
 tb_formal.i_fml_checks.vtx_crd_val_post[31:0]
 tb_formal.i_fml_checks.vtx_crs1_val_pre[31:0]
 tb_formal.i_fml_checks.vtx_crs2_val_pre[31:0]
+@23
+tb_formal.i_fml_checks.vtx_crs3_val_pre[31:0]
+@22
 tb_formal.i_fml_checks.vtx_instr_enc[31:0]
 @28
 tb_formal.mem_txn_finish
+@22
+tb_formal.i_fml_checks.vtx_crdm_val_pre[63:0]
+tb_formal.i_fml_checks.vtx_crdm_val_post[63:0]
 @200
 -
-@23
-tb_formal.i_fml_checks.vtx_mem_addr_0[31:0]
 @22
-tb_formal.i_fml_checks.exp_addrs<3>[31:0]
+tb_formal.i_fml_checks.vtx_mem_addr_0[31:0]
 @200
 -
 @22
 tb_formal.i_fml_checks.vtx_mem_addr_1[31:0]
-tb_formal.i_fml_checks.exp_addrs<2>[31:0]
 @200
 -
 @22
 tb_formal.i_fml_checks.vtx_mem_addr_2[31:0]
-tb_formal.i_fml_checks.exp_addrs<1>[31:0]
 @200
 -
 @22
 tb_formal.i_fml_checks.vtx_mem_addr_3[31:0]
-tb_formal.i_fml_checks.exp_addrs<0>[31:0]
 @200
 -
 [pattern_trace] 1
