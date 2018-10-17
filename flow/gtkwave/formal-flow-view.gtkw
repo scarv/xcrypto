@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Oct  3 13:07:14 2018
+[*] Wed Oct 17 09:37:05 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_sw_cr.rpt.vcd"
-[dumpfile_mtime] "Wed Oct  3 11:43:17 2018"
-[dumpfile_size] 163110
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_gather_b.rpt.vcd"
+[dumpfile_mtime] "Wed Oct 17 09:25:43 2018"
+[dumpfile_size] 228343
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/formal-flow-view.gtkw"
 [timestart] 0
-[size] 1186 1025
+[size] 1411 1025
 [pos] -1 -1
-*-4.776795 38 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.913043 51 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_formal.
 [treeopen] tb_formal.i_dut.
 [sst_width] 298
@@ -30,14 +30,25 @@ tb_formal.i_dut.cpu_insn_enc[31:0]
 tb_formal.i_dut.cpu_rs1[31:0]
 @200
 -
+@22
+tb_formal.i_dut.cop_mem_addr[31:0]
+tb_formal.i_dut.cop_mem_ben[3:0]
 @28
-tb_formal.i_dut.id_exception
-tb_formal.i_dut.i_scarv_cop_idecode.bad_pack_width
-@2028
-^1 /home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/filter-pack-width.txt
-tb_formal.i_dut.i_scarv_cop_idecode.id_pw[2:0]
+tb_formal.i_dut.cop_mem_cen
+tb_formal.i_dut.cop_mem_error
+@22
+tb_formal.i_dut.cop_mem_rdata[31:0]
 @28
-tb_formal.i_dut.i_scarv_cop_idecode.id_pw[2:0]
+tb_formal.i_dut.cop_mem_stall
+@22
+tb_formal.i_dut.cop_mem_wdata[31:0]
+@28
+tb_formal.i_dut.cop_mem_wen
+@200
+-
+@28
+tb_formal.mem_txn_finish
+tb_formal.mem_txn_new
 @200
 -
 @28
@@ -53,25 +64,37 @@ tb_formal.i_fml_checks.dec_arg_crs2[3:0]
 tb_formal.i_fml_checks.dec_arg_crs3[3:0]
 @200
 -
-@29
+@28
 tb_formal.i_fml_checks.vtx_valid
 @22
 tb_formal.i_fml_checks.vtx_crd_val_post[31:0]
 tb_formal.i_fml_checks.vtx_crs1_val_pre[31:0]
 tb_formal.i_fml_checks.vtx_crs2_val_pre[31:0]
+tb_formal.i_fml_checks.vtx_instr_enc[31:0]
+@28
+tb_formal.mem_txn_finish
+@200
+-
+@23
+tb_formal.i_fml_checks.vtx_mem_addr_0[31:0]
+@22
+tb_formal.i_fml_checks.exp_addrs<3>[31:0]
 @200
 -
 @22
-tb_formal.i_fml_checks.sw_addr[31:0]
-tb_formal.i_fml_checks.vtx_mem_addr_0[31:0]
-tb_formal.i_fml_checks.vtx_mem_ben_0[3:0]
-@28
-tb_formal.i_fml_checks.vtx_mem_cen_0
-tb_formal.i_fml_checks.vtx_mem_error_0
+tb_formal.i_fml_checks.vtx_mem_addr_1[31:0]
+tb_formal.i_fml_checks.exp_addrs<2>[31:0]
+@200
+-
 @22
-tb_formal.i_fml_checks.vtx_mem_rdata_0[31:0]
-tb_formal.i_fml_checks.vtx_mem_wdata_0[31:0]
-@28
-tb_formal.i_fml_checks.vtx_mem_wen_0
+tb_formal.i_fml_checks.vtx_mem_addr_2[31:0]
+tb_formal.i_fml_checks.exp_addrs<1>[31:0]
+@200
+-
+@22
+tb_formal.i_fml_checks.vtx_mem_addr_3[31:0]
+tb_formal.i_fml_checks.exp_addrs<0>[31:0]
+@200
+-
 [pattern_trace] 1
 [pattern_trace] 0

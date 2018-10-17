@@ -62,6 +62,17 @@ always @(posedge g_clk) if(!g_resetn) begin
 end
 
 //
+// Assume correct behaviour of the memory interface
+//
+always @(posedge g_clk) begin
+    if(!$past(cop_mem_cen)) begin
+        // The error signal can only be asserted when the chip enable is high
+        // in the previous cycle.
+        assume(cop_mem_error == 1'b0);
+    end
+end
+
+//
 // Assume that the instruction request interface will behave correctly
 //
 always @(posedge g_clk) if(!g_resetn) begin
@@ -145,10 +156,14 @@ reg p_mem_cen;
 always @(posedge g_clk) if(!g_resetn) p_mem_cen <= 1'b0;
     else p_mem_cen <= cop_mem_cen;
 
+wire mem_txn_new    = !cop_mem_error &&
+                      ((cop_mem_cen && !p_mem_cen) ||
+                      (cop_mem_cen &&  p_mem_cen && !cop_mem_stall));
+
 wire mem_txn_finish = p_mem_cen && !(cop_mem_stall);
     
 always @(posedge g_clk) begin
-    if($rose(cop_mem_cen)) begin
+    if(mem_txn_new) begin
         vtx_mem_cen  [0] <= cop_mem_cen  ;
         vtx_mem_wen  [0] <= cop_mem_wen  ;
         vtx_mem_addr [0] <= cop_mem_addr ;
@@ -163,7 +178,7 @@ end
 
 genvar i;
 generate for (i=1 ; i < 4;i=i+1) begin
-    always @(posedge g_clk) if($rose(cop_mem_cen) && vtx_mem_cen[0]) begin
+    always @(posedge g_clk) if(mem_txn_new) begin
         vtx_mem_cen  [i] <= vtx_mem_cen  [i-1];
         vtx_mem_wen  [i] <= vtx_mem_wen  [i-1];
         vtx_mem_addr [i] <= vtx_mem_addr [i-1];

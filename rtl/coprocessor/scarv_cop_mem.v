@@ -134,12 +134,12 @@ assign mem_is_store   = cop_mem_wen;
 
 // Byte lane select wires.
 wire   ben_word       = is_sw;
-wire   ben_hw_lo      = is_sh && !mem_address[1];
-wire   ben_hw_hi      = is_sh &&  mem_address[1];
-wire   ben_b_3        = is_sb &&  mem_address[1:0] == 2'b11;
-wire   ben_b_2        = is_sb &&  mem_address[1:0] == 2'b10;
-wire   ben_b_1        = is_sb &&  mem_address[1:0] == 2'b01;
-wire   ben_b_0        = is_sb &&  mem_address[1:0] == 2'b00;
+wire   ben_hw_lo      = (is_sh || is_sc_h) && !mem_address[1];
+wire   ben_hw_hi      = (is_sh || is_sc_h) &&  mem_address[1];
+wire   ben_b_3        = (is_sb || is_sc_b) &&  mem_address[1:0] == 2'b11;
+wire   ben_b_2        = (is_sb || is_sc_b) &&  mem_address[1:0] == 2'b10;
+wire   ben_b_1        = (is_sb || is_sc_b) &&  mem_address[1:0] == 2'b01;
+wire   ben_b_0        = (is_sb || is_sc_b) &&  mem_address[1:0] == 2'b00;
 
 assign cop_mem_ben[3] = ben_word || ben_hw_hi || ben_b_3;
 assign cop_mem_ben[2] = ben_word || ben_hw_hi || ben_b_2;
@@ -337,8 +337,7 @@ end
 
 //
 // Recording of chip enable.
-wire n_p_cen = cop_mem_cen && !mem_idone ||
-               p_cen && cop_mem_stall;
+wire n_p_cen = cop_mem_cen && !mem_idone;
 
 always @(posedge g_clk) begin
     if(!g_resetn) begin

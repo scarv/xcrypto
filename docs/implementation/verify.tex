@@ -42,20 +42,27 @@ verification flow.
 \begin{itemize}
 \item Input instruction and RS1 data not registered properly by the COP during
     stalled or multi-cycle execution.
-\item Memory read data polluting other writeback data when no memory instruction
-    was active.
+\item Memory read data polluting other writeback data when no memory
+    instruction was active due to poorly gated and/or tree.
 \item Memory bus error exception raised ahead of invalid opcode exception.
 \item Memory bus errors being raised when no memory instruction was active.
 \item Pack width instructions not raising invalid opcode exceptions for
     invalid pack widths.
 \item Raising invalid pack width exceptions for instructions with no pack width
     fields.
-\item Design shift amound fields 1 bit too big resulting in different results only
-    when the pack width is 1.
+\item Design shift amound fields 1 bit too big resulting in different results
+    only when the pack width is 1.
 \item Rotate instruction {\em model} was incorrect if the rotate ammount was
     greater than twice the pack width.
 \item Insert bitfield instruction was blanking out destination beyond the
     bitfield.
+\item All memory instructions were not recording transaction history correctly.
+\item A bus error in the first cycle of a memory transaction caused memory
+    transactions to be missed in the formal environment, even though it
+    should have been ignored iff it was the first cycle of the transaction.
+\item Scatter/Gather instruction addresses were not correctly registered
+    by the formal verification interface.
+\item Scatter instructions set write enable but no byte enable bits.
 \end{itemize}
 
 \subsection{Constrained Random Flow}
