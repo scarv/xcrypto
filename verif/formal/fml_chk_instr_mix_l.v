@@ -11,26 +11,25 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_bop_cr)
+`VTX_CHECKER_MODULE_BEGIN(instr_mix_l)
 
-wire [31:0] bop_result;
+wire [31:0] rotated = ({`CRS1,`CRS1} >> dec_arg_lut4);
 
-genvar i;
-generate for(i=0; i < 32; i = i + 1) begin
-    assign bop_result[i] = dec_arg_lut4[{`CRS1[i],`CRS2[i]}];
-end endgenerate
+wire [31:0] lmix_result = 
+    (( `CRS2) & rotated        ) |
+    ((~`CRS2) & vtx_crd_val_pre) ;
 
 //
-// bop_cr
+// mix_l
 //
-`VTX_CHECK_INSTR_BEGIN(bop_cr) 
+`VTX_CHECK_INSTR_BEGIN(mix_l) 
 
     // Result comes from the PACK_WIDTH_ARITH_OPERATION_RESULT macro.
-    `VTX_ASSERT_CRD_VALUE_IS(bop_result)
+    `VTX_ASSERT_CRD_VALUE_IS(lmix_result)
 
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(bop_cr)
+`VTX_CHECK_INSTR_END(mix_l)
 
 `VTX_CHECKER_MODULE_END

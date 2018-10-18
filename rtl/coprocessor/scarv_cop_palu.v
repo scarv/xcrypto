@@ -99,11 +99,11 @@ wire        wen_cmov    =
 //  Bitwise Instructions
 //
 
-wire bw_lmix_cr = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LMIX_CR;
-wire bw_hmix_cr = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_HMIX_CR;
-wire bw_bop_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP_CR ;
-wire bw_ins_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS_CR ; 
-wire bw_ext_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT_CR ;
+wire bw_mix_l = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_MIX_L;
+wire bw_mix_h = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_MIX_H;
+wire bw_bop  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP ;
+wire bw_ins  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS ; 
+wire bw_ext  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT ;
 wire bw_ld_li  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LI ;
 wire bw_ld_hi  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HI ;
 
@@ -128,7 +128,7 @@ wire [31:0] ins_result  =
     (palu_rs3 & ~(ins_mask << ei_start));
 
 // Result computation for the MIX instructions
-wire [ 4:0] mix_ramt = {bw_hmix_cr,id_imm[3:0]};
+wire [ 4:0] mix_ramt = {bw_mix_h,id_imm[3:0]};
 
 wire [31:0] mix_t0   =
     (palu_rs1 >> mix_ramt) | (palu_rs1 << (32-mix_ramt));
@@ -140,12 +140,12 @@ wire [31:0] mix_result =
 wire [31:0] result_bitwise = 
     {32{bw_ld_li }} & {palu_rs3[31:16], id_imm[15:0]    } |
     {32{bw_ld_hi }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
-    {32{bw_bop_cr }} & {bop_result                       } |
-    {32{bw_bop_cr }} & {bop_result                       } |
-    {32{bw_ext_cr }} & {ext_result                       } |
-    {32{bw_ins_cr }} & {ins_result                       } |
-    {32{bw_lmix_cr}} & {mix_result                       } |
-    {32{bw_hmix_cr}} & {mix_result                       } ;
+    {32{bw_bop }} & {bop_result                       } |
+    {32{bw_bop }} & {bop_result                       } |
+    {32{bw_ext }} & {ext_result                       } |
+    {32{bw_ins }} & {ins_result                       } |
+    {32{bw_mix_l}} & {mix_result                       } |
+    {32{bw_mix_h}} & {mix_result                       } ;
 
 // ----------------------------------------------------------------------
 

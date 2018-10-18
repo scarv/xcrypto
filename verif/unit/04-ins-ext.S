@@ -14,15 +14,15 @@ test_start:
     ld.hi c5, 0
     ld.li c5, 0
     
-    ext.cr c5, c4, 2, 4
+    ext c5, c4, 2, 4
     
     ld.li c6, 0xFF00
     ld.hi c6, 0x0000
-    ext.cr c7, c6, 4, 8
+    ext c7, c6, 4, 8
 
     ld.hi c8, 0
     ld.li c8, 0
-    ins.cr c8, c7, 4, 8
+    ins c8, c7, 4, 8
 
     xcr2gpr x0, c4
     xcr2gpr x1, c5

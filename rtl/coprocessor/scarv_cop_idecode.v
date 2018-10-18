@@ -64,7 +64,7 @@ parameter ISE_MCCR_P2   = 1; //
 assign id_crs1 = dec_arg_crs1;
 assign id_crs2 = dec_arg_crs2;
 
-wire   crd_in_crs3 = dec_lmix_cr || dec_hmix_cr || dec_ins_cr ||
+wire   crd_in_crs3 = dec_mix_l || dec_mix_h || dec_ins ||
                      dec_ld_li  || dec_ld_hi  || dec_ld_bu ||
                      dec_ld_hu  || dec_scatter_b || dec_scatter_h;
 
@@ -114,8 +114,8 @@ wire class_mp           =
     dec_acc1_mp || dec_mac_mp   ;
 
 wire class_bitwise      = 
-    dec_lmix_cr || dec_hmix_cr || dec_bop_cr  || dec_ins_cr  || 
-    dec_ext_cr  || dec_ld_li  || dec_ld_hi   ;
+    dec_mix_l || dec_mix_h || dec_bop  || dec_ins  || 
+    dec_ext  || dec_ld_li  || dec_ld_hi   ;
 
 assign id_class = 
     {3{class_packed_arith}} & SCARV_COP_ICLASS_PACKED_ARITH |
@@ -158,11 +158,11 @@ wire [3:0] subclass_mp =
     {4{dec_mac_mp }} & {SCARV_COP_SCLASS_MAC_MP  } ;
 
 wire [3:0] subclass_bitwise =
-    {4{dec_lmix_cr}} & {SCARV_COP_SCLASS_LMIX_CR} |
-    {4{dec_hmix_cr}} & {SCARV_COP_SCLASS_HMIX_CR} |
-    {4{dec_bop_cr }} & {SCARV_COP_SCLASS_BOP_CR } |
-    {4{dec_ins_cr }} & {SCARV_COP_SCLASS_INS_CR } | 
-    {4{dec_ext_cr }} & {SCARV_COP_SCLASS_EXT_CR } |
+    {4{dec_mix_l}} & {SCARV_COP_SCLASS_MIX_L} |
+    {4{dec_mix_h}} & {SCARV_COP_SCLASS_MIX_H} |
+    {4{dec_bop }} & {SCARV_COP_SCLASS_BOP } |
+    {4{dec_ins }} & {SCARV_COP_SCLASS_INS } | 
+    {4{dec_ext }} & {SCARV_COP_SCLASS_EXT } |
     {4{dec_ld_li }} & {SCARV_COP_SCLASS_LD_LI } |
     {4{dec_ld_hi }} & {SCARV_COP_SCLASS_LD_HI } ;
     
@@ -184,10 +184,10 @@ assign id_subclass =
 wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
 wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
 wire imm_li     = dec_ld_hi    || dec_ld_li;
-wire imm_8      = class_twiddle || dec_ext_cr   || dec_ins_cr;
+wire imm_8      = class_twiddle || dec_ext   || dec_ins;
 wire imm_sh_px  = dec_slli_px   || dec_srli_px  || dec_roti_px;
 wire imm_sh_mp  = dec_slli_mp   || dec_srli_mp;
-wire imm_lut    = dec_lmix_cr   || dec_hmix_cr  || dec_bop_cr;
+wire imm_lut    = dec_mix_l   || dec_mix_h  || dec_bop;
 
 assign id_imm = 
     {32{imm_ld      }} & {{21{encoded[31]}}, encoded[31:21]               } |

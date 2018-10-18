@@ -11,7 +11,7 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_ins_cr)
+`VTX_CHECKER_MODULE_BEGIN(instr_ins)
 
 wire [ 4:0] ins_begin = {dec_arg_cs,1'b0};
 wire [ 4:0] ins_len   = {dec_arg_cl,1'b0};
@@ -26,9 +26,9 @@ wire [31:0] ins_result  =
     
 
 //
-// ins_cr
+// ins
 //
-`VTX_CHECK_INSTR_BEGIN(ins_cr) 
+`VTX_CHECK_INSTR_BEGIN(ins) 
 
     // Result comes from the PACK_WIDTH_ARITH_OPERATION_RESULT macro.
     `VTX_ASSERT_CRD_VALUE_IS(ins_result)
@@ -36,6 +36,6 @@ wire [31:0] ins_result  =
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(ins_cr)
+`VTX_CHECK_INSTR_END(ins)
 
 `VTX_CHECKER_MODULE_END

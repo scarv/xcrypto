@@ -440,12 +440,12 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_SCATTER_H  0xff00787f
 +#define MATCH_GATHER_H 0x2e00002b
 +#define MASK_GATHER_H  0xff00787f
-+#define MATCH_LMIX_CR 0x8000002b
-+#define MASK_LMIX_CR  0xe108787f
-+#define MATCH_HMIX_CR 0xa000002b
-+#define MASK_HMIX_CR  0xe108787f
-+#define MATCH_BOP_CR 0xc000002b
-+#define MASK_BOP_CR  0xe108787f
++#define MATCH_MIX_L 0x8000002b
++#define MASK_MIX_L  0xe108787f
++#define MATCH_MIX_H 0xa000002b
++#define MASK_MIX_H  0xe108787f
++#define MATCH_BOP 0xc000002b
++#define MASK_BOP  0xe108787f
 +#define MATCH_EQU_MP 0x702b
 +#define MASK_EQU_MP  0xf000707f
 +#define MATCH_LTU_MP 0x1000702b
@@ -498,10 +498,10 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_TWID_C2  0xf8787f
 +#define MATCH_TWID_C3 0xf0282b
 +#define MASK_TWID_C3  0xf8787f
-+#define MATCH_INS_CR 0x18282b
-+#define MASK_INS_CR  0xf8787f
-+#define MATCH_EXT_CR 0x38282b
-+#define MASK_EXT_CR  0xf8787f
++#define MATCH_INS 0x18282b
++#define MASK_INS  0xf8787f
++#define MATCH_EXT 0x38282b
++#define MASK_EXT  0xf8787f
 +#define MATCH_ST_B 0x402b
 +#define MASK_ST_B  0x707f
 +#define MATCH_ST_H 0x502b
@@ -692,9 +692,9 @@ index 79e7214835..db8da1a4d5 100644
 +{"gather.b",   "x", "XD,Xt,s",            MATCH_GATHER_B, MASK_GATHER_B, match_opcode, 0},
 +{"scatter.h",  "x", "XD,Xt,s",            MATCH_SCATTER_H, MASK_SCATTER_H, match_opcode, 0},
 +{"gather.h",   "x", "XD,Xt,s",            MATCH_GATHER_H, MASK_GATHER_H, match_opcode, 0},
-+{"lmix.cr",    "x", "XD,Xs,Xt,X4",        MATCH_LMIX_CR, MASK_LMIX_CR, match_opcode, 0},
-+{"hmix.cr",    "x", "XD,Xs,Xt,X4",        MATCH_HMIX_CR, MASK_HMIX_CR, match_opcode, 0},
-+{"bop.cr",     "x", "XD,Xs,Xt,X4",        MATCH_BOP_CR, MASK_BOP_CR, match_opcode, 0},
++{"mix.l",    "x", "XD,Xs,Xt,X4",        MATCH_MIX_L, MASK_MIX_L, match_opcode, 0},
++{"mix.h",    "x", "XD,Xs,Xt,X4",        MATCH_MIX_H, MASK_MIX_H, match_opcode, 0},
++{"bop",     "x", "XD,Xs,Xt,X4",        MATCH_BOP, MASK_BOP, match_opcode, 0},
 +{"equ.mp",     "x", "d,s,Xt,XS",          MATCH_EQU_MP, MASK_EQU_MP, match_opcode, 0},
 +{"ltu.mp",     "x", "d,s,Xt,XS",          MATCH_LTU_MP, MASK_LTU_MP, match_opcode, 0},
 +{"gtu.mp",     "x", "d,s,Xt,XS",          MATCH_GTU_MP, MASK_GTU_MP, match_opcode, 0},
@@ -721,8 +721,8 @@ index 79e7214835..db8da1a4d5 100644
 +{"twid.c1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C1, MASK_TWID_C1, match_opcode, 0},
 +{"twid.c2",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C2, MASK_TWID_C2, match_opcode, 0},
 +{"twid.c3",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C3, MASK_TWID_C3, match_opcode, 0},
-+{"ins.cr",     "x", "XD,Xs,XL,Xk",        MATCH_INS_CR, MASK_INS_CR, match_opcode, 0},
-+{"ext.cr",     "x", "XD,Xs,XL,Xk",        MATCH_EXT_CR, MASK_EXT_CR, match_opcode, 0},
++{"ins",     "x", "XD,Xs,XL,Xk",        MATCH_INS, MASK_INS, match_opcode, 0},
++{"ext",     "x", "XD,Xs,XL,Xk",        MATCH_EXT, MASK_EXT, match_opcode, 0},
 +{"st.b",      "x", "Xt,(Xh,XB),Xm(s)",   MATCH_ST_B, MASK_ST_B, match_opcode, 0},
 +{"st.h",      "x", "Xt,(Xh),Xm(s)",      MATCH_ST_H, MASK_ST_H, match_opcode, 0},
 +{"st.w",      "x", "Xt,Xm(s)",         MATCH_ST_W, MASK_ST_W, match_opcode, 0},

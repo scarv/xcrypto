@@ -1166,10 +1166,10 @@ end endtask
 
 
 //
-// Implementation function for the lmix.cr instruction.
+// Implementation function for the mix.l instruction.
 //
-task model_do_lmix_cr;
-begin: t_model_lmix_cr
+task model_do_mix_l;
+begin: t_model_mix_l
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
@@ -1178,16 +1178,16 @@ begin: t_model_lmix_cr
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
     result  = (~crs2 & crd) | (crs2 & t0);
-    $display("ISE> lmix.cr c%d, c%d, c%d, %d",
+    $display("ISE> mix.l c%d, c%d, c%d, %d",
         dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
 //
-// Implementation function for the hmix.cr instruction.
+// Implementation function for the mix.h instruction.
 //
-task model_do_hmix_cr;
-begin: t_model_hmix_cr
+task model_do_mix_h;
+begin: t_model_mix_h
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
@@ -1196,16 +1196,16 @@ begin: t_model_hmix_cr
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
     result  = (~crs2 & crd) | (crs2 & t0);
-    $display("ISE> hmix.cr c%d, c%d, c%d, 16+%d",
+    $display("ISE> mix.h c%d, c%d, c%d, 16+%d",
         dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
 //
-// Implementation function for the bop.cr instruction.
+// Implementation function for the bop instruction.
 //
-task model_do_bop_cr;
-begin: t_model_bop_cr
+task model_do_bop;
+begin: t_model_bop
     reg  [31:0] crs1, crs2;
     integer i;
     reg  [31:0] result;
@@ -1214,7 +1214,7 @@ begin: t_model_bop_cr
     for(i = 0; i < 32; i = i + 1)
         result[i] = dec_arg_lut4[{crs1[i],crs2[2]}];
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> bop.cr %d, %d, %d, %4b", dec_arg_crd,
+    $display("ISE> bop %d, %d, %d, %4b", dec_arg_crd,
         dec_arg_crs1, dec_arg_crs2, dec_arg_lut4[3:0]);
 end endtask
 
@@ -1815,10 +1815,10 @@ end endtask
 
 
 //
-// Implementation function for the ins.cr instruction.
+// Implementation function for the ins instruction.
 //
-task model_do_ins_cr;
-begin: t_model_ins_cr
+task model_do_ins;
+begin: t_model_ins
     reg  [31:0] crs1;
     reg  [31:0] crd ;
     reg  [5:0]  s;
@@ -1832,16 +1832,16 @@ begin: t_model_ins_cr
     mask = (~(32'hFFFF_FFFF << l)) << s;
     result = (mask & (crs1 << s)) | ((~mask)&crd);
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> ins.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+    $display("ISE> ins %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
         s+l,s);
 end endtask
 
 
 //
-// Implementation function for the ext.cr instruction.
+// Implementation function for the ext instruction.
 //
-task model_do_ext_cr;
-begin: t_model_ext_cr
+task model_do_ext;
+begin: t_model_ext
     reg  [31:0] crs1;
     reg  [5:0]  s;
     reg  [5:0]  l;
@@ -1851,7 +1851,7 @@ begin: t_model_ext_cr
     l = {dec_arg_cl, 1'b0};
     result = (crs1 >> s) & (~(32'hFFFF_FFFF << l));
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> ext.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+    $display("ISE> ext %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
         s+l,s);
 end endtask
 
@@ -2024,9 +2024,9 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_gather_b   ) model_do_gather_b   ();
         else if (dec_scatter_h  ) model_do_scatter_h  ();
         else if (dec_gather_h   ) model_do_gather_h   ();
-        else if (dec_lmix_cr    ) model_do_lmix_cr    ();
-        else if (dec_hmix_cr    ) model_do_hmix_cr    ();
-        else if (dec_bop_cr     ) model_do_bop_cr     ();
+        else if (dec_mix_l    ) model_do_mix_l    ();
+        else if (dec_mix_h    ) model_do_mix_h    ();
+        else if (dec_bop     ) model_do_bop     ();
         else if (dec_equ_mp     ) model_do_equ_mp     ();
         else if (dec_ltu_mp     ) model_do_ltu_mp     ();
         else if (dec_gtu_mp     ) model_do_gtu_mp     ();
@@ -2053,8 +2053,8 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_twid_c1    ) model_do_twid_c1    ();
         else if (dec_twid_c2    ) model_do_twid_c2    ();
         else if (dec_twid_c3    ) model_do_twid_c3    ();
-        else if (dec_ins_cr     ) model_do_ins_cr     ();
-        else if (dec_ext_cr     ) model_do_ext_cr     ();
+        else if (dec_ins     ) model_do_ins     ();
+        else if (dec_ext     ) model_do_ext     ();
         else if (dec_st_b      ) model_do_st_b      ();
         else if (dec_st_h      ) model_do_st_h      ();
         else if (dec_st_w      ) model_do_st_w      ();

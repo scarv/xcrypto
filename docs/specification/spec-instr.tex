@@ -82,7 +82,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{LW.cr}{crd,        imm11(rs1)}{
-  \ienclwcr
+  \iencldw
 }{
   Load a     word from memory 
   into                        a $\XCR$ register.
@@ -97,7 +97,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SB.cr}{rs2, h, b, imm11(rs1)}{
-  \iencsbcr
+  \iencstb
 }{
   Store a specific     byte of a $\XCR$ register into memory.
   Note that, wrt. the encoding,
@@ -112,7 +112,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SH.cr}{rs2, h,    imm11(rs1)}{
-  \iencshcr
+  \iencsth
 }{
   Store a specific halfword of a $\XCR$ register into memory.
   Note that, wrt. the encoding,
@@ -128,7 +128,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SW.cr}{rs2,       imm11(rs1)}{
-  \iencswcr
+  \iencstw
 }{
   Store                        a $\XCR$ register into memory.
   Note that, wrt. the encoding,
@@ -275,7 +275,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{BOP.cr}{crd, crs1, crs2, lut4}{
-  \iencbopcr
+  \iencbop
 }{
   Compute the $i$-bit of a result by apply a $2$-input, $1$-output Boolean 
   function $f$ to corresponding $i$-th bits of two operands.  The function
@@ -305,7 +305,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{EXT.cr}{crd, crs, cs, cl}{
-  \iencextcr
+  \iencext
 }{
   Extract a contiguous sequences of $2$-bit crumbs 
   from              one $\XCR$ register, and
@@ -319,7 +319,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{INS.cr}{crd, crs, cs, cl}{
-  \iencinscr
+  \iencins
 }{
   Extract a contiguous sequences of $2$-bit crumbs 
   from the LSBSs of one $\XCR$ register, and
@@ -334,7 +334,7 @@
 
 % TODO: shamt -> rtamt?
 \XCINSTR{LMIX.cr}{rd, rs1, rs2, shamt}{
-  \ienclmixcr
+  \iencmixl
 }{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  
@@ -363,7 +363,7 @@
 
 % TODO: shamt -> rtamt?
 \XCINSTR{HMIX.cr}{rd, rs1, rs2, shamt}{
-  \ienchmixcr
+  \iencmixh
 }{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  

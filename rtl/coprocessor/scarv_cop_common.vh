@@ -49,11 +49,11 @@ localparam SCARV_COP_SCLASS_LH_CR     = 4'd7 ;
 localparam SCARV_COP_SCLASS_ST_B     = 4'd8 ;
 localparam SCARV_COP_SCLASS_LB_CR     = 4'd9 ;
     
-localparam SCARV_COP_SCLASS_LMIX_CR = 4'd0;
-localparam SCARV_COP_SCLASS_HMIX_CR = 4'd1;
-localparam SCARV_COP_SCLASS_BOP_CR  = 4'd2;
-localparam SCARV_COP_SCLASS_INS_CR  = 4'd3; 
-localparam SCARV_COP_SCLASS_EXT_CR  = 4'd4;
+localparam SCARV_COP_SCLASS_MIX_L = 4'd0;
+localparam SCARV_COP_SCLASS_MIX_H = 4'd1;
+localparam SCARV_COP_SCLASS_BOP  = 4'd2;
+localparam SCARV_COP_SCLASS_INS  = 4'd3; 
+localparam SCARV_COP_SCLASS_EXT  = 4'd4;
 localparam SCARV_COP_SCLASS_LD_LI  = 4'd5;
 localparam SCARV_COP_SCLASS_LD_HI  = 4'd6;
 
