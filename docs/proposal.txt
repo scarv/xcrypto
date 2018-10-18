@@ -55,7 +55,7 @@ SRLI.px   => xc.psrl.$i
 ROT.px    => xc.prot.$
 ROTI.px   => xc.prot.$i
 
-TWID.B    => xc.pperm.b
+PPERM.W    => xc.pperm.b
 TWID.NN   => xc.pperm.h$
 TWID.CN   => xc.pperm.w$
 

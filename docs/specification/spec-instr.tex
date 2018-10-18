@@ -624,8 +624,8 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{TWID.B}{crd, crs1, b0, b1, b2, b3}{
-  \ienctwidb
+\XCINSTR{PPERM.W}{crd, crs1, b0, b1, b2, b3}{
+  \iencppermw
 }{
   Permute bytes   of               some $\XCR$ register,
   storing the result in               another $\XCR$ register.
@@ -640,8 +640,8 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{TWID.Nx}{crd, crs1, b0, b1, b2, b3}{
-  \ienctwidnzero
-  \ienctwidnone
+  \iencppermhzero
+  \iencppermhone
 }{
   Permute nibbles of a halfword in some $\XCR$ register,
   storing the result in a halfword of another $\XCR$ register.
@@ -661,10 +661,10 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{TWID.Cx}{crd, crs1, b0, b1, b2, b3}{
-  \ienctwidczero
-  \ienctwidcone
-  \ienctwidctwo
-  \ienctwidcthree
+  \iencppermbzero
+  \iencppermbone
+  \iencppermbtwo
+  \iencppermbthree
 }{
   Permute crumbs  of a byte     in some $\XCR$ register,
   storing the result in a byte     of another $\XCR$ register.

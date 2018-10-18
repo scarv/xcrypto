@@ -1659,10 +1659,10 @@ end endtask
 
 
 //
-// Implementation function for the twid.b instruction.
+// Implementation function for the pperm.w instruction.
 //
-task model_do_twid_b;
-begin: t_model_twid_b
+task model_do_pperm_w;
+begin: t_model_pperm_w
     reg  [31:0] crs1;
     reg  [ 7:0] split[3:0];
     reg  [31:0] result;
@@ -1672,17 +1672,17 @@ begin: t_model_twid_b
     result   = {split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.b c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.w c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.n0 instruction.
+// Implementation function for the pperm.h0 instruction.
 //
-task model_do_twid_n0;
-begin: t_model_twid_n0
+task model_do_pperm_h0;
+begin: t_model_pperm_h0
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
@@ -1693,17 +1693,17 @@ begin: t_model_twid_n0
                 split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.n0 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.h0 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.n1 instruction.
+// Implementation function for the pperm.h1 instruction.
 //
-task model_do_twid_n1;
-begin: t_model_twid_n1
+task model_do_pperm_h1;
+begin: t_model_pperm_h1
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
@@ -1714,17 +1714,17 @@ begin: t_model_twid_n1
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[15:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.n1 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.h1 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c0 instruction.
+// Implementation function for the pperm.b0 instruction.
 //
-task model_do_twid_c0;
-begin: t_model_twid_c0
+task model_do_pperm_b0;
+begin: t_model_pperm_b0
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1737,17 +1737,17 @@ begin: t_model_twid_c0
                 split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c0 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b0 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c1 instruction.
+// Implementation function for the pperm.b1 instruction.
 //
-task model_do_twid_c1;
-begin: t_model_twid_c1
+task model_do_pperm_b1;
+begin: t_model_pperm_b1
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1761,17 +1761,17 @@ begin: t_model_twid_c1
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[7:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c1 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b1 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c2 instruction.
+// Implementation function for the pperm.b2 instruction.
 //
-task model_do_twid_c2;
-begin: t_model_twid_c2
+task model_do_pperm_b2;
+begin: t_model_pperm_b2
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1785,17 +1785,17 @@ begin: t_model_twid_c2
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[15:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c2 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b2 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c3 instruction.
+// Implementation function for the pperm.b3 instruction.
 //
-task model_do_twid_c3;
-begin: t_model_twid_c3
+task model_do_pperm_b3;
+begin: t_model_pperm_b3
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1808,7 +1808,7 @@ begin: t_model_twid_c3
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[23:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c3 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b3 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
@@ -2046,13 +2046,13 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_ld_w      ) model_do_ld_w      ();
         else if (dec_ld_hi     ) model_do_ld_hi     ();
         else if (dec_ld_li     ) model_do_ld_li     ();
-        else if (dec_twid_b     ) model_do_twid_b     ();
-        else if (dec_twid_n0    ) model_do_twid_n0    ();
-        else if (dec_twid_n1    ) model_do_twid_n1    ();
-        else if (dec_twid_c0    ) model_do_twid_c0    ();
-        else if (dec_twid_c1    ) model_do_twid_c1    ();
-        else if (dec_twid_c2    ) model_do_twid_c2    ();
-        else if (dec_twid_c3    ) model_do_twid_c3    ();
+        else if (dec_pperm_w     ) model_do_pperm_w     ();
+        else if (dec_pperm_h0    ) model_do_pperm_h0    ();
+        else if (dec_pperm_h1    ) model_do_pperm_h1    ();
+        else if (dec_pperm_b0    ) model_do_pperm_b0    ();
+        else if (dec_pperm_b1    ) model_do_pperm_b1    ();
+        else if (dec_pperm_b2    ) model_do_pperm_b2    ();
+        else if (dec_pperm_b3    ) model_do_pperm_b3    ();
         else if (dec_ins     ) model_do_ins     ();
         else if (dec_ext     ) model_do_ext     ();
         else if (dec_st_b      ) model_do_st_b      ();

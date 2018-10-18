@@ -30,13 +30,13 @@ localparam SCARV_COP_SCLASS_CMOVN     = 4'b1010;
 localparam SCARV_COP_SCLASS_GPR2XCR    = 4'b0001;
 localparam SCARV_COP_SCLASS_XCR2GPR    = 4'b0000;
 
-localparam SCARV_COP_SCLASS_TWID_B    = 4'b0000;
-localparam SCARV_COP_SCLASS_TWID_N0   = 4'b0010;
-localparam SCARV_COP_SCLASS_TWID_N1   = 4'b0011;
-localparam SCARV_COP_SCLASS_TWID_C0   = 4'b0100;
-localparam SCARV_COP_SCLASS_TWID_C1   = 4'b0101;
-localparam SCARV_COP_SCLASS_TWID_C2   = 4'b0110;
-localparam SCARV_COP_SCLASS_TWID_C3   = 4'b0111;
+localparam SCARV_COP_SCLASS_PPERM_W    = 4'b0000;
+localparam SCARV_COP_SCLASS_PPERM_H0   = 4'b0010;
+localparam SCARV_COP_SCLASS_PPERM_H1   = 4'b0011;
+localparam SCARV_COP_SCLASS_PPERM_B0   = 4'b0100;
+localparam SCARV_COP_SCLASS_PPERM_B1   = 4'b0101;
+localparam SCARV_COP_SCLASS_PPERM_B2   = 4'b0110;
+localparam SCARV_COP_SCLASS_PPERM_B3   = 4'b0111;
     
 localparam SCARV_COP_SCLASS_SCATTER_B = 4'd0 ;
 localparam SCARV_COP_SCLASS_GATHER_B  = 4'd1 ;

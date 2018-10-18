@@ -93,8 +93,8 @@ wire class_packed_arith =
     dec_psrl  || dec_prot  || dec_psll_i || dec_psrl_i || dec_prot_i ;
 
 wire class_twiddle      = 
-    dec_twid_b  || dec_twid_n0 || dec_twid_n1 || dec_twid_c0 ||
-    dec_twid_c1 || dec_twid_c2 || dec_twid_c3  ;
+    dec_pperm_w  || dec_pperm_h0 || dec_pperm_h1 || dec_pperm_b0 ||
+    dec_pperm_b1 || dec_pperm_b2 || dec_pperm_b3  ;
 
 wire class_loadstore    = 
     dec_scatter_b || dec_gather_b  || dec_scatter_h || dec_gather_h  ||

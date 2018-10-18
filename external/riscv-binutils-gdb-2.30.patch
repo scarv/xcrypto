@@ -484,20 +484,20 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_LD_HI  0x10787f
 +#define MATCH_LD_LI 0x10382b
 +#define MASK_LD_LI  0x10787f
-+#define MATCH_TWID_B 0x10282b
-+#define MASK_TWID_B  0xf8787f
-+#define MATCH_TWID_N0 0x50282b
-+#define MASK_TWID_N0  0xf8787f
-+#define MATCH_TWID_N1 0x70282b
-+#define MASK_TWID_N1  0xf8787f
-+#define MATCH_TWID_C0 0x90282b
-+#define MASK_TWID_C0  0xf8787f
-+#define MATCH_TWID_C1 0xb0282b
-+#define MASK_TWID_C1  0xf8787f
-+#define MATCH_TWID_C2 0xd0282b
-+#define MASK_TWID_C2  0xf8787f
-+#define MATCH_TWID_C3 0xf0282b
-+#define MASK_TWID_C3  0xf8787f
++#define MATCH_PPERM_W 0x10282b
++#define MASK_PPERM_W  0xf8787f
++#define MATCH_PPERM_H0 0x50282b
++#define MASK_PPERM_H0  0xf8787f
++#define MATCH_PPERM_H1 0x70282b
++#define MASK_PPERM_H1  0xf8787f
++#define MATCH_PPERM_B0 0x90282b
++#define MASK_PPERM_B0  0xf8787f
++#define MATCH_PPERM_B1 0xb0282b
++#define MASK_PPERM_B1  0xf8787f
++#define MATCH_PPERM_B2 0xd0282b
++#define MASK_PPERM_B2  0xf8787f
++#define MATCH_PPERM_B3 0xf0282b
++#define MASK_PPERM_B3  0xf8787f
 +#define MATCH_INS 0x18282b
 +#define MASK_INS  0xf8787f
 +#define MATCH_EXT 0x38282b
@@ -714,13 +714,13 @@ index 79e7214835..db8da1a4d5 100644
 +{"ld.w",      "x", "XD,Xl(s)",            MATCH_LD_W, MASK_LD_W, match_opcode, 0},
 +{"ld.hi",     "x", "XD,X5",           MATCH_LD_HI, MASK_LD_HI, match_opcode, 0},
 +{"ld.li",     "x", "XD,X5",           MATCH_LD_LI, MASK_LD_LI, match_opcode, 0},
-+{"twid.b",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_B, MASK_TWID_B, match_opcode, 0},
-+{"twid.n0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_N0, MASK_TWID_N0, match_opcode, 0},
-+{"twid.n1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_N1, MASK_TWID_N1, match_opcode, 0},
-+{"twid.c0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C0, MASK_TWID_C0, match_opcode, 0},
-+{"twid.c1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C1, MASK_TWID_C1, match_opcode, 0},
-+{"twid.c2",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C2, MASK_TWID_C2, match_opcode, 0},
-+{"twid.c3",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C3, MASK_TWID_C3, match_opcode, 0},
++{"pperm.w",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_W, MASK_PPERM_W, match_opcode, 0},
++{"pperm.h0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H0, MASK_PPERM_H0, match_opcode, 0},
++{"pperm.h1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H1, MASK_PPERM_H1, match_opcode, 0},
++{"pperm.b0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_B0, MASK_PPERM_B0, match_opcode, 0},
++{"pperm.b1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_B1, MASK_PPERM_B1, match_opcode, 0},
++{"pperm.b2",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_B2, MASK_PPERM_B2, match_opcode, 0},
++{"pperm.b3",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_B3, MASK_PPERM_B3, match_opcode, 0},
 +{"ins",     "x", "XD,Xs,XL,Xk",        MATCH_INS, MASK_INS, match_opcode, 0},
 +{"ext",     "x", "XD,Xs,XL,Xk",        MATCH_EXT, MASK_EXT, match_opcode, 0},
 +{"st.b",      "x", "Xt,(Xh,XB),Xm(s)",   MATCH_ST_B, MASK_ST_B, match_opcode, 0},
