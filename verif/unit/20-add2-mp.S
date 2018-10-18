@@ -10,10 +10,10 @@ test_start:
     ld.hi  c9, 0xFFFF
     ld.li  c9, 0xFFFF
 
-    add2.mp  (c2,c3), c0, c1
-    add2.mp  (c4,c5), c1, c0
-    add2.mp  (c6,c7), c9, c1
-    add2.mp  (c8,c9), c0, c9
+    madd.2  (c2,c3), c0, c1
+    madd.2  (c4,c5), c1, c0
+    madd.2  (c6,c7), c9, c1
+    madd.2  (c8,c9), c0, c9
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
@@ -26,10 +26,10 @@ test_start:
     xcr2gpr  x1, c8
     xcr2gpr  x1, c9
 
-    add2.mp  (c2,c3), c4, c1
-    add2.mp  (c4,c5), c3, c2
-    add2.mp  (c6,c7), c2, c3
-    add2.mp  (c8,c9), c1, c4
+    madd.2  (c2,c3), c4, c1
+    madd.2  (c4,c5), c3, c2
+    madd.2  (c6,c7), c2, c3
+    madd.2  (c8,c9), c1, c4
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1

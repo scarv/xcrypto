@@ -728,7 +728,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ADD2.mp}{(crd2, crd1), crs1, crs2      }{
-  \iencaddtwomp
+  \iencmaddtwo
 }{
   Compute a   register-based multi-precision (or ``long'') addition:
   one can interpret
@@ -752,7 +752,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ADD3.mp}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencaddthreemp
+  \iencmaddthree
 }{
   Compute a   register-based multi-precision (or ``long'') addition:
   one can interpret
@@ -778,7 +778,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SUB2.mp}{(crd2, crd1), crs1, crs2      }{
-  \iencsubtwomp
+  \iencmsubtwo
 }{
   Compute a   register-based multi-precision (or ``long'') subtraction:
   one can interpret
@@ -801,7 +801,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SUB3.mp}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencsubthreemp
+  \iencmsubthree
 }{
   Compute a   register-based multi-precision (or ``long'') subtraction:
   one can interpret
@@ -826,7 +826,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ACC1.mp}{(crd2, crd1), crs1      }{
-  \iencacconemp
+  \iencmaccone
 }{
   Compute a   register-based multi-precision (or ``long'') accumulation,
   with the
@@ -849,7 +849,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ACC2.mp}{(crd2, crd1), crs1, crs2}{
-  \iencacctwomp
+  \iencmacctwo
 }{
   Compute a   register-based multi-precision (or ``long'') accumulation,
   with the
@@ -875,7 +875,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{MAC.mp}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmacmp
+  \iencmmulone
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
   the $32$-bit multiplicands
@@ -903,7 +903,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SLL.mp}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencsllmp
+  \iencmsll
 }{
   Compute a   register-based multi-precision (or ``long'')  left-shift:
   a $64$-bit value is formed by concatenating
@@ -936,7 +936,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % TODO: why 4-bit cmshamt?
 \XCINSTR{SLLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
-  \iencsllimp
+  \iencmslli
 }{
   Compute an immediate-based multi-precision (or ``long'')  left-shift:
   a $64$-bit value is formed by concatenating
@@ -960,7 +960,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SRL.mp}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencsrlmp
+  \iencmsrl
 }{
   Compute a   register-based multi-precision (or ``long'') right-shift:
   a $64$-bit value is formed by concatenating
@@ -993,7 +993,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % TODO: why 4-bit cmshamt?
 \XCINSTR{SRLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
-  \iencsrlimp
+  \iencmsrli
 }{
   Compute an immediate-based multi-precision (or ``long'') right-shift:
   a $64$-bit value is formed by concatenating
@@ -1017,7 +1017,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{EQU.mp}{rd, rs1, crs2, crs3}{
-  \ienceqump
+  \iencmequ
 }{
   Compute a ``chained'' (or ``long'') 
   equality 
@@ -1034,7 +1034,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{LTU.mp}{rd, rs1, crs2, crs3}{
-  \iencltump
+  \iencmlte
 }{
   Compute a ``chained'' (or ``long'') 
      less-than
@@ -1052,7 +1052,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{GTU.mp}{rd, rs1, crs2, crs3}{
-  \iencgtump
+  \iencmgte
 }{
   Compute a ``chained'' (or ``long'') 
   greater-than

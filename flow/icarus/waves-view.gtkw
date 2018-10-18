@@ -2,7 +2,7 @@
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
 [*] Mon Oct 15 09:24:25 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/unit/20-add2-mp.vcd"
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/unit/20-madd.2.vcd"
 [dumpfile_mtime] "Mon Oct 15 09:23:43 2018"
 [dumpfile_size] 339025
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
@@ -4239,19 +4239,19 @@ tb_scarv_cop_top.i_grm.model_cpr_c15[31:0]
 @c00200
 -GRM Decoder
 @28
-tb_scarv_cop_top.i_grm.dec_acc1_mp
-tb_scarv_cop_top.i_grm.dec_acc2_mp
-tb_scarv_cop_top.i_grm.dec_add2_mp
-tb_scarv_cop_top.i_grm.dec_add3_mp
+tb_scarv_cop_top.i_grm.dec_macc_1
+tb_scarv_cop_top.i_grm.dec_macc_2
+tb_scarv_cop_top.i_grm.dec_madd_2
+tb_scarv_cop_top.i_grm.dec_madd_3
 tb_scarv_cop_top.i_grm.dec_padd
 tb_scarv_cop_top.i_grm.dec_bop
 tb_scarv_cop_top.i_grm.dec_cmov_cr
 tb_scarv_cop_top.i_grm.dec_cmovn_cr
-tb_scarv_cop_top.i_grm.dec_equ_mp
+tb_scarv_cop_top.i_grm.dec_mequ
 tb_scarv_cop_top.i_grm.dec_ext
 tb_scarv_cop_top.i_grm.dec_gather_b
 tb_scarv_cop_top.i_grm.dec_gather_h
-tb_scarv_cop_top.i_grm.dec_gtu_mp
+tb_scarv_cop_top.i_grm.dec_mgte
 tb_scarv_cop_top.i_grm.dec_mix_h
 tb_scarv_cop_top.i_grm.dec_ins
 tb_scarv_cop_top.i_grm.dec_invalid_opcode
@@ -4259,10 +4259,10 @@ tb_scarv_cop_top.i_grm.dec_ld_bu
 tb_scarv_cop_top.i_grm.dec_ld_hu
 tb_scarv_cop_top.i_grm.dec_ld_li
 tb_scarv_cop_top.i_grm.dec_mix_l
-tb_scarv_cop_top.i_grm.dec_ltu_mp
+tb_scarv_cop_top.i_grm.dec_mlte
 tb_scarv_cop_top.i_grm.dec_ld_hi
 tb_scarv_cop_top.i_grm.dec_ld_w
-tb_scarv_cop_top.i_grm.dec_mac_mp
+tb_scarv_cop_top.i_grm.dec_mmul_1
 tb_scarv_cop_top.i_grm.dec_pmul_l
 tb_scarv_cop_top.i_grm.dec_gpr2xcr
 tb_scarv_cop_top.i_grm.dec_xcr2gpr
@@ -4274,16 +4274,16 @@ tb_scarv_cop_top.i_grm.dec_st_b
 tb_scarv_cop_top.i_grm.dec_scatter_b
 tb_scarv_cop_top.i_grm.dec_scatter_h
 tb_scarv_cop_top.i_grm.dec_st_h
-tb_scarv_cop_top.i_grm.dec_sll_mp
+tb_scarv_cop_top.i_grm.dec_msll
 tb_scarv_cop_top.i_grm.dec_psll
-tb_scarv_cop_top.i_grm.dec_slli_mp
+tb_scarv_cop_top.i_grm.dec_msll_i
 tb_scarv_cop_top.i_grm.dec_psll_i
-tb_scarv_cop_top.i_grm.dec_srl_mp
+tb_scarv_cop_top.i_grm.dec_msrl
 tb_scarv_cop_top.i_grm.dec_psrl
-tb_scarv_cop_top.i_grm.dec_srli_mp
+tb_scarv_cop_top.i_grm.dec_msrl_i
 tb_scarv_cop_top.i_grm.dec_psrl_i
-tb_scarv_cop_top.i_grm.dec_sub2_mp
-tb_scarv_cop_top.i_grm.dec_sub3_mp
+tb_scarv_cop_top.i_grm.dec_msub_2
+tb_scarv_cop_top.i_grm.dec_msub_3
 tb_scarv_cop_top.i_grm.dec_psub
 tb_scarv_cop_top.i_grm.dec_st_w
 tb_scarv_cop_top.i_grm.dec_pperm_w
@@ -4406,28 +4406,28 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_arg_rs1[4:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_w
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gpr2xcr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_xcr2gpr
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc1_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_add2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_add3_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_macc_1
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_macc_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_madd_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_madd_3
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_padd
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_bop
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_cmov_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_cmovn_cr
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_equ_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mequ
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ext
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gather_b
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gather_h
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gtu_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mgte
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mix_h
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ins
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_bu
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_hu
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_li
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mix_l
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ltu_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mlte
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_hi
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mac_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mmul_1
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_pmul_l
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_prot
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_prot_i
@@ -4437,16 +4437,16 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_st_b
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_scatter_b
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_scatter_h
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_st_h
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_sll_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msll
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_psll
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_slli_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msll_i
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_psll_i
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_srl_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msrl
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_psrl
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_srli_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msrl_i
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_psrl_i
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_sub2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_sub3_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msub_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_msub_3
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_psub
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_st_w
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_pperm_w
@@ -4919,20 +4919,20 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_malu.id_subclass[3:0]
 @1401200
 -group_end
 @28
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_acc1_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_acc2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_add2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_add3_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_equ_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_gtu_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_ltu_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_mac_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_sll_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_slli_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_srl_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_srli_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_sub2_mp
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_sub3_mp
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_macc_1
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_macc_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_madd_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_madd_3
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_mequ
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_mgte
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_mlte
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_mmul_1
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msll
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msll_i
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msrl
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msrl_i
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msub_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_malu.is_msub_3
 @1401200
 -MP Instruction
 @22

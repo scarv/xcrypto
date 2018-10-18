@@ -11,15 +11,15 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_ltu_mp)
+`VTX_CHECKER_MODULE_BEGIN(instr_mlte)
 
 reg value;
 
 
 //
-// ltu_mp
+// mlte
 //
-`VTX_CHECK_INSTR_BEGIN(ltu_mp) 
+`VTX_CHECK_INSTR_BEGIN(mlte) 
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
@@ -35,7 +35,7 @@ reg value;
     // WDATA is the single bit compare result zero padded to 32-bits.
     `VTX_ASSERT_WDATA_IS({31'b0,value});
 
-`VTX_CHECK_INSTR_END(ltu_mp)
+`VTX_CHECK_INSTR_END(mlte)
 
 `VTX_CHECKER_MODULE_END
 

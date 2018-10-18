@@ -11,18 +11,18 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_sll_mp)
+`VTX_CHECKER_MODULE_BEGIN(instr_msrl)
 
 reg [63:0] value;
 
 //
-// sll_mp
+// msrl
 //
-`VTX_CHECK_INSTR_BEGIN(sll_mp) 
+`VTX_CHECK_INSTR_BEGIN(msrl) 
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
-    value = {`CRS1 , `CRS2} << `CRS3;
+    value = {`CRS1 , `CRS2} >> `CRS3;
 
     if(`CRS3 >= 64) begin
         
@@ -38,7 +38,7 @@ reg [63:0] value;
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(sll_mp)
+`VTX_CHECK_INSTR_END(msrl)
 
 `VTX_CHECKER_MODULE_END
 

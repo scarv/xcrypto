@@ -11,15 +11,15 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_equ_mp)
+`VTX_CHECKER_MODULE_BEGIN(instr_mequ)
 
 reg value;
 
 
 //
-// equ_mp
+// mequ
 //
-`VTX_CHECK_INSTR_BEGIN(equ_mp) 
+`VTX_CHECK_INSTR_BEGIN(mequ) 
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
@@ -34,7 +34,7 @@ reg value;
     // WDATA is the single bit compare result zero padded to 32-bits.
     `VTX_ASSERT_WDATA_IS({31'b0,value});
 
-`VTX_CHECK_INSTR_END(equ_mp)
+`VTX_CHECK_INSTR_END(mequ)
 
 `VTX_CHECKER_MODULE_END
 

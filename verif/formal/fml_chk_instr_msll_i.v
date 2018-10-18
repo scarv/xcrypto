@@ -11,25 +11,25 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_add3_mp)
+`VTX_CHECKER_MODULE_BEGIN(instr_msll_i)
 
 reg [63:0] value;
 
 //
-// add3_mp
+// msll_i
 //
-`VTX_CHECK_INSTR_BEGIN(add3_mp) 
+`VTX_CHECK_INSTR_BEGIN(msll_i) 
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
-    value = (`CRS1 + `CRS2) + `CRS3;
+    value = {`CRS1 , `CRS2} << dec_arg_cmshamt;
 
     `VTX_ASSERT_CRDM_VALUE_IS(value)
 
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(add3_mp)
+`VTX_CHECK_INSTR_END(msll_i)
 
 `VTX_CHECKER_MODULE_END
 

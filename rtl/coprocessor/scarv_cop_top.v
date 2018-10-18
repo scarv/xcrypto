@@ -191,9 +191,9 @@ assign n_cop_wen   =
     (id_class     == SCARV_COP_ICLASS_MOVE    &&
      id_subclass  == SCARV_COP_SCLASS_XCR2GPR   )  ||
     (id_class     == SCARV_COP_ICLASS_MP      &&
-     (id_subclass == SCARV_COP_SCLASS_EQU_MP ||
-      id_subclass == SCARV_COP_SCLASS_LTU_MP ||
-      id_subclass == SCARV_COP_SCLASS_GTU_MP ) )   ;
+     (id_subclass == SCARV_COP_SCLASS_MEQU ||
+      id_subclass == SCARV_COP_SCLASS_MLTE ||
+      id_subclass == SCARV_COP_SCLASS_MGTE ) )   ;
 
 assign n_cop_wdata = 
     id_class == SCARV_COP_ICLASS_MOVE ? palu_cpr_rd_wdata : 

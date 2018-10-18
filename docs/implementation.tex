@@ -146,12 +146,12 @@ control the rate of information flow between the CPU and the COP.
 }
 \SIGNALO{5}{cop\_waddr}{
     The RISC-V GPR destination register address used by the COP instructions
-    \ASM{XCR2GPR, EQU.mp, LTU.MP} and \ASM{GTU.mp}.
+    \ASM{XCR2GPR, EQU.mp, MLTE} and \ASM{GTU.mp}.
 }
 \SIGNALO{32}{cop\_wdata}{
     The data to be written to the RISC-V GPR register addressed by 
     {\tt cop\_waddr} by the 
-    \ASM{XCR2GPR, EQU.mp, LTU.MP} and \ASM{GTU.mp}
+    \ASM{XCR2GPR, EQU.mp, MLTE} and \ASM{GTU.mp}
     instructions.
 }
 \SIGNALO{3}{cop\_result}{

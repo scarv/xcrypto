@@ -13,26 +13,26 @@ test_start:
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
 
-    slli.mp  (c2,c3), c0, c1, 1
+    msll.i  (c2,c3), c0, c1, 1
     xcr2gpr  x1, c2
     xcr2gpr  x1, c3
 
-    slli.mp  (c4,c5), c1, c0, 2
+    msll.i  (c4,c5), c1, c0, 2
     xcr2gpr  x1, c4
     xcr2gpr  x1, c5
 
-    slli.mp  (c6,c7), c9, c1, 4
+    msll.i  (c6,c7), c9, c1, 4
     xcr2gpr  x1, c6
     xcr2gpr  x1, c7
 
-    slli.mp  (c8,c9), c0, c9, 8
+    msll.i  (c8,c9), c0, c9, 8
     xcr2gpr  x1, c8
     xcr2gpr  x1, c9
 
-    slli.mp  (c2,c3), c0, c1, 3
-    slli.mp  (c4,c5), c1, c0, 5
-    slli.mp  (c6,c7), c9, c1, 12
-    slli.mp  (c8,c9), c0, c9, 15
+    msll.i  (c2,c3), c0, c1, 3
+    msll.i  (c4,c5), c1, c0, 5
+    msll.i  (c6,c7), c9, c1, 12
+    msll.i  (c8,c9), c0, c9, 15
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
