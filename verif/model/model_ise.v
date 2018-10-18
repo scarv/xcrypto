@@ -1584,17 +1584,17 @@ begin: t_model_ld_hu
         end
     end else begin
         model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
-        $display("ISE> lw.cr %d <- MEM[%h] bad addr",
+        $display("ISE> ld.w %d <- MEM[%h] bad addr",
             dec_arg_crd, exp_addr,rdata);
     end
 end endtask
 
 
 //
-// Implementation function for the lw.cr instruction.
+// Implementation function for the ld.w instruction.
 //
-task model_do_lw_cr;
-begin: t_model_lw_cr
+task model_do_ld_w;
+begin: t_model_ld_w
     reg [31:0] exp_addr;
     reg        wen  ;
     reg [ 3:0] ben  ;
@@ -1609,16 +1609,16 @@ begin: t_model_lw_cr
             model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         end else begin
             if(addr != exp_addr) begin
-                $display("t=%0d ERROR: lw.cr address expected %h got %h.",
+                $display("t=%0d ERROR: ld.w address expected %h got %h.",
                     $time, exp_addr, addr);
             end
             model_do_write_cpr(dec_arg_crd, rdata);
-            $display("ISE> lw.cr %d <- MEM[%h] (%h)",
+            $display("ISE> ld.w %d <- MEM[%h] (%h)",
                 dec_arg_crd, exp_addr,rdata);
         end
     end else begin
         model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
-        $display("ISE> lw.cr %d <- MEM[%h] bad addr",
+        $display("ISE> ld.w %d <- MEM[%h] bad addr",
             dec_arg_crd, exp_addr,rdata);
     end
 end endtask
@@ -1857,10 +1857,10 @@ end endtask
 
 
 //
-// Implementation function for the sb.cr instruction.
+// Implementation function for the st.b instruction.
 //
-task model_do_sb_cr;
-begin: t_model_sb_cr
+task model_do_st_b;
+begin: t_model_st_b
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] wrd_addr;
@@ -1897,10 +1897,10 @@ end endtask
 
 
 //
-// Implementation function for the sh.cr instruction.
+// Implementation function for the st.h instruction.
 //
-task model_do_sh_cr;
-begin: t_model_sh_cr
+task model_do_st_h;
+begin: t_model_st_h
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] wrd_addr;
@@ -1926,17 +1926,17 @@ begin: t_model_sh_cr
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
-        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+        $display("ISE> st.h MEM[%h] <- c%0d (%h) - bad addr",
             exp_addr, dec_arg_crs2,crs2);
     end
 end endtask
 
 
 //
-// Implementation function for the sw.cr instruction.
+// Implementation function for the st.w instruction.
 //
-task model_do_sw_cr;
-begin: t_model_sw_cr
+task model_do_st_w;
+begin: t_model_st_w
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] exp_wdata;
@@ -1959,7 +1959,7 @@ begin: t_model_sw_cr
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
-        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+        $display("ISE> st.h MEM[%h] <- c%0d (%h) - bad addr",
             exp_addr, dec_arg_crs2,crs2);
     end
 end endtask
@@ -2043,7 +2043,7 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_mac_mp     ) model_do_mac_mp     ();
         else if (dec_ld_bu     ) model_do_ld_bu     ();
         else if (dec_ld_hu     ) model_do_ld_hu     ();
-        else if (dec_lw_cr      ) model_do_lw_cr      ();
+        else if (dec_ld_w      ) model_do_ld_w      ();
         else if (dec_ld_hi     ) model_do_ld_hi     ();
         else if (dec_ld_li     ) model_do_ld_li     ();
         else if (dec_twid_b     ) model_do_twid_b     ();
@@ -2055,9 +2055,9 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_twid_c3    ) model_do_twid_c3    ();
         else if (dec_ins_cr     ) model_do_ins_cr     ();
         else if (dec_ext_cr     ) model_do_ext_cr     ();
-        else if (dec_sb_cr      ) model_do_sb_cr      ();
-        else if (dec_sh_cr      ) model_do_sh_cr      ();
-        else if (dec_sw_cr      ) model_do_sw_cr      ();
+        else if (dec_st_b      ) model_do_st_b      ();
+        else if (dec_st_h      ) model_do_st_h      ();
+        else if (dec_st_w      ) model_do_st_w      ();
         else begin
             $display("ERROR: We should never reach here!");
         end

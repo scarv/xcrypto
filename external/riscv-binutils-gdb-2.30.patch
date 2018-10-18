@@ -478,8 +478,8 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_LD_BU  0x707f
 +#define MATCH_LD_HU 0x202b
 +#define MASK_LD_HU  0x10707f
-+#define MATCH_LW_CR 0x302b
-+#define MASK_LW_CR  0x10787f
++#define MATCH_LD_W 0x302b
++#define MASK_LD_W  0x10787f
 +#define MATCH_LD_HI 0x10302b
 +#define MASK_LD_HI  0x10787f
 +#define MATCH_LD_LI 0x10382b
@@ -502,12 +502,12 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_INS_CR  0xf8787f
 +#define MATCH_EXT_CR 0x38282b
 +#define MASK_EXT_CR  0xf8787f
-+#define MATCH_SB_CR 0x402b
-+#define MASK_SB_CR  0x707f
-+#define MATCH_SH_CR 0x502b
-+#define MASK_SH_CR  0x100707f
-+#define MATCH_SW_CR 0x602b
-+#define MASK_SW_CR  0x100787f
++#define MATCH_ST_B 0x402b
++#define MASK_ST_B  0x707f
++#define MATCH_ST_H 0x502b
++#define MASK_ST_H  0x100707f
++#define MATCH_ST_W 0x602b
++#define MASK_ST_W  0x100787f
 +// ----- Crypto ISE END -------
  #define MATCH_SLLI_RV32 0x1013
  #define MASK_SLLI_RV32  0xfe00707f
@@ -711,7 +711,7 @@ index 79e7214835..db8da1a4d5 100644
 +{"mac.mp",     "x", "(XM),Xs,Xt,XS",        MATCH_MAC_MP, MASK_MAC_MP, match_opcode, 0},
 +{"ld.bu",     "x", "XD,(Xh,Xd),Xl(s)",      MATCH_LD_BU, MASK_LD_BU, match_opcode, 0},
 +{"ld.hu",     "x", "XD,(Xh),Xl(s)",         MATCH_LD_HU, MASK_LD_HU, match_opcode, 0},
-+{"lw.cr",      "x", "XD,Xl(s)",            MATCH_LW_CR, MASK_LW_CR, match_opcode, 0},
++{"ld.w",      "x", "XD,Xl(s)",            MATCH_LD_W, MASK_LD_W, match_opcode, 0},
 +{"ld.hi",     "x", "XD,X5",           MATCH_LD_HI, MASK_LD_HI, match_opcode, 0},
 +{"ld.li",     "x", "XD,X5",           MATCH_LD_LI, MASK_LD_LI, match_opcode, 0},
 +{"twid.b",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_B, MASK_TWID_B, match_opcode, 0},
@@ -723,9 +723,9 @@ index 79e7214835..db8da1a4d5 100644
 +{"twid.c3",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_TWID_C3, MASK_TWID_C3, match_opcode, 0},
 +{"ins.cr",     "x", "XD,Xs,XL,Xk",        MATCH_INS_CR, MASK_INS_CR, match_opcode, 0},
 +{"ext.cr",     "x", "XD,Xs,XL,Xk",        MATCH_EXT_CR, MASK_EXT_CR, match_opcode, 0},
-+{"sb.cr",      "x", "Xt,(Xh,XB),Xm(s)",   MATCH_SB_CR, MASK_SB_CR, match_opcode, 0},
-+{"sh.cr",      "x", "Xt,(Xh),Xm(s)",      MATCH_SH_CR, MASK_SH_CR, match_opcode, 0},
-+{"sw.cr",      "x", "Xt,Xm(s)",         MATCH_SW_CR, MASK_SW_CR, match_opcode, 0},
++{"st.b",      "x", "Xt,(Xh,XB),Xm(s)",   MATCH_ST_B, MASK_ST_B, match_opcode, 0},
++{"st.h",      "x", "Xt,(Xh),Xm(s)",      MATCH_ST_H, MASK_ST_H, match_opcode, 0},
++{"st.w",      "x", "Xt,Xm(s)",         MATCH_ST_W, MASK_ST_W, match_opcode, 0},
 +// ----- Crypto ISE END -------
  {"unimp",     "C",   "",  0, 0xffffU,  match_opcode, 0 },
  {"unimp",     "I",   "",  MATCH_CSRRW | (CSR_CYCLE << OP_SH_CSR), 0xffffffffU,  match_opcode, 0 }, /* csrw cycle, x0 */

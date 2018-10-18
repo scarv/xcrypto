@@ -47,7 +47,7 @@ mac.mp    19=0 31..28=0b1101          11..10=0b10 14..12=0b111 6..0=0b0101011 cr
 
 ld.bu         cd        cc   14..12=0b001 6..0=0b0101011 crd   rs1   imm11
 ld.hu         20=0      cc   14..12=0b010 6..0=0b0101011 crd   rs1   imm11
-lw.cr          20=0      11=0 14..12=0b011 6..0=0b0101011 crd   rs1   imm11
+ld.w          20=0      11=0 14..12=0b011 6..0=0b0101011 crd   rs1   imm11
 ld.hi         20=1      11=0 14..12=0b011 6..0=0b0101011 crd         imm11 imm5
 ld.li         20=1      11=1 14..12=0b011 6..0=0b0101011 crd         imm11 imm5
 
@@ -62,6 +62,6 @@ ins.cr    23..21=0b000  20=1 19=1 11=1 14..12=0b010 6..0=0b0101011 crd   crs1  c
 ext.cr    23..21=0b001  20=1 19=1 11=1 14..12=0b010 6..0=0b0101011 crd   crs1  cs cl
 
 
-sb.cr     ca             cc   14..12=0b100 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
-sh.cr     24=0           cc   14..12=0b101 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
-sw.cr     24=0           11=0 14..12=0b110 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
+st.b     ca             cc   14..12=0b100 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
+st.h     24=0           cc   14..12=0b101 6..0=0b0101011 rs1   crs2  imm11hi imm11lo
+st.w     24=0           11=0 14..12=0b110 6..0=0b0101011 rs1   crs2  imm11hi imm11lo

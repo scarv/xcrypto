@@ -98,8 +98,8 @@ wire class_twiddle      =
 
 wire class_loadstore    = 
     dec_scatter_b || dec_gather_b  || dec_scatter_h || dec_gather_h  ||
-    dec_ld_bu    || dec_ld_hu    || dec_lw_cr     || dec_sb_cr     ||
-    dec_sh_cr     || dec_sw_cr     ;
+    dec_ld_bu    || dec_ld_hu    || dec_ld_w     || dec_st_b     ||
+    dec_st_h     || dec_st_w     ;
 
 wire class_random       = 
     dec_rngseed || dec_rngsamp;
@@ -134,11 +134,11 @@ wire [3:0] subclass_load_store =
     {4{dec_gather_b }} & {SCARV_COP_SCLASS_GATHER_B } |
     {4{dec_scatter_h}} & {SCARV_COP_SCLASS_SCATTER_H} |
     {4{dec_gather_h }} & {SCARV_COP_SCLASS_GATHER_H } |
-    {4{dec_sw_cr    }} & {SCARV_COP_SCLASS_SW_CR    } |
-    {4{dec_lw_cr    }} & {SCARV_COP_SCLASS_LW_CR    } |
-    {4{dec_sh_cr    }} & {SCARV_COP_SCLASS_SH_CR    } |
+    {4{dec_st_w    }} & {SCARV_COP_SCLASS_ST_W    } |
+    {4{dec_ld_w    }} & {SCARV_COP_SCLASS_LD_W    } |
+    {4{dec_st_h    }} & {SCARV_COP_SCLASS_ST_H    } |
     {4{dec_ld_hu   }} & {SCARV_COP_SCLASS_LH_CR    } |
-    {4{dec_sb_cr    }} & {SCARV_COP_SCLASS_SB_CR    } |
+    {4{dec_st_b    }} & {SCARV_COP_SCLASS_ST_B    } |
     {4{dec_ld_bu   }} & {SCARV_COP_SCLASS_LB_CR    } ;
 
 wire [3:0] subclass_mp =
@@ -181,8 +181,8 @@ assign id_subclass =
 
 //
 // Immediate decoding
-wire imm_ld     = dec_lw_cr     || dec_ld_hu   || dec_ld_bu;
-wire imm_st     = dec_sw_cr     || dec_sh_cr    || dec_sb_cr;
+wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
+wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
 wire imm_li     = dec_ld_hi    || dec_ld_li;
 wire imm_8      = class_twiddle || dec_ext_cr   || dec_ins_cr;
 wire imm_sh_px  = dec_slli_px   || dec_srli_px  || dec_roti_px;
