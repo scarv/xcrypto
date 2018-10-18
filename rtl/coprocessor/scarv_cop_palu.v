@@ -45,7 +45,7 @@ output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
 
 // Purely combinatoral block.
 assign palu_idone = palu_ivalid &&
-                    (is_mul_px ? pmul_done : 1'b1);
+                    (is_pmul_l ? pmul_done : 1'b1);
 
 // Detect which subclass of instruction to execute.
 wire is_mov_insn  = 
@@ -271,43 +271,43 @@ wire        pshf_sl   ; // shift left / n shift right
 wire        pshf_r    ; // rotate / n shift
 wire [31:0] pshf_c    ; // Result
 
-assign padd_a = is_mul_px ? pmul_add_a[31:0] : palu_rs1;
-assign padd_b = is_mul_px ? pmul_add_b[31:0] : palu_rs2;
+assign padd_a = is_pmul_l ? pmul_add_a[31:0] : palu_rs1;
+assign padd_b = is_pmul_l ? pmul_add_b[31:0] : palu_rs2;
 
 assign pmul_a       = palu_rs1;
 assign pmul_b       = palu_rs2;
 assign pmul_add_c   = padd_c;
-assign pmul_start   = is_mul_px && is_parith_insn;
+assign pmul_start   = is_pmul_l && is_parith_insn;
 assign pmul_shf_c   = pshf_c;
 
-wire   shift_imm    = is_slli_px || is_srli_px || is_roti_px;
-assign pshf_a       = is_mul_px ? pmul_shf_a : palu_rs1;
-assign pshf_shamt   = is_mul_px ? pmul_shf_sham      :
+wire   shift_imm    = is_psll_i || is_psrl_i || is_prot_i;
+assign pshf_a       = is_pmul_l ? pmul_shf_a : palu_rs1;
+assign pshf_shamt   = is_pmul_l ? pmul_shf_sham      :
                       shift_imm ? {1'b0,id_imm[4:0]  } :
                                   {1'b0,palu_rs2[4:0]} ;
-assign pshf_r       = is_rot_px || is_roti_px;
-assign pshf_sl      = is_mul_px || is_sll_px || is_slli_px;
+assign pshf_r       = is_prot || is_prot_i;
+assign pshf_sl      = is_pmul_l || is_psll || is_psll_i;
 
-assign padd_ci      = is_sub_px;
-assign padd_sub     = is_sub_px;
+assign padd_ci      = is_psub;
+assign padd_sub     = is_psub;
 
-wire is_add_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ADD_PX;
-wire is_sub_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SUB_PX;
-wire is_mul_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_MUL_PX;
-wire is_sll_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLL_PX;
-wire is_srl_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRL_PX;
-wire is_rot_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROT_PX;
-wire is_slli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLLI_PX;
-wire is_srli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRLI_PX;
-wire is_roti_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROTI_PX;
+wire is_padd  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PADD;
+wire is_psub  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSUB;
+wire is_pmul_l  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PMUL_L;
+wire is_psll  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL;
+wire is_psrl  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL;
+wire is_prot  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT;
+wire is_psll_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL_I;
+wire is_psrl_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL_I;
+wire is_prot_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT_I;
 
-wire is_shift   =  is_sll_px  || is_srl_px  || is_rot_px  || is_slli_px ||
-                   is_srli_px || is_roti_px ;
+wire is_shift   =  is_psll  || is_psrl  || is_prot  || is_psll_i ||
+                   is_psrl_i || is_prot_i ;
 
 assign result_parith =
-    {32{is_mul_px}} & pmul_result   |
-    {32{is_add_px}} & padd_c        |
-    {32{is_sub_px}} & padd_c        |
+    {32{is_pmul_l}} & pmul_result   |
+    {32{is_padd}} & padd_c        |
+    {32{is_psub}} & padd_c        |
     {32{is_shift }} & pshf_c        ;
 
 

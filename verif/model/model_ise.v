@@ -754,10 +754,10 @@ end endtask
 
 
 //
-// Implementation function for the add.px instruction.
+// Implementation function for the padd instruction.
 //
-task model_do_add_px;
-begin: t_model_add_px
+task model_do_padd;
+begin: t_model_padd
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -766,16 +766,16 @@ begin: t_model_add_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(+)
-    $display("add.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("padd c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the sub.px instruction.
+// Implementation function for the psub instruction.
 //
-task model_do_sub_px;
-begin: t_model_sub_px
+task model_do_psub;
+begin: t_model_psub
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -784,16 +784,16 @@ begin: t_model_sub_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(-)
-    $display("sub.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psub c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the mul.px instruction.
+// Implementation function for the pmul.l instruction.
 //
-task model_do_mul_px;
-begin: t_model_mul_px
+task model_do_pmul_l;
+begin: t_model_pmul_l
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -802,16 +802,16 @@ begin: t_model_mul_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(*)
-    $display("mul.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("pmul.l c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the sll.px instruction.
+// Implementation function for the psll instruction.
 //
-task model_do_sll_px;
-begin: t_model_sll_px
+task model_do_psll;
+begin: t_model_psll
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -820,16 +820,16 @@ begin: t_model_sll_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
-    $display("sll.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psll c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the srl.px instruction.
+// Implementation function for the psrl instruction.
 //
-task model_do_srl_px;
-begin: t_model_srl_px
+task model_do_psrl;
+begin: t_model_psrl
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -838,16 +838,16 @@ begin: t_model_srl_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
-    $display("srl.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psrl c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the rot.px instruction.
+// Implementation function for the prot instruction.
 //
-task model_do_rot_px;
-begin: t_model_rot_px
+task model_do_prot;
+begin: t_model_prot
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -856,16 +856,16 @@ begin: t_model_rot_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ROTATE_RIGHT_OPERATION(crs2[4:0])
-    $display("rot.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("prot c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the slli.px instruction.
+// Implementation function for the psll.i instruction.
 //
-task model_do_slli_px;
-begin: t_model_slli_px
+task model_do_psll_i;
+begin: t_model_psll_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -877,10 +877,10 @@ end endtask
 
 
 //
-// Implementation function for the srli.px instruction.
+// Implementation function for the psrl.i instruction.
 //
-task model_do_srli_px;
-begin: t_model_srli_px
+task model_do_psrl_i;
+begin: t_model_psrl_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -892,10 +892,10 @@ end endtask
 
 
 //
-// Implementation function for the roti.px instruction.
+// Implementation function for the prot.i instruction.
 //
-task model_do_roti_px;
-begin: t_model_roti_px
+task model_do_prot_i;
+begin: t_model_prot_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -2007,15 +2007,15 @@ always @(posedge g_clk) begin : p_model_control
         if (dec_invalid_opcode) model_do_invalid_opcode();
         else if (dec_xcr2gpr     ) model_do_xcr2gpr     ();
         else if (dec_gpr2xcr     ) model_do_gpr2xcr     ();
-        else if (dec_add_px     ) model_do_add_px     ();
-        else if (dec_sub_px     ) model_do_sub_px     ();
-        else if (dec_mul_px     ) model_do_mul_px     ();
-        else if (dec_sll_px     ) model_do_sll_px     ();
-        else if (dec_srl_px     ) model_do_srl_px     ();
-        else if (dec_rot_px     ) model_do_rot_px     ();
-        else if (dec_slli_px    ) model_do_slli_px    ();
-        else if (dec_srli_px    ) model_do_srli_px    ();
-        else if (dec_roti_px    ) model_do_roti_px    ();
+        else if (dec_padd     ) model_do_padd     ();
+        else if (dec_psub     ) model_do_psub     ();
+        else if (dec_pmul_l     ) model_do_pmul_l     ();
+        else if (dec_psll     ) model_do_psll     ();
+        else if (dec_psrl     ) model_do_psrl     ();
+        else if (dec_prot     ) model_do_prot     ();
+        else if (dec_psll_i    ) model_do_psll_i    ();
+        else if (dec_psrl_i    ) model_do_psrl_i    ();
+        else if (dec_prot_i    ) model_do_prot_i    ();
         else if (dec_rngseed   ) model_do_rngseed   ();
         else if (dec_rngsamp   ) model_do_rngsamp   ();
         else if (dec_cmov_cr    ) model_do_cmov_cr    ();

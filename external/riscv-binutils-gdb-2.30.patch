@@ -406,24 +406,24 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_XCR2GPR  0xfff8707f
 +#define MATCH_GPR2XCR 0x100002b
 +#define MASK_GPR2XCR  0xfff0787f
-+#define MATCH_ADD_PX 0x200002b
-+#define MASK_ADD_PX  0xfe00707f
-+#define MATCH_SUB_PX 0x400002b
-+#define MASK_SUB_PX  0xfe00707f
-+#define MATCH_MUL_PX 0x600002b
-+#define MASK_MUL_PX  0xfe00707f
-+#define MATCH_SLL_PX 0x800002b
-+#define MASK_SLL_PX  0xfe00707f
-+#define MATCH_SRL_PX 0xa00002b
-+#define MASK_SRL_PX  0xfe00707f
-+#define MATCH_ROT_PX 0xc00002b
-+#define MASK_ROT_PX  0xfe00707f
-+#define MATCH_SLLI_PX 0xe00002b
-+#define MASK_SLLI_PX  0xfe00707f
-+#define MATCH_SRLI_PX 0x1000002b
-+#define MASK_SRLI_PX  0xfe00707f
-+#define MATCH_ROTI_PX 0x1200002b
-+#define MASK_ROTI_PX  0xfe00707f
++#define MATCH_PADD 0x200002b
++#define MASK_PADD  0xfe00707f
++#define MATCH_PSUB 0x400002b
++#define MASK_PSUB  0xfe00707f
++#define MATCH_PMUL_L 0x600002b
++#define MASK_PMUL_L  0xfe00707f
++#define MATCH_PSLL 0x800002b
++#define MASK_PSLL  0xfe00707f
++#define MATCH_PSRL 0xa00002b
++#define MASK_PSRL  0xfe00707f
++#define MATCH_PROT 0xc00002b
++#define MASK_PROT  0xfe00707f
++#define MATCH_PSLL_I 0xe00002b
++#define MASK_PSLL_I  0xfe00707f
++#define MATCH_PSRL_I 0x1000002b
++#define MASK_PSRL_I  0xfe00707f
++#define MATCH_PROT_I 0x1200002b
++#define MASK_PROT_I  0xfe00707f
 +#define MATCH_RNGSEED 0x1400002b
 +#define MASK_RNGSEED  0xfff87fff
 +#define MATCH_RNGSAMP 0x1600002b
@@ -675,15 +675,15 @@ index 79e7214835..db8da1a4d5 100644
 +// ----- Crypto ISE BEGIN -----
 +{"xcr2gpr",     "x", "d,Xs",               MATCH_XCR2GPR, MASK_XCR2GPR, match_opcode, 0},
 +{"gpr2xcr",     "x", "XD,s",               MATCH_GPR2XCR, MASK_GPR2XCR, match_opcode, 0},
-+{"add.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ADD_PX, MASK_ADD_PX, match_opcode, 0},
-+{"sub.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SUB_PX, MASK_SUB_PX, match_opcode, 0},
-+{"mul.px",     "x", "Xp,XD,Xs,Xt",  MATCH_MUL_PX, MASK_MUL_PX, match_opcode, 0},
-+{"sll.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SLL_PX, MASK_SLL_PX, match_opcode, 0},
-+{"srl.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SRL_PX, MASK_SRL_PX, match_opcode, 0},
-+{"rot.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ROT_PX, MASK_ROT_PX, match_opcode, 0},
-+{"slli.px",    "x", "Xp,XD,Xs,XR",  MATCH_SLLI_PX, MASK_SLLI_PX, match_opcode, 0},
-+{"srli.px",    "x", "Xp,XD,Xs,XR",  MATCH_SRLI_PX, MASK_SRLI_PX, match_opcode, 0},
-+{"roti.px",    "x", "Xp,XD,Xs,XR",  MATCH_ROTI_PX, MASK_ROTI_PX, match_opcode, 0},
++{"padd",     "x", "Xp,XD,Xs,Xt",  MATCH_PADD, MASK_PADD, match_opcode, 0},
++{"psub",     "x", "Xp,XD,Xs,Xt",  MATCH_PSUB, MASK_PSUB, match_opcode, 0},
++{"pmul.l",     "x", "Xp,XD,Xs,Xt",  MATCH_PMUL_L, MASK_PMUL_L, match_opcode, 0},
++{"psll",     "x", "Xp,XD,Xs,Xt",  MATCH_PSLL, MASK_PSLL, match_opcode, 0},
++{"psrl",     "x", "Xp,XD,Xs,Xt",  MATCH_PSRL, MASK_PSRL, match_opcode, 0},
++{"prot",     "x", "Xp,XD,Xs,Xt",  MATCH_PROT, MASK_PROT, match_opcode, 0},
++{"psll.i",    "x", "Xp,XD,Xs,XR",  MATCH_PSLL_I, MASK_PSLL_I, match_opcode, 0},
++{"psrl.i",    "x", "Xp,XD,Xs,XR",  MATCH_PSRL_I, MASK_PSRL_I, match_opcode, 0},
++{"prot.i",    "x", "Xp,XD,Xs,XR",  MATCH_PROT_I, MASK_PROT_I, match_opcode, 0},
 +{"rngseed",   "x", "Xs",                 MATCH_RNGSEED, MASK_RNGSEED, match_opcode, 0},
 +{"rngsamp",   "x", "XD",                 MATCH_RNGSAMP, MASK_RNGSAMP, match_opcode, 0},
 +{"cmov.cr",    "x", "XD,Xs,Xt",           MATCH_CMOV_CR, MASK_CMOV_CR, match_opcode, 0},

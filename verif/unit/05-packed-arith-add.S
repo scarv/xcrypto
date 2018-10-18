@@ -8,11 +8,11 @@ test_start:
     ld.hi  c1, 0x1111
     ld.li  c1, 0x1111
 
-    add.px  w, c2, c0, c1
-    add.px  h, c3, c0, c1
-    add.px  b, c4, c0, c1
-    add.px  n, c5, c0, c1
-    add.px  c, c6, c0, c1
+    padd  w, c2, c0, c1
+    padd  h, c3, c0, c1
+    padd  b, c4, c0, c1
+    padd  n, c5, c0, c1
+    padd  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
@@ -22,11 +22,11 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    add.px  w, c2, c0, c1
-    add.px  h, c3, c0, c1
-    add.px  b, c4, c0, c1
-    add.px  n, c5, c0, c1
-    add.px  c, c6, c0, c1
+    padd  w, c2, c0, c1
+    padd  h, c3, c0, c1
+    padd  b, c4, c0, c1
+    padd  n, c5, c0, c1
+    padd  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
@@ -36,11 +36,11 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    add.px  w, c2, c0, c1
-    add.px  h, c3, c0, c1
-    add.px  b, c4, c0, c1
-    add.px  n, c5, c0, c1
-    add.px  c, c6, c0, c1
+    padd  w, c2, c0, c1
+    padd  h, c3, c0, c1
+    padd  b, c4, c0, c1
+    padd  n, c5, c0, c1
+    padd  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1

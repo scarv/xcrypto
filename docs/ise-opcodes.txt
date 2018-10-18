@@ -4,15 +4,15 @@ xcr2gpr    24=0      19=0      23..20=0b0000 14..12=0b000 31..25=0b0000000 6..0=
 gpr2xcr    24=1           11=0 23..20=0b0000 14..12=0b000 31..25=0b0000000 6..0=0b0101011 crd   rs1
 
 #         a    d    b    c      f3                  f7          opcode
-add.px    ca        cb   cc   14..12=0b000 31..25=0b0000001 6..0=0b0101011 crd   crs1  crs2
-sub.px    ca        cb   cc   14..12=0b000 31..25=0b0000010 6..0=0b0101011 crd   crs1  crs2
-mul.px    ca        cb   cc   14..12=0b000 31..25=0b0000011 6..0=0b0101011 crd   crs1  crs2
-sll.px    ca        cb   cc   14..12=0b000 31..25=0b0000100 6..0=0b0101011 crd   crs1  crs2
-srl.px    ca        cb   cc   14..12=0b000 31..25=0b0000101 6..0=0b0101011 crd   crs1  crs2
-rot.px    ca        cb   cc   14..12=0b000 31..25=0b0000110 6..0=0b0101011 crd   crs1  crs2
-slli.px   ca        cb   cc   14..12=0b000 31..25=0b0000111 6..0=0b0101011 crd   crs1  cshamt
-srli.px   ca        cb   cc   14..12=0b000 31..25=0b0001000 6..0=0b0101011 crd   crs1  cshamt
-roti.px   ca        cb   cc   14..12=0b000 31..25=0b0001001 6..0=0b0101011 crd   crs1  cshamt
+padd    ca        cb   cc   14..12=0b000 31..25=0b0000001 6..0=0b0101011 crd   crs1  crs2
+psub    ca        cb   cc   14..12=0b000 31..25=0b0000010 6..0=0b0101011 crd   crs1  crs2
+pmul.l    ca        cb   cc   14..12=0b000 31..25=0b0000011 6..0=0b0101011 crd   crs1  crs2
+psll    ca        cb   cc   14..12=0b000 31..25=0b0000100 6..0=0b0101011 crd   crs1  crs2
+psrl    ca        cb   cc   14..12=0b000 31..25=0b0000101 6..0=0b0101011 crd   crs1  crs2
+prot    ca        cb   cc   14..12=0b000 31..25=0b0000110 6..0=0b0101011 crd   crs1  crs2
+psll.i   ca        cb   cc   14..12=0b000 31..25=0b0000111 6..0=0b0101011 crd   crs1  cshamt
+psrl.i   ca        cb   cc   14..12=0b000 31..25=0b0001000 6..0=0b0101011 crd   crs1  cshamt
+prot.i   ca        cb   cc   14..12=0b000 31..25=0b0001001 6..0=0b0101011 crd   crs1  cshamt
 rngseed  24=0      19=0 11=0 14..12=0b000 31..25=0b0001010 6..0=0b0101011 10..7=0 crs1 23..20=0
 rngsamp  24=0      19=0 11=0 14..12=0b000 31..25=0b0001011 6..0=0b0101011 crd   18..15=0 23..20=0
 cmov.cr   24=0      19=0 11=0 14..12=0b000 31..25=0b0001100 6..0=0b0101011 crd   crs1  crs2

@@ -421,7 +421,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ADD.px}{pw, crd, crs1, crs2}{
-  \iencaddpx
+  \iencpadd
 }{
   Compute a   register-based packed addition, 
   implying $\odot = +$.
@@ -439,7 +439,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SUB.px}{pw, crd, crs1, crs2}{
-  \iencsubpx
+  \iencpsub
 }{
   Compute a   register-based packed subtraction, 
   implying $\odot = -$.
@@ -457,7 +457,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{MUL.px}{pw, crd, crs1, crs2}{
-  \iencmulpx
+  \iencpmull
 }{
   Compute a   register-based packed multiplication, 
   implying $\odot = \times$.
@@ -475,7 +475,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SLL.px}{pw, crd, crs1, crs2}{
-  \iencsllpx
+  \iencpsll
 }{
   Compute a   register-based packed left-shift,
   implying $\odot = \LSH$.
@@ -502,7 +502,7 @@ $
 
 % TODO: cshamt => pshamt ?
 \XCINSTR{SLLI.px}{pw, crd, crs1, cshamt}{
-  \iencsllipx
+  \iencpsll
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \LSH$.
@@ -528,7 +528,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{SRL.px}{pw, crd, crs1, crs2}{
-  \iencsrlpx
+  \iencpsrl
 }{
   Compute a   register-based packed right-shift,
   implying $\odot = \RSH$.
@@ -555,7 +555,7 @@ $
 
 % TODO: cshamt => pshamt ?
 \XCINSTR{SRLI.px}{pw, crd, crs1, cshamt}{
-  \iencsrlipx
+  \iencpsrl
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \RSH$.
@@ -581,7 +581,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ROT.px}{pw, crd, crs1, crs2}{
-  \iencrotpx
+  \iencprot
 }{
   Compute a   register-based packed left-rotate,
   implying $\odot = \LRT$.
@@ -603,7 +603,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{ROTI.px}{pw, crd, crs1, cshamt}{
-  \iencrotipx
+  \iencproti
 }{
   Compute an immediate-based packed left-rotate,
   implying $\odot = \LRT$.

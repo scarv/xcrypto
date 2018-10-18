@@ -57,15 +57,15 @@ localparam SCARV_COP_SCLASS_EXT  = 4'd4;
 localparam SCARV_COP_SCLASS_LD_LI  = 4'd5;
 localparam SCARV_COP_SCLASS_LD_HI  = 4'd6;
 
-localparam SCARV_COP_SCLASS_ADD_PX  = 4'd1;
-localparam SCARV_COP_SCLASS_SUB_PX  = 4'd2;
-localparam SCARV_COP_SCLASS_MUL_PX  = 4'd3;
-localparam SCARV_COP_SCLASS_SLL_PX  = 4'd4;
-localparam SCARV_COP_SCLASS_SRL_PX  = 4'd5;
-localparam SCARV_COP_SCLASS_ROT_PX  = 4'd6;
-localparam SCARV_COP_SCLASS_SLLI_PX = 4'd7;
-localparam SCARV_COP_SCLASS_SRLI_PX = 4'd8;
-localparam SCARV_COP_SCLASS_ROTI_PX = 4'd9;
+localparam SCARV_COP_SCLASS_PADD  = 4'd1;
+localparam SCARV_COP_SCLASS_PSUB  = 4'd2;
+localparam SCARV_COP_SCLASS_PMUL_L  = 4'd3;
+localparam SCARV_COP_SCLASS_PSLL  = 4'd4;
+localparam SCARV_COP_SCLASS_PSRL  = 4'd5;
+localparam SCARV_COP_SCLASS_PROT  = 4'd6;
+localparam SCARV_COP_SCLASS_PSLL_I = 4'd7;
+localparam SCARV_COP_SCLASS_PSRL_I = 4'd8;
+localparam SCARV_COP_SCLASS_PROT_I = 4'd9;
 
 localparam SCARV_COP_SCLASS_EQU_MP  = 4'd0 ;
 localparam SCARV_COP_SCLASS_LTU_MP  = 4'd1 ;

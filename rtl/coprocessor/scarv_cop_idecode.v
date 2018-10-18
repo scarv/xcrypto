@@ -89,8 +89,8 @@ assign id_exception =
 //
 // Which class of instruction have we decoded?
 wire class_packed_arith = 
-    dec_add_px  || dec_sub_px  || dec_mul_px  || dec_sll_px  || 
-    dec_srl_px  || dec_rot_px  || dec_slli_px || dec_srli_px || dec_roti_px ;
+    dec_padd  || dec_psub  || dec_pmul_l  || dec_psll  || 
+    dec_psrl  || dec_prot  || dec_psll_i || dec_psrl_i || dec_prot_i ;
 
 wire class_twiddle      = 
     dec_twid_b  || dec_twid_n0 || dec_twid_n1 || dec_twid_c0 ||
@@ -185,7 +185,7 @@ wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
 wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
 wire imm_li     = dec_ld_hi    || dec_ld_li;
 wire imm_8      = class_twiddle || dec_ext   || dec_ins;
-wire imm_sh_px  = dec_slli_px   || dec_srli_px  || dec_roti_px;
+wire imm_sh_px  = dec_psll_i   || dec_psrl_i  || dec_prot_i;
 wire imm_sh_mp  = dec_slli_mp   || dec_srli_mp;
 wire imm_lut    = dec_mix_l   || dec_mix_h  || dec_bop;
 

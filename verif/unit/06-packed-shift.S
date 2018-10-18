@@ -8,11 +8,11 @@ test_start:
     ld.hi  c1, 0x0000
     ld.li  c1, 1
 
-    srl.px  w, c2, c0, c1
-    srl.px  h, c3, c0, c1
-    srl.px  b, c4, c0, c1
-    srl.px  n, c5, c0, c1
-    srl.px  c, c6, c0, c1
+    psrl  w, c2, c0, c1
+    psrl  h, c3, c0, c1
+    psrl  b, c4, c0, c1
+    psrl  n, c5, c0, c1
+    psrl  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
@@ -22,11 +22,11 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    sll.px  w, c2, c0, c1
-    sll.px  h, c3, c0, c1
-    sll.px  b, c4, c0, c1
-    sll.px  n, c5, c0, c1
-    sll.px  c, c6, c0, c1
+    psll  w, c2, c0, c1
+    psll  h, c3, c0, c1
+    psll  b, c4, c0, c1
+    psll  n, c5, c0, c1
+    psll  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1
@@ -36,11 +36,11 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    rot.px  w, c2, c0, c1
-    rot.px  h, c3, c0, c1
-    rot.px  b, c4, c0, c1
-    rot.px  n, c5, c0, c1
-    rot.px  c, c6, c0, c1
+    prot  w, c2, c0, c1
+    prot  h, c3, c0, c1
+    prot  b, c4, c0, c1
+    prot  n, c5, c0, c1
+    prot  c, c6, c0, c1
 
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1

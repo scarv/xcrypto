@@ -11,19 +11,19 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_roti_px)
+`VTX_CHECKER_MODULE_BEGIN(instr_psll)
 
 // Pack width of the instruction
 wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 
 // Compute expected result into register called "result". See
 // `verif/formal/fml_pack_widths.vh` for macro definition.
-`PACK_WIDTH_ROTATE_RIGHT_OPERATION(dec_arg_cshamt)
+`PACK_WIDTH_SHIFT_OPERATION_RESULT(<<,`CRS2[4:0])
 
 //
-// roti_px
+// psll
 //
-`VTX_CHECK_INSTR_BEGIN(roti_px) 
+`VTX_CHECK_INSTR_BEGIN(psll) 
 
     // Correct pack width encoding value or instruction gives in bad
     // opcode result.
@@ -37,6 +37,6 @@ wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(roti_px)
+`VTX_CHECK_INSTR_END(psll)
 
 `VTX_CHECKER_MODULE_END
