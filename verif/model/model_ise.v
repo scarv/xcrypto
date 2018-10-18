@@ -730,34 +730,34 @@ end endtask
 
 
 //
-// Implementation function for the mv2gpr instruction.
+// Implementation function for the xcr2gpr instruction.
 //
-task model_do_mv2gpr;
-begin: t_model_mv2gpr
+task model_do_xcr2gpr;
+begin: t_model_xcr2gpr
     reg  [31:0] crs1;
     crs1=model_crs1;
     model_do_write_gpr(dec_arg_rd, crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
+    $display("ISE> xcr2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
 
 //
-// Implementation function for the mv2cop instruction.
+// Implementation function for the gpr2xcr instruction.
 //
-task model_do_mv2cop;
-begin: t_model_mv2cop
+task model_do_gpr2xcr;
+begin: t_model_gpr2xcr
     model_do_write_cpr(dec_arg_crd, cop_rs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2cop c%0d, x%0d",dec_arg_crd, dec_arg_rs1);
+    $display("ISE> gpr2xcr c%0d, x%0d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
 
 //
-// Implementation function for the add.px instruction.
+// Implementation function for the padd instruction.
 //
-task model_do_add_px;
-begin: t_model_add_px
+task model_do_padd;
+begin: t_model_padd
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -766,16 +766,16 @@ begin: t_model_add_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(+)
-    $display("add.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("padd c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the sub.px instruction.
+// Implementation function for the psub instruction.
 //
-task model_do_sub_px;
-begin: t_model_sub_px
+task model_do_psub;
+begin: t_model_psub
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -784,16 +784,16 @@ begin: t_model_sub_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(-)
-    $display("sub.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psub c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the mul.px instruction.
+// Implementation function for the pmul.l instruction.
 //
-task model_do_mul_px;
-begin: t_model_mul_px
+task model_do_pmul_l;
+begin: t_model_pmul_l
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -802,16 +802,16 @@ begin: t_model_mul_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ARITH_OPERATION(*)
-    $display("mul.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("pmul.l c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the sll.px instruction.
+// Implementation function for the psll instruction.
 //
-task model_do_sll_px;
-begin: t_model_sll_px
+task model_do_psll;
+begin: t_model_psll
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -820,16 +820,16 @@ begin: t_model_sll_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(<<, crs2[4:0])
-    $display("sll.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psll c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the srl.px instruction.
+// Implementation function for the psrl instruction.
 //
-task model_do_srl_px;
-begin: t_model_srl_px
+task model_do_psrl;
+begin: t_model_psrl
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -838,16 +838,16 @@ begin: t_model_srl_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_SHIFT_OPERATION(>>, crs2[4:0])
-    $display("srl.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("psrl c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the rot.px instruction.
+// Implementation function for the prot instruction.
 //
-task model_do_rot_px;
-begin: t_model_rot_px
+task model_do_prot;
+begin: t_model_prot
     reg  [31:0] crs1, crs2;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -856,16 +856,16 @@ begin: t_model_rot_px
     crs2=model_crs2;
     model_decode_pack_widths(pw,pw_valid);
     `PACK_WIDTH_ROTATE_RIGHT_OPERATION(crs2[4:0])
-    $display("rot.px c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
+    $display("prot c%0d, c%0d(%h), c%0d(%h) - pw=%0d",
         dec_arg_crd, dec_arg_crs1,crs1,dec_arg_crs2,crs2, 32/pw);
 end endtask
 
 
 //
-// Implementation function for the slli.px instruction.
+// Implementation function for the psll.i instruction.
 //
-task model_do_slli_px;
-begin: t_model_slli_px
+task model_do_psll_i;
+begin: t_model_psll_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -877,10 +877,10 @@ end endtask
 
 
 //
-// Implementation function for the srli.px instruction.
+// Implementation function for the psrl.i instruction.
 //
-task model_do_srli_px;
-begin: t_model_srli_px
+task model_do_psrl_i;
+begin: t_model_psrl_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -892,10 +892,10 @@ end endtask
 
 
 //
-// Implementation function for the roti.px instruction.
+// Implementation function for the prot.i instruction.
 //
-task model_do_roti_px;
-begin: t_model_roti_px
+task model_do_prot_i;
+begin: t_model_prot_i
     reg  [31:0] crs1;
     reg  [31:0] result;
     reg  [ 5:0] pw;
@@ -907,33 +907,33 @@ end endtask
 
 
 //
-// Implementation function for the rseed.cr instruction.
+// Implementation function for the rngseed instruction.
 //
-task model_do_rseed_cr;
-begin: t_model_rseed_cr
+task model_do_rngseed;
+begin: t_model_rngseed
     reg  [31:0] crs1;
     crs1=model_crs1;
-    $display("ISE> rseed.cr %d", dec_arg_crs1);
+    $display("ISE> rngseed %d", dec_arg_crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
 //
-// Implementation function for the rsamp.cr instruction.
+// Implementation function for the rngsamp instruction.
 //
-task model_do_rsamp_cr;
-begin: t_model_rsamp_cr
-    $display("ISE> rsamp.cr %d", dec_arg_crd);
+task model_do_rngsamp;
+begin: t_model_rngsamp
+    $display("ISE> rngsamp %d", dec_arg_crd);
     model_do_write_cpr(dec_arg_crd, p_random);
     model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
 //
-// Implementation function for the cmov.cr instruction.
+// Implementation function for the cmov instruction.
 //
-task model_do_cmov_cr;
-begin: t_model_cmov_cr
+task model_do_cmov;
+begin: t_model_cmov
     reg  [31:0] crs1, crs2;
     crs1=model_crs1;
     crs2=model_crs2;
@@ -943,16 +943,16 @@ begin: t_model_cmov_cr
         // Do nothing
     end
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> cmov.cr %d, %d, %d", 
+    $display("ISE> cmov %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 
 //
-// Implementation function for the cmovn.cr instruction.
+// Implementation function for the cmovn instruction.
 //
-task model_do_cmovn_cr;
-begin: t_model_cmovn_cr
+task model_do_cmovn;
+begin: t_model_cmovn
     reg  [31:0] crs1, crs2;
     crs1=model_crs1;
     crs2=model_crs2;
@@ -962,7 +962,7 @@ begin: t_model_cmovn_cr
         model_do_write_cpr(dec_arg_crd,crs1);
     end
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> cmovn.cr %d, %d, %d", 
+    $display("ISE> cmovn %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
@@ -1166,10 +1166,10 @@ end endtask
 
 
 //
-// Implementation function for the lmix.cr instruction.
+// Implementation function for the mix.l instruction.
 //
-task model_do_lmix_cr;
-begin: t_model_lmix_cr
+task model_do_mix_l;
+begin: t_model_mix_l
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
@@ -1178,16 +1178,16 @@ begin: t_model_lmix_cr
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
     result  = (~crs2 & crd) | (crs2 & t0);
-    $display("ISE> lmix.cr c%d, c%d, c%d, %d",
+    $display("ISE> mix.l c%d, c%d, c%d, %d",
         dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
 //
-// Implementation function for the hmix.cr instruction.
+// Implementation function for the mix.h instruction.
 //
-task model_do_hmix_cr;
-begin: t_model_hmix_cr
+task model_do_mix_h;
+begin: t_model_mix_h
     reg  [31:0] crs1, crs2, crd;
     reg  [31:0] result;
     reg  [31:0] t0;
@@ -1196,16 +1196,16 @@ begin: t_model_hmix_cr
     model_do_read_cpr(dec_arg_crd , crd );
     t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
     result  = (~crs2 & crd) | (crs2 & t0);
-    $display("ISE> hmix.cr c%d, c%d, c%d, 16+%d",
+    $display("ISE> mix.h c%d, c%d, c%d, 16+%d",
         dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
 end endtask
 
 
 //
-// Implementation function for the bop.cr instruction.
+// Implementation function for the bop instruction.
 //
-task model_do_bop_cr;
-begin: t_model_bop_cr
+task model_do_bop;
+begin: t_model_bop
     reg  [31:0] crs1, crs2;
     integer i;
     reg  [31:0] result;
@@ -1214,16 +1214,16 @@ begin: t_model_bop_cr
     for(i = 0; i < 32; i = i + 1)
         result[i] = dec_arg_lut4[{crs1[i],crs2[2]}];
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> bop.cr %d, %d, %d, %4b", dec_arg_crd,
+    $display("ISE> bop %d, %d, %d, %4b", dec_arg_crd,
         dec_arg_crs1, dec_arg_crs2, dec_arg_lut4[3:0]);
 end endtask
 
 
 //
-// Implementation function for the equ.mp instruction.
+// Implementation function for the mequ instruction.
 //
-task model_do_equ_mp;
-begin: t_model_equ_mp
+task model_do_mequ;
+begin: t_model_mequ
     reg [31:0] crs2, crs3;
     reg [31:0] result;
     crs2    = model_crs2;
@@ -1231,16 +1231,16 @@ begin: t_model_equ_mp
     result  = (crs2 == crs3) && cop_rs1;
     model_do_write_gpr(dec_arg_rd, result);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> equ.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+    $display("ISE> mequ x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
         dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 
 //
-// Implementation function for the ltu.mp instruction.
+// Implementation function for the mlte instruction.
 //
-task model_do_ltu_mp;
-begin: t_model_ltu_mp
+task model_do_mlte;
+begin: t_model_mlte
     reg [31:0] crs2, crs3;
     reg [31:0] result ;
     reg [31:0] result0;
@@ -1252,16 +1252,16 @@ begin: t_model_ltu_mp
     result  = result1 && (result0 || cop_rs1);
     model_do_write_gpr(dec_arg_rd, result);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> ltu.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+    $display("ISE> mlte x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
         dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 
 //
-// Implementation function for the gtu.mp instruction.
+// Implementation function for the mgte instruction.
 //
-task model_do_gtu_mp;
-begin: t_model_gtu_mp
+task model_do_mgte;
+begin: t_model_mgte
     reg [31:0] crs2, crs3;
     reg [31:0] result ;
     reg [31:0] result0;
@@ -1273,16 +1273,16 @@ begin: t_model_gtu_mp
     result  = result1 && (result0 || cop_rs1);
     model_do_write_gpr(dec_arg_rd, result);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> gtu.mp x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
+    $display("ISE> mgte x%0d, x%0d, c%0d, c%0d", dec_arg_rd,dec_arg_rs1,
         dec_arg_crs2,dec_arg_crs3);
 end endtask
 
 
 //
-// Implementation function for the add3.mp instruction.
+// Implementation function for the madd.3 instruction.
 //
-task model_do_add3_mp;
-begin: t_model_add3_mp
+task model_do_madd_3;
+begin: t_model_madd_3
     reg  [31:0] crs1, crs2,crs3;
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
@@ -1293,16 +1293,16 @@ begin: t_model_add3_mp
     result = crs1 + crs2 + crs3;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
-    $display("add3.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+    $display("madd.3 (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
         rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 
 //
-// Implementation function for the add2.mp instruction.
+// Implementation function for the madd.2 instruction.
 //
-task model_do_add2_mp;
-begin: t_model_add2_mp
+task model_do_madd_2;
+begin: t_model_madd_2
     reg  [31:0] crs1, crs2;
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
@@ -1312,16 +1312,16 @@ begin: t_model_add2_mp
     result = crs1 + crs2;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
-    $display("add2.mp (c%0d,c%0d), c%0d(%h), c%0d(%h)",
+    $display("madd.2 (c%0d,c%0d), c%0d(%h), c%0d(%h)",
         rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 
 //
-// Implementation function for the sub3.mp instruction.
+// Implementation function for the msub.3 instruction.
 //
-task model_do_sub3_mp;
-begin: t_model_sub3_mp
+task model_do_msub_3;
+begin: t_model_msub_3
     reg  [31:0] crs1, crs2,crs3;
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
@@ -1332,16 +1332,16 @@ begin: t_model_sub3_mp
     result = (crs1 - crs2) - crs3;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
-    $display("sub3.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+    $display("msub.3 (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
         rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 
 //
-// Implementation function for the sub2.mp instruction.
+// Implementation function for the msub.2 instruction.
 //
-task model_do_sub2_mp;
-begin: t_model_sub2_mp
+task model_do_msub_2;
+begin: t_model_msub_2
     reg [31:0] crs1, crs2;
     reg [ 3:0] rd1,rd2;
     reg [63:0] result;
@@ -1351,16 +1351,16 @@ begin: t_model_sub2_mp
     result  = {32'b0, crs1} - {32'b0,crs2};
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
-    $display("sub2.mp (c%0d,c%0d), c%0d(%h), c%0d(%h)",
+    $display("msub.2 (c%0d,c%0d), c%0d(%h), c%0d(%h)",
         rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 
 //
-// Implementation function for the slli.mp instruction.
+// Implementation function for the msll.i instruction.
 //
-task model_do_slli_mp;
-begin: t_model_slli_mp
+task model_do_msll_i;
+begin: t_model_msll_i
     reg  [31:0] crs1, crs2;
     reg  [63:0] result;
     reg  [63:0] toshift;
@@ -1378,10 +1378,10 @@ end endtask
 
 
 //
-// Implementation function for the sll.mp instruction.
+// Implementation function for the msll instruction.
 //
-task model_do_sll_mp;
-begin: t_model_sll_mp
+task model_do_msll;
+begin: t_model_msll
     reg  [31:0] crs1, crs2,crs3;
     reg  [63:0] result;
     reg  [63:0] toshift;
@@ -1401,10 +1401,10 @@ end endtask
 
 
 //
-// Implementation function for the srli.mp instruction.
+// Implementation function for the msrl.i instruction.
 //
-task model_do_srli_mp;
-begin: t_model_srli_mp
+task model_do_msrl_i;
+begin: t_model_msrl_i
     reg  [31:0] crs1, crs2;
     reg  [63:0] result;
     reg  [63:0] toshift;
@@ -1422,10 +1422,10 @@ end endtask
 
 
 //
-// Implementation function for the srl.mp instruction.
+// Implementation function for the msrl instruction.
 //
-task model_do_srl_mp;
-begin: t_model_srl_mp
+task model_do_msrl;
+begin: t_model_msrl
     reg  [31:0] crs1, crs2,crs3;
     reg  [63:0] result;
     reg  [63:0] toshift;
@@ -1445,10 +1445,10 @@ end endtask
 
 
 //
-// Implementation function for the acc2.mp instruction.
+// Implementation function for the macc.2 instruction.
 //
-task model_do_acc2_mp;
-begin: t_model_acc2_mp
+task model_do_macc_2;
+begin: t_model_macc_2
     reg  [31:0] crs1, crs2;
     reg  [3:0] crd1,crd2;
     reg  [31:0] crd1_v,crd2_v;
@@ -1461,16 +1461,16 @@ begin: t_model_acc2_mp
     result = {crd2_v,crd1_v} + crs1 + crs2;
     model_do_write_cpr(crd1,result[31: 0]);
     model_do_write_cpr(crd2,result[63:32]);
-    $display("acc2.mp (c%0d,c%0d) <- {c%0d(%h),c%0d(%h)} + c%0d(%h) + c%0d(%h)",
+    $display("macc.2 (c%0d,c%0d) <- {c%0d(%h),c%0d(%h)} + c%0d(%h) + c%0d(%h)",
         crd2,crd1,crd2,crd2_v,crd1,crd1_v,dec_arg_crs1,crs1,dec_arg_crs2,crs2);
 end endtask
 
 
 //
-// Implementation function for the acc1.mp instruction.
+// Implementation function for the macc.1 instruction.
 //
-task model_do_acc1_mp;
-begin: t_model_acc1_mp
+task model_do_macc_1;
+begin: t_model_macc_1
     reg  [31:0] crs1;
     reg  [3:0] crd1,crd2;
     reg  [31:0] crd1_v,crd2_v;
@@ -1482,16 +1482,16 @@ begin: t_model_acc1_mp
     result = {crd2_v,crd1_v} + crs1;
     model_do_write_cpr(crd1,result[31: 0]);
     model_do_write_cpr(crd2,result[63:32]);
-    $display("acc1.mp (c%0d,c%0d) <- {c%0d,c%0d} + c%0d",
+    $display("macc.1 (c%0d,c%0d) <- {c%0d,c%0d} + c%0d",
         crd2,crd1,crd2,crd1,crs1);
 end endtask
 
 
 //
-// Implementation function for the mac.mp instruction.
+// Implementation function for the mmul.1 instruction.
 //
-task model_do_mac_mp;
-begin: t_model_mac_mp
+task model_do_mmul_1;
+begin: t_model_mmul_1
     reg  [31:0] crs1, crs2,crs3;
     reg   [3:0] rd1,rd2;
     reg  [63:0] result;
@@ -1502,16 +1502,16 @@ begin: t_model_mac_mp
     result = (crs1 * crs2) + crs3;
     model_do_write_cpr(rd1, result[31: 0]);
     model_do_write_cpr(rd2, result[63:32]);
-    $display("mac.mp (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
+    $display("mmul.1 (c%0d,c%0d), c%0d(%h), c%0d(%h), c%0d(%h)",
         rd2,rd1, dec_arg_crs1,crs1,dec_arg_crs2,crs2,dec_arg_crs3,crs3);
 end endtask
 
 
 //
-// Implementation function for the lbu.cr instruction.
+// Implementation function for the ld.bu instruction.
 //
-task model_do_lbu_cr;
-begin: t_model_lbu_cr
+task model_do_ld_bu;
+begin: t_model_ld_bu
     reg [31:0] crd;
     reg [31:0] exp_addr;
     reg        wen  ;
@@ -1531,7 +1531,7 @@ begin: t_model_lbu_cr
         model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
     end else begin
         if(addr[31:28] != exp_addr[31:28]) begin
-            $display("t=%0d ERROR: lbu.cr address expected %h got %h.",
+            $display("t=%0d ERROR: ld.bu address expected %h got %h.",
                 $time, exp_addr, addr);
         end
         loaded_byte = exp_addr[1:0] == 2'b00 ? rdata[ 7: 0] :
@@ -1550,10 +1550,10 @@ end endtask
 
 
 //
-// Implementation function for the lhu.cr instruction.
+// Implementation function for the ld.hu instruction.
 //
-task model_do_lhu_cr;
-begin: t_model_lhu_cr
+task model_do_ld_hu;
+begin: t_model_ld_hu
     reg [31:0] crd;
     reg [31:0] exp_addr;
     reg        wen  ;
@@ -1572,7 +1572,7 @@ begin: t_model_lhu_cr
             model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         end else begin
             if(addr[31:28] != exp_addr[31:28]) begin
-                $display("t=%0d ERROR: lhu.cr address expected %h got %h.",
+                $display("t=%0d ERROR: ld.hu address expected %h got %h.",
                     $time, exp_addr, addr);
             end
             loaded_hw = exp_addr[1] ? rdata[31:16] : rdata[15:0];
@@ -1584,17 +1584,17 @@ begin: t_model_lhu_cr
         end
     end else begin
         model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
-        $display("ISE> lw.cr %d <- MEM[%h] bad addr",
+        $display("ISE> ld.w %d <- MEM[%h] bad addr",
             dec_arg_crd, exp_addr,rdata);
     end
 end endtask
 
 
 //
-// Implementation function for the lw.cr instruction.
+// Implementation function for the ld.w instruction.
 //
-task model_do_lw_cr;
-begin: t_model_lw_cr
+task model_do_ld_w;
+begin: t_model_ld_w
     reg [31:0] exp_addr;
     reg        wen  ;
     reg [ 3:0] ben  ;
@@ -1609,26 +1609,26 @@ begin: t_model_lw_cr
             model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         end else begin
             if(addr != exp_addr) begin
-                $display("t=%0d ERROR: lw.cr address expected %h got %h.",
+                $display("t=%0d ERROR: ld.w address expected %h got %h.",
                     $time, exp_addr, addr);
             end
             model_do_write_cpr(dec_arg_crd, rdata);
-            $display("ISE> lw.cr %d <- MEM[%h] (%h)",
+            $display("ISE> ld.w %d <- MEM[%h] (%h)",
                 dec_arg_crd, exp_addr,rdata);
         end
     end else begin
         model_do_instr_result(ISE_RESULT_LOAD_ADDR_MISALIGN);
-        $display("ISE> lw.cr %d <- MEM[%h] bad addr",
+        $display("ISE> ld.w %d <- MEM[%h] bad addr",
             dec_arg_crd, exp_addr,rdata);
     end
 end endtask
 
 
 //
-// Implementation function for the lui.cr instruction.
+// Implementation function for the ld.hi instruction.
 //
-task model_do_lui_cr;
-begin: t_model_lui_cr
+task model_do_ld_hi;
+begin: t_model_ld_hi
     reg  [31:0] crsd;
     reg  [15:0] imm;
     reg  [31:0] wdata;
@@ -1637,15 +1637,15 @@ begin: t_model_lui_cr
     wdata = {imm,crsd[15:0]};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
+    $display("ISE> ld.hi %d, %h", dec_arg_crd, imm);
 end endtask
 
 
 //
-// Implementation function for the lli.cr instruction.
+// Implementation function for the ld.li instruction.
 //
-task model_do_lli_cr;
-begin: t_model_lli_cr
+task model_do_ld_li;
+begin: t_model_ld_li
     reg  [31:0] crsd;
     reg  [15:0] imm;
     reg  [31:0] wdata;
@@ -1654,15 +1654,15 @@ begin: t_model_lli_cr
     wdata = {crsd[31:16],imm};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
+    $display("ISE> ld.li %d, %h", dec_arg_crd, imm);
 end endtask
 
 
 //
-// Implementation function for the twid.b instruction.
+// Implementation function for the pperm.w instruction.
 //
-task model_do_twid_b;
-begin: t_model_twid_b
+task model_do_pperm_w;
+begin: t_model_pperm_w
     reg  [31:0] crs1;
     reg  [ 7:0] split[3:0];
     reg  [31:0] result;
@@ -1672,17 +1672,17 @@ begin: t_model_twid_b
     result   = {split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.b c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.w c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.n0 instruction.
+// Implementation function for the pperm.h0 instruction.
 //
-task model_do_twid_n0;
-begin: t_model_twid_n0
+task model_do_pperm_h0;
+begin: t_model_pperm_h0
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
@@ -1693,17 +1693,17 @@ begin: t_model_twid_n0
                 split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.n0 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.h0 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.n1 instruction.
+// Implementation function for the pperm.h1 instruction.
 //
-task model_do_twid_n1;
-begin: t_model_twid_n1
+task model_do_pperm_h1;
+begin: t_model_pperm_h1
     reg  [31:0] crs1;
     reg  [ 3:0] split[3:0];
     reg  [31:0] result;
@@ -1714,17 +1714,17 @@ begin: t_model_twid_n1
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[15:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.n1 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.h1 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c0 instruction.
+// Implementation function for the pperm.b0 instruction.
 //
-task model_do_twid_c0;
-begin: t_model_twid_c0
+task model_do_pperm_b0;
+begin: t_model_pperm_b0
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1737,17 +1737,17 @@ begin: t_model_twid_c0
                 split[dec_arg_b3], split[dec_arg_b2],
                 split[dec_arg_b1], split[dec_arg_b0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c0 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b0 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c1 instruction.
+// Implementation function for the pperm.b1 instruction.
 //
-task model_do_twid_c1;
-begin: t_model_twid_c1
+task model_do_pperm_b1;
+begin: t_model_pperm_b1
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1761,17 +1761,17 @@ begin: t_model_twid_c1
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[7:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c1 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b1 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c2 instruction.
+// Implementation function for the pperm.b2 instruction.
 //
-task model_do_twid_c2;
-begin: t_model_twid_c2
+task model_do_pperm_b2;
+begin: t_model_pperm_b2
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1785,17 +1785,17 @@ begin: t_model_twid_c2
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[15:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c2 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b2 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the twid.c3 instruction.
+// Implementation function for the pperm.b3 instruction.
 //
-task model_do_twid_c3;
-begin: t_model_twid_c3
+task model_do_pperm_b3;
+begin: t_model_pperm_b3
     reg  [31:0] crs1;
     reg  [ 7:0] ibyte;
     reg  [ 1:0] split[3:0];
@@ -1808,17 +1808,17 @@ begin: t_model_twid_c3
                 split[dec_arg_b1], split[dec_arg_b0],
                 crs1[23:0]};
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> twid.c3 c%0d, c%0d, %d, %d, %d, %d",
+    $display("ISE> pperm.b3 c%0d, c%0d, %d, %d, %d, %d",
         dec_arg_crd,dec_arg_crs1,dec_arg_b3,dec_arg_b2, dec_arg_b1,
         dec_arg_b0);
 end endtask
 
 
 //
-// Implementation function for the ins.cr instruction.
+// Implementation function for the ins instruction.
 //
-task model_do_ins_cr;
-begin: t_model_ins_cr
+task model_do_ins;
+begin: t_model_ins
     reg  [31:0] crs1;
     reg  [31:0] crd ;
     reg  [5:0]  s;
@@ -1832,16 +1832,16 @@ begin: t_model_ins_cr
     mask = (~(32'hFFFF_FFFF << l)) << s;
     result = (mask & (crs1 << s)) | ((~mask)&crd);
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> ins.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+    $display("ISE> ins %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
         s+l,s);
 end endtask
 
 
 //
-// Implementation function for the ext.cr instruction.
+// Implementation function for the ext instruction.
 //
-task model_do_ext_cr;
-begin: t_model_ext_cr
+task model_do_ext;
+begin: t_model_ext
     reg  [31:0] crs1;
     reg  [5:0]  s;
     reg  [5:0]  l;
@@ -1851,16 +1851,16 @@ begin: t_model_ext_cr
     l = {dec_arg_cl, 1'b0};
     result = (crs1 >> s) & (~(32'hFFFF_FFFF << l));
     model_do_write_cpr(dec_arg_crd, result);
-    $display("ISE> ext.cr %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
+    $display("ISE> ext %d, %d[%d:%d]", dec_arg_crd, dec_arg_crs1,
         s+l,s);
 end endtask
 
 
 //
-// Implementation function for the sb.cr instruction.
+// Implementation function for the st.b instruction.
 //
-task model_do_sb_cr;
-begin: t_model_sb_cr
+task model_do_st_b;
+begin: t_model_st_b
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] wrd_addr;
@@ -1897,10 +1897,10 @@ end endtask
 
 
 //
-// Implementation function for the sh.cr instruction.
+// Implementation function for the st.h instruction.
 //
-task model_do_sh_cr;
-begin: t_model_sh_cr
+task model_do_st_h;
+begin: t_model_st_h
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] wrd_addr;
@@ -1926,17 +1926,17 @@ begin: t_model_sh_cr
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
-        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+        $display("ISE> st.h MEM[%h] <- c%0d (%h) - bad addr",
             exp_addr, dec_arg_crs2,crs2);
     end
 end endtask
 
 
 //
-// Implementation function for the sw.cr instruction.
+// Implementation function for the st.w instruction.
 //
-task model_do_sw_cr;
-begin: t_model_sw_cr
+task model_do_st_w;
+begin: t_model_st_w
     reg  [31:0] crs2;
     reg  [31:0] exp_addr;
     reg  [31:0] exp_wdata;
@@ -1959,7 +1959,7 @@ begin: t_model_sw_cr
         );
     end else begin
         model_do_instr_result(ISE_RESULT_STOR_ADDR_MISALIGN);
-        $display("ISE> sh.cr MEM[%h] <- c%0d (%h) - bad addr",
+        $display("ISE> st.h MEM[%h] <- c%0d (%h) - bad addr",
             exp_addr, dec_arg_crs2,crs2);
     end
 end endtask
@@ -2005,59 +2005,59 @@ always @(posedge g_clk) begin : p_model_control
         model_do_clear_outputs();
         
         if (dec_invalid_opcode) model_do_invalid_opcode();
-        else if (dec_mv2gpr     ) model_do_mv2gpr     ();
-        else if (dec_mv2cop     ) model_do_mv2cop     ();
-        else if (dec_add_px     ) model_do_add_px     ();
-        else if (dec_sub_px     ) model_do_sub_px     ();
-        else if (dec_mul_px     ) model_do_mul_px     ();
-        else if (dec_sll_px     ) model_do_sll_px     ();
-        else if (dec_srl_px     ) model_do_srl_px     ();
-        else if (dec_rot_px     ) model_do_rot_px     ();
-        else if (dec_slli_px    ) model_do_slli_px    ();
-        else if (dec_srli_px    ) model_do_srli_px    ();
-        else if (dec_roti_px    ) model_do_roti_px    ();
-        else if (dec_rseed_cr   ) model_do_rseed_cr   ();
-        else if (dec_rsamp_cr   ) model_do_rsamp_cr   ();
-        else if (dec_cmov_cr    ) model_do_cmov_cr    ();
-        else if (dec_cmovn_cr   ) model_do_cmovn_cr   ();
+        else if (dec_xcr2gpr     ) model_do_xcr2gpr     ();
+        else if (dec_gpr2xcr     ) model_do_gpr2xcr     ();
+        else if (dec_padd     ) model_do_padd     ();
+        else if (dec_psub     ) model_do_psub     ();
+        else if (dec_pmul_l     ) model_do_pmul_l     ();
+        else if (dec_psll     ) model_do_psll     ();
+        else if (dec_psrl     ) model_do_psrl     ();
+        else if (dec_prot     ) model_do_prot     ();
+        else if (dec_psll_i    ) model_do_psll_i    ();
+        else if (dec_psrl_i    ) model_do_psrl_i    ();
+        else if (dec_prot_i    ) model_do_prot_i    ();
+        else if (dec_rngseed   ) model_do_rngseed   ();
+        else if (dec_rngsamp   ) model_do_rngsamp   ();
+        else if (dec_cmov    ) model_do_cmov    ();
+        else if (dec_cmovn   ) model_do_cmovn   ();
         else if (dec_scatter_b  ) model_do_scatter_b  ();
         else if (dec_gather_b   ) model_do_gather_b   ();
         else if (dec_scatter_h  ) model_do_scatter_h  ();
         else if (dec_gather_h   ) model_do_gather_h   ();
-        else if (dec_lmix_cr    ) model_do_lmix_cr    ();
-        else if (dec_hmix_cr    ) model_do_hmix_cr    ();
-        else if (dec_bop_cr     ) model_do_bop_cr     ();
-        else if (dec_equ_mp     ) model_do_equ_mp     ();
-        else if (dec_ltu_mp     ) model_do_ltu_mp     ();
-        else if (dec_gtu_mp     ) model_do_gtu_mp     ();
-        else if (dec_add3_mp    ) model_do_add3_mp    ();
-        else if (dec_add2_mp    ) model_do_add2_mp    ();
-        else if (dec_sub3_mp    ) model_do_sub3_mp    ();
-        else if (dec_sub2_mp    ) model_do_sub2_mp    ();
-        else if (dec_slli_mp    ) model_do_slli_mp    ();
-        else if (dec_sll_mp     ) model_do_sll_mp     ();
-        else if (dec_srli_mp    ) model_do_srli_mp    ();
-        else if (dec_srl_mp     ) model_do_srl_mp     ();
-        else if (dec_acc2_mp    ) model_do_acc2_mp    ();
-        else if (dec_acc1_mp    ) model_do_acc1_mp    ();
-        else if (dec_mac_mp     ) model_do_mac_mp     ();
-        else if (dec_lbu_cr     ) model_do_lbu_cr     ();
-        else if (dec_lhu_cr     ) model_do_lhu_cr     ();
-        else if (dec_lw_cr      ) model_do_lw_cr      ();
-        else if (dec_lui_cr     ) model_do_lui_cr     ();
-        else if (dec_lli_cr     ) model_do_lli_cr     ();
-        else if (dec_twid_b     ) model_do_twid_b     ();
-        else if (dec_twid_n0    ) model_do_twid_n0    ();
-        else if (dec_twid_n1    ) model_do_twid_n1    ();
-        else if (dec_twid_c0    ) model_do_twid_c0    ();
-        else if (dec_twid_c1    ) model_do_twid_c1    ();
-        else if (dec_twid_c2    ) model_do_twid_c2    ();
-        else if (dec_twid_c3    ) model_do_twid_c3    ();
-        else if (dec_ins_cr     ) model_do_ins_cr     ();
-        else if (dec_ext_cr     ) model_do_ext_cr     ();
-        else if (dec_sb_cr      ) model_do_sb_cr      ();
-        else if (dec_sh_cr      ) model_do_sh_cr      ();
-        else if (dec_sw_cr      ) model_do_sw_cr      ();
+        else if (dec_mix_l    ) model_do_mix_l    ();
+        else if (dec_mix_h    ) model_do_mix_h    ();
+        else if (dec_bop     ) model_do_bop     ();
+        else if (dec_mequ     ) model_do_mequ     ();
+        else if (dec_mlte     ) model_do_mlte     ();
+        else if (dec_mgte     ) model_do_mgte     ();
+        else if (dec_madd_3    ) model_do_madd_3    ();
+        else if (dec_madd_2    ) model_do_madd_2    ();
+        else if (dec_msub_3    ) model_do_msub_3    ();
+        else if (dec_msub_2    ) model_do_msub_2    ();
+        else if (dec_msll_i    ) model_do_msll_i    ();
+        else if (dec_msll     ) model_do_msll     ();
+        else if (dec_msrl_i    ) model_do_msrl_i    ();
+        else if (dec_msrl     ) model_do_msrl     ();
+        else if (dec_macc_2    ) model_do_macc_2    ();
+        else if (dec_macc_1    ) model_do_macc_1    ();
+        else if (dec_mmul_1     ) model_do_mmul_1     ();
+        else if (dec_ld_bu     ) model_do_ld_bu     ();
+        else if (dec_ld_hu     ) model_do_ld_hu     ();
+        else if (dec_ld_w      ) model_do_ld_w      ();
+        else if (dec_ld_hi     ) model_do_ld_hi     ();
+        else if (dec_ld_li     ) model_do_ld_li     ();
+        else if (dec_pperm_w     ) model_do_pperm_w     ();
+        else if (dec_pperm_h0    ) model_do_pperm_h0    ();
+        else if (dec_pperm_h1    ) model_do_pperm_h1    ();
+        else if (dec_pperm_b0    ) model_do_pperm_b0    ();
+        else if (dec_pperm_b1    ) model_do_pperm_b1    ();
+        else if (dec_pperm_b2    ) model_do_pperm_b2    ();
+        else if (dec_pperm_b3    ) model_do_pperm_b3    ();
+        else if (dec_ins     ) model_do_ins     ();
+        else if (dec_ext     ) model_do_ext     ();
+        else if (dec_st_b      ) model_do_st_b      ();
+        else if (dec_st_h      ) model_do_st_h      ();
+        else if (dec_st_w      ) model_do_st_w      ();
         else begin
             $display("ERROR: We should never reach here!");
         end

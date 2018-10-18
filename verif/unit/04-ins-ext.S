@@ -3,29 +3,29 @@
 
 test_start:
 
-    mv2cop c0, x0
-    mv2cop c1, x1
-    mv2cop c2, x2
-    mv2cop c3, x3
+    xc.gpr2xcr c0, x0
+    xc.gpr2xcr c1, x1
+    xc.gpr2xcr c2, x2
+    xc.gpr2xcr c3, x3
 
-    lli.cr c4, 0x1234
-    lui.cr c4, 0x567a
+    xc.ld.li c4, 0x1234
+    xc.ld.hi c4, 0x567a
 
-    lui.cr c5, 0
-    lli.cr c5, 0
-    
-    ext.cr c5, c4, 2, 4
-    
-    lli.cr c6, 0xFF00
-    lui.cr c6, 0x0000
-    ext.cr c7, c6, 4, 8
+    xc.ld.hi c5, 0
+    xc.ld.li c5, 0
 
-    lui.cr c8, 0
-    lli.cr c8, 0
-    ins.cr c8, c7, 4, 8
+    xc.ext c5, c4, 2, 4
 
-    mv2gpr x0, c4
-    mv2gpr x1, c5
-    mv2gpr x2, c6
-    mv2gpr x3, c7
-    mv2gpr x3, c8
+    xc.ld.li c6, 0xFF00
+    xc.ld.hi c6, 0x0000
+    xc.ext c7, c6, 4, 8
+
+    xc.ld.hi c8, 0
+    xc.ld.li c8, 0
+    xc.ins c8, c7, 4, 8
+
+    xc.xcr2gpr x0, c4
+    xc.xcr2gpr x1, c5
+    xc.xcr2gpr x2, c6
+    xc.xcr2gpr x3, c7
+    xc.xcr2gpr x3, c8

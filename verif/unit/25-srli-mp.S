@@ -3,45 +3,45 @@
 
 test_start:
 
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x1111
-    lli.cr  c1, 0x1111
-    lui.cr  c9, 0xFFFF
-    lli.cr  c9, 0xFFFF
-    
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
+    xc.ld.hi  c0, 0xF4F3
+    xc.ld.li  c0, 0xF2F1
+    xc.ld.hi  c1, 0x1111
+    xc.ld.li  c1, 0x1111
+    xc.ld.hi  c9, 0xFFFF
+    xc.ld.li  c9, 0xFFFF
 
-    srli.mp  (c2,c3), c0, c1, 1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
 
-    srli.mp  (c4,c5), c1, c0, 2
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
+    xc.msrl.i  (c2,c3), c0, c1, 1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
 
-    srli.mp  (c6,c7), c9, c1, 4
-    mv2gpr  x1, c6
-    mv2gpr  x1, c7
+    xc.msrl.i  (c4,c5), c1, c0, 2
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
 
-    srli.mp  (c8,c9), c0, c9, 8
-    mv2gpr  x1, c8
-    mv2gpr  x1, c9
+    xc.msrl.i  (c6,c7), c9, c1, 4
+    xc.xcr2gpr  x1, c6
+    xc.xcr2gpr  x1, c7
 
-    srli.mp  (c2,c3), c0, c1, 3
-    srli.mp  (c4,c5), c1, c0, 5
-    srli.mp  (c6,c7), c9, c1, 12
-    srli.mp  (c8,c9), c0, c9, 15
+    xc.msrl.i  (c8,c9), c0, c9, 8
+    xc.xcr2gpr  x1, c8
+    xc.xcr2gpr  x1, c9
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
-    mv2gpr  x1, c7
-    mv2gpr  x1, c8
-    mv2gpr  x1, c9
+    xc.msrl.i  (c2,c3), c0, c1, 3
+    xc.msrl.i  (c4,c5), c1, c0, 5
+    xc.msrl.i  (c6,c7), c9, c1, 12
+    xc.msrl.i  (c8,c9), c0, c9, 15
+
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
+    xc.xcr2gpr  x1, c7
+    xc.xcr2gpr  x1, c8
+    xc.xcr2gpr  x1, c9
 

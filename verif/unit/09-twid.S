@@ -3,75 +3,75 @@
 
 test_start:
 
-    lui.cr c0, 0xF4E3
-    lli.cr c0, 0xD2C1
+    xc.ld.hi c0, 0xF4E3
+    xc.ld.li c0, 0xD2C1
 
-    twid.b  c1, c0, 3,2,1,0
-    twid.b  c2, c0, 0,1,2,3
-    twid.b  c3, c0, 2,0,3,1
-    twid.b  c4, c0, 0,0,0,0
+    xc.pperm.w  c1, c0, 3,2,1,0
+    xc.pperm.w  c2, c0, 0,1,2,3
+    xc.pperm.w  c3, c0, 2,0,3,1
+    xc.pperm.w  c4, c0, 0,0,0,0
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.n0 c1, c0, 3,2,1,0
-    twid.n0 c2, c0, 0,1,2,3
-    twid.n0 c3, c0, 2,0,3,1
-    twid.n0 c4, c0, 0,0,0,0
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.n1 c1, c0, 3,2,1,0
-    twid.n1 c2, c0, 0,1,2,3
-    twid.n1 c3, c0, 2,0,3,1
-    twid.n1 c4, c0, 0,0,0,0
+    xc.pperm.h0 c1, c0, 3,2,1,0
+    xc.pperm.h0 c2, c0, 0,1,2,3
+    xc.pperm.h0 c3, c0, 2,0,3,1
+    xc.pperm.h0 c4, c0, 0,0,0,0
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.c0 c1, c0, 3,2,1,0
-    twid.c0 c2, c0, 0,1,2,3
-    twid.c0 c3, c0, 2,0,3,1
-    twid.c0 c4, c0, 0,0,0,0
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.c1 c1, c0, 3,2,1,0
-    twid.c1 c2, c0, 0,1,2,3
-    twid.c1 c3, c0, 2,0,3,1
-    twid.c1 c4, c0, 0,0,0,0
+    xc.pperm.h1 c1, c0, 3,2,1,0
+    xc.pperm.h1 c2, c0, 0,1,2,3
+    xc.pperm.h1 c3, c0, 2,0,3,1
+    xc.pperm.h1 c4, c0, 0,0,0,0
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.c2 c1, c0, 3,2,1,0
-    twid.c2 c2, c0, 0,1,2,3
-    twid.c2 c3, c0, 2,0,3,1
-    twid.c2 c4, c0, 0,0,0,0
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
-    
-    twid.c3 c1, c0, 3,2,1,0
-    twid.c3 c2, c0, 0,1,2,3
-    twid.c3 c3, c0, 2,0,3,1
-    twid.c3 c4, c0, 0,0,0,0
+    xc.pperm.b0 c1, c0, 3,2,1,0
+    xc.pperm.b0 c2, c0, 0,1,2,3
+    xc.pperm.b0 c3, c0, 2,0,3,1
+    xc.pperm.b0 c4, c0, 0,0,0,0
 
-    mv2gpr  a1, c1
-    mv2gpr  a1, c2
-    mv2gpr  a1, c3
-    mv2gpr  a1, c4
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
+
+    xc.pperm.b1 c1, c0, 3,2,1,0
+    xc.pperm.b1 c2, c0, 0,1,2,3
+    xc.pperm.b1 c3, c0, 2,0,3,1
+    xc.pperm.b1 c4, c0, 0,0,0,0
+
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
+
+    xc.pperm.b2 c1, c0, 3,2,1,0
+    xc.pperm.b2 c2, c0, 0,1,2,3
+    xc.pperm.b2 c3, c0, 2,0,3,1
+    xc.pperm.b2 c4, c0, 0,0,0,0
+
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4
+
+    xc.pperm.b3 c1, c0, 3,2,1,0
+    xc.pperm.b3 c2, c0, 0,1,2,3
+    xc.pperm.b3 c3, c0, 2,0,3,1
+    xc.pperm.b3 c4, c0, 0,0,0,0
+
+    xc.xcr2gpr  a1, c1
+    xc.xcr2gpr  a1, c2
+    xc.xcr2gpr  a1, c3
+    xc.xcr2gpr  a1, c4

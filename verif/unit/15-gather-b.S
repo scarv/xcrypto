@@ -3,22 +3,22 @@
 
 test_start:
 
-	mv2cop c1, a1
-	mv2cop c2, a2
-	mv2cop c3, a3 
-    
-    gather.b c2, c1, a1
-    gather.b c2, c1, a1
-    gather.b c2, c1, a1
+	xc.gpr2xcr c1, a1
+	xc.gpr2xcr c2, a2
+	xc.gpr2xcr c3, a3 
 
-    mv2gpr a1, c1
-    mv2gpr a2, c2
-    mv2gpr a3, c3
+    xc.gather.b c2, c1, a1
+    xc.gather.b c2, c1, a1
+    xc.gather.b c2, c1, a1
 
-    gather.b c3, c1, a1
-    gather.b c2, c2, a1
-    gather.b c1, c1, a1
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
 
-    mv2gpr a1, c1
-    mv2gpr a2, c2
-    mv2gpr a3, c3
+    xc.gather.b c3, c1, a1
+    xc.gather.b c2, c2, a1
+    xc.gather.b c1, c1, a1
+
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3

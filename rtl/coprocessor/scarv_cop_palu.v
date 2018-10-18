@@ -45,7 +45,7 @@ output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
 
 // Purely combinatoral block.
 assign palu_idone = palu_ivalid &&
-                    (is_mul_px ? pmul_done : 1'b1);
+                    (is_pmul_l ? pmul_done : 1'b1);
 
 // Detect which subclass of instruction to execute.
 wire is_mov_insn  = 
@@ -82,14 +82,14 @@ assign palu_cpr_rd_ben = {4{palu_idone}} & (
 //
 
 wire        cmov_cond   = palu_rs2 == 0;
-wire [31:0] result_cmov = is_mv2cop ? gpr_rs1 : palu_rs1;
+wire [31:0] result_cmov = is_gpr2xcr ? gpr_rs1 : palu_rs1;
 
 wire        is_cmov   = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV  ;
 wire        is_cmovn  = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOVN ;
-wire        is_mv2cop = is_mov_insn && id_subclass == SCARV_COP_SCLASS_MV2COP;
+wire        is_gpr2xcr = is_mov_insn && id_subclass == SCARV_COP_SCLASS_GPR2XCR;
 
 wire        wen_cmov    = 
-        (is_mv2cop             ) ||
+        (is_gpr2xcr             ) ||
         (is_cmov  &&  cmov_cond) ||
         (is_cmovn && !cmov_cond)  ;
 
@@ -99,13 +99,13 @@ wire        wen_cmov    =
 //  Bitwise Instructions
 //
 
-wire bw_lmix_cr = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LMIX_CR;
-wire bw_hmix_cr = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_HMIX_CR;
-wire bw_bop_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP_CR ;
-wire bw_ins_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS_CR ; 
-wire bw_ext_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT_CR ;
-wire bw_lli_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LLI_CR ;
-wire bw_lui_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LUI_CR ;
+wire bw_mix_l = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_MIX_L;
+wire bw_mix_h = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_MIX_H;
+wire bw_bop  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP ;
+wire bw_ins  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS ; 
+wire bw_ext  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT ;
+wire bw_ld_li  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LI ;
+wire bw_ld_hi  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HI ;
 
 // Result computation for the BOP.cr instruction
 wire [31:0] bop_result;
@@ -128,7 +128,7 @@ wire [31:0] ins_result  =
     (palu_rs3 & ~(ins_mask << ei_start));
 
 // Result computation for the MIX instructions
-wire [ 4:0] mix_ramt = {bw_hmix_cr,id_imm[3:0]};
+wire [ 4:0] mix_ramt = {bw_mix_h,id_imm[3:0]};
 
 wire [31:0] mix_t0   =
     (palu_rs1 >> mix_ramt) | (palu_rs1 << (32-mix_ramt));
@@ -138,14 +138,14 @@ wire [31:0] mix_result =
 
 // AND/ORing the various bitwise results together.
 wire [31:0] result_bitwise = 
-    {32{bw_lli_cr }} & {palu_rs3[31:16], id_imm[15:0]    } |
-    {32{bw_lui_cr }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
-    {32{bw_bop_cr }} & {bop_result                       } |
-    {32{bw_bop_cr }} & {bop_result                       } |
-    {32{bw_ext_cr }} & {ext_result                       } |
-    {32{bw_ins_cr }} & {ins_result                       } |
-    {32{bw_lmix_cr}} & {mix_result                       } |
-    {32{bw_hmix_cr}} & {mix_result                       } ;
+    {32{bw_ld_li }} & {palu_rs3[31:16], id_imm[15:0]    } |
+    {32{bw_ld_hi }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
+    {32{bw_bop }} & {bop_result                       } |
+    {32{bw_bop }} & {bop_result                       } |
+    {32{bw_ext }} & {ext_result                       } |
+    {32{bw_ins }} & {ins_result                       } |
+    {32{bw_mix_l}} & {mix_result                       } |
+    {32{bw_mix_h}} & {mix_result                       } ;
 
 // ----------------------------------------------------------------------
 
@@ -153,26 +153,26 @@ wire [31:0] result_bitwise =
 //  Twiddle Instructions
 //
 
-wire twid_b  = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_B ;
-wire twid_n0 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_N0;
-wire twid_n1 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_N1;
-wire twid_c0 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_C0;
-wire twid_c1 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_C1;
-wire twid_c2 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_C2;
-wire twid_c3 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_TWID_C3;
+wire pperm_w  = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_W ;
+wire pperm_h0 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_H0;
+wire pperm_h1 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_H1;
+wire pperm_b0 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_B0;
+wire pperm_b1 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_B1;
+wire pperm_b2 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_B2;
+wire pperm_b3 = is_twid_insn && id_subclass == SCARV_COP_SCLASS_PPERM_B3;
 
 // Input signals to the twiddle logic
-wire [7:0] twid_b_in  [3:0];
+wire [7:0] pperm_w_in  [3:0];
 wire [3:0] twid_n_in  [3:0];
 wire [1:0] twid_c_in  [3:0];
 
 // Output signals from the twiddle logic
-wire [31:0] twid_b_out;
+wire [31:0] pperm_w_out;
 wire [15:0] twid_n_out;
 wire [ 7:0] twid_c_out;
 
 // Result signals for the writeback logic
-wire [31:0] twid_b_result;
+wire [31:0] pperm_w_result;
 wire [31:0] twid_n_result;
 wire [31:0] twid_c_result;
 
@@ -183,20 +183,20 @@ wire [1:0] b2  = id_imm[3:2];
 wire [1:0] b3  = id_imm[1:0];
 
 // Input halfword to twid.nX
-wire [15:0] twid_n_hw = twid_n0 ? palu_rs1[15:0] : palu_rs1[31:16];
+wire [15:0] twid_n_hw = pperm_h0 ? palu_rs1[15:0] : palu_rs1[31:16];
 
 // Input byte to twid.cX
 wire [ 7:0] twid_c_b  =
-    {8{twid_c3}} & palu_rs1[31:24] |
-    {8{twid_c2}} & palu_rs1[23:16] |
-    {8{twid_c1}} & palu_rs1[15: 8] |
-    {8{twid_c0}} & palu_rs1[ 7: 0] ;
+    {8{pperm_b3}} & palu_rs1[31:24] |
+    {8{pperm_b2}} & palu_rs1[23:16] |
+    {8{pperm_b1}} & palu_rs1[15: 8] |
+    {8{pperm_b0}} & palu_rs1[ 7: 0] ;
 
 // Twiddle byte input array
-assign twid_b_in[3] = palu_rs1[31:24];
-assign twid_b_in[2] = palu_rs1[23:16];
-assign twid_b_in[1] = palu_rs1[15: 8];
-assign twid_b_in[0] = palu_rs1[ 7: 0];
+assign pperm_w_in[3] = palu_rs1[31:24];
+assign pperm_w_in[2] = palu_rs1[23:16];
+assign pperm_w_in[1] = palu_rs1[15: 8];
+assign pperm_w_in[0] = palu_rs1[ 7: 0];
 
 // Twiddle nibble input array
 assign twid_n_in[3] = twid_n_hw[15:12];
@@ -211,8 +211,8 @@ assign twid_c_in[1] = twid_c_b[3:2];
 assign twid_c_in[0] = twid_c_b[1:0];
 
 // Output array gathering
-assign twid_b_out = 
-    {twid_b_in[b3], twid_b_in[b2], twid_b_in[b1], twid_b_in[b0]};
+assign pperm_w_out = 
+    {pperm_w_in[b3], pperm_w_in[b2], pperm_w_in[b1], pperm_w_in[b0]};
 
 assign twid_n_out =
     {twid_n_in[b3], twid_n_in[b2], twid_n_in[b1], twid_n_in[b0]};
@@ -221,21 +221,21 @@ assign twid_c_out =
     {twid_c_in[b3], twid_c_in[b2], twid_c_in[b1], twid_c_in[b0]};
 
 // Result construction
-assign twid_b_result = 
-    {32{twid_b}} & twid_b_out;
+assign pperm_w_result = 
+    {32{pperm_w}} & pperm_w_out;
 
 assign twid_n_result = 
-    {32{twid_n0}} & {palu_rs1[31:16], twid_n_out} |
-    {32{twid_n1}} & {twid_n_out, palu_rs1[15: 0]} ;
+    {32{pperm_h0}} & {palu_rs1[31:16], twid_n_out} |
+    {32{pperm_h1}} & {twid_n_out, palu_rs1[15: 0]} ;
 
 assign twid_c_result = 
-{32{twid_c0}} & {palu_rs1[31:24],palu_rs1[23:16],palu_rs1[15:8],twid_c_out} |
-{32{twid_c1}} & {palu_rs1[31:24],palu_rs1[23:16],twid_c_out, palu_rs1[7:0]} |
-{32{twid_c2}} & {palu_rs1[31:24],twid_c_out, palu_rs1[15:8], palu_rs1[7:0]} |
-{32{twid_c3}} & {twid_c_out, palu_rs1[23:16],palu_rs1[15:8], palu_rs1[7:0]} ;
+{32{pperm_b0}} & {palu_rs1[31:24],palu_rs1[23:16],palu_rs1[15:8],twid_c_out} |
+{32{pperm_b1}} & {palu_rs1[31:24],palu_rs1[23:16],twid_c_out, palu_rs1[7:0]} |
+{32{pperm_b2}} & {palu_rs1[31:24],twid_c_out, palu_rs1[15:8], palu_rs1[7:0]} |
+{32{pperm_b3}} & {twid_c_out, palu_rs1[23:16],palu_rs1[15:8], palu_rs1[7:0]} ;
 
 wire [31:0] result_twid = 
-    twid_b_result | twid_n_result | twid_c_result;
+    pperm_w_result | twid_n_result | twid_c_result;
 
 // ----------------------------------------------------------------------
 
@@ -271,43 +271,43 @@ wire        pshf_sl   ; // shift left / n shift right
 wire        pshf_r    ; // rotate / n shift
 wire [31:0] pshf_c    ; // Result
 
-assign padd_a = is_mul_px ? pmul_add_a[31:0] : palu_rs1;
-assign padd_b = is_mul_px ? pmul_add_b[31:0] : palu_rs2;
+assign padd_a = is_pmul_l ? pmul_add_a[31:0] : palu_rs1;
+assign padd_b = is_pmul_l ? pmul_add_b[31:0] : palu_rs2;
 
 assign pmul_a       = palu_rs1;
 assign pmul_b       = palu_rs2;
 assign pmul_add_c   = padd_c;
-assign pmul_start   = is_mul_px && is_parith_insn;
+assign pmul_start   = is_pmul_l && is_parith_insn;
 assign pmul_shf_c   = pshf_c;
 
-wire   shift_imm    = is_slli_px || is_srli_px || is_roti_px;
-assign pshf_a       = is_mul_px ? pmul_shf_a : palu_rs1;
-assign pshf_shamt   = is_mul_px ? pmul_shf_sham      :
+wire   shift_imm    = is_psll_i || is_psrl_i || is_prot_i;
+assign pshf_a       = is_pmul_l ? pmul_shf_a : palu_rs1;
+assign pshf_shamt   = is_pmul_l ? pmul_shf_sham      :
                       shift_imm ? {1'b0,id_imm[4:0]  } :
                                   {1'b0,palu_rs2[4:0]} ;
-assign pshf_r       = is_rot_px || is_roti_px;
-assign pshf_sl      = is_mul_px || is_sll_px || is_slli_px;
+assign pshf_r       = is_prot || is_prot_i;
+assign pshf_sl      = is_pmul_l || is_psll || is_psll_i;
 
-assign padd_ci      = is_sub_px;
-assign padd_sub     = is_sub_px;
+assign padd_ci      = is_psub;
+assign padd_sub     = is_psub;
 
-wire is_add_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ADD_PX;
-wire is_sub_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SUB_PX;
-wire is_mul_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_MUL_PX;
-wire is_sll_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLL_PX;
-wire is_srl_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRL_PX;
-wire is_rot_px  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROT_PX;
-wire is_slli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SLLI_PX;
-wire is_srli_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_SRLI_PX;
-wire is_roti_px = is_parith_insn && id_subclass == SCARV_COP_SCLASS_ROTI_PX;
+wire is_padd  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PADD;
+wire is_psub  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSUB;
+wire is_pmul_l  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PMUL_L;
+wire is_psll  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL;
+wire is_psrl  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL;
+wire is_prot  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT;
+wire is_psll_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL_I;
+wire is_psrl_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL_I;
+wire is_prot_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT_I;
 
-wire is_shift   =  is_sll_px  || is_srl_px  || is_rot_px  || is_slli_px ||
-                   is_srli_px || is_roti_px ;
+wire is_shift   =  is_psll  || is_psrl  || is_prot  || is_psll_i ||
+                   is_psrl_i || is_prot_i ;
 
 assign result_parith =
-    {32{is_mul_px}} & pmul_result   |
-    {32{is_add_px}} & padd_c        |
-    {32{is_sub_px}} & padd_c        |
+    {32{is_pmul_l}} & pmul_result   |
+    {32{is_padd}} & padd_c        |
+    {32{is_psub}} & padd_c        |
     {32{is_shift }} & pshf_c        ;
 
 

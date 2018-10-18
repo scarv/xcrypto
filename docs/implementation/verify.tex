@@ -63,12 +63,12 @@ verification flow.
 \item Scatter/Gather instruction addresses were not correctly registered
     by the formal verification interface.
 \item Scatter instructions set write enable but no byte enable bits.
-\item {\tt gtu.mp} Instruction gave incorrect result iff crs2==crs3.
-\item {\tt srl.mp} and {\tt sll.mp} didn't give a 0 result if the shift
+\item {\tt mgte} Instruction gave incorrect result iff crs2==crs3.
+\item {\tt msrl} and {\tt msll} didn't give a 0 result if the shift
     amount was out of bounds.
-\item {\tt mac.mp} was missing the final addition writeback due to not
+\item {\tt mmul.1} was missing the final addition writeback due to not
     storing temporaries properly.
-\item {\tt mul.px} did not mask partial sums properly and was writing
+\item {\tt pmul.l} did not mask partial sums properly and was writing
     intermediate results to the register file.
 \end{itemize}
 

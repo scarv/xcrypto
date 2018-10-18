@@ -56,12 +56,12 @@ input  wire         cop_mem_error      // Error
 
 wire is_mem  = mem_ivalid && id_class == SCARV_COP_ICLASS_LOADSTORE;
 
-wire is_lw   = is_mem && id_subclass == SCARV_COP_SCLASS_LW_CR;
+wire is_lw   = is_mem && id_subclass == SCARV_COP_SCLASS_LD_W;
 wire is_lh   = is_mem && id_subclass == SCARV_COP_SCLASS_LH_CR;
 wire is_lb   = is_mem && id_subclass == SCARV_COP_SCLASS_LB_CR;
-wire is_sw   = is_mem && id_subclass == SCARV_COP_SCLASS_SW_CR;
-wire is_sh   = is_mem && id_subclass == SCARV_COP_SCLASS_SH_CR;
-wire is_sb   = is_mem && id_subclass == SCARV_COP_SCLASS_SB_CR;
+wire is_sw   = is_mem && id_subclass == SCARV_COP_SCLASS_ST_W;
+wire is_sh   = is_mem && id_subclass == SCARV_COP_SCLASS_ST_H;
+wire is_sb   = is_mem && id_subclass == SCARV_COP_SCLASS_ST_B;
 
 wire single_mem = is_lw || is_lh || is_lb || is_sw || is_sh || is_sb;
 

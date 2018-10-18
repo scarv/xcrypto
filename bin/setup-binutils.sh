@@ -9,5 +9,5 @@ git apply --apply $COP_HOME/external/riscv-binutils-gdb-2.30.patch
 mkdir build
 cd build
 ../configure --target=riscv32
-make
+make -j 4
 cd $COP_HOME

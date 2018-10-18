@@ -78,7 +78,7 @@ generate if(RNG_TYPE == SCARV_COP_RNG_TYPE_LFSR32) begin : gen_lfsr32
     //
     // Generate a simple 32-bit LFSR for testing purposes.
     //
-    //  !! This is absolutely *not* appropriate for cryptography !!
+    //  !! This is absolutely *not* appropriate fioryptography !!
     //
 
     reg [31:0] rng_value;
