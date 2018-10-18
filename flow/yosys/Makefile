@@ -4,7 +4,7 @@ YS          ?= $(YS_INSTALL)yosys
 YSMTBMC     ?= $(YS_INSTALL)yosys-smtbmc
 YS_SCRIPT   ?= write-smt-tb.ys
 
-BMC_STEPS   ?= 7 
+BMC_STEPS   ?= 10
 
 SBY         ?= sby
 SBY_SCRIPT  ?= proofs.sby
@@ -23,6 +23,7 @@ LOG_SMT2    = $(COP_HOME)/work/smt2/synthesis.log
 SMTDIR          ?= $(COP_WORK)/smt2
 CHECKS_DIR       = $(COP_HOME)/verif/formal
 
+FML_ENGINE      ?= boolector
 FML_CHECK_NAME  ?= correct_invalid_opcode_response \
                    correct_result_encodings \
                    instr_mv2cop \
@@ -51,7 +52,7 @@ adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 .PHONY: smt2
 smt2: $(SMT2_out)
 $(SMTDIR)/%.smt2 : $(SRC_RTL) $(SRC_VERIF)
-	-mkdir -p $(dir $(SMT2_out))
+	@mkdir -p $(word 1, $(dir $(SMT2_out)))
 	$(YS) -qQT -l $@.log \
         -p"verilog_defaults -add -DFML_CHECK_NAME=$(basename $(notdir $@))" \
         -p"script $(YS_SCRIPT)" \
@@ -62,7 +63,7 @@ smt2-trace: $(SMT2_out)
                -g \
                --presat \
                --dump-vcd $(SMT2_TRACE) \
-               -s z3 \
+               -s $(FML_ENGINE) \
                $(SMT2_out)
 
 $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
@@ -71,7 +72,7 @@ $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
 	$(YSMTBMC) -t $(BMC_STEPS) \
                --dump-vcd $@.vcd \
                --noprogress \
-               -s z3 \
+               -s $(FML_ENGINE) \
                $< | tee -a $@
 	echo "`date` Finished $(notdir $(basename $@))" >> $@
 

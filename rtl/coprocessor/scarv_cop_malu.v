@@ -138,7 +138,7 @@ wire [63:0] n_tmp;
 wire       tmp_ld_add = 
     fsm0 && (is_add2_mp || is_add3_mp || is_sub2_mp || is_sub3_mp ||
              is_acc1_mp || is_acc2_mp                                   ) ||
-    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp                     ) ;
+    fsm1 && (is_add3_mp || is_sub3_mp || is_acc2_mp || is_mac_mp        ) ;
 
 // Load multiplier result into tmp.
 wire       tmp_ld_mul =
@@ -174,9 +174,9 @@ wire cmp_eq = cmp_lhs == cmp_rhs;
 wire cmp_lt = cmp_lhs <  cmp_rhs;
 
 wire result_cmp =
-    (is_equ_mp && (cmp_eq && |gpr_rs1           )) ||
-    (is_ltu_mp && (cmp_eq && |gpr_rs1 ||  cmp_lt)) ||
-    (is_gtu_mp && (cmp_eq && |gpr_rs1 || !cmp_lt)) ;
+    (is_equ_mp && ((cmp_eq && |gpr_rs1)                       )) ||
+    (is_ltu_mp && ((cmp_eq && |gpr_rs1) ||  (cmp_lt          ))) ||
+    (is_gtu_mp && ((cmp_eq && |gpr_rs1) || !(cmp_lt || cmp_eq))) ;
 
 //
 // 64 bit adder
@@ -226,16 +226,21 @@ assign result_mul   = mul_lhs * mul_rhs ;
 
 wire        shiftright  = is_srl_mp  || is_srli_mp                  ;
 
-wire [5:0]  shamt       = is_srli_mp || is_slli_mp ? id_imm[5:0]    : 
-                                                     malu_rs3[5:0]  ;
+wire [5:0]  shamt       = 
+    is_srli_mp || is_slli_mp ? {2'b0,id_imm[3:0]}    : 
+                               malu_rs3[5:0]         ;
+
+// Shift results return zero if shift amount greater than 63.
+wire        shift_ret_z = (is_srl_mp || is_sll_mp) && |malu_rs3[31:6];
 
 wire   shf_gated        = is_srli_mp || is_slli_mp ||
                           is_srl_mp  || is_sll_mp;
 
 assign shf_lhs          = {64{shf_gated}} & {malu_rs1, malu_rs2}    ;
 
-assign result_shf       = shiftright ? shf_lhs >> shamt             :
-                                       shf_lhs << shamt             ;
+assign result_shf       = shift_ret_z ? 64'b0                        :
+                          shiftright  ? shf_lhs >> shamt             :
+                                        shf_lhs << shamt             ;
 
 //
 // MP instruction writeback data

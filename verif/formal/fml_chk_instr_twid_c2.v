@@ -17,7 +17,7 @@ wire [1:0] split[3:0];
 
 assign split[3] = `CRS1[23:22];
 assign split[2] = `CRS1[21:20];
-assign split[1] = `CRS1[18:18];
+assign split[1] = `CRS1[19:18];
 assign split[0] = `CRS1[17:16];
 
 wire [31:0] twid_c2_result = {

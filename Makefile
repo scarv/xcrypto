@@ -14,6 +14,7 @@ FORMAL_CHECKS = $(shell find ./verif/formal -name "fml_chk_*.v")
 FORMAL_CHECK_NAMES = $(basename $(notdir $(FORMAL_CHECKS)))
 
 export FML_CHECK_NAME = $(subst fml_chk_,,$(FORMAL_CHECK_NAMES))
+export FML_ENGINE     = boolector
 
 export SIM_UNIT_TEST ?= $(COP_WORK)/unit/00-mvcop.hex
 export RTL_TIMEOUT   ?= 300

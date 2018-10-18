@@ -19,7 +19,11 @@
 
 `define CRS1 vtx_crs1_val_pre
 `define CRS2 vtx_crs2_val_pre
+`define CRS3 vtx_crs3_val_pre
 `define CRD  vtx_crd_val_pre
+`define CRD1 vtx_crd1_val_pre
+`define CRD2 vtx_crd2_val_pre
+`define CRDM vtx_crdm_val_pre
 
 // Start a checker block
 `define VTX_CHECK_BEGIN(NAME) \
@@ -59,6 +63,8 @@
 `define VTX_ASSERT_CRD_VALUE_IS(VAL) \
     `VTX_ASSERT(vtx_cprs_post[dec_arg_crd] == VAL);
 
+`define VTX_ASSERT_CRDM_VALUE_IS(VAL) \
+    `VTX_ASSERT(vtx_crdm_val_post == VAL);
 // -------------------------------------------------------------------
 
 
@@ -85,14 +91,15 @@ input wire        vtx_mem_error_``TXN ,
 `VTX_MEM_TXN_PORTS(1) \
 `VTX_MEM_TXN_PORTS(2) \
 `VTX_MEM_TXN_PORTS(3) \
-input wire [ 0:0] vtx_reset                , \
-input wire [ 0:0] vtx_valid                , \
-input wire [31:0] vtx_instr_enc            , \
-input wire [31:0] vtx_instr_rs1            , \
-input wire [ 2:0] vtx_instr_result         , \
-input wire [31:0] vtx_instr_wdata          , \
-input wire [ 4:0] vtx_instr_waddr          , \
-input wire [ 0:0] vtx_instr_wen            
+input wire [ 0:0] vtx_reset        , \
+input wire [ 0:0] vtx_valid        , \
+input wire [31:0] vtx_instr_enc    , \
+input wire [31:0] vtx_instr_rs1    , \
+input wire [ 2:0] vtx_instr_result , \
+input wire [31:0] vtx_instr_wdata  , \
+input wire [ 4:0] vtx_instr_waddr  , \
+input wire [ 0:0] vtx_instr_wen    , \
+input wire [31:0] vtx_rand_sample  
 
 
 // Name of arrays to registers ports.
@@ -203,11 +210,17 @@ wire [31:0] encoded = vtx_instr_enc; \
 `include "ise_decode.v" \
 wire [31:0] vtx_cprs_pre [15:0]; \
 wire [31:0] vtx_cprs_post[15:0]; \
-(* keep *) wire [31:0] vtx_crd_val_pre = vtx_cprs_pre[dec_arg_crd]; \
-(* keep *) wire [31:0] vtx_crs1_val_pre = vtx_cprs_pre[dec_arg_crs1]; \
-(* keep *) wire [31:0] vtx_crs2_val_pre = vtx_cprs_pre[dec_arg_crs2]; \
-(* keep *) wire [31:0] vtx_crs3_val_pre = vtx_cprs_pre[dec_arg_crs3]; \
+(* keep *) wire [31:0] vtx_crd_val_pre   = vtx_cprs_pre[dec_arg_crd]; \
+(* keep *) wire [31:0] vtx_crs1_val_pre  = vtx_cprs_pre[dec_arg_crs1]; \
+(* keep *) wire [31:0] vtx_crs2_val_pre  = vtx_cprs_pre[dec_arg_crs2]; \
+(* keep *) wire [31:0] vtx_crs3_val_pre  = vtx_cprs_pre[dec_arg_crs3]; \
+(* keep *) wire [31:0] vtx_crd1_val_pre  = vtx_cprs_pre[{dec_arg_crdm,1'b0}];\
+(* keep *) wire [31:0] vtx_crd2_val_pre  = vtx_cprs_pre[{dec_arg_crdm,1'b1}];\
+(* keep *) wire [63:0] vtx_crdm_val_pre  = {vtx_crd2_val_pre,vtx_crd1_val_pre}; \
 (* keep *) wire [31:0] vtx_crd_val_post  = vtx_cprs_post[dec_arg_crd]; \
+(* keep *) wire [31:0] vtx_crd1_val_post = vtx_cprs_post[{dec_arg_crdm,1'b0}];\
+(* keep *) wire [31:0] vtx_crd2_val_post = vtx_cprs_post[{dec_arg_crdm,1'b1}];\
+(* keep *) wire [63:0] vtx_crdm_val_post = {vtx_crd2_val_post,vtx_crd1_val_post}; \
 (* keep *) wire [31:0] vtx_crs1_val_post = vtx_cprs_post[dec_arg_crs1]; \
 (* keep *) wire [31:0] vtx_crs2_val_post = vtx_cprs_post[dec_arg_crs2]; \
 (* keep *) wire [31:0] vtx_crs3_val_post = vtx_cprs_post[dec_arg_crs3]; \
