@@ -13,6 +13,8 @@ UNIT_WAVES    = $(UNIT_TESTS:%.hex=%.vcd)
 FORMAL_CHECKS = $(shell find ./verif/formal -name "fml_chk_*.v")
 FORMAL_CHECK_NAMES = $(basename $(notdir $(FORMAL_CHECKS)))
 
+export BMC_STEPS     ?= 10
+
 export FML_CHECK_NAME = $(subst fml_chk_,,$(FORMAL_CHECK_NAMES))
 export FML_ENGINE     = boolector
 
