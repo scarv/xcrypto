@@ -14,13 +14,13 @@ test_start:
     srl.px  n, c5, c0, c1
     srl.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     sll.px  w, c2, c0, c1
     sll.px  h, c3, c0, c1
@@ -28,13 +28,13 @@ test_start:
     sll.px  n, c5, c0, c1
     sll.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     rot.px  w, c2, c0, c1
     rot.px  h, c3, c0, c1
@@ -42,10 +42,10 @@ test_start:
     rot.px  n, c5, c0, c1
     rot.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6

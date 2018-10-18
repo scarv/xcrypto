@@ -730,15 +730,15 @@ end endtask
 
 
 //
-// Implementation function for the mv2gpr instruction.
+// Implementation function for the xcr2gpr instruction.
 //
-task model_do_mv2gpr;
-begin: t_model_mv2gpr
+task model_do_xcr2gpr;
+begin: t_model_xcr2gpr
     reg  [31:0] crs1;
     crs1=model_crs1;
     model_do_write_gpr(dec_arg_rd, crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
+    $display("ISE> xcr2gpr x%0d, c%0d",dec_arg_rd,dec_arg_crs1);
 end endtask
 
 
@@ -2005,7 +2005,7 @@ always @(posedge g_clk) begin : p_model_control
         model_do_clear_outputs();
         
         if (dec_invalid_opcode) model_do_invalid_opcode();
-        else if (dec_mv2gpr     ) model_do_mv2gpr     ();
+        else if (dec_xcr2gpr     ) model_do_xcr2gpr     ();
         else if (dec_mv2cop     ) model_do_mv2cop     ();
         else if (dec_add_px     ) model_do_add_px     ();
         else if (dec_sub_px     ) model_do_sub_px     ();

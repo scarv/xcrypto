@@ -11,14 +11,14 @@ test_start:
     rsamp.cr c2
     rsamp.cr c3
 
-    mv2gpr a1, c1
-    mv2gpr a2, c2
-    mv2gpr a3, c3
+    xcr2gpr a1, c1
+    xcr2gpr a2, c2
+    xcr2gpr a3, c3
     
     rsamp.cr c2
     rseed.cr c1
     rsamp.cr c3
 
-    mv2gpr a1, c1
-    mv2gpr a2, c2
-    mv2gpr a3, c3
+    xcr2gpr a1, c1
+    xcr2gpr a2, c2
+    xcr2gpr a3, c3

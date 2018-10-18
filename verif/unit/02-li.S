@@ -23,7 +23,7 @@ test_start:
     lui.cr c7, 0xFFFF
     lli.cr c7, 0xFFFF
     
-    mv2gpr x0, c4
-    mv2gpr x1, c5
-    mv2gpr x2, c6
-    mv2gpr x3, c7
+    xcr2gpr x0, c4
+    xcr2gpr x1, c5
+    xcr2gpr x2, c6
+    xcr2gpr x3, c7

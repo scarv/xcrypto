@@ -14,13 +14,13 @@ test_start:
     srli.px  n, c5, c0, 2
     srli.px  c, c6, c0, 1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     slli.px  w, c2, c0, 5
     slli.px  h, c3, c0, 4
@@ -28,13 +28,13 @@ test_start:
     slli.px  n, c5, c0, 2
     slli.px  c, c6, c0, 1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     roti.px  w, c2, c0, 5
     roti.px  h, c3, c0, 4
@@ -42,10 +42,10 @@ test_start:
     roti.px  n, c5, c0, 2
     roti.px  c, c6, c0, 1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6

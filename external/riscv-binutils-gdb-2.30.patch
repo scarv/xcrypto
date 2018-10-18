@@ -402,8 +402,8 @@ index f966fb6a50..57a82b87d8 100644
  #ifndef RISCV_ENCODING_H
  #define RISCV_ENCODING_H
 +// ----- Crypto ISE BEGIN -----
-+#define MATCH_MV2GPR 0x2b
-+#define MASK_MV2GPR  0xfff8707f
++#define MATCH_XCR2GPR 0x2b
++#define MASK_XCR2GPR  0xfff8707f
 +#define MATCH_MV2COP 0x100002b
 +#define MASK_MV2COP  0xfff0787f
 +#define MATCH_ADD_PX 0x200002b
@@ -673,7 +673,7 @@ index 79e7214835..db8da1a4d5 100644
  {
  /* name,      isa,   operands, match, mask, match_func, pinfo.  */
 +// ----- Crypto ISE BEGIN -----
-+{"mv2gpr",     "x", "d,Xs",               MATCH_MV2GPR, MASK_MV2GPR, match_opcode, 0},
++{"xcr2gpr",     "x", "d,Xs",               MATCH_XCR2GPR, MASK_XCR2GPR, match_opcode, 0},
 +{"mv2cop",     "x", "XD,s",               MATCH_MV2COP, MASK_MV2COP, match_opcode, 0},
 +{"add.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ADD_PX, MASK_ADD_PX, match_opcode, 0},
 +{"sub.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SUB_PX, MASK_SUB_PX, match_opcode, 0},

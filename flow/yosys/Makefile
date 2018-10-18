@@ -27,7 +27,7 @@ FML_ENGINE      ?= boolector
 FML_CHECK_NAME  ?= correct_invalid_opcode_response \
                    correct_result_encodings \
                    instr_mv2cop \
-                   instr_mv2gpr
+                   instr_xcr2gpr
 
 FML_CHECK_SRC = $(addsuffix .v,$(addprefix $(CHECKS_DIR)/fml_chk_, $(FML_CHECK_NAME)))
 SMT2_out     ?= $(addsuffix .smt2,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))

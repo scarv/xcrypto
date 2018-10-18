@@ -28,7 +28,7 @@ localparam SCARV_COP_ICLASS_BITWISE      = 3'b111;
 localparam SCARV_COP_SCLASS_CMOV      = 4'b1000;
 localparam SCARV_COP_SCLASS_CMOVN     = 4'b1010;
 localparam SCARV_COP_SCLASS_MV2COP    = 4'b0001;
-localparam SCARV_COP_SCLASS_MV2GPR    = 4'b0000;
+localparam SCARV_COP_SCLASS_XCR2GPR    = 4'b0000;
 
 localparam SCARV_COP_SCLASS_TWID_B    = 4'b0000;
 localparam SCARV_COP_SCLASS_TWID_N0   = 4'b0010;

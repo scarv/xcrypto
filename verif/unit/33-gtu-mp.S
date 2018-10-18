@@ -21,8 +21,8 @@ test_start:
     gtu.mp  x16, x2, c2, c3
     gtu.mp  x15, x1, c3, c0
 
-    mv2gpr x16, c0
-    mv2gpr x16, c1
-    mv2gpr x16, c2
-    mv2gpr x16, c3
-    mv2gpr x16, c4
+    xcr2gpr x16, c0
+    xcr2gpr x16, c1
+    xcr2gpr x16, c2
+    xcr2gpr x16, c3
+    xcr2gpr x16, c4

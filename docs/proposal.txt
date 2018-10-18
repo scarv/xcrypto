@@ -10,7 +10,7 @@ rules:
   - b/h/w = byte/halfword/word varient
   - $ is a width
 
-MV2GPR    => xc.xcr2gpr
+XCR2GPR    => xc.xcr2gpr
 MV2COP    => xc.gpr2xcr
 
 LUI.cr    => xc.ld.hi

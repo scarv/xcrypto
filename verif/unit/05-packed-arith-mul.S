@@ -14,13 +14,13 @@ test_start:
     mul.px  n, c5, c0, c1
     mul.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     lui.cr  c0, 0x0000
     lli.cr  c0, 0x0007
@@ -33,13 +33,13 @@ test_start:
     mul.px  n, c5, c0, c1
     mul.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     lui.cr  c0, 0xF4F3
     lli.cr  c0, 0xF2F1
@@ -52,13 +52,13 @@ test_start:
     mul.px  n, c5, c0, c1
     mul.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     lui.cr  c0, 0xF4F3
     lli.cr  c0, 0xF2F1
@@ -71,13 +71,13 @@ test_start:
     mul.px  n, c5, c0, c1
     mul.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6
     
     lui.cr  c0, 0xF4F3
     lli.cr  c0, 0xF2F1
@@ -90,10 +90,10 @@ test_start:
     mul.px  n, c5, c0, c1
     mul.px  c, c6, c0, c1
 
-    mv2gpr  x1, c0
-    mv2gpr  x1, c1
-    mv2gpr  x1, c2
-    mv2gpr  x1, c3
-    mv2gpr  x1, c4
-    mv2gpr  x1, c5
-    mv2gpr  x1, c6
+    xcr2gpr  x1, c0
+    xcr2gpr  x1, c1
+    xcr2gpr  x1, c2
+    xcr2gpr  x1, c3
+    xcr2gpr  x1, c4
+    xcr2gpr  x1, c5
+    xcr2gpr  x1, c6

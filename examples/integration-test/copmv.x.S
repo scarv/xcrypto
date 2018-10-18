@@ -7,5 +7,5 @@ __move_to_cop:             # Move GPR a0 to CPR c0
 
 .global __move_to_gpr
 __move_to_gpr:             # Move CPR c0 to GPR a0
-	mv2gpr  a0, c0
+	xcr2gpr  a0, c0
     ret

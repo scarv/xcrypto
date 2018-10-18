@@ -24,8 +24,8 @@ test_start:
     lli.cr c8, 0
     ins.cr c8, c7, 4, 8
 
-    mv2gpr x0, c4
-    mv2gpr x1, c5
-    mv2gpr x2, c6
-    mv2gpr x3, c7
-    mv2gpr x3, c8
+    xcr2gpr x0, c4
+    xcr2gpr x1, c5
+    xcr2gpr x2, c6
+    xcr2gpr x3, c7
+    xcr2gpr x3, c8
