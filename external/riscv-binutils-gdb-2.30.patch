@@ -404,8 +404,8 @@ index f966fb6a50..57a82b87d8 100644
 +// ----- Crypto ISE BEGIN -----
 +#define MATCH_XCR2GPR 0x2b
 +#define MASK_XCR2GPR  0xfff8707f
-+#define MATCH_MV2COP 0x100002b
-+#define MASK_MV2COP  0xfff0787f
++#define MATCH_GPR2XCR 0x100002b
++#define MASK_GPR2XCR  0xfff0787f
 +#define MATCH_ADD_PX 0x200002b
 +#define MASK_ADD_PX  0xfe00707f
 +#define MATCH_SUB_PX 0x400002b
@@ -674,7 +674,7 @@ index 79e7214835..db8da1a4d5 100644
  /* name,      isa,   operands, match, mask, match_func, pinfo.  */
 +// ----- Crypto ISE BEGIN -----
 +{"xcr2gpr",     "x", "d,Xs",               MATCH_XCR2GPR, MASK_XCR2GPR, match_opcode, 0},
-+{"mv2cop",     "x", "XD,s",               MATCH_MV2COP, MASK_MV2COP, match_opcode, 0},
++{"gpr2xcr",     "x", "XD,s",               MATCH_GPR2XCR, MASK_GPR2XCR, match_opcode, 0},
 +{"add.px",     "x", "Xp,XD,Xs,Xt",  MATCH_ADD_PX, MASK_ADD_PX, match_opcode, 0},
 +{"sub.px",     "x", "Xp,XD,Xs,Xt",  MATCH_SUB_PX, MASK_SUB_PX, match_opcode, 0},
 +{"mul.px",     "x", "Xp,XD,Xs,Xt",  MATCH_MUL_PX, MASK_MUL_PX, match_opcode, 0},

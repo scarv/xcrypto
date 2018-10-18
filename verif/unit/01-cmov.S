@@ -3,10 +3,10 @@
 
 test_start:
 
-    mv2cop c0, x0
-    mv2cop c1, x1
-    mv2cop c2, x2
-    mv2cop c3, x3
+    gpr2xcr c0, x0
+    gpr2xcr c1, x1
+    gpr2xcr c2, x2
+    gpr2xcr c3, x3
 
     cmov.cr c4, c0, c1
     cmov.cr c5, c1, c2

@@ -4264,7 +4264,7 @@ tb_scarv_cop_top.i_grm.dec_lui_cr
 tb_scarv_cop_top.i_grm.dec_lw_cr
 tb_scarv_cop_top.i_grm.dec_mac_mp
 tb_scarv_cop_top.i_grm.dec_mul_px
-tb_scarv_cop_top.i_grm.dec_mv2cop
+tb_scarv_cop_top.i_grm.dec_gpr2xcr
 tb_scarv_cop_top.i_grm.dec_xcr2gpr
 tb_scarv_cop_top.i_grm.dec_rot_px
 tb_scarv_cop_top.i_grm.dec_roti_px
@@ -4404,7 +4404,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_arg_rs1[4:0]
 -One-hot
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_lw_cr
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mv2cop
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gpr2xcr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_xcr2gpr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc1_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_acc2_mp
@@ -5009,7 +5009,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_palu.bw_lui_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.is_cmov
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.is_cmovn
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.is_mov_insn
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.is_mv2cop
+tb_scarv_cop_top.i_dut.i_scarv_cop_palu.is_gpr2xcr
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.cmov_cond
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.ei_len[4:0]

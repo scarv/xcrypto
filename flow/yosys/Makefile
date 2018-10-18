@@ -26,7 +26,7 @@ CHECKS_DIR       = $(COP_HOME)/verif/formal
 FML_ENGINE      ?= boolector
 FML_CHECK_NAME  ?= correct_invalid_opcode_response \
                    correct_result_encodings \
-                   instr_mv2cop \
+                   instr_gpr2xcr \
                    instr_xcr2gpr
 
 FML_CHECK_SRC = $(addsuffix .v,$(addprefix $(CHECKS_DIR)/fml_chk_, $(FML_CHECK_NAME)))

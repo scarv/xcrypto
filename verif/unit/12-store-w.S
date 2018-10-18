@@ -3,9 +3,9 @@
 
 test_start:
 
-	mv2cop c1, a1
-	mv2cop c2, a2
-	mv2cop c3, a3 
+	gpr2xcr c1, a1
+	gpr2xcr c2, a2
+	gpr2xcr c3, a3 
 
     sw.cr  c1, 0(a1)
     sw.cr  c2, 4(a1)

@@ -11,7 +11,7 @@ rules:
   - $ is a width
 
 XCR2GPR    => xc.xcr2gpr
-MV2COP    => xc.gpr2xcr
+GPR2XCR    => xc.gpr2xcr
 
 LUI.cr    => xc.ld.hi
 LLI.cr    => xc.ld.hi

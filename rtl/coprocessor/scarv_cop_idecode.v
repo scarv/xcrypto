@@ -105,7 +105,7 @@ wire class_random       =
     dec_rseed_cr || dec_rsamp_cr;
 
 wire class_move         = 
-    dec_xcr2gpr   || dec_mv2cop   || dec_cmov_cr ||  dec_cmovn_cr ;
+    dec_xcr2gpr   || dec_gpr2xcr   || dec_cmov_cr ||  dec_cmovn_cr ;
 
 wire class_mp           = 
     dec_equ_mp  || dec_ltu_mp  || dec_gtu_mp  || dec_add3_mp || 

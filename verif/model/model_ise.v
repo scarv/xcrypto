@@ -743,13 +743,13 @@ end endtask
 
 
 //
-// Implementation function for the mv2cop instruction.
+// Implementation function for the gpr2xcr instruction.
 //
-task model_do_mv2cop;
-begin: t_model_mv2cop
+task model_do_gpr2xcr;
+begin: t_model_gpr2xcr
     model_do_write_cpr(dec_arg_crd, cop_rs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> mv2cop c%0d, x%0d",dec_arg_crd, dec_arg_rs1);
+    $display("ISE> gpr2xcr c%0d, x%0d",dec_arg_crd, dec_arg_rs1);
 end endtask
 
 
@@ -2006,7 +2006,7 @@ always @(posedge g_clk) begin : p_model_control
         
         if (dec_invalid_opcode) model_do_invalid_opcode();
         else if (dec_xcr2gpr     ) model_do_xcr2gpr     ();
-        else if (dec_mv2cop     ) model_do_mv2cop     ();
+        else if (dec_gpr2xcr     ) model_do_gpr2xcr     ();
         else if (dec_add_px     ) model_do_add_px     ();
         else if (dec_sub_px     ) model_do_sub_px     ();
         else if (dec_mul_px     ) model_do_mul_px     ();
