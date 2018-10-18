@@ -55,7 +55,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{LBU.cr}{crd, h, b, imm11(rs1)}{
-  \ienclbucr
+  \iencldbu
 }{
   Load a     byte from memory
   into a specific     byte of a $\XCR$ register,
@@ -68,7 +68,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{LHU.cr}{crd, h,    imm11(rs1)}{
-  \ienclhucr
+  \iencldhu
 }{
   Load a halfword from memory
   into a specific halfword of a $\XCR$ register,
@@ -151,7 +151,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{RSEED.cr}{crs1}{
-  \iencrseedcr
+  \iencrngseed
 }{
   Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\XCR$ register.
 }{
@@ -161,7 +161,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{RSAMP.cr}{crd}{
-  \iencrsampcr
+  \iencrngsamp
 }{
   Sample           $32$-bits of entropy from the RNG, writing to   a $\XCR$ register.
 }{
@@ -243,7 +243,7 @@
 \label{sec:spec:instr:2:3}
 
 \XCINSTR{LLI.cr}{crd, imm16}{
-  \iencllicr
+  \iencldli
 }{
   Load an immediate halfword
   into the lower (or least-significant) halfword of a $\XCR$ register, 
@@ -259,7 +259,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{LUI.cr}{crd, imm16}{
-  \iencluicr
+  \iencldhi 
 }{
   Load an immediate halfword
   into the upper (or  most-significant) halfword of a $\XCR$ register, 

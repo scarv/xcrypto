@@ -102,7 +102,7 @@ wire class_loadstore    =
     dec_sh_cr     || dec_sw_cr     ;
 
 wire class_random       = 
-    dec_rseed_cr || dec_rsamp_cr;
+    dec_rngseed || dec_rngsamp;
 
 wire class_move         = 
     dec_xcr2gpr   || dec_gpr2xcr   || dec_cmov_cr ||  dec_cmovn_cr ;

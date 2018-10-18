@@ -907,23 +907,23 @@ end endtask
 
 
 //
-// Implementation function for the rseed.cr instruction.
+// Implementation function for the rngseed instruction.
 //
-task model_do_rseed_cr;
-begin: t_model_rseed_cr
+task model_do_rngseed;
+begin: t_model_rngseed
     reg  [31:0] crs1;
     crs1=model_crs1;
-    $display("ISE> rseed.cr %d", dec_arg_crs1);
+    $display("ISE> rngseed %d", dec_arg_crs1);
     model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
 
 
 //
-// Implementation function for the rsamp.cr instruction.
+// Implementation function for the rngsamp instruction.
 //
-task model_do_rsamp_cr;
-begin: t_model_rsamp_cr
-    $display("ISE> rsamp.cr %d", dec_arg_crd);
+task model_do_rngsamp;
+begin: t_model_rngsamp
+    $display("ISE> rngsamp %d", dec_arg_crd);
     model_do_write_cpr(dec_arg_crd, p_random);
     model_do_instr_result(ISE_RESULT_SUCCESS);
 end endtask
@@ -2016,8 +2016,8 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_slli_px    ) model_do_slli_px    ();
         else if (dec_srli_px    ) model_do_srli_px    ();
         else if (dec_roti_px    ) model_do_roti_px    ();
-        else if (dec_rseed_cr   ) model_do_rseed_cr   ();
-        else if (dec_rsamp_cr   ) model_do_rsamp_cr   ();
+        else if (dec_rngseed   ) model_do_rngseed   ();
+        else if (dec_rngsamp   ) model_do_rngsamp   ();
         else if (dec_cmov_cr    ) model_do_cmov_cr    ();
         else if (dec_cmovn_cr   ) model_do_cmovn_cr   ();
         else if (dec_scatter_b  ) model_do_scatter_b  ();

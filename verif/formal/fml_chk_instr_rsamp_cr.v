@@ -10,15 +10,15 @@
 // 
 
 
-`VTX_CHECKER_MODULE_BEGIN(instr_rsamp_cr)
+`VTX_CHECKER_MODULE_BEGIN(instr_rngsamp)
 
 //
-// rsamp_cr
+// rngsamp
 //
 //  Checks that the most recent sample of the COP RNG is written to the
 //  correct register.
 //
-`VTX_CHECK_INSTR_BEGIN(rsamp_cr) 
+`VTX_CHECK_INSTR_BEGIN(rngsamp) 
     
     // Value of destination register post instruction should be the same
     // as the most recent 32-bit random sample.
@@ -30,6 +30,6 @@
     // Never writes to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
     
-`VTX_CHECK_INSTR_END(rsamp_cr)
+`VTX_CHECK_INSTR_END(rngsamp)
 
 `VTX_CHECKER_MODULE_END

@@ -4268,8 +4268,8 @@ tb_scarv_cop_top.i_grm.dec_gpr2xcr
 tb_scarv_cop_top.i_grm.dec_xcr2gpr
 tb_scarv_cop_top.i_grm.dec_rot_px
 tb_scarv_cop_top.i_grm.dec_roti_px
-tb_scarv_cop_top.i_grm.dec_rsamp_cr
-tb_scarv_cop_top.i_grm.dec_rseed_cr
+tb_scarv_cop_top.i_grm.dec_rngsamp
+tb_scarv_cop_top.i_grm.dec_rngseed
 tb_scarv_cop_top.i_grm.dec_sb_cr
 tb_scarv_cop_top.i_grm.dec_scatter_b
 tb_scarv_cop_top.i_grm.dec_scatter_h
@@ -4431,8 +4431,8 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mac_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_mul_px
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rot_px
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_roti_px
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rsamp_cr
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rseed_cr
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rngsamp
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_rngseed
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_sb_cr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_scatter_b
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_scatter_h
