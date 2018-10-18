@@ -3,22 +3,22 @@
 
 test_start:
 
-	gpr2xcr c1, a1
-	gpr2xcr c2, a2
-	gpr2xcr c3, a3 
-    
-    gather.h c2, c1, a1
-    gather.h c2, c1, a1
-    gather.h c2, c1, a1
+	xc.gpr2xcr c1, a1
+	xc.gpr2xcr c2, a2
+	xc.gpr2xcr c3, a3 
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
+    xc.gather.h c2, c1, a1
+    xc.gather.h c2, c1, a1
+    xc.gather.h c2, c1, a1
 
-    gather.h c3, c1, a1
-    gather.h c2, c2, a1
-    gather.h c1, c1, a1
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
+    xc.gather.h c3, c1, a1
+    xc.gather.h c2, c2, a1
+    xc.gather.h c1, c1, a1
+
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3

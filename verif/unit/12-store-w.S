@@ -3,46 +3,46 @@
 
 test_start:
 
-	gpr2xcr c1, a1
-	gpr2xcr c2, a2
-	gpr2xcr c3, a3 
+	xc.gpr2xcr c1, a1
+	xc.gpr2xcr c2, a2
+	xc.gpr2xcr c3, a3 
 
-    st.w  c1, 0(a1)
-    st.w  c2, 4(a1)
-    st.w  c3,16(a1)
+    xc.st.w  c1, 0(a1)
+    xc.st.w  c2, 4(a1)
+    xc.st.w  c3,16(a1)
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
 
-    st.w  c1, 0(a1)
-    st.w  c2, 4(a1)
-    st.w  c3,16(a1)
+    xc.st.w  c1, 0(a1)
+    xc.st.w  c2, 4(a1)
+    xc.st.w  c3,16(a1)
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
-    
-    st.w  c1, 0(a1)
-    st.w  c2, 4(a1)
-    st.w  c3,16(a1)
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
-    
-    st.w  c1, 0(a1)
-    st.w  c2, 4(a1)
-    st.w  c3,16(a1)
+    xc.st.w  c1, 0(a1)
+    xc.st.w  c2, 4(a1)
+    xc.st.w  c3,16(a1)
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
-    
-    st.w  c1, 0(a1)
-    st.w  c2, 4(a1)
-    st.w  c3,16(a1)
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
 
-    xcr2gpr a1, c1
-    xcr2gpr a2, c2
-    xcr2gpr a3, c3
+    xc.st.w  c1, 0(a1)
+    xc.st.w  c2, 4(a1)
+    xc.st.w  c3,16(a1)
+
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3
+
+    xc.st.w  c1, 0(a1)
+    xc.st.w  c2, 4(a1)
+    xc.st.w  c3,16(a1)
+
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3

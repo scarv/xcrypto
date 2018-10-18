@@ -3,97 +3,97 @@
 
 test_start:
 
-    ld.hi  c0, 0x0000
-    ld.li  c0, 0x0001
-    ld.hi  c1, 0x0000
-    ld.li  c1, 4  
+    xc.ld.hi  c0, 0x0000
+    xc.ld.li  c0, 0x0001
+    xc.ld.hi  c1, 0x0000
+    xc.ld.li  c1, 4  
 
-    pmul.l  w, c2, c0, c1
-    pmul.l  h, c3, c0, c1
-    pmul.l  b, c4, c0, c1
-    pmul.l  n, c5, c0, c1
-    pmul.l  c, c6, c0, c1
+    xc.pmul.l  w, c2, c0, c1
+    xc.pmul.l  h, c3, c0, c1
+    xc.pmul.l  b, c4, c0, c1
+    xc.pmul.l  n, c5, c0, c1
+    xc.pmul.l  c, c6, c0, c1
 
-    xcr2gpr  x1, c0
-    xcr2gpr  x1, c1
-    xcr2gpr  x1, c2
-    xcr2gpr  x1, c3
-    xcr2gpr  x1, c4
-    xcr2gpr  x1, c5
-    xcr2gpr  x1, c6
-    
-    ld.hi  c0, 0x0000
-    ld.li  c0, 0x0007
-    ld.hi  c1, 0x0000
-    ld.li  c1, 4  
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
 
-    pmul.l  w, c2, c0, c1
-    pmul.l  h, c3, c0, c1
-    pmul.l  b, c4, c0, c1
-    pmul.l  n, c5, c0, c1
-    pmul.l  c, c6, c0, c1
+    xc.ld.hi  c0, 0x0000
+    xc.ld.li  c0, 0x0007
+    xc.ld.hi  c1, 0x0000
+    xc.ld.li  c1, 4  
 
-    xcr2gpr  x1, c0
-    xcr2gpr  x1, c1
-    xcr2gpr  x1, c2
-    xcr2gpr  x1, c3
-    xcr2gpr  x1, c4
-    xcr2gpr  x1, c5
-    xcr2gpr  x1, c6
-    
-    ld.hi  c0, 0xF4F3
-    ld.li  c0, 0xF2F1
-    ld.hi  c1, 0x1111
-    ld.li  c1, 0x1111
-    
-    pmul.l  w, c2, c0, c1
-    pmul.l  h, c3, c0, c1
-    pmul.l  b, c4, c0, c1
-    pmul.l  n, c5, c0, c1
-    pmul.l  c, c6, c0, c1
+    xc.pmul.l  w, c2, c0, c1
+    xc.pmul.l  h, c3, c0, c1
+    xc.pmul.l  b, c4, c0, c1
+    xc.pmul.l  n, c5, c0, c1
+    xc.pmul.l  c, c6, c0, c1
 
-    xcr2gpr  x1, c0
-    xcr2gpr  x1, c1
-    xcr2gpr  x1, c2
-    xcr2gpr  x1, c3
-    xcr2gpr  x1, c4
-    xcr2gpr  x1, c5
-    xcr2gpr  x1, c6
-    
-    ld.hi  c0, 0xF4F3
-    ld.li  c0, 0xF2F1
-    ld.hi  c1, 0x2222
-    ld.li  c1, 0x2222
-    
-    pmul.l  w, c2, c0, c1
-    pmul.l  h, c3, c0, c1
-    pmul.l  b, c4, c0, c1
-    pmul.l  n, c5, c0, c1
-    pmul.l  c, c6, c0, c1
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
 
-    xcr2gpr  x1, c0
-    xcr2gpr  x1, c1
-    xcr2gpr  x1, c2
-    xcr2gpr  x1, c3
-    xcr2gpr  x1, c4
-    xcr2gpr  x1, c5
-    xcr2gpr  x1, c6
-    
-    ld.hi  c0, 0xF4F3
-    ld.li  c0, 0xF2F1
-    ld.hi  c1, 0x3333
-    ld.li  c1, 0x3333
-    
-    pmul.l  w, c2, c0, c1
-    pmul.l  h, c3, c0, c1
-    pmul.l  b, c4, c0, c1
-    pmul.l  n, c5, c0, c1
-    pmul.l  c, c6, c0, c1
+    xc.ld.hi  c0, 0xF4F3
+    xc.ld.li  c0, 0xF2F1
+    xc.ld.hi  c1, 0x1111
+    xc.ld.li  c1, 0x1111
 
-    xcr2gpr  x1, c0
-    xcr2gpr  x1, c1
-    xcr2gpr  x1, c2
-    xcr2gpr  x1, c3
-    xcr2gpr  x1, c4
-    xcr2gpr  x1, c5
-    xcr2gpr  x1, c6
+    xc.pmul.l  w, c2, c0, c1
+    xc.pmul.l  h, c3, c0, c1
+    xc.pmul.l  b, c4, c0, c1
+    xc.pmul.l  n, c5, c0, c1
+    xc.pmul.l  c, c6, c0, c1
+
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
+
+    xc.ld.hi  c0, 0xF4F3
+    xc.ld.li  c0, 0xF2F1
+    xc.ld.hi  c1, 0x2222
+    xc.ld.li  c1, 0x2222
+
+    xc.pmul.l  w, c2, c0, c1
+    xc.pmul.l  h, c3, c0, c1
+    xc.pmul.l  b, c4, c0, c1
+    xc.pmul.l  n, c5, c0, c1
+    xc.pmul.l  c, c6, c0, c1
+
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
+
+    xc.ld.hi  c0, 0xF4F3
+    xc.ld.li  c0, 0xF2F1
+    xc.ld.hi  c1, 0x3333
+    xc.ld.li  c1, 0x3333
+
+    xc.pmul.l  w, c2, c0, c1
+    xc.pmul.l  h, c3, c0, c1
+    xc.pmul.l  b, c4, c0, c1
+    xc.pmul.l  n, c5, c0, c1
+    xc.pmul.l  c, c6, c0, c1
+
+    xc.xcr2gpr  x1, c0
+    xc.xcr2gpr  x1, c1
+    xc.xcr2gpr  x1, c2
+    xc.xcr2gpr  x1, c3
+    xc.xcr2gpr  x1, c4
+    xc.xcr2gpr  x1, c5
+    xc.xcr2gpr  x1, c6
