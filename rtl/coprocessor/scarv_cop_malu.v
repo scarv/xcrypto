@@ -231,7 +231,7 @@ wire [5:0]  shamt       =
                                malu_rs3[5:0]         ;
 
 // Shift results return zero if shift amount greater than 63.
-wire        shift_ret_z = |malu_rs3[31:6];
+wire        shift_ret_z = (is_srl_mp || is_sll_mp) && |malu_rs3[31:6];
 
 wire   shf_gated        = is_srli_mp || is_slli_mp ||
                           is_srl_mp  || is_sll_mp;
