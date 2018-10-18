@@ -54,7 +54,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{LBU.cr}{crd, h, b, imm11(rs1)}{
+\XCINSTR{LD.BU}{crd, h, b, imm11(rs1)}{
   \iencldbu
 }{
   Load a     byte from memory
@@ -67,7 +67,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{LHU.cr}{crd, h,    imm11(rs1)}{
+\XCINSTR{LD.HU}{crd, h,    imm11(rs1)}{
   \iencldhu
 }{
   Load a halfword from memory
@@ -81,7 +81,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{LW.cr}{crd,        imm11(rs1)}{
+\XCINSTR{LD.W}{crd,        imm11(rs1)}{
   \iencldw
 }{
   Load a     word from memory 
@@ -96,7 +96,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SB.cr}{rs2, h, b, imm11(rs1)}{
+\XCINSTR{ST.B}{rs2, h, b, imm11(rs1)}{
   \iencstb
 }{
   Store a specific     byte of a $\XCR$ register into memory.
@@ -111,7 +111,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SH.cr}{rs2, h,    imm11(rs1)}{
+\XCINSTR{ST.H}{rs2, h,    imm11(rs1)}{
   \iencsth
 }{
   Store a specific halfword of a $\XCR$ register into memory.
@@ -127,7 +127,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SW.cr}{rs2,       imm11(rs1)}{
+\XCINSTR{ST.W}{rs2,       imm11(rs1)}{
   \iencstw
 }{
   Store                        a $\XCR$ register into memory.
@@ -150,7 +150,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{RSEED.cr}{crs1}{
+\XCINSTR{RNGSEED}{crs1}{
   \iencrngseed
 }{
   Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\XCR$ register.
@@ -160,7 +160,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{RSAMP.cr}{crd}{
+\XCINSTR{RNGSAMP}{crd}{
   \iencrngsamp
 }{
   Sample           $32$-bits of entropy from the RNG, writing to   a $\XCR$ register.
@@ -242,7 +242,7 @@
 \subsubsection{Class-$2.3$: bit-oriented}
 \label{sec:spec:instr:2:3}
 
-\XCINSTR{LLI.cr}{crd, imm16}{
+\XCINSTR{LD.LI}{crd, imm16}{
   \iencldli
 }{
   Load an immediate halfword
@@ -258,7 +258,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{LUI.cr}{crd, imm16}{
+\XCINSTR{LD.HI}{crd, imm16}{
   \iencldhi 
 }{
   Load an immediate halfword
@@ -274,7 +274,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{BOP.cr}{crd, crs1, crs2, lut4}{
+\XCINSTR{BOP}{crd, crs1, crs2, lut4}{
   \iencbop
 }{
   Compute the $i$-bit of a result by apply a $2$-input, $1$-output Boolean 
@@ -304,7 +304,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{EXT.cr}{crd, crs, cs, cl}{
+\XCINSTR{EXT}{crd, crs, cs, cl}{
   \iencext
 }{
   Extract a contiguous sequences of $2$-bit crumbs 
@@ -318,7 +318,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{INS.cr}{crd, crs, cs, cl}{
+\XCINSTR{INS}{crd, crs, cs, cl}{
   \iencins
 }{
   Extract a contiguous sequences of $2$-bit crumbs 
@@ -333,7 +333,7 @@
 % -----------------------------------------------------------------------------
 
 % TODO: shamt -> rtamt?
-\XCINSTR{LMIX.cr}{rd, rs1, rs2, shamt}{
+\XCINSTR{MIX.l}{rd, rs1, rs2, shamt}{
   \iencmixl
 }{
   Form a result by mix together bits from two operands based on a mask:
@@ -362,7 +362,7 @@
 % -----------------------------------------------------------------------------
 
 % TODO: shamt -> rtamt?
-\XCINSTR{HMIX.cr}{rd, rs1, rs2, shamt}{
+\XCINSTR{MIX.h}{rd, rs1, rs2, shamt}{
   \iencmixh
 }{
   Form a result by mix together bits from two operands based on a mask:
@@ -420,7 +420,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ADD.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PADD}{pw, crd, crs1, crs2}{
   \iencpadd
 }{
   Compute a   register-based packed addition, 
@@ -438,7 +438,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SUB.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PSUB}{pw, crd, crs1, crs2}{
   \iencpsub
 }{
   Compute a   register-based packed subtraction, 
@@ -456,7 +456,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{MUL.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PMUL.l}{pw, crd, crs1, crs2}{
   \iencpmull
 }{
   Compute a   register-based packed multiplication, 
@@ -474,7 +474,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SLL.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PSLL}{pw, crd, crs1, crs2}{
   \iencpsll
 }{
   Compute a   register-based packed left-shift,
@@ -501,8 +501,8 @@ $
 % -----------------------------------------------------------------------------
 
 % TODO: cshamt => pshamt ?
-\XCINSTR{SLLI.px}{pw, crd, crs1, cshamt}{
-  \iencpsll
+\XCINSTR{PSLL.i}{pw, crd, crs1, cshamt}{
+  \iencpslli
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \LSH$.
@@ -527,7 +527,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SRL.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PSRL}{pw, crd, crs1, crs2}{
   \iencpsrl
 }{
   Compute a   register-based packed right-shift,
@@ -554,7 +554,7 @@ $
 % -----------------------------------------------------------------------------
 
 % TODO: cshamt => pshamt ?
-\XCINSTR{SRLI.px}{pw, crd, crs1, cshamt}{
+\XCINSTR{PSRL.i}{pw, crd, crs1, cshamt}{
   \iencpsrl
 }{
   Compute an immediate-based packed left-shift,
@@ -580,7 +580,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ROT.px}{pw, crd, crs1, crs2}{
+\XCINSTR{PROT}{pw, crd, crs1, crs2}{
   \iencprot
 }{
   Compute a   register-based packed left-rotate,
@@ -602,7 +602,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ROTI.px}{pw, crd, crs1, cshamt}{
+\XCINSTR{PROT.i}{pw, crd, crs1, cshamt}{
   \iencproti
 }{
   Compute an immediate-based packed left-rotate,
@@ -639,7 +639,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{TWID.Nx}{crd, crs1, b0, b1, b2, b3}{
+\XCINSTR{PPERM.Hx}{crd, crs1, b0, b1, b2, b3}{
   \iencppermhzero
   \iencppermhone
 }{
@@ -660,7 +660,7 @@ $
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{TWID.Cx}{crd, crs1, b0, b1, b2, b3}{
+\XCINSTR{PPERM.Bx}{crd, crs1, b0, b1, b2, b3}{
   \iencppermbzero
   \iencppermbone
   \iencppermbtwo
@@ -727,7 +727,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ADD2.mp}{(crd2, crd1), crs1, crs2      }{
+\XCINSTR{MADD.2}{(crd2, crd1), crs1, crs2      }{
   \iencmaddtwo
 }{
   Compute a   register-based multi-precision (or ``long'') addition:
@@ -751,7 +751,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ADD3.mp}{(crd2, crd1), crs1, crs2, crs3}{
+\XCINSTR{MADD.3}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmaddthree
 }{
   Compute a   register-based multi-precision (or ``long'') addition:
@@ -777,7 +777,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SUB2.mp}{(crd2, crd1), crs1, crs2      }{
+\XCINSTR{MSUB.2}{(crd2, crd1), crs1, crs2      }{
   \iencmsubtwo
 }{
   Compute a   register-based multi-precision (or ``long'') subtraction:
@@ -800,7 +800,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SUB3.mp}{(crd2, crd1), crs1, crs2, crs3}{
+\XCINSTR{MSUB.3}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmsubthree
 }{
   Compute a   register-based multi-precision (or ``long'') subtraction:
@@ -825,7 +825,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ACC1.mp}{(crd2, crd1), crs1      }{
+\XCINSTR{MACC.1}{(crd2, crd1), crs1      }{
   \iencmaccone
 }{
   Compute a   register-based multi-precision (or ``long'') accumulation,
@@ -848,7 +848,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{ACC2.mp}{(crd2, crd1), crs1, crs2}{
+\XCINSTR{MACC.2}{(crd2, crd1), crs1, crs2}{
   \iencmacctwo
 }{
   Compute a   register-based multi-precision (or ``long'') accumulation,
@@ -874,7 +874,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{MAC.mp}{(crd2, crd1), crs1, crs2, crs3}{
+\XCINSTR{MMUL.1}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmmulone
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
@@ -902,7 +902,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SLL.mp}{(crd2, crd1), crs1, crs2, crs3}{
+\XCINSTR{MSLL}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmsll
 }{
   Compute a   register-based multi-precision (or ``long'')  left-shift:
@@ -935,7 +935,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 % TODO: why 4-bit cmshamt?
-\XCINSTR{SLLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
+\XCINSTR{MSLL.i}{(crd2, crd1), crs1, crs2, shamt}{
   \iencmslli
 }{
   Compute an immediate-based multi-precision (or ``long'')  left-shift:
@@ -959,7 +959,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{SRL.mp}{(crd2, crd1), crs1, crs2, crs3}{
+\XCINSTR{MSRL}{(crd2, crd1), crs1, crs2, crs3}{
   \iencmsrl
 }{
   Compute a   register-based multi-precision (or ``long'') right-shift:
@@ -992,7 +992,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 % TODO: why 4-bit cmshamt?
-\XCINSTR{SRLI.mp}{(crd2, crd1), crs1, crs2, shamt}{
+\XCINSTR{MSRL.i}{(crd2, crd1), crs1, crs2, shamt}{
   \iencmsrli
 }{
   Compute an immediate-based multi-precision (or ``long'') right-shift:
@@ -1016,7 +1016,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{EQU.mp}{rd, rs1, crs2, crs3}{
+\XCINSTR{MEQU}{rd, rs1, crs2, crs3}{
   \iencmequ
 }{
   Compute a ``chained'' (or ``long'') 
@@ -1033,7 +1033,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{LTU.mp}{rd, rs1, crs2, crs3}{
+\XCINSTR{MLTE}{rd, rs1, crs2, crs3}{
   \iencmlte
 }{
   Compute a ``chained'' (or ``long'') 
@@ -1051,7 +1051,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{GTU.mp}{rd, rs1, crs2, crs3}{
+\XCINSTR{MGTE}{rd, rs1, crs2, crs3}{
   \iencmgte
 }{
   Compute a ``chained'' (or ``long'') 
