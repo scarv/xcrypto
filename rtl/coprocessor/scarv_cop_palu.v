@@ -104,8 +104,8 @@ wire bw_hmix_cr = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_HMIX_CR;
 wire bw_bop_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP_CR ;
 wire bw_ins_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS_CR ; 
 wire bw_ext_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT_CR ;
-wire bw_lli_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LLI_CR ;
-wire bw_lui_cr  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LUI_CR ;
+wire bw_ld_li  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LI ;
+wire bw_ld_hi  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HI ;
 
 // Result computation for the BOP.cr instruction
 wire [31:0] bop_result;
@@ -138,8 +138,8 @@ wire [31:0] mix_result =
 
 // AND/ORing the various bitwise results together.
 wire [31:0] result_bitwise = 
-    {32{bw_lli_cr }} & {palu_rs3[31:16], id_imm[15:0]    } |
-    {32{bw_lui_cr }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
+    {32{bw_ld_li }} & {palu_rs3[31:16], id_imm[15:0]    } |
+    {32{bw_ld_hi }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
     {32{bw_bop_cr }} & {bop_result                       } |
     {32{bw_bop_cr }} & {bop_result                       } |
     {32{bw_ext_cr }} & {ext_result                       } |

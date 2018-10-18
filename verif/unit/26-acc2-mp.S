@@ -3,20 +3,20 @@
 
 test_start:
 
-    lui.cr  c0, 0x1111
-    lli.cr  c0, 0x1111
+    ld.hi  c0, 0x1111
+    ld.li  c0, 0x1111
 
-    lui.cr  c1, 0x2222
-    lli.cr  c1, 0x2222
+    ld.hi  c1, 0x2222
+    ld.li  c1, 0x2222
     
-    lui.cr  c2, 0x3333
-    lli.cr  c2, 0x3333
+    ld.hi  c2, 0x3333
+    ld.li  c2, 0x3333
     
-    lui.cr  c3, 0x4444
-    lli.cr  c3, 0x4444
+    ld.hi  c3, 0x4444
+    ld.li  c3, 0x4444
 
-    lui.cr  c9, 0xFFFF
-    lli.cr  c9, 0xFFFF
+    ld.hi  c9, 0xFFFF
+    ld.li  c9, 0xFFFF
     
     xcr2gpr  x1, c0
     xcr2gpr  x1, c1

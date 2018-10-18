@@ -3,10 +3,10 @@
 
 test_start:
 
-    lui.cr  c0, 0x7654
-    lli.cr  c0, 0x3210
-    lui.cr  c1, 0x0000
-    lli.cr  c1, 2
+    ld.hi  c0, 0x7654
+    ld.li  c0, 0x3210
+    ld.hi  c1, 0x0000
+    ld.li  c1, 2
 
     srli.px  w, c2, c0, 5
     srli.px  h, c3, c0, 4

@@ -3,12 +3,12 @@
 
 test_start:
 
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x1111
-    lli.cr  c1, 0x1111
-    lui.cr  c9, 0xFFFF
-    lli.cr  c9, 0xFFFF
+    ld.hi  c0, 0xF4F3
+    ld.li  c0, 0xF2F1
+    ld.hi  c1, 0x1111
+    ld.li  c1, 0x1111
+    ld.hi  c9, 0xFFFF
+    ld.li  c9, 0xFFFF
 
     sub2.mp  (c2,c3), c0, c1
     sub2.mp  (c4,c5), c1, c0

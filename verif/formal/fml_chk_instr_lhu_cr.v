@@ -11,7 +11,7 @@
 
 `include "fml_common.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_lhu_cr)
+`VTX_CHECKER_MODULE_BEGIN(instr_ld_hu)
 
 wire [31:0] lh_addr = vtx_instr_rs1 + {{21{dec_arg_imm11[10]}},dec_arg_imm11};
 
@@ -19,9 +19,9 @@ wire [15:0] lh_rdata = lh_addr[1] ? vtx_mem_rdata_0[31:16] :
                                     vtx_mem_rdata_0[15: 0] ;
 
 //
-// lhu_cr
+// ld_hu
 //
-`VTX_CHECK_INSTR_BEGIN(lhu_cr) 
+`VTX_CHECK_INSTR_BEGIN(ld_hu) 
 
     // Make sure it never gives the wrong error code.
     `VTX_ASSERT(vtx_instr_result != SCARV_COP_INSN_ST_ERR);
@@ -61,7 +61,7 @@ wire [15:0] lh_rdata = lh_addr[1] ? vtx_mem_rdata_0[31:16] :
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(lhu_cr)
+`VTX_CHECK_INSTR_END(ld_hu)
 
 `VTX_CHECKER_MODULE_END
 

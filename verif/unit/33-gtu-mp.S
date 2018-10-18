@@ -3,14 +3,14 @@
 
 test_start:
 
-    lui.cr  c0, 0x1111
-    lli.cr  c0, 0x1111
-    lui.cr  c1, 0x2222
-    lli.cr  c1, 0x2222
-    lui.cr  c2, 0x0000
-    lli.cr  c2, 0x0000
-    lui.cr  c3, 0x3333
-    lli.cr  c3, 0x3333
+    ld.hi  c0, 0x1111
+    ld.li  c0, 0x1111
+    ld.hi  c1, 0x2222
+    ld.li  c1, 0x2222
+    ld.hi  c2, 0x0000
+    ld.li  c2, 0x0000
+    ld.hi  c3, 0x3333
+    ld.li  c3, 0x3333
 
     gtu.mp  x0 , x0, c0, c3
     gtu.mp  x1 , x1, c1, c0

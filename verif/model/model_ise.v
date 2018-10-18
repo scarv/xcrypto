@@ -1508,10 +1508,10 @@ end endtask
 
 
 //
-// Implementation function for the lbu.cr instruction.
+// Implementation function for the ld.bu instruction.
 //
-task model_do_lbu_cr;
-begin: t_model_lbu_cr
+task model_do_ld_bu;
+begin: t_model_ld_bu
     reg [31:0] crd;
     reg [31:0] exp_addr;
     reg        wen  ;
@@ -1531,7 +1531,7 @@ begin: t_model_lbu_cr
         model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
     end else begin
         if(addr[31:28] != exp_addr[31:28]) begin
-            $display("t=%0d ERROR: lbu.cr address expected %h got %h.",
+            $display("t=%0d ERROR: ld.bu address expected %h got %h.",
                 $time, exp_addr, addr);
         end
         loaded_byte = exp_addr[1:0] == 2'b00 ? rdata[ 7: 0] :
@@ -1550,10 +1550,10 @@ end endtask
 
 
 //
-// Implementation function for the lhu.cr instruction.
+// Implementation function for the ld.hu instruction.
 //
-task model_do_lhu_cr;
-begin: t_model_lhu_cr
+task model_do_ld_hu;
+begin: t_model_ld_hu
     reg [31:0] crd;
     reg [31:0] exp_addr;
     reg        wen  ;
@@ -1572,7 +1572,7 @@ begin: t_model_lhu_cr
             model_do_instr_result(ISE_RESULT_LOAD_ACCESS_FAULT);
         end else begin
             if(addr[31:28] != exp_addr[31:28]) begin
-                $display("t=%0d ERROR: lhu.cr address expected %h got %h.",
+                $display("t=%0d ERROR: ld.hu address expected %h got %h.",
                     $time, exp_addr, addr);
             end
             loaded_hw = exp_addr[1] ? rdata[31:16] : rdata[15:0];
@@ -1625,10 +1625,10 @@ end endtask
 
 
 //
-// Implementation function for the lui.cr instruction.
+// Implementation function for the ld.hi instruction.
 //
-task model_do_lui_cr;
-begin: t_model_lui_cr
+task model_do_ld_hi;
+begin: t_model_ld_hi
     reg  [31:0] crsd;
     reg  [15:0] imm;
     reg  [31:0] wdata;
@@ -1637,15 +1637,15 @@ begin: t_model_lui_cr
     wdata = {imm,crsd[15:0]};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> lui.cr %d, %h", dec_arg_crd, imm);
+    $display("ISE> ld.hi %d, %h", dec_arg_crd, imm);
 end endtask
 
 
 //
-// Implementation function for the lli.cr instruction.
+// Implementation function for the ld.li instruction.
 //
-task model_do_lli_cr;
-begin: t_model_lli_cr
+task model_do_ld_li;
+begin: t_model_ld_li
     reg  [31:0] crsd;
     reg  [15:0] imm;
     reg  [31:0] wdata;
@@ -1654,7 +1654,7 @@ begin: t_model_lli_cr
     wdata = {crsd[31:16],imm};
     model_do_write_cpr(dec_arg_crd, wdata);
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> lli.cr %d, %h", dec_arg_crd, imm);
+    $display("ISE> ld.li %d, %h", dec_arg_crd, imm);
 end endtask
 
 
@@ -2041,11 +2041,11 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_acc2_mp    ) model_do_acc2_mp    ();
         else if (dec_acc1_mp    ) model_do_acc1_mp    ();
         else if (dec_mac_mp     ) model_do_mac_mp     ();
-        else if (dec_lbu_cr     ) model_do_lbu_cr     ();
-        else if (dec_lhu_cr     ) model_do_lhu_cr     ();
+        else if (dec_ld_bu     ) model_do_ld_bu     ();
+        else if (dec_ld_hu     ) model_do_ld_hu     ();
         else if (dec_lw_cr      ) model_do_lw_cr      ();
-        else if (dec_lui_cr     ) model_do_lui_cr     ();
-        else if (dec_lli_cr     ) model_do_lli_cr     ();
+        else if (dec_ld_hi     ) model_do_ld_hi     ();
+        else if (dec_ld_li     ) model_do_ld_li     ();
         else if (dec_twid_b     ) model_do_twid_b     ();
         else if (dec_twid_n0    ) model_do_twid_n0    ();
         else if (dec_twid_n1    ) model_do_twid_n1    ();

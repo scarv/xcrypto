@@ -3,10 +3,10 @@
 
 test_start:
 
-    lui.cr  c0, 0x0000
-    lli.cr  c0, 0x0001
-    lui.cr  c1, 0x0000
-    lli.cr  c1, 4  
+    ld.hi  c0, 0x0000
+    ld.li  c0, 0x0001
+    ld.hi  c1, 0x0000
+    ld.li  c1, 4  
 
     mul.px  w, c2, c0, c1
     mul.px  h, c3, c0, c1
@@ -22,10 +22,10 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    lui.cr  c0, 0x0000
-    lli.cr  c0, 0x0007
-    lui.cr  c1, 0x0000
-    lli.cr  c1, 4  
+    ld.hi  c0, 0x0000
+    ld.li  c0, 0x0007
+    ld.hi  c1, 0x0000
+    ld.li  c1, 4  
 
     mul.px  w, c2, c0, c1
     mul.px  h, c3, c0, c1
@@ -41,10 +41,10 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x1111
-    lli.cr  c1, 0x1111
+    ld.hi  c0, 0xF4F3
+    ld.li  c0, 0xF2F1
+    ld.hi  c1, 0x1111
+    ld.li  c1, 0x1111
     
     mul.px  w, c2, c0, c1
     mul.px  h, c3, c0, c1
@@ -60,10 +60,10 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x2222
-    lli.cr  c1, 0x2222
+    ld.hi  c0, 0xF4F3
+    ld.li  c0, 0xF2F1
+    ld.hi  c1, 0x2222
+    ld.li  c1, 0x2222
     
     mul.px  w, c2, c0, c1
     mul.px  h, c3, c0, c1
@@ -79,10 +79,10 @@ test_start:
     xcr2gpr  x1, c5
     xcr2gpr  x1, c6
     
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x3333
-    lli.cr  c1, 0x3333
+    ld.hi  c0, 0xF4F3
+    ld.li  c0, 0xF2F1
+    ld.hi  c1, 0x3333
+    ld.li  c1, 0x3333
     
     mul.px  w, c2, c0, c1
     mul.px  h, c3, c0, c1

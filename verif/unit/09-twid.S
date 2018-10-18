@@ -3,8 +3,8 @@
 
 test_start:
 
-    lui.cr c0, 0xF4E3
-    lli.cr c0, 0xD2C1
+    ld.hi c0, 0xF4E3
+    ld.li c0, 0xD2C1
 
     twid.b  c1, c0, 3,2,1,0
     twid.b  c2, c0, 0,1,2,3

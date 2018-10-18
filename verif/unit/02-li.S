@@ -8,20 +8,20 @@ test_start:
     gpr2xcr c2, x2
     gpr2xcr c3, x3
 
-    lli.cr c4, 0x1
-    lui.cr c4, 0x1
+    ld.li c4, 0x1
+    ld.hi c4, 0x1
     
-    lui.cr c5, 0x1
-    lli.cr c5, 0x1
+    ld.hi c5, 0x1
+    ld.li c5, 0x1
 
-    lli.cr c5, 0x10
-    lui.cr c5, 0x10
+    ld.li c5, 0x10
+    ld.hi c5, 0x10
     
-    lui.cr c6, 0xf0f0
-    lli.cr c6, 0xf0f0
+    ld.hi c6, 0xf0f0
+    ld.li c6, 0xf0f0
     
-    lui.cr c7, 0xFFFF
-    lli.cr c7, 0xFFFF
+    ld.hi c7, 0xFFFF
+    ld.li c7, 0xFFFF
     
     xcr2gpr x0, c4
     xcr2gpr x1, c5

@@ -3,14 +3,14 @@
 
 test_start:
 
-    lui.cr  c0, 0xF4F3
-    lli.cr  c0, 0xF2F1
-    lui.cr  c1, 0x1111
-    lli.cr  c1, 0x1111
-    lui.cr  c3, 0x4444
-    lli.cr  c3, 0x4444
-    lui.cr  c9, 0xFFFF
-    lli.cr  c9, 0xFFFF
+    ld.hi  c0, 0xF4F3
+    ld.li  c0, 0xF2F1
+    ld.hi  c1, 0x1111
+    ld.li  c1, 0x1111
+    ld.hi  c3, 0x4444
+    ld.li  c3, 0x4444
+    ld.hi  c9, 0xFFFF
+    ld.li  c9, 0xFFFF
 
     add3.mp  (c2,c3), c0, c1, c3
     xcr2gpr  x1, c2
