@@ -70,10 +70,10 @@ assign palu_cpr_rd_wdata =
 
 //
 // Should the result be written back?
-assign palu_cpr_rd_ben =
+assign palu_cpr_rd_ben = {4{palu_idone}} & (
     is_mov_insn                                       ? {4{wen_cmov}} :
     is_bitwise_insn || is_parith_insn || is_twid_insn ? 4'hF          :
-                                                        4'h0          ;
+                                                        4'h0         );
 
 // ----------------------------------------------------------------------
 

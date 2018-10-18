@@ -68,6 +68,8 @@ verification flow.
     amount was out of bounds.
 \item {\tt mac.mp} was missing the final addition writeback due to not
     storing temporaries properly.
+\item {\tt mul.px} did not mask partial sums properly and was writing
+    intermediate results to the register file.
 \end{itemize}
 
 \subsection{Constrained Random Flow}
