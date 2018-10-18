@@ -428,10 +428,10 @@ index f966fb6a50..57a82b87d8 100644
 +#define MASK_RNGSEED  0xfff87fff
 +#define MATCH_RNGSAMP 0x1600002b
 +#define MASK_RNGSAMP  0xfffff87f
-+#define MATCH_CMOV_CR 0x1800002b
-+#define MASK_CMOV_CR  0xff08787f
-+#define MATCH_CMOVN_CR 0x1a00002b
-+#define MASK_CMOVN_CR  0xff08787f
++#define MATCH_CMOV 0x1800002b
++#define MASK_CMOV  0xff08787f
++#define MATCH_CMOVN 0x1a00002b
++#define MASK_CMOVN  0xff08787f
 +#define MATCH_SCATTER_B 0x2400002b
 +#define MASK_SCATTER_B  0xff00787f
 +#define MATCH_GATHER_B 0x2600002b
@@ -686,8 +686,8 @@ index 79e7214835..db8da1a4d5 100644
 +{"prot.i",    "x", "Xp,XD,Xs,XR",  MATCH_PROT_I, MASK_PROT_I, match_opcode, 0},
 +{"rngseed",   "x", "Xs",                 MATCH_RNGSEED, MASK_RNGSEED, match_opcode, 0},
 +{"rngsamp",   "x", "XD",                 MATCH_RNGSAMP, MASK_RNGSAMP, match_opcode, 0},
-+{"cmov.cr",    "x", "XD,Xs,Xt",           MATCH_CMOV_CR, MASK_CMOV_CR, match_opcode, 0},
-+{"cmovn.cr",   "x", "XD,Xs,Xt",           MATCH_CMOVN_CR, MASK_CMOVN_CR, match_opcode, 0},
++{"cmov",    "x", "XD,Xs,Xt",           MATCH_CMOV, MASK_CMOV, match_opcode, 0},
++{"cmovn",   "x", "XD,Xs,Xt",           MATCH_CMOVN, MASK_CMOVN, match_opcode, 0},
 +{"scatter.b",  "x", "XD,Xt,s",            MATCH_SCATTER_B, MASK_SCATTER_B, match_opcode, 0},
 +{"gather.b",   "x", "XD,Xt,s",            MATCH_GATHER_B, MASK_GATHER_B, match_opcode, 0},
 +{"scatter.h",  "x", "XD,Xt,s",            MATCH_SCATTER_H, MASK_SCATTER_H, match_opcode, 0},

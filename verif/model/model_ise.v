@@ -930,10 +930,10 @@ end endtask
 
 
 //
-// Implementation function for the cmov.cr instruction.
+// Implementation function for the cmov instruction.
 //
-task model_do_cmov_cr;
-begin: t_model_cmov_cr
+task model_do_cmov;
+begin: t_model_cmov
     reg  [31:0] crs1, crs2;
     crs1=model_crs1;
     crs2=model_crs2;
@@ -943,16 +943,16 @@ begin: t_model_cmov_cr
         // Do nothing
     end
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> cmov.cr %d, %d, %d", 
+    $display("ISE> cmov %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
 
 //
-// Implementation function for the cmovn.cr instruction.
+// Implementation function for the cmovn instruction.
 //
-task model_do_cmovn_cr;
-begin: t_model_cmovn_cr
+task model_do_cmovn;
+begin: t_model_cmovn
     reg  [31:0] crs1, crs2;
     crs1=model_crs1;
     crs2=model_crs2;
@@ -962,7 +962,7 @@ begin: t_model_cmovn_cr
         model_do_write_cpr(dec_arg_crd,crs1);
     end
     model_do_instr_result(ISE_RESULT_SUCCESS);
-    $display("ISE> cmovn.cr %d, %d, %d", 
+    $display("ISE> cmovn %d, %d, %d", 
         dec_arg_crd, dec_arg_crs1,dec_arg_crs2);
 end endtask
 
@@ -2018,8 +2018,8 @@ always @(posedge g_clk) begin : p_model_control
         else if (dec_prot_i    ) model_do_prot_i    ();
         else if (dec_rngseed   ) model_do_rngseed   ();
         else if (dec_rngsamp   ) model_do_rngsamp   ();
-        else if (dec_cmov_cr    ) model_do_cmov_cr    ();
-        else if (dec_cmovn_cr   ) model_do_cmovn_cr   ();
+        else if (dec_cmov    ) model_do_cmov    ();
+        else if (dec_cmovn   ) model_do_cmovn   ();
         else if (dec_scatter_b  ) model_do_scatter_b  ();
         else if (dec_gather_b   ) model_do_gather_b   ();
         else if (dec_scatter_h  ) model_do_scatter_h  ();

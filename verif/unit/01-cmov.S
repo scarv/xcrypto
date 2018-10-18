@@ -8,10 +8,10 @@ test_start:
     gpr2xcr c2, x2
     gpr2xcr c3, x3
 
-    cmov.cr c4, c0, c1
-    cmov.cr c5, c1, c2
-    cmov.cr c6, c2, c3
-    cmov.cr c7, c3, c4
+    cmov c4, c0, c1
+    cmov c5, c1, c2
+    cmov c6, c2, c3
+    cmov c7, c3, c4
     
     xcr2gpr x0, c4
     xcr2gpr x1, c5

@@ -10,12 +10,12 @@
 // 
 
 
-`VTX_CHECKER_MODULE_BEGIN(instr_cmovn_cr)
+`VTX_CHECKER_MODULE_BEGIN(instr_cmovn)
 
 //
 // cmovn
 //
-`VTX_CHECK_INSTR_BEGIN(cmovn_cr) 
+`VTX_CHECK_INSTR_BEGIN(cmovn) 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
     `VTX_ASSERT_WEN_IS_CLEAR
     
@@ -25,6 +25,6 @@
         `VTX_ASSERT_CRD_VALUE_IS(vtx_crd_val_pre)
     end
 
-`VTX_CHECK_INSTR_END(cmovn_cr)
+`VTX_CHECK_INSTR_END(cmovn)
 
 `VTX_CHECKER_MODULE_END
