@@ -13,7 +13,7 @@
 
 `VTX_CHECKER_MODULE_BEGIN(instr_mix_h)
 
-wire [31:0] rotated = ({`CRS1,`CRS1} >> (16+dec_arg_lut4));
+wire [31:0] rotated = ({`CRS1,`CRS1} >> (16+dec_arg_rtamt));
 
 wire [31:0] hmix_result = 
     (( `CRS2) & rotated        ) |

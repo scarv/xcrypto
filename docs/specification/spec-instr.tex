@@ -332,15 +332,14 @@
 
 % -----------------------------------------------------------------------------
 
-% TODO: shamt -> rtamt?
-\XCINSTR{MIX.l}{rd, rs1, rs2, shamt}{
+\XCINSTR{MIX.l}{rd, rs1, rs2, rtamt}{
   \iencmixl
 }{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  
   \[
   \INDEX{r}{i} = \left\{\begin{array}{ll}
-                        \INDEX{x}{i} \OP[32][u]{\RRT}   \VERB[RV]{shamt}        & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{x}{i} \OP[32][u]{\RRT}   \VERB[RV]{rtamt}        & \mbox{~if $\INDEX{m}{i} = 0$} \\
                         \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
                         \end{array}
                         \right.
@@ -351,7 +350,7 @@
   0 \leq i < 32 .
   $ 
 }{
-  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{shamt}       $ \;
+  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{rtamt}       $ \;
   \For{$i = 0$ {\bf upto} $31$}{
     \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
@@ -361,15 +360,14 @@
 
 % -----------------------------------------------------------------------------
 
-% TODO: shamt -> rtamt?
-\XCINSTR{MIX.h}{rd, rs1, rs2, shamt}{
+\XCINSTR{MIX.h}{rd, rs1, rs2, rtamt}{
   \iencmixh
 }{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  
   \[
   \INDEX{r}{i} = \left\{\begin{array}{ll}
-                        \INDEX{x}{i} \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 ) & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{x}{i} \OP[32][u]{\RRT} ( \VERB[RV]{rtamt} + 16 ) & \mbox{~if $\INDEX{m}{i} = 0$} \\
                         \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
                         \end{array}
                         \right.
@@ -380,7 +378,7 @@
   0 \leq i < 32 .
   $ 
 }{
-  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{shamt} + 16 )$ \;
+  $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{rtamt} + 16 )$ \;
   \For{$i = 0$ {\bf upto} $31$}{
     \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$

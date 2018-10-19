@@ -1176,10 +1176,10 @@ begin: t_model_mix_l
     crs1=model_crs1;
     crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
-    t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_lut4));
+    t0      = (crs1 >> dec_arg_lut4) | (crs1 << (32-dec_arg_rtamt));
     result  = (~crs2 & crd) | (crs2 & t0);
     $display("ISE> mix.l c%d, c%d, c%d, %d",
-        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_rtamt);
 end endtask
 
 
@@ -1194,10 +1194,10 @@ begin: t_model_mix_h
     crs1=model_crs1;
     crs2=model_crs2;
     model_do_read_cpr(dec_arg_crd , crd );
-    t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_lut4)));
+    t0      = (crs1 >> (16+dec_arg_lut4)) | (crs1 << (32-(16+dec_arg_rtamt)));
     result  = (~crs2 & crd) | (crs2 & t0);
     $display("ISE> mix.h c%d, c%d, c%d, 16+%d",
-        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_lut4);
+        dec_arg_crd, dec_arg_crs1, dec_arg_crs2, dec_arg_rtamt);
 end endtask
 
 

@@ -187,7 +187,8 @@ wire imm_li     = dec_ld_hi    || dec_ld_li;
 wire imm_8      = class_twiddle || dec_ext   || dec_ins;
 wire imm_sh_px  = dec_psll_i   || dec_psrl_i  || dec_prot_i;
 wire imm_sh_mp  = dec_msll_i   || dec_msrl_i;
-wire imm_lut    = dec_mix_l   || dec_mix_h  || dec_bop;
+wire imm_lut    = dec_bop;
+wire imm_rtamt  = dec_mix_l   || dec_mix_h  || dec_bop;
 
 assign id_imm = 
     {32{imm_ld      }} & {{21{encoded[31]}}, encoded[31:21]               } |
@@ -196,7 +197,8 @@ assign id_imm =
     {32{imm_8       }} & {24'b0, encoded[31:24]                           } |
     {32{imm_sh_px   }} & {27'b0, dec_arg_cshamt                           } |
     {32{imm_sh_mp   }} & {27'b0, dec_arg_cmshamt                          } |
-    {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } ;
+    {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } |
+    {32{imm_rtamt   }} & {27'b0, dec_arg_rtamt                            } ;
 
 assign id_wb_h = dec_arg_cc ;
 assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_ca;

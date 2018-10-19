@@ -30,7 +30,7 @@ cargs= ['imm11'   , 'imm11hi' , 'imm11lo' , 'imm5'
 'b2'      , 'b3'      , 'ca'      , 'cb'      ,
 'cc'      , 'cd'      , 'crs1'    , 'crs2'    ,
 'crs3'    ,             'crd'     , 'crdm'    ,
-'lut4',    'cs', 'cl']
+'lut4', 'rtamt',   'cs', 'cl']
 
 acodes = {}
 acodes['imm11'  ] = "Xl"
@@ -52,7 +52,8 @@ acodes['crs2'   ] = "Xt"
 acodes['crs3'   ] = "XS"
 acodes['crd'    ] = "XD"
 acodes['crdm'   ] = "XM"
-acodes['lut4'   ] = "X4"
+acodes['lut4'   ] = "X4" # These two share the same field coding as they are
+acodes['rtamt'  ] = "X4" # identical in all but name.
 acodes['cs'     ] = "Xk"
 acodes['cl'     ] = "XL"
 acodes['rd'     ] = "d"
@@ -81,6 +82,7 @@ arglut['crs3'   ] = (27,24)
 arglut['crd'    ] = (10, 7)
 arglut['crdm'   ] = ( 9, 7)
 arglut['lut4'   ] = (28,25)
+arglut['rtamt'  ] = (28,25)
 
 arglut['rd'] = (11,7)
 arglut['rs1'] = (19,15)
