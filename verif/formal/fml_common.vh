@@ -220,6 +220,7 @@ wire [31:0] vtx_cprs_post[15:0]; \
 (* keep *) wire [31:0] vtx_crd_val_post  = vtx_cprs_post[dec_arg_crd]; \
 (* keep *) wire [31:0] vtx_crd1_val_post = vtx_cprs_post[{dec_arg_crdm,1'b0}];\
 (* keep *) wire [31:0] vtx_crd2_val_post = vtx_cprs_post[{dec_arg_crdm,1'b1}];\
+(* keep *) wire [63:0] vtx_crdm_val_pre  = {vtx_crd2_val_pre,vtx_crd1_val_pre}; \
 (* keep *) wire [63:0] vtx_crdm_val_post = {vtx_crd2_val_post,vtx_crd1_val_post}; \
 (* keep *) wire [31:0] vtx_crs1_val_post = vtx_cprs_post[dec_arg_crs1]; \
 (* keep *) wire [31:0] vtx_crs2_val_post = vtx_cprs_post[dec_arg_crs2]; \
