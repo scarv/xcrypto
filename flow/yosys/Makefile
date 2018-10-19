@@ -6,14 +6,13 @@ YS_SCRIPT   ?= write-smt-tb.ys
 
 BMC_STEPS   ?= 10
 
-SBY         ?= sby
-SBY_SCRIPT  ?= proofs.sby
-SBY_WORK    ?= $(COP_WORK)/sby
-
 SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v") \
 	           $(shell find ../../ -path "*rtl/*.vh")
 SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.vh") \
 	           $(shell find ../../ -path "*verif/*.v") 
+SRC_FORMAL  ?= $(COP_HOME)/verif/tb/tb_formal.v \
+               $(COP_HOME)/verif/formal/fml_pack_widths.vh \
+               $(COP_HOME)/verif/formal/fml_common.vh
 
 VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
 
@@ -51,7 +50,7 @@ adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 
 .PHONY: smt2
 smt2: $(SMT2_out)
-$(SMTDIR)/%.smt2 : $(SRC_RTL) $(SRC_VERIF)
+$(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v $(SRC_RTL) $(SRC_FORMAL)
 	@mkdir -p $(word 1, $(dir $(SMT2_out)))
 	$(YS) -qQT -l $@.log \
         -p"verilog_defaults -add -DFML_CHECK_NAME=$(basename $(notdir $@))" \
