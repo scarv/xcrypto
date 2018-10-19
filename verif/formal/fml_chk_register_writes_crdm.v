@@ -37,7 +37,7 @@ generate for(i = 0; i < 16; i = i + 2) begin
 
     //
     // For each CPR register:
-    //  If a CRD change is expected but said register is *not* crd, then
+    //  If a CRDM change is expected but said register is *not* in crdm, then
     //  that register should not change.
     //
     `VTX_CHECK_BEGIN(register_writes_non_crdm)

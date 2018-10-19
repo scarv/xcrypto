@@ -37,6 +37,19 @@ wire expect_crd_change =
     dec_gather_h  ||  dec_ext       ||
     dec_mix_l     ||  dec_mix_h      ;
 
+// When set, no CPR should change in value.
+wire expect_no_register_writes = 
+    dec_xcr2gpr   ||
+    dec_rngseed   ||
+    dec_scatter_b ||
+    dec_scatter_h ||
+    dec_mequ      ||
+    dec_mlte      ||
+    dec_mgte      ||
+    dec_st_b      ||
+    dec_st_h      ||
+    dec_st_w       ; 
+
 genvar i;
 generate for(i = 0; i < 16; i = i + 1) begin
 
@@ -47,8 +60,11 @@ generate for(i = 0; i < 16; i = i + 1) begin
     //
     `VTX_CHECK_BEGIN(register_writes_non_crd)
 
-        if(dec_arg_crd != i && expect_crd_change) begin
+        if((dec_arg_crd != i && expect_crd_change) ||
+           expect_no_register_writes)                   begin
+
             `VTX_ASSERT(vtx_cprs_pre[i] == vtx_cprs_post[i]);
+
         end
 
     `VTX_CHECK_END(register_writes_non_crd)
