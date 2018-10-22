@@ -26,6 +26,10 @@ int main() {
             __fail();
         }
 
+        if(new  != original) {
+            __fail();
+        }
+
     }
     
     __pass();
