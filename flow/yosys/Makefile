@@ -57,14 +57,6 @@ $(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v $(SRC_RTL) $(SRC_FORMAL)
         -p"script $(YS_SCRIPT)" \
         -p"write_smt2 -wires $@"
 
-smt2-trace: $(SMT2_out)
-	$(YSMTBMC) -t $(BMC_STEPS) \
-               -g \
-               --presat \
-               --dump-vcd $(SMT2_TRACE) \
-               -s $(FML_ENGINE) \
-               $(SMT2_out)
-
 $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
 	rm -f $@
 	echo "`date` Started $(notdir $(basename $@))" > $@
