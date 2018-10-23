@@ -28,6 +28,35 @@ Build the documentation by running `make docs`
 - Documentation on the *reference implementation* of the ISE willl be found
   in `$COP_HOME/docs/implementation.pdf`.
 
+### Project Organisation
+
+```
+├── bin                     - Tool/environment setup scripts
+├── docs                    - Project documentation
+│   ├── diagrams
+│   ├── implementation      - Reference implementation documentation
+│   └── specification       - ISE Specification document
+├── examples
+│   ├── common              - Shared files between examples
+│   └── integration-test    - "Hello World" example integration program
+├── external                - External repositories
+│   ├── picorv32
+│   └── riscv-opcodes
+├── flow                    - Hardware simulation/implementation flow
+│   ├── gtkwave             - Wave views
+│   ├── icarus              - Simulation flow
+│   └── yosys               - Formal SMT2 generation and synthesis
+├── rtl
+│   ├── coprocessor         - XCrypto ISE example implementation
+│   └── integration         - XCrypto/PicoRV32 integration example
+├── verif
+│   ├── formal              - Formal verification checks
+│   ├── model               - Simulation model
+│   ├── tb                  - Simulation/integration/formal testbenches
+│   └── unit                - Simulation sanity tests
+└── work                    - Working directory for generated artifacts
+```
+
 ### Setting Up binutils
 
 You will need a customised version of GNU Binutils in order to compile
