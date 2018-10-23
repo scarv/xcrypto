@@ -1,38 +1,46 @@
 
-Verification of the ISE implementation will be done using a mixture of
-constrained random testing and formal methods.
-Both methods will use the same single cycle, functional model of the ISE as a
-golden reference model (GRM).
-Outputs of the implementation will be compared against the GRM for
-correctness.
+Verification of the ISE implementation is done using a mixture of
+directed testing using a golden reference model and formal methods.
 
 \subsection{Verilog Golden Reference Model}
 
-The GRM will be written using functional verilog.
+The GRM is be written using functional verilog.
 
 \begin{itemize}
-\item Each instruction will be implemented as a verilog task.
-\item The GRM will have the same interface as the implementation.
-\item The GRM will snoop on the implementation interface and produce a
-    predicted result for all input instructions.
+\item Each instruction is implemented as a verilog task.
+\item The GRM has the same interface as the implementation.
+\item The GRM snoops on the implementation interface and produces a
+    predicted result for all instructions.
 \item All transactions on the memory and CPU/COP interface will be modelled
     and checked against the GRM.
 \end{itemize}
 
-Using bounded model checking (BMC) the aim will be to make sure that after
-$12$ clock ticks, the model and implementation have not diverged.
-After that check is passed, we switch to induction mode and show that the two
-will never diverge after that point.
+The GRM is only used as a basic sanity checker. Designers can use it to
+develop hardware and get general functionality working before applying
+formal checks.
 
-We use $12$ clock ticks because it is enough for all combinations of 
-instruction tripples to be executed and experience things like memory
-and writeback stalling.
+The formal flow should be used to actually gain verification confidence
+in the implementation.
 
 \subsection{Formal Verification Flow}
 
-The formal flow will use Yosys as a model checker to ensure that for any
-sequence of inputs, the outputs of the implementation and the GRM will remain
-the same.
+The formal flow uses Yosys and Boolector as a model checker to ensure that
+for any sequence of inputs, the implementation behaves correctly with
+respect to the implementation.
+
+% TODO: Flow graph
+
+\subsubsection{Flow Method}
+
+TBD
+
+\subsubsection{Relevent Files}
+
+These are the files and directories relevent to the formal flow:
+
+\begin{itemize}
+\item TBD
+\end{itemize}
 
 \subsubsection{Formal Flow Bug List}
 
