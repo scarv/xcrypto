@@ -130,4 +130,4 @@ unit_tests:
 # Build the unit tests, examples yosys and icarus models but don't run 
 # anything yet.
 #
-build_all: yosys_smt2 icarus_build unit_tests icarus_integ_tb examples docs
+build_all: icarus_build unit_tests icarus_integ_tb examples docs
