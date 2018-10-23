@@ -71,11 +71,3 @@ verification flow.
 \item {\tt pmul.l} did not mask partial sums properly and was writing
     intermediate results to the register file.
 \end{itemize}
-
-\subsection{Constrained Random Flow}
-
-The CRT flow will re-use much of the same environment of the formal flow,
-but will allow loading of simple assembly program sequences into a
-memory model. This will allow us to create a set of fast unit tests, and to
-re-create bugs found in the formal flow.
-

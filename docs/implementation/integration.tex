@@ -124,4 +124,30 @@ as they are designed to be run with the functional verification testbench.
 
 \subsubsection{Synthesis}
 
-TBD
+The example synthesis flow uses {\tt yosys} to create a verilog netlist of
+the combined CPU and co-processor.
+The {\tt scarv_prv_xcrypt_top} module is the top-level entity.
+
+\begin{lstlisting}[language=bash]
+$> make yosys_synth
+\end{lstlisting}
+
+Will create the netlist and put the result in 
+{\tt \$COP\_HOME/work/scarv_cop_top.v}.
+
+Extra report files include:
+\begin{itemize}
+\item {\tt \$COP\_HOME/work/yosys-synth.log} - 
+    The log file for the synthesis process.
+\item {\tt \$COP\_HOME/work/synth-statistics.rpt} - 
+    The number of yosys internal cells used to represent the design.
+    This is useful to work out the relative impact on area of different
+    changes, though designers must be mindful this does not represent
+    final FPGA utilisation or ASIC cell usage.
+\item {\tt \$COP\_HOME/work/logic-loops.rpt} - 
+    Contains reports on any logic loops found during the synthesis process.
+    These must be removed before synthesis will complete.
+\end{itemize}
+
+The {\tt yosys} script used is very simple, and is found in
+{\tt \$COP\_HOME/flow/yosys/write-verilog.ys}.
