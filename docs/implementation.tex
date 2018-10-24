@@ -343,6 +343,21 @@ Rules for signal naming are as follows:
     between separate words.
 \end{itemize}
 
+\subsection{Top Level Control}
+
+The COP is controlled at the top level by a single FSM which handles
+instruction acceptance, execution and retiring. A diagram of this FSM's
+behaviour is shown in figure \ref{fig:top-level-fsm}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{diagrams/top-level-fsm.eps}
+\caption{FSM diagram showing the top level instruction accept/execute/retire
+stages.}
+\label{fig:top-level-fsm}
+\end{figure}
+
+
 \subsection{Instruction Decode Block ({\tt scarv\_cop\_idecode})}
 
 This block is responsible for taking the 32-bit encoded instructions from
