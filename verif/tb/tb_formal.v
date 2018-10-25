@@ -54,6 +54,10 @@ input  wire             cop_mem_error     // Error
 //
 initial assume(g_resetn == 1'b0);
 
+always @(posedge g_clk) begin
+    if($past(g_resetn)) restrict(g_resetn == 1'b1);
+end
+
 // No requests during a reset
 always @(posedge g_clk) if(!g_resetn) begin
     assume(!cpu_insn_req);

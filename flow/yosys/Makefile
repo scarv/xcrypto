@@ -57,6 +57,7 @@ $(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v $(SRC_RTL) $(SRC_FORMAL)
         -p"script $(YS_SCRIPT)" \
         -p"write_smt2 -wires $@"
 
+include proof-depths.mk
 $(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
 	rm -f $@
 	echo "`date` Started $(notdir $(basename $@))" > $@
