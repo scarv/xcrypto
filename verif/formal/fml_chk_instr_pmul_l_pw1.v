@@ -12,10 +12,10 @@
 `include "fml_pack_widths.vh"
 
 //
-// Checker for bit packed multiply instruction.
-// - Only checks cases where pack width >= 4
+// Checker for 32x32 bit packed multiply instruction.
+// - Only checks case where pack width == 1 (i.e. 32x32)
 //
-`VTX_CHECKER_MODULE_BEGIN(instr_pmul_l)
+`VTX_CHECKER_MODULE_BEGIN(instr_pmul_l_pw1)
 
 // Pack width of the instruction
 wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
@@ -35,7 +35,7 @@ end
 //
 `VTX_CHECK_INSTR_BEGIN(pmul_l) 
 
-    restrict(pw != SCARV_COP_PW_1 && pw != SCARV_COP_PW_2);
+    restrict(pw == SCARV_COP_PW_1);
 
     // Correct pack width encoding value or instruction gives in bad
     // opcode result.
@@ -52,3 +52,4 @@ end
 `VTX_CHECK_INSTR_END(pmul_l)
 
 `VTX_CHECKER_MODULE_END
+
