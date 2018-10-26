@@ -152,27 +152,35 @@
 \subsection{More specific,  low(er)-level points}
 \label{appx:discuss:lo}
 
-% TODO
-%\designnote{
-%The decision to source the base address from the $\GPR$ set rather
-%than a $\XCR$ was because all of the RISC-V address calculation
-%instructions work perfectly well on the $\GPR$s and there is no sense
-%in duplicating that functionality for this ISE. This free's up
-%encoding space, and lets the $\XCR$ state be used for the compute
-%work it was designed for rather than mundane address calculation.
-%While care must be
-%taken to avoid hazards between the different register sets, we
-%believe this decision makes sense overall.
-%}
+\begin{itemize}
 
-% TODO
-%There is no requirement for the ISE memory instructions to share the same
-%address space as the standard ISA. One may wish to completely separate
-%the physical memory used to store cryptographic secrets from the rest of
-%the virtual / logical memory space, and the ISE does not stop implementers
-%from doing so. This allows for hardware root-of-trust type devices to keep
-%their keys in tamper-proof memory, while still letting the rest of the
-%program exist in standard RAM/Flash.
+\item Instruction mnemonics follow a (somewhat) consistent scheme; they
+      all use a domain-separating prefix pf \VERB[RV]{xc}, and a suffix
+      intended to identify variants.  These include
+      \[
+      \begin{array}{lcl}
+      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   } \\
+      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)} \\
+      \VERB[RV]{b} &:& \mbox{    byte-oriented}           \\
+      \VERB[RV]{h} &:& \mbox{halfword-oriented}           \\
+      \VERB[RV]{w} &:& \mbox{    word-oriented}           \\
+      \VERB[RV]{x} &:& \mbox{a size parameter}            \\
+      \end{array}
+      \]
+\item Although they share a memory interface, there is no requirement for
+      the host core and co-processor to share an address space.  Indeed,
+      it is easy to imagine cases where using disjoint address spaces is
+      useful; examples include use of
+      a) an OTP-style memory for key storage, 
+         or
+      b) a (uncached) scratch-pad memory,
+      by the co-processor alone.
+\item The use of a $\GPR$ register as the base address for memory access,
+      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
+      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
+      as a control-path for the co-processor: control-flow orchestration 
+      address computation both fall under the remit of the former, and 
+      can be supported by RV32I as is.
 
 % TODO
 %\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
@@ -185,22 +193,26 @@
 %with, we can then use only one instruction to create masks which fit
 %into only a single halfword.}
 
-% TODO
-%\designnote{
-%    This instruction must be implemented with care, since a naive
-%    implementation will end up with a 32-port LUT, with correspondingly
-%    poor timing performance.
-
-%\designnote{This decision was made simply to make the encoding space
-%easier to manage. Rather than adding another 5-bit immediate field, it was
-%more efficient to re-use the 4-bit lut field of the BOP.cr
-%instruction.}
-
-%\designnote{
-%    This scheme means the function to compute the actual source registers
-%    from the minimum 3-bit encoding is simply to append either {\tt 00}
-%    or {\tt 01} depending on the even or odd address respectively.
-%}
+\item Per \REFSEC{sec:spec:instr:2:4}, 
+      \VERB[RV]{xc.mix.l}
+      and
+      \VERB[RV]{xc.mix.h}
+      use the immediate 
+      $ 
+      0 \leq \VERB[RV]{rtamt} < 16 
+      $ 
+      to right-rotate \XCR[*][{\VERB[RV]{crs1}}] by $d$ bits where
+      $0  \leq d < 16$
+      and
+      $16 \leq d < 32$
+      respectivly.
+      The specification of {\em two} instructions vs. {\em one} that can
+      deal with 
+      $0  \leq d < 32$
+      is motivated by instruction encoding: it is easier to avoid having
+      a dedicated $5$-bit immiediate field, reusing the existing $4$-bit
+      field, e.g., as used by
+      \VERB[RV]{xc.bop}.
 
 %%%\designnote{
 %%%    While it is of-course possible to emulate the {\tt .h} variants of
