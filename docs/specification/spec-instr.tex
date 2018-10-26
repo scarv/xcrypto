@@ -535,7 +535,8 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.h}{pw, crd, crs1, crs2}{
-  \iencpmulh
+% TODO
+%  \iencpmulh
 }{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
@@ -557,9 +558,10 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-  \iencpclmull
+% TODO
+%  \iencpclmull
 }{
-  Compute a   register-based packed multiplication in $\F_2[\IND]$ (or ``carry-less'' multiplication),
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
@@ -579,9 +581,10 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-  \iencpclmulh
+% TODO
+%  \iencpclmulh
 }{
-  Compute a   register-based packed multiplication in $\F_2[\IND]$ (or ``carry-less'' multiplication),
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
@@ -1033,9 +1036,10 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mclmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmclmulone
+% TODO
+% \iencmclmulone
 }{
-  Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\F_2[\IND]$:
+  Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
   $\XCR[*][{\VERB[RV]{crs1}}]$
   and

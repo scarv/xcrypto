@@ -69,15 +69,15 @@
       \]
       where perhaps all but the first are fairly standard.
 \item Where appropriate, a sequence $x$ of $n$ bits can be interpreted as an
-      element of the polynomial ring $\F_2[\IND]$
+      element of the polynomial ring $\B{F}_2[\IND{x}]$
       (i.e. a binary polynomial);
       the $i$-bit of $x$ is the $i$-th coefficient, meaning
       $
-      x \mapsto x( \IND )
+      x \mapsto x( \IND{x} )
       $
       because
       $
-      x_i \mapsto x_i \cdot \IND^i .
+      x_i \mapsto x_i \cdot \IND{x}^i .
       $
 \item The operators $\NOT$, $\AND$, $\IOR$ and $\XOR$ denote Boolean NOT, AND,
       OR and XOR respectively, with $\NAND$, $\NIOR$ and $\NXOR$ denoting NAND,
@@ -141,7 +141,7 @@
       $\oplus$
       and
       $\otimes$
-      respectively denote addition and multiplication in $\F_2[\IND]$.
+      respectively denote addition and multiplication in $\B{F}_2[\IND]$.
 \item For some $x$, 
       we let
       $\EXT[w]{0  }( x )$
