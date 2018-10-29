@@ -27,10 +27,10 @@
       c) a      non-invasive, loosely-coupled co-processor.
 
 \item All cited implementation approaches are viable, but, in {\em concept},
-      we view \XCID as a co-processor technology: wlog. we adopt terminology 
-      associated with that option from here on.  By doing so, the aim is to 
-      present a clean(er) separation between the intended roles of some host 
-      core and associated \XCID co-processor.
+      we view \XCID as a co-processor technology: wlog. we adopt associated
+      terminology from here on.  By doing so, we aim to present a clean(er) 
+      separation between the intended roles of some host core and associated 
+      \XCID co-processor.
 
       For example, at a high level one could view the co-processor as being 
       tasked with support for execution of cryptography; such a task is not
@@ -144,12 +144,12 @@
       in an associated CSR outlined in \REFSEC{sec:spec:state:csr}.
 
 \item All that said, such an approach may naturally be deemed inappropriate 
-      for some use-cases; we pitch \XCID as {\em an} approach, not {\em the}
-      approach.  
+      for some use-cases; we carefully pitch \XCID as {\em an} approach, not 
+      {\em the} approach.  
       Along these lines, note that instances of the {\em opposite} approach
       naturally exist as alternatives.  For example,
       a) the RISC-V Cryptographic Extensions Task Group is focused on use 
-         of the vector ISE as a vehicle fioryptographic operations,
+         of the vector ISE as a vehicle for cryptographic operations,
       b) many commercialised SoCs 
          (e.g., Google Titan, Rambus CryptoManager) 
          prefer to couple a dedicated IP core 

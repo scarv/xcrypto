@@ -61,8 +61,8 @@
   (cf. \VERB[RV]{xc.ld.b}, which sets them to zero).
 }{
   $addr                                          \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $index_0                                       \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_0} \ASN \MEM[*][{addr  }]$ \;
+  $index                                         \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
+  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index  } \ASN \MEM[*][{addr  }]$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -155,8 +155,8 @@
   $
 }{
   $addr            \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $index_0         \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
-  $\MEM[*][addr  ] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_0}$ \;
+  $index           \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
+  $\MEM[*][addr  ] \ASN \INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index  }$ \;
 }
 
 % -----------------------------------------------------------------------------
@@ -204,7 +204,25 @@
 \subsubsection{Class-$2.1$: randomness}
 \label{sec:spec:instr:2:1}
 
-% TODO: rngtest
+\XCINSTR{xc.rngtest}{rd1}{
+  % TODO: encoding  
+}{
+  Inspect the RNG state, applying a suitable ``health check'' on the level 
+  of entropy available: the status flag is stored in a $\GPR$ register.
+  If, after execution \VERB[RV]{xc.rngseed},
+         $\GPR[*][{\VERB[RV]{rd1}}] =    0$
+  (resp. $\GPR[*][{\VERB[RV]{rd1}}] \neq 0$),
+  then the RNG has 
+         insufficient 
+  (resp.   sufficient)
+  entropy; the next output sampled via \VERB[RV]{xc.rngsamp} 
+  therefore
+         cannot 
+  (resp. can)
+  be used.
+}{
+  $\GPR[*][{\VERB[RV]{rd1}}] \TEST{\ASN} \RNG$ \;
+}
 
 % -----------------------------------------------------------------------------
 
@@ -352,7 +370,7 @@
   \]
   the instructions
   \VERB[RV]{AND.cr}, \VERB[RV]{AND.cr}, and \VERB[RV]{AND.cr}
-  can be, and are, synthesised using \VERB[RV]{BOP.cr}.
+  can be, and are, synthesised using \VERB[RV]{xc.bop}.
 }{
   \For{$i = 0$ {\bf upto} $31$} {
     $index \ASN \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
@@ -535,8 +553,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.h}{pw, crd, crs1, crs2}{
-% TODO
-%  \iencpmulh
+  % TODO: encoding
 }{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
@@ -558,8 +575,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-% TODO
-%  \iencpclmull
+  % TODO: encoding
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -581,8 +597,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-% TODO
-%  \iencpclmulh
+  % TODO: encoding
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -684,7 +699,7 @@ $
 
 % TODO: cshamt => pshamt ?
 \XCINSTR{xc.psrl.i}{pw, crd, crs1, cshamt}{
-  \iencpsrl
+  \iencpsrli
 }{
   Compute an immediate-based packed left-shift,
   implying $\odot = \RSH$.
@@ -815,7 +830,7 @@ $
 \subsubsection{Class-$2.5$: multi-precision}
 \label{sec:spec:instr:2:5}
 
-Instruction in this class use upto
+Instructions in this class use upto
 $4$ source      $\XCR$ registers
 and
 $2$ destination $\XCR$ registers,
@@ -1036,8 +1051,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mclmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-% TODO
-% \iencmclmulone
+  % TODO: encoding
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
@@ -1096,7 +1110,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-% TODO: why 4-bit cmshamt?
 \XCINSTR{xc.msll.i}{(crd2, crd1), crs1, crs2, shamt}{
   \iencmslli
 }{
@@ -1153,7 +1166,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-% TODO: why 4-bit cmshamt?
 \XCINSTR{xc.msrl.i}{(crd2, crd1), crs1, crs2, shamt}{
   \iencmsrli
 }{
@@ -1231,29 +1243,90 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\subsubsection{Class-$3.1$: AES encryption}
+\subsubsection{Class-$3.1$: AES}
 \label{sec:spec:instr:3:1}
 
-Per~\cite[Figures 5+6]{SCARV:TilGro:06}, the idea would be to support
+\XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
+  % TODO: encoding
+}{
+  Per~\cite[Figures 5]{SCARV:TilGro:06}, 
+  apply a (carefully structured) form of the AES 
+  $\ALG{S-box}$
+  operation:
+  this is applicable to a column-oriented implementation of AES, whereby
+  columns of the state (resp. round key) matrix are packed into $32$-bit
+  words.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{mode}
+  $
+  and
+  $
+  \VERB[RV]{rot}
+  $
+  control  which variant is applied: these variants are exposed via
+  dedicated mnemonics st.
+  \[
+  \begin{array}{l c r@{\;}c@{\;}l @{\;}c@{\;} r@{\;}c@{\;}l}
+  \VERB[RV]{xc.aessub.enc}    &\mapsto& \VERB[RV]{mode} &=& 0 &,& \VERB[RV]{rot} &=& 0 \\
+  \VERB[RV]{xc.aessub.encrot} &\mapsto& \VERB[RV]{mode} &=& 0 &,& \VERB[RV]{rot} &=& 1 \\
+  \VERB[RV]{xc.aessub.dec}    &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 0 \\
+  \VERB[RV]{xc.aessub.decrot} &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 1 \\
+  \end{array}
+  \]
+}{
+  \eIf{$\VERB[RV]{mode} = 0$}{
+    $t_0                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0} )$ \;
+    $t_1                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs2}]_{15 \RANGE  8} )$ \;
+    $t_2                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs1}]_{23 \RANGE 16} )$ \;
+    $t_3                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs2}]_{31 \RANGE 24} )$ \;
+  }{
+    $t_0                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0} )$ \;
+    $t_1                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \XCR[*][\OPER{crs2}]_{15 \RANGE  8} )$ \;
+    $t_2                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \XCR[*][\OPER{crs1}]_{23 \RANGE 16} )$ \;
+    $t_3                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \XCR[*][\OPER{crs2}]_{31 \RANGE 24} )$ \;
+  }
+  
+  \eIf{$\VERB[RV]{rot}  = 0$}{
+    $\XCR[*][\OPER{crd0}] \ASN                                          t_3 \CONS t_2 \CONS t_1 \CONS t_0 $ \;
+  }{
+    $\XCR[*][\OPER{crd0}] \ASN                                          t_2 \CONS t_1 \CONS t_0 \CONS t_3 $ \;
+  }
+}
 
-\begin{enumerate}
-\item \INST{aes.sub rd0, rd1, rs0, rs1, rs2, rs3}{
-        $\GPR[*][\OPER{rd0}] \ASN \SCOPE{AES}{\ALG{S-box}}( \GPR[*][\OPER{rs1}]_{15,\ldots,12} ) \CONS
-                                  \SCOPE{AES}{\ALG{S-box}}( \GPR[*][\OPER{rs0}]_{11,\ldots, 8} ) \CONS
-                                  \SCOPE{AES}{\ALG{S-box}}( \GPR[*][\OPER{rs1}]_{ 7,\ldots, 4} ) \CONS
-                                  \SCOPE{AES}{\ALG{S-box}}( \GPR[*][\OPER{rs0}]_{ 3,\ldots, 0} )$\;
-      }
-\item \INST{aes.mix rd0, rd1, rs0, rs1, rs2, rs3}{
-        $\GPR[*][\OPER{rd0}] \ASN \SCOPE{AES}{\ALG{Mix-Column}}\big( \GPR[*][\OPER{rs1}]_{15,\ldots,12} ) \CONS
-                                                                     \GPR[*][\OPER{rs1}]_{11,\ldots, 8} ) \CONS
-                                                                     \GPR[*][\OPER{rs0}]_{ 7,\ldots, 4} ) \CONS
-                                                                     \GPR[*][\OPER{rs0}]_{ 3,\ldots, 0} \big)$\;
-      }
-\end{enumerate}
+\XCINSTR{xc.aesmix}{mode,      crd, crs1, crs2}{
+  % TODO: encoding
+}{
+  Per~\cite[Figures 5]{SCARV:TilGro:06}, 
+  apply a (carefully structured) form of the AES 
+  $\ALG{Mix-Column}$
+  operation:
+  this is applicable to a column-oriented implementation of AES, whereby
+  columns of the state (resp. round key) matrix are packed into $32$-bit
+  words.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{mode}
+  $
+  controls which variant is applied: these variants are exposed via
+  dedicated mnemonics st.
+  \[
+  \begin{array}{l c r@{\;}c@{\;}l@{\;}}
+  \VERB[RV]{xc.aesmix.enc}    &\mapsto& \VERB[RV]{mode} &=& 0                          \\
+  \VERB[RV]{xc.aesmix.dec}    &\mapsto& \VERB[RV]{mode} &=& 1                          \\
+  \end{array}
+  \]
+}{
+    $t_0                 \ASN                                \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0}  $ \;
+    $t_1                 \ASN                                \XCR[*][\OPER{crs1}]_{15 \RANGE  8}  $ \;
+    $t_2                 \ASN                                \XCR[*][\OPER{crs2}]_{23 \RANGE 16}  $ \;
+    $t_3                 \ASN                                \XCR[*][\OPER{crs2}]_{31 \RANGE 24}  $ \;
 
-% -----------------------------------------------------------------------------
-
-\subsubsection{Class-$3.2$: AES decryption}
-\label{sec:spec:instr:3:2}
+  \eIf{$\VERB[RV]{mode} = 0$}{
+    $\XCR[*][\OPER{crd0}] \ASN \SCOPE{\ID{AES}}{\ALG{Mix-Column}}     ( t_3 \CONS t_2 \CONS t_1 \CONS t_0 )$ \;
+  }{
+    $\XCR[*][\OPER{crd0}] \ASN \SCOPE{\ID{AES}}{\ALG{Mix-Column}}^{-1}( t_3 \CONS t_2 \CONS t_1 \CONS t_0 )$ \;
+  }
+}
 
 % =============================================================================

@@ -141,7 +141,7 @@
       $\oplus$
       and
       $\otimes$
-      respectively denote addition and multiplication in $\B{F}_2[\IND]$.
+      respectively denote addition and multiplication in $\B{F}_2[\IND{x}]$.
 \item For some $x$, 
       we let
       $\EXT[w]{0  }( x )$
@@ -170,19 +170,19 @@
 \item $\ROUND{x}{k}$ denotes some quantity $x$ relating to the $k$-th 
       round (e.g., the $k$-th round key).
 \item The AES round functions are denoted using
-      $\SCOPE{AES}{\ALG{Key-Addition}}$,
-      $\SCOPE{AES}{\ALG{Sub-Bytes}}$,
-      $\SCOPE{AES}{\ALG{Shift-Rows}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Key-Addition}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Sub-Bytes}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Shift-Rows}}$,
       and
-      $\SCOPE{AES}{\ALG{Mix-Columns}}$;
+      $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$;
       note that 
-      a) $\SCOPE{AES}{\ALG{Mix-Column}}$ is applied per column of the
-         state matrix to realise $\SCOPE{AES}{\ALG{Mix-Columns}}$, so
+      a) $\SCOPE{\ID{AES}}{\ALG{Mix-Column}}$ is applied per column of the
+         state matrix to realise $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$, so
          the former is basically a $1$-column version of the latter,
-      b) $\SCOPE{AES}{\ALG{S-Box}}$ denotes the AES S-box,
+      b) $\SCOPE{\ID{AES}}{\ALG{S-Box}}$ denotes the AES S-box,
          and
-      c) $\SCOPE{AES}{\ALG{X}}^{-1}$ denotes the inverse $\ALG{X}$,
-         e.g., $\SCOPE{AES}{\ALG{S-Box}}^{-1}$ is the inverse S-box.
+      c) $\SCOPE{\ID{AES}}{\ALG{X}}^{-1}$ denotes the inverse $\ALG{X}$,
+         e.g., $\SCOPE{\ID{AES}}{\ALG{S-Box}}^{-1}$ is the inverse S-box.
 
 \end{itemize}
 

@@ -1,28 +1,108 @@
 % =============================================================================
 
+\subsection{More specific,  low(er)-level points}
+\label{appx:discuss:lo}
+
+\begin{itemize}
+
+\item Instruction mnemonics follow a (somewhat) consistent scheme; they
+      all include a domain-separating prefix \VERB[RV]{xc}, and, where
+      need be, a suffix intended to identify specific variants.  These 
+      include
+      \[
+      \begin{array}{lcl}
+      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   } \\
+      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)} \\
+      \VERB[RV]{b} &:& \mbox{    byte-oriented}           \\
+      \VERB[RV]{h} &:& \mbox{halfword-oriented}           \\
+      \VERB[RV]{w} &:& \mbox{    word-oriented}           \\
+      \VERB[RV]{x} &:& \mbox{a size parameter}            \\
+      \end{array}
+      \]
+\item Although they share a memory interface, there is no requirement for
+      the host core and co-processor to share an address space.  Indeed,
+      it is easy to imagine cases where using disjoint address spaces is
+      useful; examples include use of
+      a) an OTP-style memory for key storage, 
+         or
+      b) a (uncached) scratch-pad memory,
+      by the co-processor alone.
+\item The use of a $\GPR$ register as the base address for memory access,
+      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
+      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
+      as a control-path for the co-processor: control-flow orchestration 
+      address computation both fall under the remit of the former, and 
+      can be supported by RV32I as is.
+
+% TODO
+%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
+%(in tandem with \ASM{ORI} and loading addresses.
+%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
+%for addresses, we remove this functionality in favour of leaving the
+%low half of the register unmodified.
+%The rationale being that two instructions can still create and 32-bit
+%immediate, but that if we know a register is zero to begin
+%with, we can then use only one instruction to create masks which fit
+%into only a single halfword.}
+
+\item Per \REFSEC{sec:spec:instr:2:4}, 
+      \VERB[RV]{xc.mix.l}
+      and
+      \VERB[RV]{xc.mix.h}
+      use the immediate 
+      $ 
+      0 \leq \VERB[RV]{rtamt} < 16 
+      $ 
+      to right-rotate $\XCR[*][{\VERB[RV]{crs1}}]$ by $d$ bits where
+      $0  \leq d < 16$
+      and
+      $16 \leq d < 32$
+      respectivly.
+      The specification of {\em two} instructions vs. {\em one} that can
+      deal with 
+      $0  \leq d < 32$
+      is motivated by instruction encoding: it is easier to avoid having
+      a dedicated $5$-bit immiediate field, reusing the existing $4$-bit
+      field, e.g., as used by
+      \VERB[RV]{xc.bop}.
+
+%%%\designnote{
+%%%    While it is of-course possible to emulate the {\tt .h} variants of
+%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
+%%%    the performance and efficency savings to be had from telling the hardware
+%%%    explicitly to work on halfwords were worth the extra instructions.
+%%%}
+%%%An implementation may perform the memory accesses in any order. The instructions
+%%%will raise address misalignment exceptions in line with how misalignment is
+%%%handled in the rest of the ISA.
+%%%If any of the memory accesses cause
+%%%a {\em load access fault, load page fault, store page fault} or
+%%%{\em store access fault} then the address of the access which caused the
+%%%exception is written to the {\tt MTVAL} csr. The value taken by the
+%%%destination register bytes should an exception occur at any point in the
+%%%instruction is {\em implementation dependent}.
+%%%
+%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
+%%%though in order to service an interrupt. If the instructions are aborted
+%%%early, the value taken by the destination register bytes is {\em
+%%%implementation dependent}. The implementation is responsible for ensuring
+%%%that the {\tt EPC} register is set appropriately depending on whether the
+%%%interrupt is taken during, or at the end of, the instruction.
+%%%\designnote{Implementation of these instructions should consider the impact of
+%%%shared memory systems, since it will be possible for other agents in the
+%%%system to access memory during the execution of this instruction. In systems
+%%%possessing a cache, programmers must be mindful that these instructions
+%%%can cause odd behaviour due to the non-linear access pattern the instruction
+%%%creates.}
+
+\end{itemize}
+
+% =============================================================================
+
 \subsection{More  generic, high(er)-level points}
 \label{appx:discuss:hi}
 
 \begin{itemize}
-
-\item It is important to recognise 
-      the overhead, wrt. both 
-      time (e.g., due to it needing to be context switched) 
-      and 
-      space (e.g., due to the logic required),
-      relating to state added to RV32I by \XCID.
-      However, it seems reasonable to align this overhead with that of any
-      extension for floating-point arithmetic (which, in the same way, will
-      typically make use of a dedicated floating-point register file): many 
-      of the trade-offs involved, e.g., provision of
-      a) clear separation of duty,
-      b) additional capacity,
-         and
-      c) additional (specialised) functionality,
-      are the same, but motivated by cryptographic workloads.
-      Due to the nature of such workloads, however, attack vectors such as
-      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
-      the overhead of context switching, {\em must} be robustly mitigated.
 
 \item Lee and Fiskiran introduce (e.g., see~\cite{SCARV:LeeFis:05}) the PLX
       design, which, among other concepts, supports 
@@ -37,8 +117,8 @@
       implementations that, e.g., have a $32$-bit instructions but a $32$-,
       $64$-, or $128$-bit general-purpose register file (and address space).
       The same concept is useful wrt. the co-processor, and indeed, for the
-      multi-precision integer instructions 
-      (per \REFSEC{sec:spec:instr:mp})
+      multi-precision operations
+      (per \REFSEC{sec:spec:instr:2:5})
       in particular.
 
       The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
@@ -144,104 +224,6 @@
       a range of drawbacks (e.g., overhead wrt. co-processor register 
       file size, complexity in instruction en/decoding, requirement for
       multi-cycle instruction execution).
-
-\end{itemize}
-
-% =============================================================================
-
-\subsection{More specific,  low(er)-level points}
-\label{appx:discuss:lo}
-
-\begin{itemize}
-
-\item Instruction mnemonics follow a (somewhat) consistent scheme; they
-      all use a domain-separating prefix pf \VERB[RV]{xc}, and a suffix
-      intended to identify variants.  These include
-      \[
-      \begin{array}{lcl}
-      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   } \\
-      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)} \\
-      \VERB[RV]{b} &:& \mbox{    byte-oriented}           \\
-      \VERB[RV]{h} &:& \mbox{halfword-oriented}           \\
-      \VERB[RV]{w} &:& \mbox{    word-oriented}           \\
-      \VERB[RV]{x} &:& \mbox{a size parameter}            \\
-      \end{array}
-      \]
-\item Although they share a memory interface, there is no requirement for
-      the host core and co-processor to share an address space.  Indeed,
-      it is easy to imagine cases where using disjoint address spaces is
-      useful; examples include use of
-      a) an OTP-style memory for key storage, 
-         or
-      b) a (uncached) scratch-pad memory,
-      by the co-processor alone.
-\item The use of a $\GPR$ register as the base address for memory access,
-      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
-      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
-      as a control-path for the co-processor: control-flow orchestration 
-      address computation both fall under the remit of the former, and 
-      can be supported by RV32I as is.
-
-% TODO
-%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-%(in tandem with \ASM{ORI} and loading addresses.
-%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
-%for addresses, we remove this functionality in favour of leaving the
-%low half of the register unmodified.
-%The rationale being that two instructions can still create and 32-bit
-%immediate, but that if we know a register is zero to begin
-%with, we can then use only one instruction to create masks which fit
-%into only a single halfword.}
-
-\item Per \REFSEC{sec:spec:instr:2:4}, 
-      \VERB[RV]{xc.mix.l}
-      and
-      \VERB[RV]{xc.mix.h}
-      use the immediate 
-      $ 
-      0 \leq \VERB[RV]{rtamt} < 16 
-      $ 
-      to right-rotate $\XCR[*][{\VERB[RV]{crs1}}]$ by $d$ bits where
-      $0  \leq d < 16$
-      and
-      $16 \leq d < 32$
-      respectivly.
-      The specification of {\em two} instructions vs. {\em one} that can
-      deal with 
-      $0  \leq d < 32$
-      is motivated by instruction encoding: it is easier to avoid having
-      a dedicated $5$-bit immiediate field, reusing the existing $4$-bit
-      field, e.g., as used by
-      \VERB[RV]{xc.bop}.
-
-%%%\designnote{
-%%%    While it is of-course possible to emulate the {\tt .h} variants of
-%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
-%%%    the performance and efficency savings to be had from telling the hardware
-%%%    explicitly to work on halfwords were worth the extra instructions.
-%%%}
-%%%An implementation may perform the memory accesses in any order. The instructions
-%%%will raise address misalignment exceptions in line with how misalignment is
-%%%handled in the rest of the ISA.
-%%%If any of the memory accesses cause
-%%%a {\em load access fault, load page fault, store page fault} or
-%%%{\em store access fault} then the address of the access which caused the
-%%%exception is written to the {\tt MTVAL} csr. The value taken by the
-%%%destination register bytes should an exception occur at any point in the
-%%%instruction is {\em implementation dependent}.
-%%%
-%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
-%%%though in order to service an interrupt. If the instructions are aborted
-%%%early, the value taken by the destination register bytes is {\em
-%%%implementation dependent}. The implementation is responsible for ensuring
-%%%that the {\tt EPC} register is set appropriately depending on whether the
-%%%interrupt is taken during, or at the end of, the instruction.
-%%%\designnote{Implementation of these instructions should consider the impact of
-%%%shared memory systems, since it will be possible for other agents in the
-%%%system to access memory during the execution of this instruction. In systems
-%%%possessing a cache, programmers must be mindful that these instructions
-%%%can cause odd behaviour due to the non-linear access pattern the instruction
-%%%creates.}
 
 \end{itemize}
 

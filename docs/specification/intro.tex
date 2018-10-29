@@ -11,12 +11,12 @@ it represents pure overhead.  Efficiency is a goal in and of itself then,
 but also as an enabler for security.  One cannot (or at least {\em should} 
 not) compromise security to meet efficiency requirements, and so delivering
 higher efficiency can be pitched as an enabler for countermeasures against 
-attack (since there is more margin in which to do so).
+attack (since there is more margin within which to do so).
 
 This document acts as the specification for a 
 greenfield, non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
 to the RISC-V 
-RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17} (or RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17})
+RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}
 base ISA, which we dub \XCID; it forms an output from the SCARV\footnote{
 \url{http://www.scarv.org}, \url{http://www.github.com/scarv}
 } project, funded by EPSRC\footnote{
@@ -26,7 +26,7 @@ base ISA, which we dub \XCID; it forms an output from the SCARV\footnote{
 } initiative.
 The \XCID ISE aims to support software implementations of both symmetric and 
 asymmetric cryptographic primitives.  By analogy, one could view this remit
-as similar to that of a floating-point co-processor, but fioryptography: 
+as similar to that of a floating-point co-processor, but cryptography: 
 per the above, it aims to enable
 a) efficient
    and
@@ -36,7 +36,7 @@ execution of said implementations.
 Note this document {\em is} a specification for \XCID, but categorically
 {\em is not} an implementation guide: we provide a separate document for 
 that purpose.  In order to avoid the specification becoming too verbose,
-we defer coverage of related work and an detailed design notes to
+we defer coverage of related work and detailed design notes to
 \REFAPPX{appx:related}
 and
 \REFAPPX{appx:design}

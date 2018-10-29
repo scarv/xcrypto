@@ -1,10 +1,30 @@
 \subsection{\XCID state}
 \label{sec:spec:state}
 
+It is important to recognise 
+the overhead, wrt. both 
+time (e.g., due to it needing to be context switched) 
+and 
+space (e.g., due to the logic required),
+relating to state added to RV32I by \XCID.
+However, it seems reasonable to align this overhead with that of any
+extension for floating-point arithmetic (which, in the same way, will
+typically make use of a dedicated floating-point register file): many 
+of the trade-offs involved, e.g., provision of
+a) clear separation of duty,
+b) additional capacity,
+   and
+c) additional (specialised) functionality,
+are the same, but motivated by cryptographic workloads.
+
 % =============================================================================
 
 \subsubsection{General-purpose registers}
 \label{sec:spec:state:gpr}
+
+Due to the nature of such workloads, however, attack vectors such as
+LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
+the overhead of context switching, {\em must} be robustly mitigated.
 
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE.

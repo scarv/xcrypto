@@ -1,77 +1,147 @@
 % =============================================================================
 
-\vspace*{\fill}
+\begin{table}[p]
 \begin{center}
-\begin{longtable}{|c|l|l|}
-\caption{An overview of instruction syntax, including reference to associated semantics.} \label{tab:syntax}  \\
-
-\hline
-Class                 & Syntax                  & Section                           \\
-\hline
-\endfirsthead
-\hline
-Class                 & Syntax                  & Section                           \\
-\hline
-\endhead
-\hline
-\endlastfoot
-\endfoot
-\multirow{10}{*}{1}   & \XCSYNTAXUSE{XCR2GPR}    & \REFSEC{sec:spec:instr:XCR2GPR}    \\
-                      & \XCSYNTAXUSE{GPR2XCR}    & \REFSEC{sec:spec:instr:GPR2XCR}    \\
-                      & \XCSYNTAXUSE{CMOV}      & \REFSEC{sec:spec:instr:CMOV}      \\
-                      & \XCSYNTAXUSE{CMOVN}     & \REFSEC{sec:spec:instr:CMOVN}     \\
-                      & \XCSYNTAXUSE{LD.BU}     & \REFSEC{sec:spec:instr:LD.BU}     \\
-                      & \XCSYNTAXUSE{LD.HU}     & \REFSEC{sec:spec:instr:LD.HU}     \\
-                      & \XCSYNTAXUSE{LD.W}      & \REFSEC{sec:spec:instr:LD.W}      \\
-                      & \XCSYNTAXUSE{ST.B}      & \REFSEC{sec:spec:instr:ST.B}      \\
-                      & \XCSYNTAXUSE{ST.H}      & \REFSEC{sec:spec:instr:ST.H}      \\
-                      & \XCSYNTAXUSE{ST.W}      & \REFSEC{sec:spec:instr:ST.W}      \\
+\begin{tabular}{|c|l|l|}
 \hline                                                                             
-\multirow{ 2}{*}{2.1} & \XCSYNTAXUSE{RNGSEED}   & \REFSEC{sec:spec:instr:RNGSEED}   \\
-                      & \XCSYNTAXUSE{RNGSAMP}   & \REFSEC{sec:spec:instr:RNGSAMP}   \\
+Class                 & Syntax                     & Section                              \\
 \hline                                                                             
-\multirow{ 4}{*}{2.2} & \XCSYNTAXUSE{SCATTER.b} & \REFSEC{sec:spec:instr:SCATTER.b} \\
-                      & \XCSYNTAXUSE{SCATTER.h} & \REFSEC{sec:spec:instr:SCATTER.h} \\
-                      & \XCSYNTAXUSE{GATHER.b}  & \REFSEC{sec:spec:instr:GATHER.b}  \\
-                      & \XCSYNTAXUSE{GATHER.h}  & \REFSEC{sec:spec:instr:GATHER.h}  \\
+\multirow{12}{*}{1}   & \XCSYNTAXUSE{xc.xcr2gpr}   & \REFSEC{sec:spec:instr:xc.xcr2gpr}   \\
+                      & \XCSYNTAXUSE{xc.gpr2xcr}   & \REFSEC{sec:spec:instr:xc.gpr2xcr}   \\
+                      & \XCSYNTAXUSE{xc.cmov}      & \REFSEC{sec:spec:instr:xc.cmov}      \\
+                      & \XCSYNTAXUSE{xc.cmovn}     & \REFSEC{sec:spec:instr:xc.cmovn}     \\
+                      & \XCSYNTAXUSE{xc.ld.bu}     & \REFSEC{sec:spec:instr:xc.ld.bu}     \\
+                      & \XCSYNTAXUSE{xc.ld.hu}     & \REFSEC{sec:spec:instr:xc.ld.hu}     \\
+                      & \XCSYNTAXUSE{xc.ld.b}      & \REFSEC{sec:spec:instr:xc.ld.b}      \\
+                      & \XCSYNTAXUSE{xc.ld.h}      & \REFSEC{sec:spec:instr:xc.ld.h}      \\
+                      & \XCSYNTAXUSE{xc.ld.w}      & \REFSEC{sec:spec:instr:xc.ld.w}      \\
+                      & \XCSYNTAXUSE{xc.st.b}      & \REFSEC{sec:spec:instr:xc.st.b}      \\
+                      & \XCSYNTAXUSE{xc.st.h}      & \REFSEC{sec:spec:instr:xc.st.h}      \\
+                      & \XCSYNTAXUSE{xc.st.w}      & \REFSEC{sec:spec:instr:xc.st.w}      \\
 \hline                                                                             
-\multirow{ 7}{*}{2.2} & \XCSYNTAXUSE{LD.HI}     & \REFSEC{sec:spec:instr:LD.HI}     \\
-                      & \XCSYNTAXUSE{LD.LI}     & \REFSEC{sec:spec:instr:LD.LI}     \\
-                      & \XCSYNTAXUSE{BOP}       & \REFSEC{sec:spec:instr:BOP}       \\
-                      & \XCSYNTAXUSE{EXT}       & \REFSEC{sec:spec:instr:EXT}       \\
-                      & \XCSYNTAXUSE{INS}       & \REFSEC{sec:spec:instr:INS}       \\
-                      & \XCSYNTAXUSE{MIX.l}     & \REFSEC{sec:spec:instr:MIX.l}     \\
-                      & \XCSYNTAXUSE{MIX.h}     & \REFSEC{sec:spec:instr:MIX.h}     \\
-\hline                                                                             
-\multirow{12}{*}{2.3} & \XCSYNTAXUSE{PADD}      & \REFSEC{sec:spec:instr:PADD}      \\
-                      & \XCSYNTAXUSE{PSUB}      & \REFSEC{sec:spec:instr:PSUB}      \\
-                      & \XCSYNTAXUSE{PMUL.l}    & \REFSEC{sec:spec:instr:PMUL.l}    \\
-                      & \XCSYNTAXUSE{PSLL}      & \REFSEC{sec:spec:instr:PSLL}      \\
-                      & \XCSYNTAXUSE{PSLL.i}    & \REFSEC{sec:spec:instr:PSLL.i}    \\
-                      & \XCSYNTAXUSE{PSRL}      & \REFSEC{sec:spec:instr:PSRL}      \\
-                      & \XCSYNTAXUSE{PSRL.i}    & \REFSEC{sec:spec:instr:PSRL.i}    \\
-                      & \XCSYNTAXUSE{PROT}      & \REFSEC{sec:spec:instr:PROT}      \\
-                      & \XCSYNTAXUSE{PROT.i}    & \REFSEC{sec:spec:instr:PROT.i}    \\
-                      & \XCSYNTAXUSE{PPERM.W}   & \REFSEC{sec:spec:instr:PPERM.W}    \\
-                      & \XCSYNTAXUSE{PPERM.Hx}  & \REFSEC{sec:spec:instr:PPERM.Hx}  \\
-                      & \XCSYNTAXUSE{PPERM.Bx}  & \REFSEC{sec:spec:instr:PPERM.Bx}  \\
-\hline                                                                             
-\multirow{14}{*}{2.4} & \XCSYNTAXUSE{MADD.2}    & \REFSEC{sec:spec:instr:MADD.2}    \\
-                      & \XCSYNTAXUSE{MADD.3}    & \REFSEC{sec:spec:instr:MADD.3}    \\
-                      & \XCSYNTAXUSE{MSUB.2}    & \REFSEC{sec:spec:instr:MSUB.2}    \\
-                      & \XCSYNTAXUSE{MSUB.3}    & \REFSEC{sec:spec:instr:MSUB.3}    \\
-                      & \XCSYNTAXUSE{MACC.1}    & \REFSEC{sec:spec:instr:MACC.1}    \\
-                      & \XCSYNTAXUSE{MACC.2}    & \REFSEC{sec:spec:instr:MACC.2}    \\
-                      & \XCSYNTAXUSE{MMUL.1}    & \REFSEC{sec:spec:instr:MMUL.1}    \\
-                      & \XCSYNTAXUSE{MSLL}      & \REFSEC{sec:spec:instr:MSLL}      \\
-                      & \XCSYNTAXUSE{MSLL.i}    & \REFSEC{sec:spec:instr:MSLL.i}    \\
-                      & \XCSYNTAXUSE{MSRL}      & \REFSEC{sec:spec:instr:MSRL}      \\
-                      & \XCSYNTAXUSE{MSRL.i}    & \REFSEC{sec:spec:instr:MSRL.i}    \\
-                      & \XCSYNTAXUSE{MEQU}      & \REFSEC{sec:spec:instr:MEQU}      \\
-                      & \XCSYNTAXUSE{MLTE}      & \REFSEC{sec:spec:instr:MLTE}      \\
-                      & \XCSYNTAXUSE{MGTE}      & \REFSEC{sec:spec:instr:MGTE}      \\
-\end{longtable}
+\end{tabular}
 \end{center}
-\vspace*{\fill}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $1$,   per \REFSEC{sec:spec:instr:1}.}
+\label{tab:syntax:1}
+\end{table}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline                                                                             
+Class                 & Syntax                     & Section                              \\
+\hline                                                                             
+\multirow{ 3}{*}{2.1} & \XCSYNTAXUSE{xc.rngtest}   & \REFSEC{sec:spec:instr:xc.rngtest}   \\
+                      & \XCSYNTAXUSE{xc.rngseed}   & \REFSEC{sec:spec:instr:xc.rngseed}   \\
+                      & \XCSYNTAXUSE{xc.rngsamp}   & \REFSEC{sec:spec:instr:xc.rngsamp}   \\
+\hline                                                                             
+\end{tabular}
+\end{center}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $2.1$, per \REFSEC{sec:spec:instr:2:1}.}
+\label{tab:syntax:2:1}
+\end{table}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline                                                                             
+Class                 & Syntax                     & Section                              \\
+\hline                                                                             
+\multirow{ 4}{*}{2.2} & \XCSYNTAXUSE{xc.scatter.b} & \REFSEC{sec:spec:instr:xc.scatter.b} \\
+                      & \XCSYNTAXUSE{xc.scatter.h} & \REFSEC{sec:spec:instr:xc.scatter.h} \\
+                      & \XCSYNTAXUSE{xc.gather.b}  & \REFSEC{sec:spec:instr:xc.gather.b}  \\
+                      & \XCSYNTAXUSE{xc.gather.h}  & \REFSEC{sec:spec:instr:xc.gather.h}  \\
+\hline                                                                             
+\end{tabular}
+\end{center}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $2.2$, per \REFSEC{sec:spec:instr:2:2}.}
+\label{tab:syntax:2:2}
+\end{table}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
+\begin{center} 
+\begin{tabular}{|c|l|l|}
+\hline                                                                             
+Class                 & Syntax                     & Section                              \\
+\hline                                                                             
+\multirow{ 7}{*}{2.3} & \XCSYNTAXUSE{xc.ld.hi}     & \REFSEC{sec:spec:instr:xc.ld.hi}     \\
+                      & \XCSYNTAXUSE{xc.ld.li}     & \REFSEC{sec:spec:instr:xc.ld.li}     \\
+                      & \XCSYNTAXUSE{xc.bop}       & \REFSEC{sec:spec:instr:xc.bop}       \\
+                      & \XCSYNTAXUSE{xc.ext}       & \REFSEC{sec:spec:instr:xc.ext}       \\
+                      & \XCSYNTAXUSE{xc.ins}       & \REFSEC{sec:spec:instr:xc.ins}       \\
+                      & \XCSYNTAXUSE{xc.mix.l}     & \REFSEC{sec:spec:instr:xc.mix.l}     \\
+                      & \XCSYNTAXUSE{xc.mix.h}     & \REFSEC{sec:spec:instr:xc.mix.h}     \\
+\hline                                                                             
+\end{tabular}
+\end{center}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $2.3$, per \REFSEC{sec:spec:instr:2:3}.}
+\label{tab:syntax:2:3}
+\end{table}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline                                                                             
+Class                 & Syntax                     & Section                              \\
+\hline                                                                             
+\multirow{15}{*}{2.4} & \XCSYNTAXUSE{xc.padd}      & \REFSEC{sec:spec:instr:xc.padd}      \\
+                      & \XCSYNTAXUSE{xc.psub}      & \REFSEC{sec:spec:instr:xc.psub}      \\
+                      & \XCSYNTAXUSE{xc.pmul.l}    & \REFSEC{sec:spec:instr:xc.pmul.l}    \\
+                      & \XCSYNTAXUSE{xc.pmul.h}    & \REFSEC{sec:spec:instr:xc.pmul.h}    \\
+                      & \XCSYNTAXUSE{xc.pclmul.l}  & \REFSEC{sec:spec:instr:xc.pclmul.l}  \\
+                      & \XCSYNTAXUSE{xc.pclmul.h}  & \REFSEC{sec:spec:instr:xc.pclmul.h}  \\
+                      & \XCSYNTAXUSE{xc.psll}      & \REFSEC{sec:spec:instr:xc.psll}      \\
+                      & \XCSYNTAXUSE{xc.psll.i}    & \REFSEC{sec:spec:instr:xc.psll.i}    \\
+                      & \XCSYNTAXUSE{xc.psrl}      & \REFSEC{sec:spec:instr:xc.psrl}      \\
+                      & \XCSYNTAXUSE{xc.psrl.i}    & \REFSEC{sec:spec:instr:xc.psrl.i}    \\
+                      & \XCSYNTAXUSE{xc.prot}      & \REFSEC{sec:spec:instr:xc.prot}      \\
+                      & \XCSYNTAXUSE{xc.prot.i}    & \REFSEC{sec:spec:instr:xc.prot.i}    \\
+                      & \XCSYNTAXUSE{xc.pperm.w}   & \REFSEC{sec:spec:instr:xc.pperm.w}   \\
+                      & \XCSYNTAXUSE{xc.pperm.hx}  & \REFSEC{sec:spec:instr:xc.pperm.hx}  \\
+                      & \XCSYNTAXUSE{xc.pperm.bx}  & \REFSEC{sec:spec:instr:xc.pperm.bx}  \\
+\hline                                                                             
+\end{tabular}
+\end{center}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $2.4$, per \REFSEC{sec:spec:instr:2:4}.}
+\label{tab:syntax:2:4}
+\end{table}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline                                                                             
+Class                 & Syntax                     & Section                              \\
+\hline                                                                             
+\multirow{15}{*}{2.5} & \XCSYNTAXUSE{xc.madd.2}    & \REFSEC{sec:spec:instr:xc.madd.2}    \\
+                      & \XCSYNTAXUSE{xc.madd.3}    & \REFSEC{sec:spec:instr:xc.madd.3}    \\
+                      & \XCSYNTAXUSE{xc.msub.2}    & \REFSEC{sec:spec:instr:xc.msub.2}    \\
+                      & \XCSYNTAXUSE{xc.msub.3}    & \REFSEC{sec:spec:instr:xc.msub.3}    \\
+                      & \XCSYNTAXUSE{xc.macc.1}    & \REFSEC{sec:spec:instr:xc.macc.1}    \\
+                      & \XCSYNTAXUSE{xc.macc.2}    & \REFSEC{sec:spec:instr:xc.macc.2}    \\
+                      & \XCSYNTAXUSE{xc.mmul.1}    & \REFSEC{sec:spec:instr:xc.mmul.1}    \\
+                      & \XCSYNTAXUSE{xc.mclmul.1}  & \REFSEC{sec:spec:instr:xc.mclmul.1}  \\
+                      & \XCSYNTAXUSE{xc.msll}      & \REFSEC{sec:spec:instr:xc.msll}      \\
+                      & \XCSYNTAXUSE{xc.msll.i}    & \REFSEC{sec:spec:instr:xc.msll.i}    \\
+                      & \XCSYNTAXUSE{xc.msrl}      & \REFSEC{sec:spec:instr:xc.msrl}      \\
+                      & \XCSYNTAXUSE{xc.msrl.i}    & \REFSEC{sec:spec:instr:xc.msrl.i}    \\
+                      & \XCSYNTAXUSE{xc.mequ}      & \REFSEC{sec:spec:instr:xc.mequ}      \\
+                      & \XCSYNTAXUSE{xc.mlte}      & \REFSEC{sec:spec:instr:xc.mlte}      \\
+                      & \XCSYNTAXUSE{xc.mgte}      & \REFSEC{sec:spec:instr:xc.mgte}      \\
+\hline                                                                             
+\end{tabular}
+\end{center}
+\caption{An overview of instruction syntax, including reference to associated semantics: class $2.5$, per \REFSEC{sec:spec:instr:2:5}.}
+\label{tab:syntax:2:5}
+\end{table}                                                                      
 
 % =============================================================================

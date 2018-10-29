@@ -5,16 +5,19 @@
 
 \begin{table}[t]
 \begin{center}
-\begin{tabular}{|l|cc|}
+\begin{tabular}{|l|l|cc|}
 \hline
-Feature class   & Numeric ID & Mnemonic ID \\
+Description                                & Class           & Numeric ID & Mnemonic ID \\
 \hline
-Baseline        & $1$        & BASE        \\
-Randomness      & $2.1$      & RND         \\
-Memory          & $2.2$      & MEM         \\
-Bit-oriented    & $2.3$      & BIT         \\
-Packed          & $2.4$      & PACK        \\
-Multi-precision & $2.5$      & MP          \\
+\multirow{1}{*}{Required                 } & Baseline        & $1$        & BASE        \\
+\hline
+\multirow{5}{*}{Optional, general-purpose} & Randomness      & $2.1$      & RND         \\
+                                           & Memory          & $2.2$      & MEM         \\
+                                           & Bit-oriented    & $2.3$      & BIT         \\
+                                           & Packed          & $2.4$      & PACK        \\
+                                           & Multi-precision & $2.5$      & MP          \\
+\hline
+\multirow{1}{*}{Optional, special-purpose} & AES             & $3.1$      & AES         \\
 \hline
 \end{tabular}
 \end{center}
@@ -44,8 +47,7 @@ precise specification, note that
       illegal instruction exception,
       and
 \item any instruction that accesses memory mirrors RV32I wrt. exception,
-      synchronisation (e.g., \VERB[RV]{FENCE}), and atomicity semantics: 
-      for example, if
+      synchronisation, and atomicity semantics: for example, if
       a) the effective address stemming from a memory access instruction
          is not aligned to the associated data type, 
          {\em  and}
@@ -60,7 +62,7 @@ The RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17} for ISEs
 uses a string of single-character identifiers to specify features realised
 in an implementation.  We adopt a variant of this approach, wherein
 \[
-\XCID[x/y/z]
+\XCID[$x$/$y$/$z$]
 \]
 denotes a concrete implementation of \XCID that supports feature classes 
 $x$, $y$, and $z$: we assign a numeric and a mnemonic identifier to each
@@ -101,7 +103,7 @@ to said state.
 \subparagraph{Register-register data transfer.}
 
 A suite of instructions
-(e.g., \VERB[RV]{GPR2XCR.cr})
+(e.g., \VERB[RV]{xc.gpr2xcr})
 that allow 
 transfer of content between
 the general-purpose register file (i.e., $\GPR$)
@@ -109,7 +111,7 @@ and
 the    co-processor register file (i.e., $\XCR$)
 is included.
 In addition, support 
-(e.g., \VERB[RV]{CMOV.cr})
+(e.g., \VERB[RV]{xc.cmov})
 for conditional, branch'less moves of content between $\XCR$ registers 
 (cf. x86 \VERB{cmov}~\cite[Page 3-149--3-152]{SCARV:X86:2:18})
 is included; such instructions form a common, vital component
@@ -119,7 +121,7 @@ in realisations of countermeasures against side-channel attack.
 \subparagraph{Register-memory   data transfer.}
 
 A suite of instructions 
-(e.g., \VERB[RV]{LW.cr})
+(e.g., \VERB[RV]{xc.ld.w} and \VERB[RV]{xc.st.w})
 that allow 
 transfer of content between
    memory                         (i.e., $\MEM$)
@@ -165,9 +167,9 @@ ARMv8.5-A\footnote{
 a suite of instructions 
 that allow 
 manipulation, e.g.,
- sampling entropy from (via \VERB[RV]{RSAMP.cr})
+ sampling entropy from (via \VERB[RV]{xc.rngsamp})
 or
-injecting entropy into (via \VERB[RV]{RSEED.cr}),
+injecting entropy into (via \VERB[RV]{xc.rngseed})
 of a (T)RNG implementation.
 
 % -----------------------------------------------------------------------------
@@ -201,7 +203,7 @@ This, taken as an exemplar from a richer set of examples, forms motivation
 for a richer set of addressing modes than available (by design) in RV32I.
 In particular, 
 a suite of instructions 
-(e.g., \VERB[RV]{SCATTER.b} and \VERB[RV]{GATHER.b})
+(e.g., \VERB[RV]{xc.scatter.b} and \VERB[RV]{xc.gather.b})
 that allow 
 scatter/gather-based
 transfer of content between
@@ -213,7 +215,7 @@ single base address and multiple offsets, and hence scatter sub-words into
 (resp. gather sub-words from) memory at non-contiguous addresses.  
 This capability clearly aligns with application of an S-box, with the AES 
 {\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197} 
-round function implementable via a single \VERB[RV]{GATHER.b} instruction 
+round function realised via a single \VERB[RV]{xc.gather.b} instruction 
 (albeit multiple resulting memory accesses) given a suitable look-up table.
 Couching scatter/gather as a vector-oriented operation, both
 \cite[Section 3.1]{SCARV:FouMoo:05} 
@@ -273,6 +275,7 @@ central features:
 Note that
 a) a deliberate use of the term operation is intended to highlight the fact 
    that non-arithmetic operations are viable instances of the same concept,
+   and
 b) care should be taken to distinguish this concept from traditional vector 
    architectures
    (cf. the Cray X1);
@@ -280,7 +283,7 @@ b) care should be taken to distinguish this concept from traditional vector
    could be viewed as retro-fitting packed sub-words in a scalar data type.
 It is common to describe packed arithmetic as an instance of a more general
 Single Instruction, Multiple Data (SIMD) concept, with the term SIMD Within 
-A Register (SWAR) further highlighting specifics of the instantiation;
+A Register (SWAR) further highlighting specifics of the instantiation.
 
 Concrete examples of support for packed operations include
 x86-based~\cite[Section 2.2.7]{SCARV:X86:2:18} MMX, SSE, and AVX,
@@ -311,7 +314,7 @@ arithmetic; this includes support for implementations via ISEs defined for
 RISC-based processors.
 
 \XCID includes a suite of instructions 
-(e.g., \VERB[RV]{ADD3.mp})
+(e.g., \VERB[RV]{xc.madd.3})
 which mirror low-level steps in higher-level algorithms for multi-precision 
 integer arithmetic; in part, these mirror features in 
 XS1~\cite[Section 18]{SCARV:XS1:09} 
@@ -325,5 +328,12 @@ state.
 Such an approach is particularly attractive when set within the context of 
 RV32I, because it avoids inclusion of status flags and so forces (somewhat 
 high overhead) software-based carry and overflow detection.
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$3.1$: AES}
+\label{sec:bg:feature:3:1}
+
+% TODO
 
 % =============================================================================

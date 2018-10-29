@@ -18,7 +18,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{longtable}
-\usepackage{multirow}
+\usepackage{multirow,bigdelim}
 \usepackage{pbox}
 \usepackage{ragged2e}
 \usepackage{tabularx}
@@ -197,8 +197,9 @@
 \newcommandx{\C}[1]{\ensuremath{\mathcal #1}\xspace}
 \newcommandx{\B}[1]{\ensuremath{\mathbb  #1}\xspace}
 
-% algorithm
+% algorithm, identifier
 \newcommandx{\ALG}[1]{\ensuremath\textsc{#1}\xspace}
+\newcommandx{\ID}[1]{\textsf{#1}}
 
 % instruction operand
 \newcommandx{\OPER}[1]{\mbox{\tt #1}} % TODO: remove
