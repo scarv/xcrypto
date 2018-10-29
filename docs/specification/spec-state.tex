@@ -1,15 +1,17 @@
 \subsection{\XCID state}
 \label{sec:spec:state}
 
-It is important to recognise 
-the overhead, wrt. both 
+It is important to recognise the overhead, wrt. both 
 time (e.g., due to it needing to be context switched) 
 and 
 space (e.g., due to the logic required),
-relating to state added to RV32I by \XCID.
-However, it seems reasonable to align this overhead with that of any
-extension for floating-point arithmetic (which, in the same way, will
-typically make use of a dedicated floating-point register file): many 
+relating to {\em any} state added to RV32I by \XCID.
+
+However, it also seems reasonable to align this overhead with that of, for
+example, an ISE for floating-point arithmetic: through the addition of a
+dedicated floating-point register file, 
+
+many 
 of the trade-offs involved, e.g., provision of
 a) clear separation of duty,
 b) additional capacity,
@@ -19,205 +21,208 @@ are the same, but motivated by cryptographic workloads.
 
 % =============================================================================
 
-\subsubsection{General-purpose registers}
+\subsubsection{General-purpose register file}
 \label{sec:spec:state:gpr}
 
-Due to the nature of such workloads, however, attack vectors such as
-LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
-the overhead of context switching, {\em must} be robustly mitigated.
+\XCID 
+adds a
+
+additional $16$ by $32$-bit register file which
+is used exclusively by the instructions in this ISE.
 
 The ISE introduces an additional $16$ by $32$-bit register file which
 is used exclusively by the instructions in this ISE.
 It is to the crypto ISE what the floating-point register file is to the
 RISC-V F extension.
 
-Unlike the RISC-V $\GPR$s, the zeroth $\XCR$ is not tied to zero.
 
-The register file addressing is shown in table \ref{tab:state-addr}.
-
-\begin{table}[t]
-\centering
-\begin{tabular}{|l|l l l l|}
-\hline
-\multicolumn{1}{|l|}{3:0} & \textbf{31:24} & \textbf{23:16} & \textbf{15:8} & \textbf{7:0} \\ \hline
-{\tt c0  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c1  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c2  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c3  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c4  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c5  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c6  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c7  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c8  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c9  } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c10 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c11 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c12 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c13 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c14 } & 3 & 2 & 1 & 0      \\ \hline
-{\tt c15 } & 3 & 2 & 1 & 0      \\ \hline
-\end{tabular}
-\caption{This table shows the per-byte layout of the register file.
-Note that there is no {\em zero} register in the ISE.
-The register with address $0$ will preserve writes.}
-\label{tab:state-addr}
-\end{table}
-
-\note{
-A smart programmer will remember to clear their $\XCR$s of any secret data
-before returning execution to some part of the system they did not write.
-}
-
-The number of general purpose registers to put into any ISA and ISE is
-always contentious.
-We chose 16 general purpose registers for this ISE for the following reasons:
-
-\begin{itemize}
-\item As demonstrated by ARM, 16 GPRs is plenty for most computation.
-Indeed ARM actually has fewer GPRs due to the special nature of some of their
-{\em high} registers.
-We believe mirroring the base RISC-V ISA and having
-32 GPRs would have been overkill for an ISE such as this, even when the
-{\tt F} extension adds 32 registers itself.
-\item In area-optimised implementations such as micro-controllers, the
-total area of a core is often dominated by the register-file.
-For embedded applications which do not need all 32 GPRs, one could use the 
-{\tt E} extension, and use the area saved by having 16 GPRs to make room
-on the die for the crypto ISE.
-\item Fewer registers frees up instruction encoding space which would
-normally have been needed for register addresses.
-\end{itemize}
-
-This is the only extra architectural state required by the ISE.
-We followed the RISC-V principles of avoiding implicit or otherwise
-hidden state.
-
+%\item As demonstrated by ARM, 16 GPRs is plenty for most computation.
+%Indeed ARM actually has fewer GPRs due to the special nature of some of their
+%{\em high} registers.
+%We believe mirroring the base RISC-V ISA and having
+%32 GPRs would have been overkill for an ISE such as this, even when the
+%{\tt F} extension adds 32 registers itself.
+%\item In area-optimised implementations such as micro-controllers, the
+%total area of a core is often dominated by the register-file.
+%For embedded applications which do not need all 32 GPRs, one could use the 
+%{\tt E} extension, and use the area saved by having 16 GPRs to make room
+%on the die for the crypto ISE.
+%\item Fewer registers frees up instruction encoding space which would
+%normally have been needed for register addresses.
+%
+%
+%\item RV32I specifies~\cite[Section 2.1]{SCARV:RV:ISA:I:17} that
+%      $
+%      \GPR[*][0] = 0 ,
+%      $
+%      i.e., that the $0$-th general-purpose register is fixed to $0$: all
+%      reads from said register yield $0$.  The analagous special-case is 
+%      {\em not} true of 
+%      $
+%      \XCR[*][0] ,
+%      $
+%      the $0$-th co-processor register.
+%
+%\item The use of a $\GPR$ register as the base address for memory access,
+%      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
+%      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
+%      as a control-path for the co-processor: control-flow orchestration 
+%      address computation both fall under the remit of the former, and 
+%      can be supported by RV32I as is.
+%
+%\item Due to the nature of such workloads, however, attack vectors such as
+%      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
+%      the overhead of context switching, {\em must} be robustly mitigated.
+    
 % =============================================================================
 
-\subsubsection{Control and status registers}
+\subsubsection{Control and Status Registers (CSRs)}
 \label{sec:spec:state:csr}
 
-The Crypto ISE one Control \& Status Register (CSR) to the
-standard set. It is used for feature identification and access
-control.
-
-\paragraph{Crypto ISE Control Register (mccr)}
-
-The {\tt mccr} register is a non-standard, read/write, M-level CSR
-used to identify which parts of the ISE have been implemented,
-enable or disable countermeasures, and to control which privilidge
-levels can access the ISE features.
-
-The {\tt mccr} occupies address {\tt 0x7FE}, defined in the RISC-V
-Privileged ISA Specification as reserved for non-standard,
-read/write CSRs.
-
-For more information on the differences between feature sets, see
-section \ref{sec:feature-sets}.
-
-\begin{figure}[t]
-\centering
-\begin{bytefield}[bitwidth=1.6em,endianness=big]{32}
-\bitheader{0-31}               \\
-\BB{1}{  R}
-\BB{1}{ MP}
-\BB{1}{ SG}
-\BB{1}{p32}
-\BB{1}{p16}
-\BB{1}{ p8}
-\BB{1}{ p4}
-\BB{1}{ p2}
-\BB{14}{WIRI}
-\BB{1}{  s}
-\BB{1}{  u}
-\BB{1}{ c7}
-\BB{1}{ c6}
-\BB{1}{ c5}
-\BB{1}{ c4}
-\BB{1}{ c3}
-\BB{1}{ c2}
-\BB{1}{ c1}
-\BB{1}{ c0}
-\end{bytefield}
-\captionsetup{singlelinecheck=off}
-\caption[x]{\centering Fields of the {\tt mccr} CSR.}
-\label{fig:csr-mccr}
-\end{figure}
-
-\begin{table}[t]
-\centering
-\begin{tabular}{l l l}
-\toprule
-Field& Bits & Description \\\midrule
-R    &31&Is the Random Instructions interface is implemented (set) or not (clear). \\
-MP   &30&Are the multi-precision arithmetic instructions are implemented (set) or not (clear). \\
-SG   &29&Are the {\tt SCATTER} and {\tt GATHER} instructions are implemented (set) or not (clear). \\
-p32  &28&Are pack-widths of 32 are supported (set) or not (clear).\\
-p16  &27&Are pack-widths of 16 are supported (set) or not (clear).\\
-p8   &26&Are pack-widths of  8 are supported (set) or not (clear).\\
-p4   &25&Are pack-widths of  4 are supported (set) or not (clear).\\
-p2   &24&Are pack-widths of  2 are supported (set) or not (clear).\\
-WIRI & 23..10&Writes ignored, reads ignored. \\
-s    & 9 & Allow supervisor mode access to the Crypto ISE. \\
-u    & 8 & Allow user mode access to the Crypto ISE. \\
-c7..c0 & 7..0 & Countermeasure enable bits. \\
-\bottomrule
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|r@{\;}l|cc|}
+\hline
+\multicolumn{2}{|c|}{Name}      & Address         & Access     \\
+\hline
+\XCID Control Register & (XCCR) & \RADIX{7C0}{16} & read/write \\
+\XCID Status  Register & (XCSR) & \RADIX{FC0}{16} & read-only  \\
+\hline
 \end{tabular}
-\caption{{\tt mccr} register bit field descriptions.}
+\end{center}
+\caption{XXX \cite[Table 2.1]{SCARV:RV:ISA:II:17}}
+\label{tab:csr}
 \end{table}
 
-All writable bits of the {\tt mccr} may be tied to zero based on the
-implementation. If no countermeasures are implemented for example, or
-user/supervisor mode is not supported, the corresponding bits may be
-constants.
+\begin{figure}[p]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+  \bitbox{19}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK32$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK16$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK8 $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK4 $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK2 $}}
+& \bitbox{ 2}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $AES   $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $MP    $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK  $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $BIT   $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $MEM   $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $RND   $}}
+\\
+\end{bytefield}
+\end{center}
+\caption{A diagramatic description of the $\SPR{XCSR}$ register; note that blanked out bits are reserved.}
+\label{tab:xcsr:reg}
+\end{figure}
 
-\paragraph{Access Control In The mccr}
+\begin{figure}[p]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+  \bitbox{32}{\rule{\width}{\height}}
+\\
+\end{bytefield}
+\end{center}
+\caption{A diagramatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
+\label{tab:xccr:reg}
+\end{figure}
 
-The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
-priviledge levels of the RISC-V core can use the Crypto ISE instructions
-and state. 
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|lc|l@{\;}l@{\;}l|}
+\hline
+Field    & Bit(s) & \multicolumn{3}{c|}{Description}                                                             \\
+\hline
+$RND   $ & $ 0$   & Is  & RND      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$MEM   $ & $ 1$   & Is  & MEM      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$BIT   $ & $ 2$   & Is  & BIT      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$PACK  $ & $ 3$   & Is  & PACK     & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$MP    $ & $ 4$   & Is  & MP       & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$AES   $ & $ 5$   & Is  & AES      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
+$PACK2 $ & $ 8$   & Are & $w =  2$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+$PACK4 $ & $ 9$   & Are & $w =  4$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+$PACK8 $ & $10$   & Are & $w =  8$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+$PACK16$ & $11$   & Are & $w = 16$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+$PACK32$ & $12$   & Are & $w = 32$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+\hline
+\end{tabular}
+\end{center}
+\caption{A tabular     description of the $\SPR{XCSR}$ register.}
+\label{tab:xcsr:desc}
+\end{table}
 
-If {\tt s} is clear, neither supervisor mode or user mode may access the
-Crypto ISE. If {\tt s} is set, then supervisor mode may access the Crypto
-ISE, and user mode access depends on whether the {\tt u} bit is set.
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|lc|l@{\;}l@{\;}l|}
+\hline
+Field    & Bit(s) & \multicolumn{3}{c|}{Description}                                                             \\
+\hline
 
-Machine-mode software always has access to the Crypto ISE.
+\hline
+\end{tabular}
+\end{center}
+\caption{A tabular     description of the $\SPR{XCCR}$ register.}
+\label{tab:xccr:desc}
+\end{table}
 
-If a Crypto ISE instruction is encountered in a priviledge mode which
-does not have access to the ISE, then an {\em illegal instruction exception}
-is raised.
 
-Any access to the {\tt mccr} in anything other than machine mode
-causes an {\em illegal instruction exception}.
+%\XCID 
+%adds two 
+%non-standard, machine-class CSRs~\cite[Section 2]{SCARV:RV:ISA:II:17}:
+%
+%\item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
+%
+%\item The \XCID Status  Register (XCSR), denoted $\SPR{XCCR}$,
+%
+%
+%
+%All writable bits of the {\tt mccr} may be tied to zero based on the
+%implementation. If no countermeasures are implemented for example, or
+%user/supervisor mode is not supported, the corresponding bits may be
+%constants.
 
-\paragraph{Countermeasure Control In The mccr.}
-
-The {\tt mccr} includes coarse grain control for implementation specific
-hardware side channel countermeasures using the {\tt cX} bits.
-
-It is up to the implementer to specify and document exactly what each
-countermeasure bit controls. We expect them to be used to implement
-switches for controlling things like constant time computation, random
-stalling, instruction shuffling and so on.
-
-\paragraph{ABI Standards.}
-
-All of the state added in the Crypto ISE is considered {\em callee save}
-for the purposes of the ABI.
-That is, if {\tt function1} calls 
-{\tt function2}, then {\tt function2} is responsible for saving to the
-stack any $\XCR$ registers it needs, and popping them off before returning.
-
-The $\XCR$ registers $0..8$ are considered as function arguments
-and/or return values. 
-All other $\XCR$ registers are considered temporaries.
-
-Any registers pushed to the stack should be written in ascending order.
-That is, as the stack grows downwards, $c1$ should be written (if needed)
-to the address following $c0$.
-
-The $\XCR$ registers which are written to the stack during function calls
-should be written {\em after} all of the $\GPR$ and floating-point registers
-(if the {\tt F} extension is implemented) have been written.
+%\paragraph{Access Control In The mccr}
+%
+%The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
+%priviledge levels of the RISC-V core can use the Crypto ISE instructions
+%and state. 
+%
+%If {\tt s} is clear, neither supervisor mode or user mode may access the
+%Crypto ISE. If {\tt s} is set, then supervisor mode may access the Crypto
+%ISE, and user mode access depends on whether the {\tt u} bit is set.
+%
+%Machine-mode software always has access to the Crypto ISE.
+%
+%If a Crypto ISE instruction is encountered in a priviledge mode which
+%does not have access to the ISE, then an {\em illegal instruction exception}
+%is raised.
+%
+%Any access to the {\tt mccr} in anything other than machine mode
+%causes an {\em illegal instruction exception}.
+%
+%\paragraph{ABI Standards.}
+%
+%All of the state added in the Crypto ISE is considered {\em callee save}
+%for the purposes of the ABI.
+%That is, if {\tt function1} calls 
+%{\tt function2}, then {\tt function2} is responsible for saving to the
+%stack any $\XCR$ registers it needs, and popping them off before returning.
+%
+%The $\XCR$ registers $0..8$ are considered as function arguments
+%and/or return values. 
+%All other $\XCR$ registers are considered temporaries.
+%
+%Any registers pushed to the stack should be written in ascending order.
+%That is, as the stack grows downwards, $c1$ should be written (if needed)
+%to the address following $c0$.
+%
+%The $\XCR$ registers which are written to the stack during function calls
+%should be written {\em after} all of the $\GPR$ and floating-point registers
+%(if the {\tt F} extension is implemented) have been written.
 
 % =============================================================================

@@ -27,12 +27,6 @@
          or
       b) a (uncached) scratch-pad memory,
       by the co-processor alone.
-\item The use of a $\GPR$ register as the base address for memory access,
-      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
-      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
-      as a control-path for the co-processor: control-flow orchestration 
-      address computation both fall under the remit of the former, and 
-      can be supported by RV32I as is.
 
 % TODO
 %\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
