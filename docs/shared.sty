@@ -18,7 +18,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{longtable}
-\usepackage{multirow}
+\usepackage{multirow,bigdelim}
 \usepackage{pbox}
 \usepackage{ragged2e}
 \usepackage{tabularx}
@@ -154,7 +154,7 @@
 
 \newcommandx{\XCINSTR}[6][6={}]{
   \paragraph{\VERB[RV]{#1}}
-  \label{sec:spec:instr:#1} \XCSYNTAXDEF{#1}{#2}
+  \label{sec:spec:instruction:#1} \XCSYNTAXDEF{#1}{#2}
 
   \begin{itemize}[labelindent=0pt,align=left,noitemsep]
   \item {\bf Description:} 
@@ -197,8 +197,9 @@
 \newcommandx{\C}[1]{\ensuremath{\mathcal #1}\xspace}
 \newcommandx{\B}[1]{\ensuremath{\mathbb  #1}\xspace}
 
-% algorithm
+% algorithm, identifier
 \newcommandx{\ALG}[1]{\ensuremath\textsc{#1}\xspace}
+\newcommandx{\ID}[1]{\textsf{#1}}
 
 % instruction operand
 \newcommandx{\OPER}[1]{\mbox{\tt #1}} % TODO: remove
@@ -251,6 +252,9 @@
 % concatination
 \newcommandx{\CONS}{\ensuremath{\;\parallel\;}\xspace}
 
+% polynomial indeterminent
+\newcommandx{\IND}[1]{\ensuremath{\mbox{\bf #1}}\xspace}          
+
 % set builder st.
 \newcommandx{\ST}{\ensuremath{\;|\;}\xspace}
 
@@ -269,6 +273,9 @@
 \newcommandx{\AND}{\ensuremath{\wedge}\xspace}
 \newcommandx{\IOR}{\ensuremath{\vee  }\xspace}
 \newcommandx{\XOR}{\ensuremath{\oplus}\xspace}
+
+% round key etc.
+\newcommandx{\ROUND}[2]{\ensuremath{#1}^{(#2)}}                   
 
 % type- or structure-annotated operators
 \newcommandx{\SID}[2][1={}]{#2_{\mathsmaller{#1}}}

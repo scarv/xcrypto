@@ -1,28 +1,63 @@
 % =============================================================================
 
+\subsection{More specific,  low(er)-level points}
+\label{appx:discuss:lo}
+
+\begin{itemize}
+
+\item Instruction mnemonics follow a (somewhat) consistent scheme; they
+      all include a domain-separating prefix \VERB[RV]{xc}, and, where
+      need be, a suffix intended to identify specific variants.  These 
+      include
+      \[
+      \begin{array}{lcl}
+      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   }        \\
+      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)}        \\
+      \VERB[RV]{h} &:& \mbox{high}                               \\
+      \VERB[RV]{l} &:& \mbox{ low}                               \\
+      \VERB[RV]{b} &:& \mbox{    byte-oriented}                  \\
+      \VERB[RV]{h} &:& \mbox{halfword-oriented}                  \\
+      \VERB[RV]{w} &:& \mbox{    word-oriented}                  \\
+      \VERB[RV]{x} &:& \mbox{a size, length, or count parameter} \\
+      \end{array}
+      \]
+\item Although they share a memory interface, there is no requirement for
+      the host core and co-processor to share an address space.  Indeed,
+      it is easy to imagine cases where using disjoint address spaces is
+      useful; examples include use of
+      a) an OTP-style memory for key storage, 
+         or
+      b) a (uncached) scratch-pad memory,
+      by the co-processor alone.
+\item Per \REFSEC{sec:spec:instr:2:4}, 
+      \VERB[RV]{xc.mix.l}
+      and
+      \VERB[RV]{xc.mix.h}
+      use the immediate 
+      $ 
+      0 \leq \VERB[RV]{rtamt} < 16 
+      $ 
+      to right-rotate $\XCR[*][{\VERB[RV]{crs1}}]$ by $d$ bits where
+      $0  \leq d < 16$
+      and
+      $16 \leq d < 32$
+      respectively.
+      The specification of {\em two} instructions vs. {\em one} that can
+      deal with 
+      $0  \leq d < 32$
+      is motivated by instruction encoding: it is easier to avoid having
+      a dedicated $5$-bit immediate field, reusing the existing $4$-bit
+      field, e.g., as used by
+      \VERB[RV]{xc.bop}.
+
+\end{itemize}
+
+% =============================================================================
+
 \subsection{More  generic, high(er)-level points}
 \label{appx:discuss:hi}
 
 \begin{itemize}
-
-\item It is important to recognise 
-      the overhead, wrt. both 
-      time (e.g., due to it needing to be context switched) 
-      and 
-      space (e.g., due to the logic required),
-      relating to state added to RV32I by \XCID.
-      However, it seems reasonable to align this overhead with that of any
-      extension for floating-point arithmetic (which, in the same way, will
-      typically make use of a dedicated floating-point register file): many 
-      of the trade-offs involved, e.g., provision of
-      a) clear separation of duty,
-      b) additional capacity,
-         and
-      c) additional (specialised) functionality,
-      are the same, but motivated by cryptographic workloads.
-      Due to the nature of such workloads, however, attack vectors such as
-      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
-      the overhead of context switching, {\em must} be robustly mitigated.
 
 \item Lee and Fiskiran introduce (e.g., see~\cite{SCARV:LeeFis:05}) the PLX
       design, which, among other concepts, supports 
@@ -35,17 +70,17 @@
       Second,
       note that, in a sense, RISC-V is word size scalable: it can cater for
       implementations that, e.g., have a $32$-bit instructions but a $32$-,
-      $64$-, or $128$-bit general-purpose register file (and address space).
+      $64$-, or $128$-bit $\GPR$ register file (and so also address space). 
       The same concept is useful wrt. the co-processor, and indeed, for the
-      multi-precision integer instructions 
-      (per \REFSEC{sec:spec:instr:mp})
+      multi-precision operations
+      (per \REFSEC{sec:spec:instr:2:5})
       in particular.
 
       The current design considers sub-{\em byte} (e.g., $4$-bit), sub-word
       sizes; doing so is motivated, e.g., by their utility in some classes 
       of light-weight block cipher.  However, it does not currently explore 
       the potential of a scalable word size: it assumes the general-purpose
-      and co-processor register file word sizes are {\em both} $32$ bits.
+      and $\XCR$ register file word sizes are {\em both} $32$ bits.
 
 \item Consider a general case, wherein a given ISA has instruction formats
       to allow access to $n$ general-purpose registers, st. 
@@ -86,15 +121,15 @@
             For example, XS1 uses a long (i.e., $32$-bit) $6$-address 
             instruction format~\cite[Page 246]{SCARV:XS1:09} 
             to encode
-            {\tt lmul}~\cite[Page 146]{SCARV:XS1:09}.
+            \VERB{lmul}~\cite[Page 146]{SCARV:XS1:09}.
       \item One could make some register addresses {\em implicit}.  
             For example, the x86 $( 32 \times 32 )$-bit multiplication 
             instruction 
-            {\tt mul}~\cite[Page 4-144--4-145]{SCARV:X86:2:18} 
-            makes implicit uses of {\tt edx} and {\tt edx} as destinations.
+            \VERB{mul}~\cite[Page 4-144--4-145]{SCARV:X86:2:18} 
+            makes implicit uses of \VERB{edx} and \VERB{edx} as destinations.
       \item One could make some register addresses {\em implied}.
             For example, this approach has been considered within the
-            specific context of support fioryptography: 
+            specific context of support cryptography: 
             Lee and Choi~\cite{SCARV:LeeCho:08} propose Register File
             Extension for Multi-word and Long-word Operation (RFEMLO), 
             where a group of $n$ contiguous registers is identified by 
@@ -111,7 +146,7 @@
       \item One could make some register addresses {\em overloaded}.
             For example, ARMv7-A includes a so-called ``unsigned multiply,
             accumulate accumulate'' instruction 
-            {\tt umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
+            \VERB{umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
             whose format {\em suggests} $n = 4 = 2 + 2$ but in fact 
             reuses the two destination as additional sources.
       \end{enumerate}
@@ -131,104 +166,24 @@
             or
       \item use some form of instruction prefix.
       \end{enumerate}
-      
-      \noindent
-      The current design is somewhat conservative, in the sense it 
-      a) supports (upto) $d = 2$ and $s = 3$, 
-         optionally using implied specification option for destinations: 
-         one register address is explicit and the other can be implied,
-      b) can have short register addresses than normal, due to the use
-         of a $16$-entry co-processor register file.
-      It does not explore the potential for, and trade-offs wrt. larger 
-      $d$ or $s$: doing so is demonstrably useful, but, equally implies
-      a range of drawbacks (e.g., overhead wrt. co-processor register 
-      file size, complexity in instruction en/decoding, requirement for
-      multi-cycle instruction execution).
+
+\item The $\XCR$ register file capacity (i.e., the number of constituent
+      registers) is a trade-off between quite a number of factors, e.g.,
+
+      \begin{itemize}
+      \item increased area, and complexity stemming from implementation
+            of the register file,
+      \item use of a $16$-element $\XCR$ register file in conjunction
+            with RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17} yielding a 
+            similar footprint (wrt. this resource at least) to RV32I,
+      \item a domain-specific remit suggesting a smaller capacity is 
+            viable,
+      \item   domain-specific workloads suggest more value from larger 
+            registers (i.e., word size), not necessarily larger register
+            file capacity,
+      \item a smaller capacity reducing instruction encoding pressure.
+      \end{itemize}
 
 \end{itemize}
-
-% =============================================================================
-
-\subsection{More specific,  low(er)-level points}
-\label{appx:discuss:lo}
-
-% TODO
-%\designnote{
-%The decision to source the base address from the $\GPR$ set rather
-%than a $\XCR$ was because all of the RISC-V address calculation
-%instructions work perfectly well on the $\GPR$s and there is no sense
-%in duplicating that functionality for this ISE. This free's up
-%encoding space, and lets the $\XCR$ state be used for the compute
-%work it was designed for rather than mundane address calculation.
-%While care must be
-%taken to avoid hazards between the different register sets, we
-%believe this decision makes sense overall.
-%}
-
-% TODO
-%There is no requirement for the ISE memory instructions to share the same
-%address space as the standard ISA. One may wish to completely separate
-%the physical memory used to store cryptographic secrets from the rest of
-%the virtual / logical memory space, and the ISE does not stop implementers
-%from doing so. This allows for hardware root-of-trust type devices to keep
-%their keys in tamper-proof memory, while still letting the rest of the
-%program exist in standard RAM/Flash.
-
-% TODO
-%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-%(in tandem with \ASM{ORI} and loading addresses.
-%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
-%for addresses, we remove this functionality in favour of leaving the
-%low half of the register unmodified.
-%The rationale being that two instructions can still create and 32-bit
-%immediate, but that if we know a register is zero to begin
-%with, we can then use only one instruction to create masks which fit
-%into only a single halfword.}
-
-% TODO
-%\designnote{
-%    This instruction must be implemented with care, since a naive
-%    implementation will end up with a 32-port LUT, with correspondingly
-%    poor timing performance.
-
-%\designnote{This decision was made simply to make the encoding space
-%easier to manage. Rather than adding another 5-bit immediate field, it was
-%more efficient to re-use the 4-bit lut field of the BOP.cr
-%instruction.}
-
-%\designnote{
-%    This scheme means the function to compute the actual source registers
-%    from the minimum 3-bit encoding is simply to append either {\tt 00}
-%    or {\tt 01} depending on the even or odd address respectively.
-%}
-
-%%%\designnote{
-%%%    While it is of-course possible to emulate the {\tt .h} variants of
-%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
-%%%    the performance and efficency savings to be had from telling the hardware
-%%%    explicitly to work on halfwords were worth the extra instructions.
-%%%}
-%%%An implementation may perform the memory accesses in any order. The instructions
-%%%will raise address misalignment exceptions in line with how misalignment is
-%%%handled in the rest of the ISA.
-%%%If any of the memory accesses cause
-%%%a {\em load access fault, load page fault, store page fault} or
-%%%{\em store access fault} then the address of the access which caused the
-%%%exception is written to the {\tt MTVAL} csr. The value taken by the
-%%%destination register bytes should an exception occur at any point in the
-%%%instruction is {\em implementation dependent}.
-%%%
-%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
-%%%though in order to service an interrupt. If the instructions are aborted
-%%%early, the value taken by the destination register bytes is {\em
-%%%implementation dependent}. The implementation is responsible for ensuring
-%%%that the {\tt EPC} register is set appropriately depending on whether the
-%%%interrupt is taken during, or at the end of, the instruction.
-%%%\designnote{Implementation of these instructions should consider the impact of
-%%%shared memory systems, since it will be possible for other agents in the
-%%%system to access memory during the execution of this instruction. In systems
-%%%possessing a cache, programmers must be mindful that these instructions
-%%%can cause odd behaviour due to the non-linear access pattern the instruction
-%%%creates.}
 
 % =============================================================================

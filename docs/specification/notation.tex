@@ -68,6 +68,17 @@
       \end{array}
       \]
       where perhaps all but the first are fairly standard.
+\item Where appropriate, a sequence $x$ of $n$ bits can be interpreted as an
+      element of the polynomial ring $\B{F}_2[\IND{x}]$
+      (i.e. a binary polynomial);
+      the $i$-bit of $x$ is the $i$-th coefficient, meaning
+      $
+      x \mapsto x( \IND{x} )
+      $
+      because
+      $
+      x_i \mapsto x_i \cdot \IND{x}^i .
+      $
 \item The operators $\NOT$, $\AND$, $\IOR$ and $\XOR$ denote Boolean NOT, AND,
       OR and XOR respectively, with $\NAND$, $\NIOR$ and $\NXOR$ denoting NAND,
       NOR and NXOR; all of these may be overloaded to cater for bit-sequences
@@ -126,6 +137,11 @@
 \item The operators $\LSH$ and $\RSH$ denote left- and right-shift; $\LRT$ and
       $\RRT$ denote left- and right-rotate (beware of context: $\ll$ and $\gg$
       are also used to denote ``much less than'' and ``much greater than'').
+\item The operators 
+      $\oplus$
+      and
+      $\otimes$
+      respectively denote addition and multiplication in $\B{F}_2[\IND{x}]$.
 \item For some $x$, 
       we let
       $\EXT[w]{0  }( x )$
@@ -142,6 +158,31 @@
       respectively denote 
       $w$-bit signed and unsigned variants
       (allowing omission of either specifier where appropriate).
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Cryptography}
+
+\begin{itemize}
+
+\item $\ROUND{x}{k}$ denotes some quantity $x$ relating to the $k$-th 
+      round (e.g., the $k$-th round key).
+\item The AES round functions are denoted using
+      $\SCOPE{\ID{AES}}{\ALG{Key-Addition}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Sub-Bytes}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Shift-Rows}}$,
+      and
+      $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$;
+      note that 
+      a) $\SCOPE{\ID{AES}}{\ALG{Mix-Column}}$ is applied per column of the
+         state matrix to realise $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$, so
+         the former is basically a $1$-column version of the latter,
+      b) $\SCOPE{\ID{AES}}{\ALG{S-Box}}$ denotes the AES S-box,
+         and
+      c) $\SCOPE{\ID{AES}}{\ALG{X}}^{-1}$ denotes the inverse of $\ALG{X}$,
+         e.g., $\SCOPE{\ID{AES}}{\ALG{S-Box}}^{-1}$ is the inverse S-box.
 
 \end{itemize}
 
@@ -177,8 +218,10 @@
       denotes the $i$-th,
            $32$-bit 
       entry in said register file.
-
-% TODO: XCCR, XCSR
+\item $\SPR{XCCR}$
+      and
+      $\SPR{XCSR}$
+      denote two \XCID-specific CSRs.
 
 \end{itemize}
 

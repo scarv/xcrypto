@@ -17,7 +17,7 @@
 
       The specification of \XCID guarantees to excludes all
                    undefined 
-      nor 
+      and
       implementation defined
       functionality or semantics:
       this is intended to offer the greatest possible control over and thus
@@ -30,11 +30,12 @@
       can be made.  However, an implementation of \XCID is required to 
       a) guarantee that all computational 
          (i.e., {\em excluding} memory access) 
-         instructions will exhibit constant execution latency,
+         instructions will exhibit constant (or data-oblivious) execution 
+         latency,
          and
       b) clearly quote said constant in associated documentation.
 
-      A similar concept was mooted for introduction in Armv8.4-A, using a
+      A similar concept was mooted for introduction in ARMv8.4-A, using a
       processor mode to enforce data-independent execution latency for the
       same class of instructions; the concept is motivated, for example,
       by the ARM IoT Security Manifesto\footnote{
