@@ -91,6 +91,10 @@ input wire        vtx_mem_error_``TXN ,
 `VTX_MEM_TXN_PORTS(1) \
 `VTX_MEM_TXN_PORTS(2) \
 `VTX_MEM_TXN_PORTS(3) \
+input wire [ 0:0] vtx_cpu_req      , \
+input wire [ 0:0] vtx_cpu_ack      , \
+input wire [ 0:0] vtx_cop_ack      , \
+input wire [ 0:0] vtx_cop_rsp      , \
 input wire [ 0:0] vtx_reset        , \
 input wire [ 0:0] vtx_valid        , \
 input wire [31:0] vtx_instr_enc    , \

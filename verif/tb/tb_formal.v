@@ -86,9 +86,9 @@ always @(posedge g_clk) if(!g_resetn) begin
 
     end else if($past(cpu_insn_req && !cop_insn_ack)) begin
         
-        assume(cpu_insn_req);
-        assume($past(cpu_insn_enc) == cpu_insn_enc);
-        assume($past(cpu_rs1     ) == cpu_rs1     );
+        assume($stable(cpu_insn_req));
+        assume($stable(cpu_insn_enc));
+        assume($stable(cpu_rs1     ));
 
     end else if($past( cpu_insn_req &&  cop_insn_ack)) begin
 
@@ -230,6 +230,10 @@ end
 //
 `FML_CHECK_NAME i_fml_checks(
 .vtx_clk         (g_clk           ),
+.vtx_cpu_req     (cpu_insn_req    ),
+.vtx_cpu_ack     (cpu_insn_ack    ),
+.vtx_cop_ack     (cop_insn_ack    ),
+.vtx_cop_rsp     (cop_insn_rsp    ),
 .vtx_reset       (vtx_reset       ),
 `VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre )
 `VTX_REGISTER_PORTS_CON(vtx_cprs_post, vtx_cprs_post)

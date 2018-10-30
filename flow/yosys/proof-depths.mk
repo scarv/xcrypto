@@ -6,3 +6,4 @@
 #
 $(SMTDIR)/instr_pmul_l_pw2.rpt : BMC_STEPS=20
 $(SMTDIR)/instr_pmul_l_pw1.rpt : BMC_STEPS=36
+$(SMTDIR)/protocols.rpt        : BMC_STEPS=36
