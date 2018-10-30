@@ -3,25 +3,41 @@
 
 % =============================================================================
 
-%\item attempted execution of any instruction from an unsupported feature 
-%      class will cause an 
-%      illegal instruction exception,
-%      and
-%\item any instruction that accesses memory mirrors RV32I wrt. exception,
-%      synchronisation, and atomicity semantics: for example, if
-%      a) the effective address stemming from a memory access instruction
-%         is not aligned to the associated data type, 
-%         {\em  and}
-%      b) the implementation does not support misaligned accesses,
-%         {\em then}
-%         it will cause a 
-%         load/store address misaligned exception.
+Any instruction-specific exception behaviour is captured by the associated
+semantics in \REFSEC{sec:spec:instruction}, with general cases captured in
+the following:
 
-%If a Crypto ISE instruction is encountered in a priviledge mode which
-%does not have access to the ISE, then an {\em illegal instruction exception}
-%is raised.
-%
-%Any access to the {\tt mccr} in anything other than machine mode
-%causes an {\em illegal instruction exception}.
+\begin{itemize}
+\item Any attempt to execute an
+      invalid \XCID instruction
+      will cause an 
+      illegal instruction exception.
+\item Any attempt to execute a
+        valid \XCID instruction
+      from a priviledge mode which does not have access to the ISE
+      (per fields in $\SPR{XCCR}$)
+      will cause an
+      illegal instruction exception.
+\item Any attempt to execute a
+        valid \XCID instruction
+      from an unsupported feature class 
+      (per fields in $\SPR{XCSR}$) 
+      will cause an 
+      illegal instruction exception.
+\item Any access to the 
+      $\SPR{XCSR}$ or $\SPR{XCCR}$
+      CSRs from a priviledge mode other than machine mode
+      will cause an 
+      illegal instruction exception.
+\item Any instruction that accesses memory mirrors RV32I wrt. exception,
+      synchronisation, and atomicity semantics: for example, if
+      a) the effective address stemming from a memory access instruction
+         is not aligned to the associated data type, 
+         {\em  and}
+      b) the implementation does not support misaligned accesses,
+         {\em then}
+         it will cause a 
+         load/store address misaligned exception.
+\end{itemize}
 
 % =============================================================================

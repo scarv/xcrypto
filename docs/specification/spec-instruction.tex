@@ -1,10 +1,10 @@
 \subsection{\XCID instructions}
-\label{sec:spec:instr}
+\label{sec:spec:instruction}
 
 % =============================================================================
 
 \subsubsection{Class-$1$:   baseline}
-\label{sec:spec:instr:1}
+\label{sec:spec:instruction:1}
 
 % -----------------------------------------------------------------------------
 
@@ -202,7 +202,7 @@
 % =============================================================================
 
 \subsubsection{Class-$2.1$: randomness}
-\label{sec:spec:instr:2:1}
+\label{sec:spec:instruction:2:1}
 
 \XCINSTR{xc.rngtest}{rd1}{
   % TODO: encoding  
@@ -247,7 +247,7 @@
 % =============================================================================
 
 \subsubsection{Class-$2.2$: memory}
-\label{sec:spec:instr:2:2}
+\label{sec:spec:instruction:2:2}
 
 % -----------------------------------------------------------------------------
 
@@ -316,7 +316,7 @@
 % =============================================================================
 
 \subsubsection{Class-$2.3$: bit-oriented}
-\label{sec:spec:instr:2:3}
+\label{sec:spec:instruction:2:3}
 
 \XCINSTR{xc.ld.li}{crd, imm16}{
   \iencldli
@@ -465,7 +465,7 @@
 % =============================================================================
 
 \subsubsection{Class-$2.4$: packed}
-\label{sec:spec:instr:2:4}
+\label{sec:spec:instruction:2:4}
 
 Each instruction in this class computes a packed operation: for an operator
 $\odot$, register or immediate variants essentially compute
@@ -828,7 +828,7 @@ $
 % =============================================================================
 
 \subsubsection{Class-$2.5$: multi-precision}
-\label{sec:spec:instr:2:5}
+\label{sec:spec:instruction:2:5}
 
 Instructions in this class use upto
 $4$ source      $\XCR$ registers
@@ -1244,7 +1244,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \subsubsection{Class-$3.1$: AES}
-\label{sec:spec:instr:3:1}
+\label{sec:spec:instruction:3:1}
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
   % TODO: encoding

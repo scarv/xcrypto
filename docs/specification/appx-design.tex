@@ -11,12 +11,14 @@
       include
       \[
       \begin{array}{lcl}
-      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   } \\
-      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)} \\
-      \VERB[RV]{b} &:& \mbox{    byte-oriented}           \\
-      \VERB[RV]{h} &:& \mbox{halfword-oriented}           \\
-      \VERB[RV]{w} &:& \mbox{    word-oriented}           \\
-      \VERB[RV]{x} &:& \mbox{a size parameter}            \\
+      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   }        \\
+      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)}        \\
+      \VERB[RV]{h} &:& \mbox{high}                               \\
+      \VERB[RV]{l} &:& \mbox{ low}                               \\
+      \VERB[RV]{b} &:& \mbox{    byte-oriented}                  \\
+      \VERB[RV]{h} &:& \mbox{halfword-oriented}                  \\
+      \VERB[RV]{w} &:& \mbox{    word-oriented}                  \\
+      \VERB[RV]{x} &:& \mbox{a size, length, or count parameter} \\
       \end{array}
       \]
 \item Although they share a memory interface, there is no requirement for
@@ -27,18 +29,6 @@
          or
       b) a (uncached) scratch-pad memory,
       by the co-processor alone.
-
-% TODO
-%\designnote{The RISC-V version of \ASM{LUI} is both for constant creation
-%(in tandem with \ASM{ORI} and loading addresses.
-%Since the zeroing of the low 12 bits by \ASM{LUI} is mainly useful 
-%for addresses, we remove this functionality in favour of leaving the
-%low half of the register unmodified.
-%The rationale being that two instructions can still create and 32-bit
-%immediate, but that if we know a register is zero to begin
-%with, we can then use only one instruction to create masks which fit
-%into only a single halfword.}
-
 \item Per \REFSEC{sec:spec:instr:2:4}, 
       \VERB[RV]{xc.mix.l}
       and
@@ -51,43 +41,14 @@
       $0  \leq d < 16$
       and
       $16 \leq d < 32$
-      respectivly.
+      respectively.
       The specification of {\em two} instructions vs. {\em one} that can
       deal with 
       $0  \leq d < 32$
       is motivated by instruction encoding: it is easier to avoid having
-      a dedicated $5$-bit immiediate field, reusing the existing $4$-bit
+      a dedicated $5$-bit immediate field, reusing the existing $4$-bit
       field, e.g., as used by
       \VERB[RV]{xc.bop}.
-
-%%%\designnote{
-%%%    While it is of-course possible to emulate the {\tt .h} variants of
-%%%    \ASM{SCATTER} and \ASM{GATHER} with the {\tt.b} variants, we felt that
-%%%    the performance and efficency savings to be had from telling the hardware
-%%%    explicitly to work on halfwords were worth the extra instructions.
-%%%}
-%%%An implementation may perform the memory accesses in any order. The instructions
-%%%will raise address misalignment exceptions in line with how misalignment is
-%%%handled in the rest of the ISA.
-%%%If any of the memory accesses cause
-%%%a {\em load access fault, load page fault, store page fault} or
-%%%{\em store access fault} then the address of the access which caused the
-%%%exception is written to the {\tt MTVAL} csr. The value taken by the
-%%%destination register bytes should an exception occur at any point in the
-%%%instruction is {\em implementation dependent}.
-%%%
-%%%Implementations may abort execution of \ASM{SCATTER} or \ASM{GATHER} part way
-%%%though in order to service an interrupt. If the instructions are aborted
-%%%early, the value taken by the destination register bytes is {\em
-%%%implementation dependent}. The implementation is responsible for ensuring
-%%%that the {\tt EPC} register is set appropriately depending on whether the
-%%%interrupt is taken during, or at the end of, the instruction.
-%%%\designnote{Implementation of these instructions should consider the impact of
-%%%shared memory systems, since it will be possible for other agents in the
-%%%system to access memory during the execution of this instruction. In systems
-%%%possessing a cache, programmers must be mindful that these instructions
-%%%can cause odd behaviour due to the non-linear access pattern the instruction
-%%%creates.}
 
 \end{itemize}
 
@@ -109,7 +70,7 @@
       Second,
       note that, in a sense, RISC-V is word size scalable: it can cater for
       implementations that, e.g., have a $32$-bit instructions but a $32$-,
-      $64$-, or $128$-bit general-purpose register file (and address space).
+      $64$-, or $128$-bit $\GPR$ register file (and so also address space). 
       The same concept is useful wrt. the co-processor, and indeed, for the
       multi-precision operations
       (per \REFSEC{sec:spec:instr:2:5})
@@ -119,7 +80,7 @@
       sizes; doing so is motivated, e.g., by their utility in some classes 
       of light-weight block cipher.  However, it does not currently explore 
       the potential of a scalable word size: it assumes the general-purpose
-      and co-processor register file word sizes are {\em both} $32$ bits.
+      and $\XCR$ register file word sizes are {\em both} $32$ bits.
 
 \item Consider a general case, wherein a given ISA has instruction formats
       to allow access to $n$ general-purpose registers, st. 
@@ -168,7 +129,7 @@
             makes implicit uses of \VERB{edx} and \VERB{edx} as destinations.
       \item One could make some register addresses {\em implied}.
             For example, this approach has been considered within the
-            specific context of support fioryptography: 
+            specific context of support cryptography: 
             Lee and Choi~\cite{SCARV:LeeCho:08} propose Register File
             Extension for Multi-word and Long-word Operation (RFEMLO), 
             where a group of $n$ contiguous registers is identified by 
@@ -205,32 +166,23 @@
             or
       \item use some form of instruction prefix.
       \end{enumerate}
-      
-      \noindent
-      The current design is somewhat conservative, in the sense it 
-      a) supports (upto) $d = 2$ and $s = 3$, 
-         optionally using implied specification option for destinations: 
-         one register address is explicit and the other can be implied,
-      b) can have short register addresses than normal, due to the use
-         of a $16$-entry co-processor register file.
-      It does not explore the potential for, and trade-offs wrt. larger 
-      $d$ or $s$: doing so is demonstrably useful, but, equally implies
-      a range of drawbacks (e.g., overhead wrt. co-processor register 
-      file size, complexity in instruction en/decoding, requirement for
-      multi-cycle instruction execution).
 
-% TODO
-%\item The number of registers within the register file is a trade-off in
-%      various
-%
-%  
-%      - restricted remit suggests smaller size is viable,
-%      - workloads suggest more value from largers registers, not necessarily
-%        more registers
-%      - use of a $16$-element co-processor register file in conjunction
-%        with RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17} yields a similar
-%        footprint (wrt. this resource at least) to RV32I.
-%      - smaller size reduces instruction encoding pressure
+\item The $\XCR$ register file capacity (i.e., the number of constituent
+      registers) is a trade-off between quite a number of factors, e.g.,
+
+      \begin{itemize}
+      \item increased area, and complexity stemming from implementation
+            of the register file,
+      \item use of a $16$-element $\XCR$ register file in conjunction
+            with RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17} yielding a 
+            similar footprint (wrt. this resource at least) to RV32I,
+      \item a domain-specific remit suggesting a smaller capacity is 
+            viable,
+      \item   domain-specific workloads suggest more value from larger 
+            registers (i.e., word size), not necessarily larger register
+            file capacity,
+      \item a smaller capacity reducing instruction encoding pressure.
+      \end{itemize}
 
 \end{itemize}
 
