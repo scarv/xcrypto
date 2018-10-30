@@ -6,18 +6,27 @@ time (e.g., due to it needing to be context switched)
 and 
 space (e.g., due to the logic required),
 relating to {\em any} state added to RV32I by \XCID.
-
-However, it also seems reasonable to align this overhead with that of, for
-example, an ISE for floating-point arithmetic: through the addition of a
-dedicated floating-point register file, 
-
-many 
-of the trade-offs involved, e.g., provision of
+However, it also seems reasonable to align the trade-off(s) involved with 
+existing, common cases such as ISEs for floating-point arithmetic (namely
+the standard 
+F~\cite[Section 8]{SCARV:RV:ISA:I:17}
+and
+D~\cite[Section 9]{SCARV:RV:ISA:I:17}
+extensions).  The addition of a dedicated floating-point register file is
+rationalised, for example, by
 a) clear separation of duty,
-b) additional capacity,
+b) additional capacity, leading, e.g., to enhanced performance,
    and
-c) additional (specialised) functionality,
-are the same, but motivated by cryptographic workloads.
+c) additional (specialised) functionality;
+a similar argument is true of \XCID, but motivated by a different context
+(i.e., cryptographic vs. floating-point workloads).
+
+Note that, particularly due to the nature of workloads supported by \XCID,
+challenges relating to management of additional state are important.  For
+example, attack vectors such as 
+LazyFP~\cite{SCARV:StePre:18}, 
+which capitalises on a short-cut wrt. the overhead of context switching
+x87 state, {\em must} be robustly mitigated.
 
 % =============================================================================
 
@@ -25,55 +34,42 @@ are the same, but motivated by cryptographic workloads.
 \label{sec:spec:state:gpr}
 
 \XCID 
-adds a
+demands one additional 
+$16$-element, $32$-bit register file;
+we refer to this as the $\XCR$ register file, destinguishing it from the
+general-purpose $\GPR$ register file specificed by RV32I.
+Note that
 
-additional $16$ by $32$-bit register file which
-is used exclusively by the instructions in this ISE.
+\begin{itemize}
+\item RV32I specifies~\cite[Section 2.1]{SCARV:RV:ISA:I:17} that
+      $
+      \GPR[*][0] = 0 ,
+      $
+      i.e., that the $0$-th general-purpose register is fixed to $0$: all
+      reads from said register yield $0$.  The analagous special-case is 
+      {\em not} true of 
+      $
+      \XCR[*][0] ,
+      $
+      the $0$-th co-processor register.
+\item The $\XCR$ register file is used {\em exclusively} by \XCID, but, on
+      the other hand, \XCID can {\em also} use the $\GPR$ register file in 
+      selected cases.  For example, it uses a $\GPR$ register as
 
-The ISE introduces an additional $16$ by $32$-bit register file which
-is used exclusively by the instructions in this ISE.
-It is to the crypto ISE what the floating-point register file is to the
-RISC-V F extension.
+      \begin{itemize}
+      \item a source, specifically a base address, for memory accesses,
+            e.g., \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w},
+      \item a destination for comparison operations,
+            e.g., \VERB[RV]{xc.mequ}.
+      \end{itemize}
 
+      \noindent
+      Doing so aligns with \REFSEC{sec:bg:concept}, where the host core is 
+      pitched as a control-path for the co-processor: address computation,
+      control-flow orchestration, etc. fall under the remit of the former, 
+      since they can be supported by RV32I as is.
+\end{itemize}    
 
-%\item As demonstrated by ARM, 16 GPRs is plenty for most computation.
-%Indeed ARM actually has fewer GPRs due to the special nature of some of their
-%{\em high} registers.
-%We believe mirroring the base RISC-V ISA and having
-%32 GPRs would have been overkill for an ISE such as this, even when the
-%{\tt F} extension adds 32 registers itself.
-%\item In area-optimised implementations such as micro-controllers, the
-%total area of a core is often dominated by the register-file.
-%For embedded applications which do not need all 32 GPRs, one could use the 
-%{\tt E} extension, and use the area saved by having 16 GPRs to make room
-%on the die for the crypto ISE.
-%\item Fewer registers frees up instruction encoding space which would
-%normally have been needed for register addresses.
-%
-%
-%\item RV32I specifies~\cite[Section 2.1]{SCARV:RV:ISA:I:17} that
-%      $
-%      \GPR[*][0] = 0 ,
-%      $
-%      i.e., that the $0$-th general-purpose register is fixed to $0$: all
-%      reads from said register yield $0$.  The analagous special-case is 
-%      {\em not} true of 
-%      $
-%      \XCR[*][0] ,
-%      $
-%      the $0$-th co-processor register.
-%
-%\item The use of a $\GPR$ register as the base address for memory access,
-%      e.g., per \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w}, and similar,
-%      aligns with \REFSEC{sec:bg:concept}, where the host core is pitched
-%      as a control-path for the co-processor: control-flow orchestration 
-%      address computation both fall under the remit of the former, and 
-%      can be supported by RV32I as is.
-%
-%\item Due to the nature of such workloads, however, attack vectors such as
-%      LazyFP~\cite{SCARV:StePre:18}, which capitalises on a short-cut wrt. 
-%      the overhead of context switching, {\em must} be robustly mitigated.
-    
 % =============================================================================
 
 \subsubsection{Control and Status Registers (CSRs)}
@@ -90,7 +86,7 @@ RISC-V F extension.
 \hline
 \end{tabular}
 \end{center}
-\caption{XXX \cite[Table 2.1]{SCARV:RV:ISA:II:17}}
+\caption{A summary of \XCID CSRs, per~\cite[Table 2.1]{SCARV:RV:ISA:II:17}.}
 \label{tab:csr}
 \end{table}
 
@@ -116,7 +112,7 @@ RISC-V F extension.
 \end{bytefield}
 \end{center}
 \caption{A diagramatic description of the $\SPR{XCSR}$ register; note that blanked out bits are reserved.}
-\label{tab:xcsr:reg}
+\label{fig:xcsr}
 \end{figure}
 
 \begin{figure}[p]
@@ -124,19 +120,21 @@ RISC-V F extension.
 \begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
 \bitheader{0-31}               
 \\
-  \bitbox{32}{\rule{\width}{\height}}
+  \bitbox{30}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $S     $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $U     $}}
 \\
 \end{bytefield}
 \end{center}
 \caption{A diagramatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
-\label{tab:xccr:reg}
+\label{fig:xccr}
 \end{figure}
 
 \begin{table}[p]
 \begin{center}
 \begin{tabular}{|lc|l@{\;}l@{\;}l|}
 \hline
-Field    & Bit(s) & \multicolumn{3}{c|}{Description}                                                             \\
+Field    & Index  & \multicolumn{3}{c|}{Description}                                                             \\
 \hline
 $RND   $ & $ 0$   & Is  & RND      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
 $MEM   $ & $ 1$   & Is  & MEM      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
@@ -153,76 +151,72 @@ $PACK32$ & $12$   & Are & $w = 32$ & bit sub-words supported (set) for packed op
 \end{tabular}
 \end{center}
 \caption{A tabular     description of the $\SPR{XCSR}$ register.}
-\label{tab:xcsr:desc}
+\label{tab:xcsr}
 \end{table}
 
 \begin{table}[p]
 \begin{center}
 \begin{tabular}{|lc|l@{\;}l@{\;}l|}
 \hline
-Field    & Bit(s) & \multicolumn{3}{c|}{Description}                                                             \\
+Field    & Index  & \multicolumn{3}{c|}{Description}                                                             \\
 \hline
-
+$U     $ & $ 0$   & \XCID is accessible in & user       & mode (set), or not (clear)                             \\
+$S     $ & $ 1$   & \XCID is accessible in & supervisor & mode (set), or not (clear)                             \\
 \hline
 \end{tabular}
 \end{center}
 \caption{A tabular     description of the $\SPR{XCCR}$ register.}
-\label{tab:xccr:desc}
+\label{tab:xccr}
 \end{table}
 
+\XCID 
+demands two additional
+non-standard, machine-class CSRs~\cite[Section 2]{SCARV:RV:ISA:II:17}
+summarised in \REFTAB{tab:csr}:
 
-%\XCID 
-%adds two 
-%non-standard, machine-class CSRs~\cite[Section 2]{SCARV:RV:ISA:II:17}:
-%
-%\item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
-%
-%\item The \XCID Status  Register (XCSR), denoted $\SPR{XCCR}$,
-%
-%
-%
-%All writable bits of the {\tt mccr} may be tied to zero based on the
-%implementation. If no countermeasures are implemented for example, or
-%user/supervisor mode is not supported, the corresponding bits may be
-%constants.
+\begin{enumerate}
+\item The \XCID Status  Register (XCSR), denoted $\SPR{XCSR}$,
+      is described in \REFFIG{fig:xcsr} and \REFTAB{tab:xcsr};
+      the purpose of this CSR is to 
+      inspect the status and configuration of an \XCID implementation,
+      including feature identification
+      (cf. the x86 \VERB{cpuid}~\cite[Page 3-190--3-224]{SCARV:X86:2:18}).
+\item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
+      is described in \REFFIG{fig:xccr} and \REFTAB{tab:xccr}
+      the purpose of this CSR is to 
+      control the            configuration of an \XCID implementation.
+\end{enumerate}
 
-%\paragraph{Access Control In The mccr}
-%
-%The {\tt s} and {\tt u} bits of the {\tt mccr} are used to control which
-%priviledge levels of the RISC-V core can use the Crypto ISE instructions
-%and state. 
-%
-%If {\tt s} is clear, neither supervisor mode or user mode may access the
-%Crypto ISE. If {\tt s} is set, then supervisor mode may access the Crypto
-%ISE, and user mode access depends on whether the {\tt u} bit is set.
-%
-%Machine-mode software always has access to the Crypto ISE.
-%
-%If a Crypto ISE instruction is encountered in a priviledge mode which
-%does not have access to the ISE, then an {\em illegal instruction exception}
-%is raised.
-%
-%Any access to the {\tt mccr} in anything other than machine mode
-%causes an {\em illegal instruction exception}.
-%
-%\paragraph{ABI Standards.}
-%
-%All of the state added in the Crypto ISE is considered {\em callee save}
-%for the purposes of the ABI.
-%That is, if {\tt function1} calls 
-%{\tt function2}, then {\tt function2} is responsible for saving to the
-%stack any $\XCR$ registers it needs, and popping them off before returning.
-%
-%The $\XCR$ registers $0..8$ are considered as function arguments
-%and/or return values. 
-%All other $\XCR$ registers are considered temporaries.
-%
-%Any registers pushed to the stack should be written in ascending order.
-%That is, as the stack grows downwards, $c1$ should be written (if needed)
-%to the address following $c0$.
-%
-%The $\XCR$ registers which are written to the stack during function calls
-%should be written {\em after} all of the $\GPR$ and floating-point registers
-%(if the {\tt F} extension is implemented) have been written.
+% =============================================================================
+
+\subsubsection{Application Binary Interface (ABI)}
+\label{sec:spec:state:abi}
+
+\begin{itemize}
+\item For the purposes of the ABI, {\em all} additional state stemming from 
+      \XCID is considered to be callee-save: if function $f$ calls function
+      $g$, then, for example, $g$ is deemed responsible for using the stack
+      to preserve (resp. restore) any content in the $\XCR$ register file 
+      it destroys during execution.
+\item The first eight registers, 
+      i.e., $\XCR[*][0]$ through $\XCR[*][7]$, 
+      are considered to be function arguments (including return values); 
+      all other registers, 
+      i.e., $\XCR[*][8]$ upward,
+      are considered to be temporaries.
+\item Any $\XCR$ registers pushed to the stack should be stored 
+      in ascending order.
+      That is, since the stack grows downwards, 
+      $\XCR[*][i]$
+      should be written to a lower address than
+      $\XCR[*][j]$
+      if $i < j$; if $i = 0$ and $j = 1$, then storing $\XCR[*][i]$ at the
+      address $x$ implies storing $\XCR[*][j]$ at the address $x - 4$ for
+      example.
+\item Any $\XCR$ registers pushed to the stack should be stored 
+      at the end of the stack frame, 
+      i.e., {\em after} content associated with RV32I (plus any standard 
+      extensions thereof, e.g., floating-point content).
+\end{itemize}
 
 % =============================================================================

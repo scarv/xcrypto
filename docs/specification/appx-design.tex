@@ -160,12 +160,12 @@
             For example, XS1 uses a long (i.e., $32$-bit) $6$-address 
             instruction format~\cite[Page 246]{SCARV:XS1:09} 
             to encode
-            {\tt lmul}~\cite[Page 146]{SCARV:XS1:09}.
+            \VERB{lmul}~\cite[Page 146]{SCARV:XS1:09}.
       \item One could make some register addresses {\em implicit}.  
             For example, the x86 $( 32 \times 32 )$-bit multiplication 
             instruction 
-            {\tt mul}~\cite[Page 4-144--4-145]{SCARV:X86:2:18} 
-            makes implicit uses of {\tt edx} and {\tt edx} as destinations.
+            \VERB{mul}~\cite[Page 4-144--4-145]{SCARV:X86:2:18} 
+            makes implicit uses of \VERB{edx} and \VERB{edx} as destinations.
       \item One could make some register addresses {\em implied}.
             For example, this approach has been considered within the
             specific context of support fioryptography: 
@@ -185,7 +185,7 @@
       \item One could make some register addresses {\em overloaded}.
             For example, ARMv7-A includes a so-called ``unsigned multiply,
             accumulate accumulate'' instruction 
-            {\tt umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
+            \VERB{umaal}~\cite[Section A8.8.255]{SCARV:ARMv7_M:17} 
             whose format {\em suggests} $n = 4 = 2 + 2$ but in fact 
             reuses the two destination as additional sources.
       \end{enumerate}
@@ -218,6 +218,19 @@
       a range of drawbacks (e.g., overhead wrt. co-processor register 
       file size, complexity in instruction en/decoding, requirement for
       multi-cycle instruction execution).
+
+% TODO
+%\item The number of registers within the register file is a trade-off in
+%      various
+%
+%  
+%      - restricted remit suggests smaller size is viable,
+%      - workloads suggest more value from largers registers, not necessarily
+%        more registers
+%      - use of a $16$-element co-processor register file in conjunction
+%        with RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17} yields a similar
+%        footprint (wrt. this resource at least) to RV32I.
+%      - smaller size reduces instruction encoding pressure
 
 \end{itemize}
 

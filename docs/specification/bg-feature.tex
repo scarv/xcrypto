@@ -36,28 +36,12 @@ motivation: doing so allows one to tailor the ISE (resp. ISA) st. it suits
 a given context, which is important because some features are applicable 
 within a broad range of cryptographic workloads whereas others are (more) 
 specifically applicable (even niche).  Although \REFSEC{sec:spec} offers a 
-precise specification, note that
+precise specification, keep in mind that
+support for a given feature class can be determined programmatically using 
+an associated CSR,
+and
+all feature classes in \XCID can emulated by using RV32I alone.
 
-\begin{itemize}
-\item support for a given feature class can be determined programmatically 
-      using an associated CSR,
-\item all feature classes in \XCID can emulated by using RV32I alone,
-\item attempted execution of any instruction from an unsupported feature 
-      class will cause an 
-      illegal instruction exception,
-      and
-\item any instruction that accesses memory mirrors RV32I wrt. exception,
-      synchronisation, and atomicity semantics: for example, if
-      a) the effective address stemming from a memory access instruction
-         is not aligned to the associated data type, 
-         {\em  and}
-      b) the implementation does not support misaligned accesses,
-         {\em then}
-         it will cause a 
-         load/store address misaligned exception.
-\end{itemize}
-
-\noindent
 The RISC-V naming convention~\cite[Section 22]{SCARV:RV:ISA:I:17} for ISEs
 uses a string of single-character identifiers to specify features realised
 in an implementation.  We adopt a variant of this approach, wherein
@@ -334,6 +318,36 @@ high overhead) software-based carry and overflow detection.
 \subsubsection{Class-$3.1$: AES}
 \label{sec:bg:feature:3:1}
 
-% TODO
+The 
+AES~\cite{SCARV:FIPS:197} 
+block cipher is an important, standard component in a range of use-cases.  
+Most cryptographic software libraries will include an AES implementation 
+as a result of this fact, often supporting multiple 
+parameter sets     (e.g., key sizes)
+and/or
+optimisation goals (e.g., wrt. time or space)
+that stem from flexibility afforded by the underlying design.
+Focusing on the trade-off between time and space (or area), it is common
+to accelerate a software-based AES implementation using bespoke hardware.
+Doing so aligns with reduction of latency, in use-cases such as ``bulk''
+encryption (e.g., of network traffic), and a rich associated literature
+(see, e.g., \REFAPPX{appx:related}); put simply, ISEs designed to support 
+AES can be a sane and well explored approach.
+
+\XCID includes a suite of instructions 
+(e.g., \VERB[RV]{xc.aes.sub} and \VERB[RV]{xc.aes.mix})
+drawn directly from the design and analysis of 
+Tillich and Gro{\ss}sch\"{a}dl~\cite{SCARV:TilGro:06}.
+The constituent ISE supports a $32$-bit, column-oriented implementation 
+of AES, focusing on the
+{\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197},
+{\tt ShiftRows}~\cite[Section 5.1.2]{SCARV:FIPS:197}, 
+and
+{\tt MixColumns}~\cite[Section 5.1.3]{SCARV:FIPS:197}
+round functions; it does so in a manner than 
+a) reduces the latency of executing those round functions, 
+   while also
+b) eliminating the need for look-up tables and associated memory access
+   to them (which is pertinent for some forms of attack vector).
 
 % =============================================================================
