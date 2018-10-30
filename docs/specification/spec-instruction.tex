@@ -1247,7 +1247,10 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 \label{sec:spec:instruction:3:1}
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
-  \iencaessub
+  \iencaessubenc
+  \iencaessubencrot
+  \iencaessubdec
+  \iencaessubdecrot
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
@@ -1297,7 +1300,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 }
 
 \XCINSTR{xc.aesmix}{mode,      crd, crs1, crs2}{
-  \iencaesmix
+  \iencaesmixenc
+  \iencaesmixdec
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
