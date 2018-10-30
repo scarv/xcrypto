@@ -553,7 +553,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.h}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpmulh
 }{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
@@ -575,7 +575,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpclmull
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -597,7 +597,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpclmulh
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -1051,7 +1051,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mclmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-  % TODO: encoding
+  \iencmclmulone
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
@@ -1247,7 +1247,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 \label{sec:spec:instruction:3:1}
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencaessub
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
@@ -1274,6 +1274,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   \VERB[RV]{xc.aessub.decrot} &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 1 \\
   \end{array}
   \]
+  $\VERB[RV]{mode}$ is encoded in the $\VERB[RV]{ca}$ field and
+  $\VERB[RV]{rot}$  is encoded in the $\VERB[RV]{cb}$ field.
 }{
   \eIf{$\VERB[RV]{mode} = 0$}{
     $t_0                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0} )$ \;
@@ -1295,7 +1297,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 }
 
 \XCINSTR{xc.aesmix}{mode,      crd, crs1, crs2}{
-  % TODO: encoding
+  \iencaesmix
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
@@ -1316,6 +1318,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   \VERB[RV]{xc.aesmix.dec}    &\mapsto& \VERB[RV]{mode} &=& 1                          \\
   \end{array}
   \]
+  $\VERB[RV]{mode}$ is encoded in the $\VERB[RV]{ca}$ field.
 }{
     $t_0                 \ASN                                \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0}  $ \;
     $t_1                 \ASN                                \XCR[*][\OPER{crs1}]_{15 \RANGE  8}  $ \;
