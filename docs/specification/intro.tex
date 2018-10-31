@@ -6,9 +6,9 @@ a) require computationally intensive, somewhat niche functionality,
    and
 b) form a central target in what is a complex, evolving attack surface.
 The former is a particular issue, in the sense cryptography is typically an
-enabling technology vs. a feature per se: from the perspective of the user,
+enabling technology vs. a feature, so, from the perspective of the user,
 it represents pure overhead.  Efficiency is a goal in and of itself then, 
-but also as an enabler for security.  One cannot (or at least {\em should} 
+but also as an enabler for security; one cannot (or at least {\em should} 
 not) compromise security to meet efficiency requirements, and so delivering
 higher efficiency can be pitched as an enabler for countermeasures against 
 attack (since there is more margin within which to do so).
@@ -26,8 +26,8 @@ base ISA, which we dub \XCID; it forms an output from the SCARV\footnote{
 } initiative.
 The \XCID ISE aims to support software implementations of both symmetric and 
 asymmetric cryptographic primitives.  By analogy, one could view this remit
-as similar to that of a floating-point co-processor, but cryptography: 
-per the above, it aims to enable
+as similar to that of a floating-point co-processor, but focused on support
+for cryptography: per the above, it aims to enable
 a) efficient
    and
 b) secure

@@ -28,15 +28,17 @@
 
 \item All cited implementation approaches are viable, but, in {\em concept},
       we view \XCID as a co-processor technology: wlog. we adopt associated
-      terminology from here on.  By doing so, we aim to present a clean(er) 
-      separation between the intended roles of some host core and associated 
-      \XCID co-processor.
+      terminology from here onward.  Phrased as such, \XCID has an implicit
+      focus on micro-controller class host cores, although the concept and 
+      utility is broader.
 
+      By adopting this perspective, we aim to present a clean(er) separation 
+      between the intended roles of the host core and \XCID co-processor.
       For example, at a high level one could view the co-processor as being 
-      tasked with support for execution of cryptography; such a task is not
-      expected of the host core.  Along the same lines, the host core would
-      be tasked with orchestrating control-flow, off-loading computation to
-      the co-processor: wrt. cryptographic workloads, one could view the
+      tasked with support for execution of cryptography; such a task is then
+      not expected of the host core.  Along the same lines, the host core 
+      would be tasked with orchestrating control-flow, off-loading computation 
+      to the co-processor: wrt. cryptographic workloads, one could view the
       former as a general-purpose control-path for a (more) special-purpose 
       data-path represented by the latter.  Finally, note that considering
       physically separate (or at least separatable) implementations offers
@@ -61,14 +63,20 @@
       a  ``secure''    core (which ignores efficiency, focusing on delivery of   security),
       instantiated by the host core and \XCID co-processor respectively.
 
-      Phrased as such, \XCID is a general-purpose co-processor: although an
-      implicit focus on micro-controller class host cores may be assumed, 
-      the concept and utility of \XCID is broader.
-
 \item The following design criteria rationalise this approach, some of which
       are related (or even stem directly from one and other):
 
       \begin{itemize}
+      \item {\bf         Security}.
+            An unfortunate fact is that security is commonly relegated to a 
+            second-class design metric, and so, by implication, viewed as 
+            being of secondary importance;
+            see, e.g., \cite{SCARV:Lee:03,SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
+            In contrast, \XCID treats security as a first-class metric, and
+            so {\em at least} as important as more traditional alternatives.
+            For example,
+            within the context of \XCID we deem it reasonable to trade-off 
+            improved security vs. degradation of instruction throughput.
       \item {\bf      Consistency}.
             As far as is reasonable, \XCID should remain consistent with the
             RISC-V philosophy, and associated base ISA; doing so will demand 
@@ -83,16 +91,6 @@
             Bar some controlled instances, \XCID endeavours to avoid inclusion
             any (overly) functionality-specific features (and, therefore, any
             associated hardware).  
-      \item {\bf         Security}.
-            An unfortunate fact is that security is commonly relegated to a 
-            second-class design metric, and so, by implication, viewed as 
-            being of secondary importance;
-            see, e.g., \cite{SCARV:Lee:03,SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
-            In contrast, \XCID treats security as a first-class metric, and
-            so {\em at least} as important as more traditional alternatives.
-            For example,
-            within the context of \XCID we deem it reasonable to trade-off 
-            improved security vs. degradation of instruction throughput.
       \item {\bf      Flexibility}. 
             Modulo the status of security as a first-class design metric, a
             goal of \XCID remains to avoid, or at least minimise any ``baked 
@@ -152,7 +150,7 @@
          of the vector ISE as a vehicle for cryptographic operations,
       b) many commercialised SoCs 
          (e.g., Google Titan, Rambus CryptoManager) 
-         prefer to couple a dedicated IP core 
+         prefer to couple a dedicated, special-purpose IP core 
          (e.g., a hardware-based AES accelerator) 
          to a RISC-V host core.
 

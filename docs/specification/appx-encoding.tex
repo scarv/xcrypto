@@ -10,27 +10,11 @@
 }
 }{ fig:encodings-else }
 
-
 \encodingspx{
 Packed register type instruction encodings. 
-The fields {\tt ca, cb} and {\tt cc} are used by the {\tt *.px} instructions
-to encode the pack width of their operations. The three bits are
-concatenated into a 3-bit vector $a,b,c$ and then decoded into pack widths
-using the following lookup table. \\
-\begin{itemize}
-\item $ca,cb,cc = 000 \Rightarrow $ Pack width $1$  $\Rightarrow$ 1 32-bit word
-\item $ca,cb,cc = 001 \Rightarrow $ Pack width $2$  $\Rightarrow$ 2 halfwords
-\item $ca,cb,cc = 010 \Rightarrow $ Pack width $4$  $\Rightarrow$ 4 bytes
-\item $ca,cb,cc = 011 \Rightarrow $ Pack width $8$  $\Rightarrow$ 8 nibbles
-\item $ca,cb,cc = 100 \Rightarrow $ Pack width $16$ $\Rightarrow$ 16 crumbs (2-bit values)
-\item $ca,cb,cc = 101 $ - Reserved. Should be treated as an invalid opcode.
-\item $ca,cb,cc = 110 $ - Reserved. Should be treated as an invalid opcode.
-\item $ca,cb,cc = 111 $ - Reserved. Should be treated as an invalid opcode.
-\end{itemize}
 }{
 fig:encodings-rtype
 }
-
 
 \encodingsmp{
 Multi-precision integer instruction encodings. All instructions in
