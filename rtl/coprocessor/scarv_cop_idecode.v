@@ -21,7 +21,7 @@ input  wire [31:0] id_encoded      , // Encoding 32-bit instruction
 output wire        id_exception    , // Illegal instruction exception.
 
 output wire [ 2:0] id_class        , // Instruction class.
-output wire [ 3:0] id_subclass     , // Instruction subclass.
+output wire [ 4:0] id_subclass     , // Instruction subclass.
 
 output wire [ 2:0] id_pw           , // Instruction pack width.
 output wire [ 3:0] id_crs1         , // Instruction source register 1
@@ -171,13 +171,13 @@ wire [3:0] subclass_bitwise =
 // Identify individual instructions within a class using the subclass
 // field.
 assign id_subclass = 
-    {4{class_packed_arith}} & {encoded[28:25]       } |
-    {4{class_twiddle     }} & {1'b0, encoded[23:21] } |
-    {4{class_loadstore   }} & {subclass_load_store  } |
-    {4{class_random      }} & {encoded[28:25]       } |
-    {4{class_move        }} & {encoded[27:24]       } |
-    {4{class_mp          }} & {subclass_mp          } |
-    {4{class_bitwise     }} & {subclass_bitwise     } ;
+    {5{class_packed_arith}} & {encoded[28:25]       } |
+    {5{class_twiddle     }} & {1'b0, encoded[23:21] } |
+    {5{class_loadstore   }} & {subclass_load_store  } |
+    {5{class_random      }} & {encoded[24:20]       } |
+    {5{class_move        }} & {encoded[27:24]       } |
+    {5{class_mp          }} & {subclass_mp          } |
+    {5{class_bitwise     }} & {subclass_bitwise     } ;
 
 //
 // Immediate decoding

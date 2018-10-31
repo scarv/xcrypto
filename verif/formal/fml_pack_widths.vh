@@ -185,26 +185,31 @@ end \
 //      Applies "OP" to the right sizes of data type and then writes
 //      the results back,
 //
+//      If "HI" is set, the high half of the X bit partial result is
+//      selected for the final packed result. Otherwise the low half
+//      is used. This is used to represent the high and low packed
+//      multiply operations.
+//
 //      Makes the register "result" available for checking the result of
 //      A packed arithmetic operation.
 //
-`define PACK_WIDTH_ARITH_OPERATION_RESULT(OP) \
-reg [31:0] result15; \
-reg [31:0] result14; \
-reg [31:0] result13; \
-reg [31:0] result12; \
-reg [31:0] result11; \
-reg [31:0] result10; \
-reg [31:0] result9 ; \
-reg [31:0] result8 ; \
-reg [31:0] result7 ; \
-reg [31:0] result6 ; \
-reg [31:0] result5 ; \
-reg [31:0] result4 ; \
-reg [31:0] result3 ; \
-reg [31:0] result2 ; \
-reg [31:0] result1 ; \
-reg [31:0] result0 ; \
+`define PACK_WIDTH_ARITH_OPERATION_RESULT(OP,HI) \
+reg [63:0] result15; \
+reg [63:0] result14; \
+reg [63:0] result13; \
+reg [63:0] result12; \
+reg [63:0] result11; \
+reg [63:0] result10; \
+reg [63:0] result9 ; \
+reg [63:0] result8 ; \
+reg [63:0] result7 ; \
+reg [63:0] result6 ; \
+reg [63:0] result5 ; \
+reg [63:0] result4 ; \
+reg [63:0] result3 ; \
+reg [63:0] result2 ; \
+reg [63:0] result1 ; \
+reg [63:0] result0 ; \
 reg [31:0] result  ; \
 always @(*) begin \
     result15 = 0; \
@@ -225,17 +230,24 @@ always @(*) begin \
     result0  = 0; \
     result   = 0; \
     if(pw == SCARV_COP_PW_1) begin \
-        result = `CRS1 OP `CRS2; \
+        result0 = `CRS1 OP `CRS2; \
+        result  = HI ?       \
+            result0[63:32] : \
+            result0[31: 0] ; \
     end else if(pw == SCARV_COP_PW_2) begin \
         result1 = `CRS1[31:16] OP `CRS2[31:16]; \
         result0 = `CRS1[15: 0] OP `CRS2[15: 0]; \
-        result = {result1[15: 0],result0[15: 0]}; \
+        result = HI ? \
+            {result1[31:16],result0[31:16]} : \
+            {result1[15: 0],result0[15: 0]} ; \
     end else if(pw ==  SCARV_COP_PW_4) begin \
         result3 = `CRS1[31:24] OP `CRS2[31:24]; \
         result2 = `CRS1[23:16] OP `CRS2[23:16]; \
         result1 = `CRS1[15: 8] OP `CRS2[15: 8]; \
         result0 = `CRS1[ 7: 0] OP `CRS2[ 7: 0]; \
-        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
+        result  = HI ?                                             \
+            {result3[15:8],result2[15:8],result1[15:8],result0[15:8]}: \
+            {result3[7 :0],result2[ 7:0],result1[ 7:0],result0[ 7:0]}; \
     end else if(pw ==  SCARV_COP_PW_8) begin \
         result7 = `CRS1[31:28] OP `CRS2[31:28]; \
         result6 = `CRS1[27:24] OP `CRS2[27:24]; \
@@ -245,7 +257,10 @@ always @(*) begin \
         result2 = `CRS1[11: 8] OP `CRS2[11: 8]; \
         result1 = `CRS1[ 7: 4] OP `CRS2[ 7: 4]; \
         result0 = `CRS1[ 3: 0] OP `CRS2[ 3: 0]; \
-        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+        result  = HI ?                                                   \
+                  {result7[7:4],result6[7:4],result5[7:4],result4[7:4],  \
+                   result3[7:4],result2[7:4],result1[7:4],result0[7:4]}: \
+                  {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
                    result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
     end else if(pw ==  SCARV_COP_PW_16) begin \
         result15 = `CRS1[31:30] OP `CRS2[31:30]; \
@@ -264,9 +279,14 @@ always @(*) begin \
         result2  = `CRS1[ 5: 4] OP `CRS2[ 5: 4]; \
         result1  = `CRS1[ 3: 2] OP `CRS2[ 3: 2]; \
         result0  = `CRS1[ 1: 0] OP `CRS2[ 1: 0]; \
-        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
-                   result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
-                   result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
-                   result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
+        result  = HI ?                                                      \
+              {result15[3:2],result14[3:2],result13[3:2],result12[3:2],   \
+               result11[3:2],result10[3:2],result9 [3:2],result8 [3:2],   \
+               result7 [3:2],result6 [3:2],result5 [3:2],result4 [3:2],   \
+               result3 [3:2],result2 [3:2],result1 [3:2],result0 [3:2]} : \
+              {result15[1:0],result14[1:0],result13[1:0],result12[1:0],   \
+               result11[1:0],result10[1:0],result9 [1:0],result8 [1:0],   \
+               result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0],   \
+               result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]} ; \
     end \
 end \

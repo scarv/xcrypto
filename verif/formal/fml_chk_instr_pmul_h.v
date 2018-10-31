@@ -15,25 +15,25 @@
 // Checker for bit packed multiply instruction.
 // - Only checks cases where pack width >= 4
 //
-`VTX_CHECKER_MODULE_BEGIN(instr_pmul_l)
+`VTX_CHECKER_MODULE_BEGIN(instr_pmul_h)
 
 // Pack width of the instruction
 wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 
 // Compute expected result into register called "result". See
 // `verif/formal/fml_pack_widths.vh` for macro definition.
-`PACK_WIDTH_ARITH_OPERATION_RESULT(*,0)
+`PACK_WIDTH_ARITH_OPERATION_RESULT(*,1)
 
 //
-// Only check xc.pmul.l instructions.
+// Only check xc.pmul.h instructions.
 always @(posedge `VTX_CLK_NAME) begin
-    if(vtx_valid) restrict(dec_pmul_l == 1'b1);
+    if(vtx_valid) restrict(dec_pmul_h == 1'b1);
 end
 
 //
-// pmul_l
+// pmul_h
 //
-`VTX_CHECK_INSTR_BEGIN(pmul_l) 
+`VTX_CHECK_INSTR_BEGIN(pmul_h) 
 
     restrict(pw != SCARV_COP_PW_1 && pw != SCARV_COP_PW_2);
 
@@ -49,6 +49,6 @@ end
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(pmul_l)
+`VTX_CHECK_INSTR_END(pmul_h)
 
 `VTX_CHECKER_MODULE_END

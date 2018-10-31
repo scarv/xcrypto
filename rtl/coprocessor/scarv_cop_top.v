@@ -72,7 +72,7 @@ input  wire             cop_mem_error     // Error
 wire          id_exception    ; // Illegal instruction exception.
 
 wire [ 2:0]   id_class        ; // Instruction class.
-wire [ 3:0]   id_subclass     ; // Instruction subclass.
+wire [ 4:0]   id_subclass     ; // Instruction subclass.
 
 wire [ 2:0]   id_pw           ; // Instruction pack width.
 wire [ 3:0]   id_crs1         ; // Instruction source register 1

@@ -79,7 +79,7 @@ end
 //
 // Assume that the instruction request interface will behave correctly
 //
-always @(posedge g_clk) if(!g_resetn) begin
+always @(posedge g_clk) if(g_resetn) begin
     if        ($past(!cpu_insn_req && !cop_insn_ack)) begin
         
         // Require nothing
