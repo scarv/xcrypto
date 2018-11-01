@@ -41,7 +41,15 @@
 
 `define VTX_CHECK_INSTR_END(NAME) end 
 
-`define VTX_ASSERT(EXPR) assert(EXPR)
+//
+// Check EXPR is checked during a formal BMC run.
+//
+`define VTX_COVER(EXPR)  cover(EXPR)
+
+//
+// Assert EXPR *must* hold true
+//
+`define VTX_ASSERT(EXPR) `VTX_COVER(EXPR); assert(EXPR)
 
 // -------------------------------------------------------------------
 
