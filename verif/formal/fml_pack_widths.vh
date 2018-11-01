@@ -46,42 +46,16 @@
 //      the results back,
 //
 `define PACK_WIDTH_ROTATE_RIGHT_OPERATION(AMNT) \
-reg [31:0] result15; \
-reg [31:0] result14; \
-reg [31:0] result13; \
-reg [31:0] result12; \
-reg [31:0] result11; \
-reg [31:0] result10; \
-reg [31:0] result9 ; \
-reg [31:0] result8 ; \
-reg [31:0] result7 ; \
-reg [31:0] result6 ; \
-reg [31:0] result5 ; \
-reg [31:0] result4 ; \
-reg [31:0] result3 ; \
-reg [31:0] result2 ; \
-reg [31:0] result1 ; \
-reg [31:0] result0 ; \
-reg [31:0] result  ; \
+reg [31:0] result15, result14, result13, result12, result11, \
+           result10, result9 , result8 , result7 , result6 , \
+           result5 , result4 , result3 , result2 , result1 , \
+           result0 ; \
 reg [31:0] result; \
 always @(*) begin \
-    result15 = 0; \
-    result14 = 0; \
-    result13 = 0; \
-    result12 = 0; \
-    result11 = 0; \
-    result10 = 0; \
-    result9  = 0; \
-    result8  = 0; \
-    result7  = 0; \
-    result6  = 0; \
-    result5  = 0; \
-    result4  = 0; \
-    result3  = 0; \
-    result2  = 0; \
-    result1  = 0; \
-    result0  = 0; \
-    result = 0; \
+    result15 = 0; result14 = 0; result13 = 0; result12 = 0; result11 = 0; \
+    result10 = 0; result9  = 0; result8  = 0; result7  = 0; result6  = 0; \
+    result5  = 0; result4  = 0; result3  = 0; result2  = 0; result1  = 0; \
+    result0  = 0; result   = 0; \
     if(pw == SCARV_COP_PW_1) begin \
         result = {2{`CRS1}} >> AMNT; \
     end else if(pw == SCARV_COP_PW_2) begin \
@@ -179,6 +153,7 @@ always @(*) begin \
     end \
 end \
 
+
 //
 // Arithmetic pack width operation macro
 //
@@ -194,41 +169,16 @@ end \
 //      A packed arithmetic operation.
 //
 `define PACK_WIDTH_ARITH_OPERATION_RESULT(OP,HI) \
-reg [63:0] result15; \
-reg [63:0] result14; \
-reg [63:0] result13; \
-reg [63:0] result12; \
-reg [63:0] result11; \
-reg [63:0] result10; \
-reg [63:0] result9 ; \
-reg [63:0] result8 ; \
-reg [63:0] result7 ; \
-reg [63:0] result6 ; \
-reg [63:0] result5 ; \
-reg [63:0] result4 ; \
-reg [63:0] result3 ; \
-reg [63:0] result2 ; \
-reg [63:0] result1 ; \
-reg [63:0] result0 ; \
+reg [63:0] result15, result14, result13, result12, result11, \
+           result10, result9 , result8 , result7 , result6 , \
+           result5 , result4 , result3 , result2 , result1 , \
+           result0 ; \
 reg [31:0] result  ; \
 always @(*) begin \
-    result15 = 0; \
-    result14 = 0; \
-    result13 = 0; \
-    result12 = 0; \
-    result11 = 0; \
-    result10 = 0; \
-    result9  = 0; \
-    result8  = 0; \
-    result7  = 0; \
-    result6  = 0; \
-    result5  = 0; \
-    result4  = 0; \
-    result3  = 0; \
-    result2  = 0; \
-    result1  = 0; \
-    result0  = 0; \
-    result   = 0; \
+    result15 = 0; result14 = 0; result13 = 0; result12 = 0; result11 = 0; \
+    result10 = 0; result9  = 0; result8  = 0; result7  = 0; result6  = 0; \
+    result5  = 0; result4  = 0; result3  = 0; result2  = 0; result1  = 0; \
+    result0  = 0; result   = 0; \
     if(pw == SCARV_COP_PW_1) begin \
         result0 = `CRS1 OP `CRS2; \
         result  = HI ?       \
@@ -290,3 +240,5 @@ always @(*) begin \
                result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]} ; \
     end \
 end \
+
+
