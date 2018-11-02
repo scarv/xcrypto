@@ -67,11 +67,17 @@ wire is_rsamp   = rng_ivalid                            &&
                   id_class == SCARV_COP_ICLASS_RANDOM   &&
                   id_subclass == SCARV_COP_SCLASS_RSAMP ;
 
+wire is_rtest   = rng_ivalid                            && 
+                  id_class == SCARV_COP_ICLASS_RANDOM   &&
+                  id_subclass == SCARV_COP_SCLASS_RTEST ;
+
 //
 // Writeback handling
 assign rng_cpr_rd_ben   = is_rsamp ? 4'b1111    : 4'b0000;
-assign rng_cpr_rd_wdata = is_rsamp ? rng_output : 32'b0  ;
-assign rng_idone        = is_rseed || is_rsamp;
+assign rng_cpr_rd_wdata = is_rsamp ? rng_output :
+                          is_rtest ? 32'b1      :
+                                     32'b0      ;
+assign rng_idone        = is_rseed || is_rsamp || is_rtest;
 
 generate if(RNG_TYPE == SCARV_COP_RNG_TYPE_LFSR32) begin : gen_lfsr32
 

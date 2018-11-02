@@ -27,7 +27,7 @@
                 vtx_instr_wdata == 32'b1);
     
     // Returns either 32'b1 or 32'b0
-    `VTX_ASSERT_WADDR_IS(dec_arg_crd)
+    `VTX_ASSERT_WADDR_IS(dec_arg_rd)
 
     // Never writes to GPRS
     `VTX_ASSERT_WEN_IS_SET

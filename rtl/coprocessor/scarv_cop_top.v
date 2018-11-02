@@ -190,14 +190,17 @@ assign n_cop_waddr = id_rd;
 assign n_cop_wen   = 
     (id_class     == SCARV_COP_ICLASS_MOVE    &&
      id_subclass  == SCARV_COP_SCLASS_XCR2GPR   )  ||
+    (id_class     == SCARV_COP_ICLASS_RANDOM  &&
+     id_subclass  == SCARV_COP_SCLASS_RTEST     )  ||
     (id_class     == SCARV_COP_ICLASS_MP      &&
      (id_subclass == SCARV_COP_SCLASS_MEQU ||
       id_subclass == SCARV_COP_SCLASS_MLTE ||
       id_subclass == SCARV_COP_SCLASS_MGTE ) )   ;
 
 assign n_cop_wdata = 
-    id_class == SCARV_COP_ICLASS_MOVE ? palu_cpr_rd_wdata : 
-                                        malu_cpr_rd_wdata ;
+    id_class == SCARV_COP_ICLASS_MOVE   ? palu_cpr_rd_wdata : 
+    id_class == SCARV_COP_ICLASS_RANDOM ? rng_cpr_rd_wdata  : 
+                                          malu_cpr_rd_wdata ;
 
 //
 //  and/or the result of the instruction together. Note
