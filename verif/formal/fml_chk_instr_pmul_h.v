@@ -25,12 +25,6 @@ wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 `PACK_WIDTH_ARITH_OPERATION_RESULT(*,1)
 
 //
-// Only check xc.pmul.h instructions.
-always @(posedge `VTX_CLK_NAME) begin
-    if(vtx_valid) restrict(dec_pmul_h == 1'b1);
-end
-
-//
 // pmul_h
 //
 `VTX_CHECK_INSTR_BEGIN(pmul_h) 
@@ -44,6 +38,9 @@ end
     // Result comes from the PACK_WIDTH_ARITH_OPERATION_RESULT macro.
     if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
         `VTX_ASSERT_CRD_VALUE_IS(result)
+        `VTX_COVER(pw == SCARV_COP_PW_4 );
+        `VTX_COVER(pw == SCARV_COP_PW_8 );
+        `VTX_COVER(pw == SCARV_COP_PW_16);
     end
 
     // Never causes writeback to GPRS
