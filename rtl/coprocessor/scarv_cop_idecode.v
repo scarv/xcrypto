@@ -175,7 +175,7 @@ assign id_subclass =
     {5{class_twiddle     }} & {1'b0, encoded[23:21] } |
     {5{class_loadstore   }} & {subclass_load_store  } |
     {5{class_random      }} & {encoded[24:20]       } |
-    {5{class_move        }} & {encoded[29:25]       } |
+    {5{class_move        }} & {encoded[28:24]       } |
     {5{class_mp          }} & {subclass_mp          } |
     {5{class_bitwise     }} & {subclass_bitwise     } ;
 
