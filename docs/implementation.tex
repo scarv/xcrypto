@@ -666,11 +666,10 @@ instruction execution.
  &  $rdm1\ASN tmp[63:32]$ 
 \\
 {\tt xc.mclmul.1 }&
-    $tmp \ASN crs1 \otimes crs2$ \newline 
- &  
-    $tmp \ASN tmp + crs3$\newline 
+    $tmp \ASN (crs1 \otimes crs2) \oplus crs3$\newline 
     $rdm0\ASN tmp[31:0]$ 
  &  $rdm1\ASN tmp[63:32]$ 
+ &  
 \\
 {\tt xc.msll.i }&
     $tmp \ASN (crs1 \CONS crs2) \LSH cmshamt$\newline 

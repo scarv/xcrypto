@@ -29,7 +29,7 @@ always @(*) begin
         end
     end
 
-    final_value = xor_value + `CRS3;
+    final_value = xor_value ^ `CRS3;
 
 end
 
