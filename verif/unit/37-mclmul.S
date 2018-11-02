@@ -7,6 +7,8 @@ test_start:
     xc.ld.li  c0, 0xF2F1
     xc.ld.hi  c1, 0x1111
     xc.ld.li  c1, 0x1111
+    xc.ld.hi  c4, 0x2222
+    xc.ld.li  c4, 0x2222
     xc.ld.hi  c3, 0x4444
     xc.ld.li  c3, 0x4444
     xc.ld.hi  c9, 0xFFFF
@@ -34,6 +36,8 @@ test_start:
     xc.mclmul.1  (c2,c3), c4, c1, c3
     xc.mclmul.1  (c4,c5), c3, c2, c3
     xc.mclmul.1  (c6,c7), c2, c3, c3
+    xc.mclmul.1  (c8,c9), c1, c4, c3
+    
     xc.mclmul.1  (c8,c9), c1, c4, c3
 
     xc.xcr2gpr  x1, c0

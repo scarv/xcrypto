@@ -108,10 +108,10 @@ wire class_move         =
     dec_xcr2gpr   || dec_gpr2xcr   || dec_cmov ||  dec_cmovn ;
 
 wire class_mp           = 
-    dec_mequ  || dec_mlte  || dec_mgte  || dec_madd_3 || 
-    dec_madd_2 || dec_msub_3 || dec_msub_2 || dec_msll_i || 
-    dec_msll  || dec_msrl_i || dec_msrl  || dec_macc_2 || 
-    dec_macc_1 || dec_mmul_1   ;
+    dec_mequ   || dec_mlte   || dec_mgte     || dec_madd_3 || 
+    dec_madd_2 || dec_msub_3 || dec_msub_2   || dec_msll_i || 
+    dec_msll   || dec_msrl_i || dec_msrl     || dec_macc_2 || 
+    dec_macc_1 || dec_mmul_1 || dec_mclmul_1  ;
 
 wire class_bitwise      = 
     dec_mix_l || dec_mix_h || dec_bop  || dec_ins  || 
@@ -129,42 +129,43 @@ assign id_class =
 
 //
 // Subclass fields for different instruction classes.
-wire [3:0] subclass_load_store = 
-    {4{dec_scatter_b}} & {SCARV_COP_SCLASS_SCATTER_B} |
-    {4{dec_gather_b }} & {SCARV_COP_SCLASS_GATHER_B } |
-    {4{dec_scatter_h}} & {SCARV_COP_SCLASS_SCATTER_H} |
-    {4{dec_gather_h }} & {SCARV_COP_SCLASS_GATHER_H } |
-    {4{dec_st_w    }} & {SCARV_COP_SCLASS_ST_W    } |
-    {4{dec_ld_w    }} & {SCARV_COP_SCLASS_LD_W    } |
-    {4{dec_st_h    }} & {SCARV_COP_SCLASS_ST_H    } |
-    {4{dec_ld_hu   }} & {SCARV_COP_SCLASS_LH_CR    } |
-    {4{dec_st_b    }} & {SCARV_COP_SCLASS_ST_B    } |
-    {4{dec_ld_bu   }} & {SCARV_COP_SCLASS_LB_CR    } ;
+wire [4:0] subclass_load_store = 
+    {5{dec_scatter_b}} & {SCARV_COP_SCLASS_SCATTER_B} |
+    {5{dec_gather_b }} & {SCARV_COP_SCLASS_GATHER_B } |
+    {5{dec_scatter_h}} & {SCARV_COP_SCLASS_SCATTER_H} |
+    {5{dec_gather_h }} & {SCARV_COP_SCLASS_GATHER_H } |
+    {5{dec_st_w    }} & {SCARV_COP_SCLASS_ST_W    } |
+    {5{dec_ld_w    }} & {SCARV_COP_SCLASS_LD_W    } |
+    {5{dec_st_h    }} & {SCARV_COP_SCLASS_ST_H    } |
+    {5{dec_ld_hu   }} & {SCARV_COP_SCLASS_LH_CR    } |
+    {5{dec_st_b    }} & {SCARV_COP_SCLASS_ST_B    } |
+    {5{dec_ld_bu   }} & {SCARV_COP_SCLASS_LB_CR    } ;
 
-wire [3:0] subclass_mp =
-    {4{dec_mequ }} & {SCARV_COP_SCLASS_MEQU  } | 
-    {4{dec_mlte }} & {SCARV_COP_SCLASS_MLTE  } | 
-    {4{dec_mgte }} & {SCARV_COP_SCLASS_MGTE  } | 
-    {4{dec_madd_3}} & {SCARV_COP_SCLASS_MADD_3 } | 
-    {4{dec_madd_2}} & {SCARV_COP_SCLASS_MADD_2 } | 
-    {4{dec_msub_3}} & {SCARV_COP_SCLASS_MSUB_3 } | 
-    {4{dec_msub_2}} & {SCARV_COP_SCLASS_MSUB_2 } | 
-    {4{dec_msll_i}} & {SCARV_COP_SCLASS_MSLL_I } | 
-    {4{dec_msll }} & {SCARV_COP_SCLASS_MSLL  } | 
-    {4{dec_msrl_i}} & {SCARV_COP_SCLASS_MSRL_I } | 
-    {4{dec_msrl }} & {SCARV_COP_SCLASS_MSRL  } | 
-    {4{dec_macc_2}} & {SCARV_COP_SCLASS_MACC_2 } | 
-    {4{dec_macc_1}} & {SCARV_COP_SCLASS_MACC_1 } | 
-    {4{dec_mmul_1 }} & {SCARV_COP_SCLASS_MMUL_1  } ;
+wire [4:0] subclass_mp =
+    {5{dec_mequ }} & {SCARV_COP_SCLASS_MEQU  } | 
+    {5{dec_mlte }} & {SCARV_COP_SCLASS_MLTE  } | 
+    {5{dec_mgte }} & {SCARV_COP_SCLASS_MGTE  } | 
+    {5{dec_madd_3}} & {SCARV_COP_SCLASS_MADD_3 } | 
+    {5{dec_madd_2}} & {SCARV_COP_SCLASS_MADD_2 } | 
+    {5{dec_msub_3}} & {SCARV_COP_SCLASS_MSUB_3 } | 
+    {5{dec_msub_2}} & {SCARV_COP_SCLASS_MSUB_2 } | 
+    {5{dec_msll_i}} & {SCARV_COP_SCLASS_MSLL_I } | 
+    {5{dec_msll }} & {SCARV_COP_SCLASS_MSLL  } | 
+    {5{dec_msrl_i}} & {SCARV_COP_SCLASS_MSRL_I } | 
+    {5{dec_msrl }} & {SCARV_COP_SCLASS_MSRL  } | 
+    {5{dec_macc_2}} & {SCARV_COP_SCLASS_MACC_2 } | 
+    {5{dec_macc_1}} & {SCARV_COP_SCLASS_MACC_1 } | 
+    {5{dec_mmul_1 }} & {SCARV_COP_SCLASS_MMUL_1  } |
+    {5{dec_mclmul_1}} & {SCARV_COP_SCLASS_MCLMUL_1  } ;
 
-wire [3:0] subclass_bitwise =
-    {4{dec_mix_l}} & {SCARV_COP_SCLASS_MIX_L} |
-    {4{dec_mix_h}} & {SCARV_COP_SCLASS_MIX_H} |
-    {4{dec_bop }} & {SCARV_COP_SCLASS_BOP } |
-    {4{dec_ins }} & {SCARV_COP_SCLASS_INS } | 
-    {4{dec_ext }} & {SCARV_COP_SCLASS_EXT } |
-    {4{dec_ld_li }} & {SCARV_COP_SCLASS_LD_LI } |
-    {4{dec_ld_hi }} & {SCARV_COP_SCLASS_LD_HI } ;
+wire [4:0] subclass_bitwise =
+    {5{dec_mix_l}} & {SCARV_COP_SCLASS_MIX_L} |
+    {5{dec_mix_h}} & {SCARV_COP_SCLASS_MIX_H} |
+    {5{dec_bop }} & {SCARV_COP_SCLASS_BOP } |
+    {5{dec_ins }} & {SCARV_COP_SCLASS_INS } | 
+    {5{dec_ext }} & {SCARV_COP_SCLASS_EXT } |
+    {5{dec_ld_li }} & {SCARV_COP_SCLASS_LD_LI } |
+    {5{dec_ld_hi }} & {SCARV_COP_SCLASS_LD_HI } ;
     
 
 //

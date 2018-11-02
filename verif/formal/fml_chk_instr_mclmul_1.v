@@ -14,24 +14,22 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_mclmul_1)
 
 wire [63:0] in_crs1 = {32'b0,`CRS1};
-wire [63:0] in_crs2 = {32'b0,`CRS2};
-wire [63:0] in_crs3 = {32'b0,`CRS3};
 
-reg  [63:0] value;
+reg  [63:0] xor_value;
+reg  [63:0] final_value;
 
 integer i;
 
 always @(*) begin
     // Compute carryless CRS1 * CRS2
-    value = in_crs1;
+    xor_value = 0;
     for(i = 0; i < 32; i = i + 1) begin
-        value = value ^ (in_crs2 << i);
+        if(`CRS2[i]) begin
+            xor_value = xor_value ^ (in_crs1 << i);
+        end
     end
 
-    // Compute carryless (value) * CRS3
-    for(i = 0; i < 32; i = i + 1) begin
-        value = value ^ (in_crs3 << i);
-    end
+    final_value = xor_value + `CRS3;
 
 end
 
@@ -44,7 +42,7 @@ end
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
     
     // 64 bit register value check.
-    `VTX_ASSERT(vtx_crdm_val_post == value);
+    `VTX_ASSERT(vtx_crdm_val_post == final_value);
 
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
