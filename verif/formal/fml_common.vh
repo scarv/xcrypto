@@ -243,3 +243,29 @@ wire [31:0] vtx_cprs_post[15:0]; \
 `define VTX_CHECKER_MODULE_END(NAME) \
 endmodule // NAME
 
+//
+// Port list to be used for all formal checker module instantiations.
+//
+`define VTX_FORMAL_MODULE_INSTANCE_PORTS \
+.vtx_clk         (g_clk           ),     \
+.vtx_cpu_req     (cpu_insn_req    ),     \
+.vtx_cpu_ack     (cpu_insn_ack    ),     \
+.vtx_cop_ack     (cop_insn_ack    ),     \
+.vtx_cop_rsp     (cop_insn_rsp    ),     \
+.vtx_reset       (vtx_reset       ),     \
+`VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre ) \
+`VTX_REGISTER_PORTS_CON(vtx_cprs_post, vtx_cprs_post) \
+`VTX_MEM_TXN_PORTS_CONN(0)               \
+`VTX_MEM_TXN_PORTS_CONN(1)               \
+`VTX_MEM_TXN_PORTS_CONN(2)               \
+`VTX_MEM_TXN_PORTS_CONN(3)               \
+.vtx_valid       (vtx_valid       ),     \
+.vtx_instr_enc   (vtx_instr_enc[1]),     \
+.vtx_instr_rs1   (vtx_instr_rs1[1]),     \
+.vtx_instr_result(vtx_instr_result),     \
+.vtx_instr_wdata (vtx_instr_wdata ),     \
+.vtx_instr_waddr (vtx_instr_waddr ),     \
+.vtx_instr_wen   (vtx_instr_wen   ),     \
+.vtx_rand_sample (vtx_rand_sample )
+
+
