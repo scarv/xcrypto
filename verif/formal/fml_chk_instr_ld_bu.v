@@ -44,8 +44,9 @@ wire [1:0] lb_db = {dec_arg_cc, dec_arg_cd};
         // the destination CPR register.
         if(lb_db == 2'b00) begin
 
+            // If h==b==0 then blank the top bytes of the register.
             `VTX_ASSERT_CRD_VALUE_IS(
-                {vtx_crd_val_pre[31:8],lb_rdata}
+                {24'b0,lb_rdata}
             )
 
         end else if(lb_db == 2'b01) begin

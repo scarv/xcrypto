@@ -206,6 +206,10 @@ assign mem_idone        =
     mem_ivalid && mem_txn_good && n_mem_fsm == FSM_IDLE       ||
     mem_ivalid && mem_txn_error                                ;
 
+// Clear high bytes/halfword
+wire clear_hb = is_lb && !id_wb_h && !id_wb_b;
+wire clear_hh = is_lh && !id_wb_h;
+
 //
 // Writeback data assignment.
 wire wb_hw_hi = (is_lh &&  id_wb_h) || (is_ga_h && fsm_h1  );
@@ -271,14 +275,14 @@ end
 
 assign mem_cpr_rd_wdata  = 
     {32{mem_txn_good && mem_ivalid}} & 
-    {wb_bytes[3],
-     wb_bytes[2],
-     wb_bytes[1],
+    {wb_bytes[3] & {8{!(clear_hb || clear_hh)}},
+     wb_bytes[2] & {8{!(clear_hb || clear_hh)}},
+     wb_bytes[1] & {8{!clear_hb}},
      wb_bytes[0]};
 
-assign mem_cpr_rd_ben[3] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_3);
-assign mem_cpr_rd_ben[2] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_2);
-assign mem_cpr_rd_ben[1] = mem_txn_good && (is_lw || wb_hw_lo || wb_b_1);
+assign mem_cpr_rd_ben[3] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_3 || clear_hb || clear_hh);
+assign mem_cpr_rd_ben[2] = mem_txn_good && (is_lw || wb_hw_hi || wb_b_2 || clear_hb || clear_hh);
+assign mem_cpr_rd_ben[1] = mem_txn_good && (is_lw || wb_hw_lo || wb_b_1 || clear_hb);
 assign mem_cpr_rd_ben[0] = mem_txn_good && (is_lw || wb_hw_lo || wb_b_0);
 
 //
