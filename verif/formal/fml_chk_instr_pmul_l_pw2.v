@@ -24,6 +24,9 @@ wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 // `verif/formal/fml_pack_widths.vh` for macro definition.
 `PACK_WIDTH_ARITH_OPERATION_RESULT(*,0)
 
+// Only check pmul_l instructions
+always @(posedge `VTX_CLK_NAME) if(vtx_valid) restrict(dec_pmul_l);
+
 //
 // pmul_l
 //
