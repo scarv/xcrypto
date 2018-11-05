@@ -23,4 +23,10 @@ $(SMTDIR)/instr_pmul_l_pw2.cov : BMC_STEPS=22
 $(SMTDIR)/instr_pmul_l_pw1.rpt : BMC_STEPS=37
 $(SMTDIR)/instr_pmul_l_pw1.cov : BMC_STEPS=37
 
+$(SMTDIR)/instr_pclmul_l.rpt : BMC_STEPS=37
+$(SMTDIR)/instr_pclmul_l.cov : BMC_STEPS=37
+
+$(SMTDIR)/instr_pclmul_h.rpt : BMC_STEPS=37
+$(SMTDIR)/instr_pclmul_h.cov : BMC_STEPS=37
+
 $(SMTDIR)/protocols.rpt        : BMC_STEPS=40

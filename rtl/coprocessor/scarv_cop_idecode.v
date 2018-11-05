@@ -89,8 +89,9 @@ assign id_exception =
 //
 // Which class of instruction have we decoded?
 wire class_packed_arith = 
-    dec_padd  || dec_psub  || dec_pmul_l  || dec_psll  || 
-    dec_psrl  || dec_prot  || dec_psll_i || dec_psrl_i || dec_prot_i ;
+    dec_padd  || dec_psub  || dec_pmul_l || dec_psll   || 
+    dec_psrl  || dec_prot  || dec_psll_i || dec_psrl_i || 
+    dec_prot_i|| dec_pmul_h|| dec_pclmul_l|| dec_pclmul_h;
 
 wire class_twiddle      = 
     dec_pperm_w  || dec_pperm_h0 || dec_pperm_h1 || dec_pperm_b0 ||
@@ -172,7 +173,7 @@ wire [4:0] subclass_bitwise =
 // Identify individual instructions within a class using the subclass
 // field.
 assign id_subclass = 
-    {5{class_packed_arith}} & {encoded[28:25]       } |
+    {5{class_packed_arith}} & {encoded[29:25]       } |
     {5{class_twiddle     }} & {1'b0, encoded[23:21] } |
     {5{class_loadstore   }} & {subclass_load_store  } |
     {5{class_random      }} & {encoded[24:20]       } |
