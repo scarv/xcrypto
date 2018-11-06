@@ -2,9 +2,9 @@
 \label{sec:spec:state}
 
 It is important to recognise the overhead, wrt. both 
-time (e.g., due to it needing to be context switched) 
+time  (e.g., due to it needing to be context switched) 
 and 
-space (e.g., due to the logic required),
+space (e.g., wrt. additional logic),
 relating to {\em any} state added to RV32I by \XCID.
 However, it also seems reasonable to align the trade-off(s) involved with 
 existing, common cases such as ISEs for floating-point arithmetic (namely
@@ -30,14 +30,14 @@ x87 state, {\em must} be robustly mitigated.
 
 % =============================================================================
 
-\subsubsection{General-purpose register file}
-\label{sec:spec:state:gpr}
+\subsubsection{Register file}
+\label{sec:spec:state:xcr}
 
 \XCID 
 demands one additional 
 $16$-element, $32$-bit register file;
-we refer to this as the $\XCR$ register file, destinguishing it from the
-general-purpose $\GPR$ register file specificed by RV32I.
+we refer to this as the $\XCR$ register file, distinguishing it from the
+general-purpose $\GPR$ register file specified by RV32I.
 Note that
 
 \begin{itemize}
@@ -45,22 +45,22 @@ Note that
       $
       \GPR[*][0] = 0 ,
       $
-      i.e., that the $0$-th general-purpose register is fixed to $0$: all
-      reads from said register yield $0$.  The analagous special-case is 
-      {\em not} true of 
+      i.e., that the $0$-th $\GPR$ register is fixed to $0$: any read from 
+      said register yields $0$.  The analogous special-case is {\em not} 
+      true of 
       $
       \XCR[*][0] ,
       $
-      the $0$-th co-processor register.
+      the $0$-th $\XCR$ register.
 \item The $\XCR$ register file is used {\em exclusively} by \XCID, but, on
       the other hand, \XCID can {\em also} use the $\GPR$ register file in 
       selected cases.  For example, it uses a $\GPR$ register as
 
       \begin{itemize}
       \item a source, specifically a base address, for memory accesses,
-            e.g., \VERB[RV]{xc.ld.w}, \VERB[RV]{xc.st.w},
+            (e.g., \VERB[RV]{xc.ld.w} and \VERB[RV]{xc.st.w}; see \REFSEC{sec:spec:instruction:xc.ld.w} and \REFSEC{sec:spec:instruction:xc.st.w}),
       \item a destination for comparison operations,
-            e.g., \VERB[RV]{xc.mequ}.
+            (e.g., \VERB[RV]{xc.mequ}; see \REFSEC{sec:spec:instruction:xc.mequ}).
       \end{itemize}
 
       \noindent
@@ -80,7 +80,7 @@ Note that
 \begin{tabular}{|r@{\;}l|cc|}
 \hline
 \multicolumn{2}{|c|}{Name}      & Address         & Access     \\
-\hline
+\hline\hline
 \XCID Control Register & (XCCR) & \RADIX{7C0}{16} & read/write \\
 \XCID Status  Register & (XCSR) & \RADIX{FC0}{16} & read-only  \\
 \hline
@@ -96,22 +96,22 @@ Note that
 \bitheader{0-31}               
 \\
   \bitbox{19}{\rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK32$}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK16$}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK8 $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK4 $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK2 $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{16}$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 8}$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 4}$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 2}$}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 1}$}}
 & \bitbox{ 2}{\rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $AES   $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $MP    $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK  $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $BIT   $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $MEM   $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $RND   $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $AES      $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $MP       $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $PACK     $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $BIT      $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $MEM      $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $RND      $}}
 \\
 \end{bytefield}
 \end{center}
-\caption{A diagramatic description of the $\SPR{XCSR}$ register; note that blanked out bits are reserved.}
+\caption{A diagrammatic description of the $\SPR{XCSR}$ register; note that blanked out bits are reserved.}
 \label{fig:xcsr}
 \end{figure}
 
@@ -121,32 +121,32 @@ Note that
 \bitheader{0-31}               
 \\
   \bitbox{30}{\rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $S     $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $U     $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $S        $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $U        $}}
 \\
 \end{bytefield}
 \end{center}
-\caption{A diagramatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
+\caption{A diagrammatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
 \label{fig:xccr}
 \end{figure}
 
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{|lc|l@{\;}l@{\;}l|}
+\begin{tabular}{|lc|l|}
 \hline
-Field    & Index  & \multicolumn{3}{c|}{Description}                                                             \\
-\hline
-$RND   $ & $ 0$   & Is  & RND      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$MEM   $ & $ 1$   & Is  & MEM      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$BIT   $ & $ 2$   & Is  & BIT      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$PACK  $ & $ 3$   & Is  & PACK     & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$MP    $ & $ 4$   & Is  & MP       & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$AES   $ & $ 5$   & Is  & AES      & feature class, per \REFSEC{sec:bg:feature}, supported (set), or not (clear) \\
-$PACK2 $ & $ 8$   & Are & $w =  2$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
-$PACK4 $ & $ 9$   & Are & $w =  4$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
-$PACK8 $ & $10$   & Are & $w =  8$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
-$PACK16$ & $11$   & Are & $w = 16$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
-$PACK32$ & $12$   & Are & $w = 32$ & bit sub-words supported (set) for packed operations, or not (clear)         \\
+Field        & Index  & Description                                                                                             \\
+\hline\hline
+$RND       $ & $ 0$   & Is RND  feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$MEM       $ & $ 1$   & Is MEM  feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$BIT       $ & $ 2$   & Is BIT  feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$PACK      $ & $ 3$   & Is PACK feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$MP        $ & $ 4$   & Is MP   feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$AES       $ & $ 5$   & Is AES  feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$PACK_{ 1} $ & $ 8$   & Are packed operations on $\VERB[RV]{n} =  1$ sub-word  of $w = 32$ bits supported (set), or not (clear) \\
+$PACK_{ 2} $ & $ 9$   & Are packed operations on $\VERB[RV]{n} =  2$ sub-words of $w = 16$ bits supported (set), or not (clear) \\
+$PACK_{ 4} $ & $10$   & Are packed operations on $\VERB[RV]{n} =  4$ sub-words of $w =  8$ bits supported (set), or not (clear) \\
+$PACK_{ 8} $ & $11$   & Are packed operations on $\VERB[RV]{n} =  8$ sub-words of $w =  4$ bits supported (set), or not (clear) \\
+$PACK_{16} $ & $12$   & Are packed operations on $\VERB[RV]{n} = 16$ sub-words of $w =  2$ bits supported (set), or not (clear) \\
 \hline
 \end{tabular}
 \end{center}
@@ -156,12 +156,12 @@ $PACK32$ & $12$   & Are & $w = 32$ & bit sub-words supported (set) for packed op
 
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{|lc|l@{\;}l@{\;}l|}
+\begin{tabular}{|lc|l|}
 \hline
-Field    & Index  & \multicolumn{3}{c|}{Description}                                                             \\
-\hline
-$U     $ & $ 0$   & \XCID is accessible in & user       & mode (set), or not (clear)                             \\
-$S     $ & $ 1$   & \XCID is accessible in & supervisor & mode (set), or not (clear)                             \\
+Field        & Index  & Description                                                                                             \\
+\hline\hline
+$U         $ & $ 0$   & \XCID is accessible in user       mode (set), or not (clear)                                            \\
+$S         $ & $ 1$   & \XCID is accessible in supervisor mode (set), or not (clear)                                            \\
 \hline
 \end{tabular}
 \end{center}
@@ -181,6 +181,15 @@ summarised in \REFTAB{tab:csr}:
       inspect the status and configuration of an \XCID implementation,
       including feature identification
       (cf. the x86 \VERB{cpuid}~\cite[Page 3-190--3-224]{SCARV:X86:2:18}).
+      Note that 
+      \[
+      \SPR{XCSR}[*][PACK] = \SPR{XCSR}[*][PACK_{ 1}] \IOR
+                            \SPR{XCSR}[*][PACK_{ 2}] \IOR
+                            \SPR{XCSR}[*][PACK_{ 4}] \IOR
+                            \SPR{XCSR}[*][PACK_{ 8}] \IOR
+                            \SPR{XCSR}[*][PACK_{16}]
+      \]
+      with the single field retained for ease of inspection.
 \item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
       is described in \REFFIG{fig:xccr} and \REFTAB{tab:xccr}
       the purpose of this CSR is to 

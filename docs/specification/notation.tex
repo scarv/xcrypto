@@ -194,10 +194,14 @@
 
 \item $\RNG$
       denotes the Random Number Generator (RNG) object;
-      assignments to and from said object are overloaded st. if
-      it occurs on the RHS this means sampling               entropy,
-      whereas if
-      it occurs on the LHS this means injecting (or seeding) entropy.
+      we equip this object with three operations, namely
+      \[
+      \begin{array}{c@{\;}c@{\;}ccl}
+      x    &\TEST{\ASN}& \RNG &:& \mbox{test                    the RNG state} \\
+      x    &      \ASN & \RNG &:& \mbox{sample entropy $x$ from the RNG      } \\
+      \RNG &      \ASN & x    &:& \mbox{inject entropy $x$ into the RNG      } \\
+      \end{array}
+      \]
 \item $\MEM$
       denotes the byte-addressable memory;
       $\MEM[*][i]$ 

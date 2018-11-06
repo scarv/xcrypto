@@ -14,19 +14,19 @@ the following:
       illegal instruction exception.
 \item Any attempt to execute a
         valid \XCID instruction
-      from a priviledge mode which does not have access to the ISE
+      from a privilege mode which does not have access to the ISE
       (per fields in $\SPR{XCCR}$)
       will cause an
       illegal instruction exception.
 \item Any attempt to execute a
         valid \XCID instruction
-      from an unsupported feature class 
+      from an unsupported feature class (or parameterisation thereof, cf. packed operations)
       (per fields in $\SPR{XCSR}$) 
       will cause an 
       illegal instruction exception.
 \item Any access to the 
       $\SPR{XCSR}$ or $\SPR{XCCR}$
-      CSRs from a priviledge mode other than machine mode
+      CSRs from a privilege mode other than machine mode
       will cause an 
       illegal instruction exception.
 \item Any instruction that accesses memory mirrors RV32I wrt. exception,

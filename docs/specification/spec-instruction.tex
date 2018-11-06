@@ -99,7 +99,6 @@
   }
 }
 
-
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ld.w} {crd,        imm11(rs1)}{
@@ -186,15 +185,15 @@
   Inspect the RNG state, applying a suitable ``health check'' on the level 
   of entropy available: the status flag is stored in a $\GPR$ register.
   If, after execution \VERB[RV]{xc.rngseed},
-         $\GPR[*][{\VERB[RV]{rd1}}] =    0$
-  (resp. $\GPR[*][{\VERB[RV]{rd1}}] \neq 0$),
+         $\GPR[*][{\VERB[RV]{rd1}}] \neq 0$
+  (resp. $\GPR[*][{\VERB[RV]{rd1}}] =    0$),
   then the RNG has 
-         insufficient 
-  (resp.   sufficient)
+           sufficient 
+  (resp. insufficient)
   entropy; the next output sampled via \VERB[RV]{xc.rngsamp} 
   therefore
-         cannot 
-  (resp. can)
+         can
+  (resp. cannot)
   be used.
 }{
   $\GPR[*][{\VERB[RV]{rd1}}] \TEST{\ASN} \RNG$ \;
@@ -467,6 +466,20 @@ specified in the instruction encoding implies a field width of
 $
 w = 32 / \VERB[RV]{n} .
 $
+As such, said encoding yields the following cases
+\[
+\begin{array}{ccrcc@{\;}c@{\;}rc@{\;}c@{\;}r}
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{000}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{001}{2} &\mapsto& \VERB[RV]{n} &=&  2 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{010}{2} &\mapsto& \VERB[RV]{n} &=&  4 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{011}{2} &\mapsto& \VERB[RV]{n} &=&  8 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{101}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{110}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{111}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
+\end{array}
+\]
+where cases marked invalid are reserved.
 
 % -----------------------------------------------------------------------------
 
@@ -477,7 +490,7 @@ $
   implying $\odot = +$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) .
   $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
@@ -495,7 +508,7 @@ $
   implying $\odot = -$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} .
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) .
   $
 }{
   $w = 32 / \VERB[RV]{n}$ \;
@@ -513,7 +526,7 @@ $
   implying $\odot = \times$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that this instruction captures the  ``low'' half, or $w$ LSBs of 
   each computed product
@@ -535,7 +548,7 @@ $
   implying $\odot = \times$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that this instruction captures the ``high'' half, or $w$ MSBs of 
   each computed product
@@ -557,7 +570,7 @@ $
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that this instruction captures the  ``low'' half, or $w$ LSBs of 
   each computed product
@@ -579,7 +592,7 @@ $
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that this instruction captures the ``high'' half, or $w$ MSBs of 
   each computed product
@@ -601,7 +614,7 @@ $
   implying $\odot = \LSH$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that any out-of-range distance
   $
@@ -628,7 +641,7 @@ $
   implying $\odot = \LSH$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that any out-of-range distance
   $
@@ -654,7 +667,7 @@ $
   implying $\odot = \RSH$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that any out-of-range distance
   $
@@ -681,7 +694,7 @@ $
   implying $\odot = \RSH$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that any out-of-range distance
   $
@@ -707,7 +720,7 @@ $
   implying $\odot = \LRT$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that the effective distance is
   $
@@ -729,7 +742,7 @@ $
   implying $\odot = \LRT$.
   Note that, wrt. the encoding,
   $
-  \VERB[RV]{n} = \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ,
+  \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
   $
   and that the effective distance is
   $
@@ -819,7 +832,7 @@ $
 $
 of register addresses st.
 a) $\VERB[RV]{crd2} = \VERB[RV]{crd1} + 1$
-   (the contiguousness rule),
+   (the contiguous'ness rule),
    and
 b) $\VERB[RV]{crd2} = 1 \pmod{2}$
    and 
@@ -844,8 +857,8 @@ i.e.,
 \]
 noting
 $\TUPLE{ 1, 0 }$ and $\TUPLE{ 3, 2 }$ are deemed valid pairs,
-$\TUPLE{ 3, 0 }$ is invalid because it violates the contiguousness rule,
-$\TUPLE{ 2, 3 }$ is invalid because it violates the contiguousness rule,
+$\TUPLE{ 3, 0 }$ is invalid because it violates the contiguous'ness rule,
+$\TUPLE{ 2, 3 }$ is invalid because it violates the contiguous'ness rule,
 and
 $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
@@ -1229,8 +1242,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   \iencaessubdecrot
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
-  apply a (carefully structured) form of the AES 
-  $\ALG{S-box}$
+  apply a (carefully structured) form of an AES 
+  {\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197}
   operation:
   this is applicable to a column-oriented implementation of AES, whereby
   columns of the state (resp. round key) matrix are packed into $32$-bit
@@ -1281,8 +1294,10 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
-  $\ALG{Mix-Column}$
-  operation:
+  {\tt ShiftRows}~\cite[Section 5.1.2]{SCARV:FIPS:197} 
+  and
+  {\tt MixColumns}~\cite[Section 5.1.3]{SCARV:FIPS:197}
+  operations:
   this is applicable to a column-oriented implementation of AES, whereby
   columns of the state (resp. round key) matrix are packed into $32$-bit
   words.
