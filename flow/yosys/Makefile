@@ -29,14 +29,18 @@ FML_CHECK_NAME  ?= correct_invalid_opcode_response \
                    instr_xcr2gpr
 
 FML_CHECK_SRC = $(addsuffix .v,$(addprefix $(CHECKS_DIR)/fml_chk_, $(FML_CHECK_NAME)))
-SMT2_out     ?= $(addsuffix .smt2,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
-SMT2_RPTS    ?= $(addsuffix .rpt ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
-SMT2_TRACE   ?= $(addsuffix .vcd ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
-SMT2_VTB     ?= $(addsuffix .v   ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+
+SMT2_out   ?= $(addsuffix .smt2,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_RPTS  ?= $(addsuffix .rpt ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_COVER ?= $(addsuffix .cov ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_TRACE ?= $(addsuffix .vcd ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+SMT2_VTB   ?= $(addsuffix .v   ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
+
+SMT_FLAGS  = -t $(BMC_STEPS) --noprogress -s $(FML_ENGINE)
 
 all: $(VLOG_out) formal-checks
 
-formal-checks: $(SMT2_out) $(SMT2_RPTS)
+formal-checks: $(SMT2_out)  $(SMT2_COVER) $(SMT2_RPTS)
 
 synthesise: $(VLOG_out)
 $(VLOG_out) : YS_SCRIPT = write-verilog.ys
@@ -50,7 +54,8 @@ adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 
 .PHONY: smt2
 smt2: $(SMT2_out)
-$(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v $(SRC_RTL) $(SRC_FORMAL)
+$(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v \
+                   $(SRC_RTL) $(SRC_FORMAL)
 	@mkdir -p $(word 1, $(dir $(SMT2_out)))
 	$(YS) -qQT -l $@.log \
         -p"verilog_defaults -add -DFML_CHECK_NAME=$(basename $(notdir $@))" \
@@ -58,15 +63,25 @@ $(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v $(SRC_RTL) $(SRC_FORMAL)
         -p"write_smt2 -wires $@"
 
 include proof-depths.mk
-$(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
-	rm -f $@
+
+#
+# Check that every assertion is also coverable
+#
+$(SMTDIR)/%.cov  : SMT_FLAGS += -c
+$(SMTDIR)/%.cov  : $(SMTDIR)/%.smt2
 	echo "`date` Started $(notdir $(basename $@))" > $@
-	$(YSMTBMC) -t $(BMC_STEPS) \
-               --dump-vcd $@.vcd \
-               --noprogress \
-               -s $(FML_ENGINE) \
-               $< | tee -a $@
+	$(YSMTBMC) $(SMT_FLAGS) $< | tee -a $@
 	echo "`date` Finished $(notdir $(basename $@))" >> $@
+
+#
+# Run the bounded model checker
+#
+$(SMTDIR)/%.rpt  : $(SMTDIR)/%.cov
+$(SMTDIR)/%.rpt  : $(SMTDIR)/%.smt2
+	echo "`date` Started $(notdir $(basename $@))" > $@
+	$(YSMTBMC) $(SMT_FLAGS) --dump-vcd $(basename $@).vcd $< | tee -a $@
+	echo "`date` Finished $(notdir $(basename $@))" >> $@
+
 
 .PHONY: formal
 formal: $(SMT2_out)

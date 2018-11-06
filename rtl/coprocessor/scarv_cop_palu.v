@@ -34,7 +34,7 @@ input  wire [31:0]  palu_rs3         , // Source register 3
 input  wire [31:0]  id_imm           , // Source immedate
 input  wire [ 2:0]  id_pw            , // Pack width
 input  wire [ 2:0]  id_class         , // Instruction class
-input  wire [ 3:0]  id_subclass      , // Instruction subclass
+input  wire [ 4:0]  id_subclass      , // Instruction subclass
 
 output wire [ 3:0]  palu_cpr_rd_ben  , // Writeback byte enable
 output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
@@ -45,7 +45,7 @@ output wire [31:0]  palu_cpr_rd_wdata  // Writeback data
 
 // Purely combinatoral block.
 assign palu_idone = palu_ivalid &&
-                    (is_pmul_l ? pmul_done : 1'b1);
+                    (is_mul ? mul_done : 1'b1);
 
 // Detect which subclass of instruction to execute.
 wire is_mov_insn  = 
@@ -244,6 +244,19 @@ wire [31:0] result_twid =
 //
 
 
+wire is_padd  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PADD;
+wire is_psub  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSUB;
+wire is_pmul_l  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PMUL_L;
+wire is_pmul_h  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PMUL_H;
+wire is_pclmul_l= is_parith_insn && id_subclass == SCARV_COP_SCLASS_PCLMUL_L;
+wire is_pclmul_h= is_parith_insn && id_subclass == SCARV_COP_SCLASS_PCLMUL_H;
+wire is_psll  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL;
+wire is_psrl  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL;
+wire is_prot  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT;
+wire is_psll_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL_I;
+wire is_psrl_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL_I;
+wire is_prot_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT_I;
+
 wire [31:0] result_parith;
     
 wire [31:0] padd_a ;  // LHS input
@@ -253,17 +266,13 @@ wire        padd_ci;  // Carry in
 wire [31:0] padd_c ;  // Result
 wire        padd_co;  // Carry out
 
-wire        pmul_start ; // Trigger to start multiplying
-wire        pmul_done  ; // Signal multiplication has finished.
-wire [31:0] pmul_a     ; // LHS operand
-wire [31:0] pmul_b     ; // RHS operand
-wire [63:0] pmul_add_a ; // LHS operand for shared adder
-wire [63:0] pmul_add_b ; // RHS operand for shared adder
-wire [63:0] pmul_add_c ; // RHS operand for shared adder
-wire [63:0] pmul_result; // Result of the multiplication.
-wire [ 4:0] pmul_shf_sham;   // Shifter shift amount.
-wire [31:0] pmul_shf_a   ;   // Shifter input operand.
-wire [31:0] pmul_shf_c   ;   // Shifter output result.
+wire        mul_start ; // Trigger to start multiplying
+wire        mul_done  ; // Signal multiplication has finished.
+wire        mul_hi    ; // Want high part of result
+wire        mul_ncarry; // Do carryless multiplication.
+wire [31:0] mul_a     ; // LHS operand
+wire [31:0] mul_b     ; // RHS operand
+wire [31:0] mul_result; // Result of the multiplication.
     
 wire [31:0] pshf_a    ; // LHS input
 wire [ 5:0] pshf_shamt; // RHS input
@@ -271,44 +280,35 @@ wire        pshf_sl   ; // shift left / n shift right
 wire        pshf_r    ; // rotate / n shift
 wire [31:0] pshf_c    ; // Result
 
-assign padd_a = is_pmul_l ? pmul_add_a[31:0] : palu_rs1;
-assign padd_b = is_pmul_l ? pmul_add_b[31:0] : palu_rs2;
+assign padd_a = palu_rs1;
+assign padd_b = palu_rs2;
 
-assign pmul_a       = palu_rs1;
-assign pmul_b       = palu_rs2;
-assign pmul_add_c   = padd_c;
-assign pmul_start   = is_pmul_l && is_parith_insn;
-assign pmul_shf_c   = pshf_c;
+assign mul_a       = palu_rs1;
+assign mul_b       = palu_rs2;
+assign mul_hi      = is_pmul_h || is_pclmul_h;
+assign mul_ncarry  = is_pclmul_l || is_pclmul_h;
+assign mul_start   = is_mul && is_parith_insn;
 
 wire   shift_imm    = is_psll_i || is_psrl_i || is_prot_i;
-assign pshf_a       = is_pmul_l ? pmul_shf_a : palu_rs1;
-assign pshf_shamt   = is_pmul_l ? pmul_shf_sham      :
-                      shift_imm ? {1'b0,id_imm[4:0]  } :
+assign pshf_a       = palu_rs1;
+assign pshf_shamt   = shift_imm ? {1'b0,id_imm[4:0]  } :
                                   {1'b0,palu_rs2[4:0]} ;
 assign pshf_r       = is_prot || is_prot_i;
-assign pshf_sl      = is_pmul_l || is_psll || is_psll_i;
+assign pshf_sl      = is_psll || is_psll_i;
 
 assign padd_ci      = is_psub;
 assign padd_sub     = is_psub;
 
-wire is_padd  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PADD;
-wire is_psub  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSUB;
-wire is_pmul_l  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PMUL_L;
-wire is_psll  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL;
-wire is_psrl  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL;
-wire is_prot  = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT;
-wire is_psll_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSLL_I;
-wire is_psrl_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PSRL_I;
-wire is_prot_i = is_parith_insn && id_subclass == SCARV_COP_SCLASS_PROT_I;
+wire is_mul     = is_pmul_l || is_pmul_h || is_pclmul_l || is_pclmul_h ;
 
-wire is_shift   =  is_psll  || is_psrl  || is_prot  || is_psll_i ||
-                   is_psrl_i || is_prot_i ;
+wire is_shift   = is_psll   || is_psrl   || is_prot     || is_psll_i   ||
+                  is_psrl_i || is_prot_i ;
 
 assign result_parith =
-    {32{is_pmul_l}} & pmul_result   |
-    {32{is_padd}} & padd_c        |
-    {32{is_psub}} & padd_c        |
-    {32{is_shift }} & pshf_c        ;
+    {32{is_mul  }} & mul_result   |
+    {32{is_padd }} & padd_c       |
+    {32{is_psub }} & padd_c       |
+    {32{is_shift}} & pshf_c       ;
 
 
 scarv_cop_palu_adder i_palu_adder(
@@ -331,20 +331,16 @@ scarv_cop_palu_shifter i_palu_shifter (
 );
 
 scarv_cop_palu_multiplier i_palu_multiplier (
-.g_clk   (g_clk      ),   // Global clock.
-.g_resetn(g_resetn   ),   // Global synchronous active low reset
-.start   (pmul_start ),   // Trigger to start multiplying
-.done    (pmul_done  ),   // Signal multiplication has finished.
-.a       (pmul_a     ),   // LHS operand
-.b       (pmul_b     ),   // RHS operand
-.add_a   (pmul_add_a ),   // ADDER LHS operand
-.add_b   (pmul_add_b ),   // ADDER RHS operand
-.add_c   (pmul_add_c ),   // ADDER result
-.shf_sham(pmul_shf_sham), // SHIFTER LHS operand
-.shf_a   (pmul_shf_a   ), // SHIFTER RHS operand
-.shf_c   (pmul_shf_c   ), // SHIFTER result
-.pw      (id_pw      ),   // Pack width.
-.result  (pmul_result)    // Result of the multiplication.
+.g_clk   (g_clk     ), // Global clock.
+.g_resetn(g_resetn  ), // Global synchronous active low reset
+.start   (mul_start ), // Trigger to start multiplying
+.done    (mul_done  ), // Signal multiplication has finished.
+.a       (mul_a     ), // LHS operand
+.b       (mul_b     ), // RHS operand
+.pw      (id_pw     ), // Pack width.
+.high    (mul_hi    ),
+.ncarry  (mul_ncarry),
+.result  (mul_result)  // Result of the multiplication.
 );
 
 endmodule

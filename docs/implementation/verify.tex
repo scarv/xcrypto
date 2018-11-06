@@ -1,26 +1,6 @@
 
 Verification of the ISE implementation is done using a mixture of
-directed testing using a golden reference model and formal methods.
-
-\subsection{Verilog Golden Reference Model}
-
-The GRM is be written using functional verilog.
-
-\begin{itemize}
-\item Each instruction is implemented as a verilog task.
-\item The GRM has the same interface as the implementation.
-\item The GRM snoops on the implementation interface and produces a
-    predicted result for all instructions.
-\item All transactions on the memory and CPU/COP interface will be modelled
-    and checked against the GRM.
-\end{itemize}
-
-The GRM is only used as a basic sanity checker. Designers can use it to
-develop hardware and get general functionality working before applying
-formal checks.
-
-The formal flow should be used to actually gain verification confidence
-in the implementation.
+directed testing and formal methods.
 
 \subsection{Formal Verification Flow}
 
@@ -96,13 +76,17 @@ The high-level sequence of actions in the formal flow are shown in figure
     or a pass result.
 \end{enumerate}
 
-All checks are run for 10 cycles worth of design operation after
+All checks are run for atleast 10 cycles worth of design operation after
 a reset.
 This is enough time to observe one execution of every instruction (with
 some important caveats detailed later) and check that they generate the
 correct result.
 It would be better if deeper proofs could be achieved, but the timeframe of
 the project does not allow for more.
+Some proofs run for specific cycle counts in order to cover the design
+behaviour.
+These custom proof depths are specified in 
+{\tt \$COP\_HOME/flow/yosys/proof-depths.mk}.
 
 \subsubsection{Testbench Architecture}
 
@@ -201,6 +185,17 @@ verification flow.
     storing temporaries properly.
 \item {\tt pmul.l} did not mask partial sums properly and was writing
     intermediate results to the register file.
+\item {\tt pclmul.*} instructions did not clear the accumulator register
+    properly, meaning the results of a previous instruction poluted the
+    next one.
+\item We found that if the design is fed a {\em valid} instruction which
+    was not then handled by one of the functional units, the design would
+    deadlock.
+    This was discovered by the coverage checks, rather than correctness
+    assertions.
+    A new check was added that asserts all accepted instructions are
+    retired within 36 cycles or fewer, thus proving the absence of
+    deadlocks.
 \end{itemize}
 
 
@@ -212,21 +207,19 @@ verification effort which were not fillable due to time constraints on
 the project.
 
 \begin{itemize}
-\item We currently run the model checker for 10 cycles. This is long
-    enough for every varient of every instruction except varients of
-    the {\tt xc.pmul} instruction with a pack width of 1 or two.
-\item The {\tt xc.mmul.1} instruction takes an extremely long time to
-    prove and only gets as far as depth 8.
-    No counter example is found after ~60 hours of tool execution time,
-    though this is recognised as an area for improvement.
-    The nature of the instruction makes it hard to work on without
-    a statespace explosion, advice / work on taming this is welcome.
-\item Manual analysis of the proof set means we have confidence that it
-    is {\em complete}.
-    That is, it covers the entirety of the design such
-    that no instructions / functionality is missed by all checks.
-    We have no way of checking this computationally however due to tool
-    limitations.
+\item Scatter/gather instruction data loaded/stored is currently
+    not checked, though this is a todo item.
+\item The design and verification was done by a single person. This
+    is considered bad practice, as that person lacks a "fresh pair
+    of eyes" needed to critically analyse a design.
+    This situation was impossible to avoid during the project for
+    lack of person power.
+\item We know that every assertion within the formal environment is
+    covered during BMC, but we cannot know if our property set is
+    ``complete" in the sense it covers the entire design all of the
+    time.
+    This would require extending our toolset, and fell outside the
+    scope of the project.
 \end{itemize}
 
 \noindent

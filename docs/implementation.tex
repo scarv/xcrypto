@@ -665,6 +665,12 @@ instruction execution.
     $rdm0\ASN tmp[31:0]$ 
  &  $rdm1\ASN tmp[63:32]$ 
 \\
+{\tt xc.mclmul.1 }&
+    $tmp \ASN (crs1 \otimes crs2) \oplus crs3$\newline 
+    $rdm0\ASN tmp[31:0]$ 
+ &  $rdm1\ASN tmp[63:32]$ 
+ &  
+\\
 {\tt xc.msll.i }&
     $tmp \ASN (crs1 \CONS crs2) \LSH cmshamt$\newline 
     $rdm0\ASN tmp[31:0]$ 
@@ -821,7 +827,7 @@ listed in table \ref{tab:sigs-mem-block}.
 \subsection{RNG Block ({\tt scarv\_cop\_rng})}
 
 The RNG block acts as a random number source. It interacts with only the
-{\tt RSAMP.cr} and {\tt RSEED.cr} instructions.
+{\tt rngtest}, {\tt rngsamp} and {\tt rngseed} instructions.
 
 \SIGNALS{
 \SIGNALI{1}{rng\_ivalid}{
@@ -865,6 +871,9 @@ The RNG block acts as a random number source. It interacts with only the
 The reference implementation of the COP uses a simple LFSR based 
 pseudo-random number generator. This is intended only as a demonstrator
 and should not be used for actual cryptographic systems!
+
+\paragraph{Note:} The {\tt rngtest} instruction always returns $1$ in this
+implementation.
 
 \section{Integration Guide}
 \label{sec:integration}

@@ -22,3 +22,11 @@ test_start:
     xc.xcr2gpr a1, c1
     xc.xcr2gpr a2, c2
     xc.xcr2gpr a3, c3
+    
+    xc.rngtest x2
+    xc.rngtest x1
+    xc.rngtest x3
+
+    xc.xcr2gpr a1, c1
+    xc.xcr2gpr a2, c2
+    xc.xcr2gpr a3, c3

@@ -40,7 +40,7 @@ wire [31:0] sw_addr =
         `VTX_ASSERT(vtx_mem_addr_0 == {sw_addr[31:2],2'b00});
         `VTX_ASSERT(vtx_mem_wdata_0 == `CRS2);
 
-    end else if(vtx_instr_result == SCARV_COP_INSN_LD_ERR) begin
+    end else if(vtx_instr_result == SCARV_COP_INSN_ST_ERR) begin
         
         // Transaction should have started correctly.
         `VTX_ASSERT(vtx_mem_cen_0  == 1'b1);

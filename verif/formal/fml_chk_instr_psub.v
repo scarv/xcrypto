@@ -18,7 +18,7 @@ wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 
 // Compute expected result into register called "result". See
 // `verif/formal/fml_pack_widths.vh` for macro definition.
-`PACK_WIDTH_ARITH_OPERATION_RESULT(-)
+`PACK_WIDTH_ARITH_OPERATION_RESULT(-,0)
 
 //
 // psub

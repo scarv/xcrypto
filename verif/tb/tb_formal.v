@@ -79,16 +79,16 @@ end
 //
 // Assume that the instruction request interface will behave correctly
 //
-always @(posedge g_clk) if(!g_resetn) begin
+always @(posedge g_clk) if(g_resetn) begin
     if        ($past(!cpu_insn_req && !cop_insn_ack)) begin
         
         // Require nothing
 
     end else if($past(cpu_insn_req && !cop_insn_ack)) begin
         
-        assume(cpu_insn_req);
-        assume($past(cpu_insn_enc) == cpu_insn_enc);
-        assume($past(cpu_rs1     ) == cpu_rs1     );
+        assume($stable(cpu_insn_req));
+        assume($stable(cpu_insn_enc));
+        assume($stable(cpu_rs1     ));
 
     end else if($past( cpu_insn_req &&  cop_insn_ack)) begin
 
@@ -229,22 +229,7 @@ end
 // Checker Instance
 //
 `FML_CHECK_NAME i_fml_checks(
-.vtx_clk         (g_clk           ),
-.vtx_reset       (vtx_reset       ),
-`VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre )
-`VTX_REGISTER_PORTS_CON(vtx_cprs_post, vtx_cprs_post)
-`VTX_MEM_TXN_PORTS_CONN(0)
-`VTX_MEM_TXN_PORTS_CONN(1)
-`VTX_MEM_TXN_PORTS_CONN(2)
-`VTX_MEM_TXN_PORTS_CONN(3)
-.vtx_valid       (vtx_valid       ),
-.vtx_instr_enc   (vtx_instr_enc[1]),
-.vtx_instr_rs1   (vtx_instr_rs1[1]),
-.vtx_instr_result(vtx_instr_result),
-.vtx_instr_wdata (vtx_instr_wdata ),
-.vtx_instr_waddr (vtx_instr_waddr ),
-.vtx_instr_wen   (vtx_instr_wen   ),
-.vtx_rand_sample (vtx_rand_sample )
+    `VTX_FORMAL_MODULE_INSTANCE_PORTS
 );
 
 

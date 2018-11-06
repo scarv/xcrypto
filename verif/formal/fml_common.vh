@@ -41,7 +41,20 @@
 
 `define VTX_CHECK_INSTR_END(NAME) end 
 
-`define VTX_ASSERT(EXPR) assert(EXPR)
+//
+// Assume EXPR does hold true
+//
+`define VTX_ASSUME(EXPR) assume(EXPR)
+
+//
+// Check EXPR is checked during a formal BMC run.
+//
+`define VTX_COVER(EXPR)  cover(EXPR)
+
+//
+// Assert EXPR *must* hold true
+//
+`define VTX_ASSERT(EXPR) `VTX_COVER(EXPR); assert(EXPR)
 
 // -------------------------------------------------------------------
 
@@ -91,6 +104,10 @@ input wire        vtx_mem_error_``TXN ,
 `VTX_MEM_TXN_PORTS(1) \
 `VTX_MEM_TXN_PORTS(2) \
 `VTX_MEM_TXN_PORTS(3) \
+input wire [ 0:0] vtx_cpu_req      , \
+input wire [ 0:0] vtx_cpu_ack      , \
+input wire [ 0:0] vtx_cop_ack      , \
+input wire [ 0:0] vtx_cop_rsp      , \
 input wire [ 0:0] vtx_reset        , \
 input wire [ 0:0] vtx_valid        , \
 input wire [31:0] vtx_instr_enc    , \
@@ -230,4 +247,30 @@ wire [31:0] vtx_cprs_post[15:0]; \
 
 `define VTX_CHECKER_MODULE_END(NAME) \
 endmodule // NAME
+
+//
+// Port list to be used for all formal checker module instantiations.
+//
+`define VTX_FORMAL_MODULE_INSTANCE_PORTS \
+.vtx_clk         (g_clk           ),     \
+.vtx_cpu_req     (cpu_insn_req    ),     \
+.vtx_cpu_ack     (cpu_insn_ack    ),     \
+.vtx_cop_ack     (cop_insn_ack    ),     \
+.vtx_cop_rsp     (cop_insn_rsp    ),     \
+.vtx_reset       (vtx_reset       ),     \
+`VTX_REGISTER_PORTS_CON(vtx_cprs_pre , vtx_cprs_pre ) \
+`VTX_REGISTER_PORTS_CON(vtx_cprs_post, vtx_cprs_post) \
+`VTX_MEM_TXN_PORTS_CONN(0)               \
+`VTX_MEM_TXN_PORTS_CONN(1)               \
+`VTX_MEM_TXN_PORTS_CONN(2)               \
+`VTX_MEM_TXN_PORTS_CONN(3)               \
+.vtx_valid       (vtx_valid       ),     \
+.vtx_instr_enc   (vtx_instr_enc[1]),     \
+.vtx_instr_rs1   (vtx_instr_rs1[1]),     \
+.vtx_instr_result(vtx_instr_result),     \
+.vtx_instr_wdata (vtx_instr_wdata ),     \
+.vtx_instr_waddr (vtx_instr_waddr ),     \
+.vtx_instr_wen   (vtx_instr_wen   ),     \
+.vtx_rand_sample (vtx_rand_sample )
+
 

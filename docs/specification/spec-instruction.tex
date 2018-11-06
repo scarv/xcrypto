@@ -56,13 +56,22 @@
   \iencldbu
 }{
   Load a     byte from memory
-  into a specific     byte of a $\XCR$ register,
-  leaving the other     bytes in said register un-modified
-  (cf. \VERB[RV]{xc.ld.b}, which sets them to zero).
+  into a specific     byte of a $\XCR$ register.
+  If \VERB[RV]{h} or \VERB[RV]{b} are non-zero,
+  the other bytes in the destination register are left un-modified.
+  If \VERB[RV]{h} and \VERB[RV]{b} are zero,
+  the least-significant byte of the destination register
+  is set to the loaded byte, and all other bytes in the
+  destination register are cleared.
 }{
   $addr                                          \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
   $index                                         \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
   $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index  } \ASN \MEM[*][{addr  }]$ \;
+  \If{$index = 0$}{
+    $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{1} \ASN 0$ \;
+    $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{2} \ASN 0$ \;
+    $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{3} \ASN 0$ \;
+  }
 }
 
 % -----------------------------------------------------------------------------
@@ -72,57 +81,24 @@
 }{
   Load a halfword from memory
   into a specific halfword of a $\XCR$ register,
-  leaving the other halfword  in said register un-modified
-  (cf. \VERB[RV]{xc.ld.h}, which sets it   to zero).
+  If \VERB[RV]{h} is non-zero,
+  the low halfword of the destination register is left un-modified.
+  If \VERB[RV]{h} is zero,
+  the least-significant halfword of the destination register
+  is set to the loaded halfword, and all other halfwords in the
+  destination register are cleared.
 }{
   $addr                                                                    \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
   $index_0                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 0$ \;
   $index_1                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 1$ \;
   $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_0} \ASN \MEM[*][{addr+0}]$ \;
   $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_1} \ASN \MEM[*][{addr+1}]$ \;
+  \If{$index_0 = 0$}{
+    $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{2} \ASN 0$ \;
+    $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{3} \ASN 0$ \;
+  }
 }
 
-% -----------------------------------------------------------------------------
-
-\XCINSTR{xc.ld.b} {crd, h, b, imm11(rs1)}{
-  \iencldbu
-}{
-  Load a     byte from memory
-  into a specific     byte of a $\XCR$ register,
-  setting all other     bytes in said register to zero
-  (cf. \VERB[RV]{xc.ld.bu}, which leaves them un-modified).
-}{
-  $addr                                          \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $index_0                                       \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 0$ \;
-  $index_1                                       \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 1$ \;
-  $index_2                                       \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 2$ \;
-  $index_3                                       \ASN ( \VERB[RV]{cc} \CONS \VERB[RV]{cd} ) \XOR 3$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_0} \ASN \MEM[*][{addr  }]$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_1} \ASN 0                $ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_2} \ASN 0                $ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_3} \ASN 0                $ \;
-}
-
-% -----------------------------------------------------------------------------
-
-\XCINSTR{xc.ld.h} {crd, h,    imm11(rs1)}{
-  \iencldhu
-}{
-  Load a halfword from memory
-  into a specific halfword of a $\XCR$ register,
-  setting the other halfword  in said register to zero
-  (cf. \VERB[RV]{xc.ld.hu}, which leaves it   un-modified).
-}{
-  $addr                                          \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
-  $index_0                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 0$ \;
-  $index_1                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 1$ \;
-  $index_2                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 2$ \;
-  $index_3                                       \ASN ( \VERB[RV]{cc} \CONS             0 ) \XOR 3$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_0} \ASN \MEM[*][{addr+0}]$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_1} \ASN \MEM[*][{addr+1}]$ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_2} \ASN 0                $ \;
-  $\INDEX[8]{\XCR[*][{\VERB[RV]{crd}}]}{index_3} \ASN 0                $ \;
-}
 
 % -----------------------------------------------------------------------------
 
@@ -205,7 +181,7 @@
 \label{sec:spec:instruction:2:1}
 
 \XCINSTR{xc.rngtest}{rd1}{
-  % TODO: encoding  
+  \iencrngtest
 }{
   Inspect the RNG state, applying a suitable ``health check'' on the level 
   of entropy available: the status flag is stored in a $\GPR$ register.
@@ -553,7 +529,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.h}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpmulh
 }{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
@@ -575,7 +551,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpclmull
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -597,7 +573,7 @@ $
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencpclmulh
 }{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
@@ -1051,7 +1027,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mclmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-  % TODO: encoding
+  \iencmclmulone
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
@@ -1247,7 +1223,10 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 \label{sec:spec:instruction:3:1}
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
-  % TODO: encoding
+  \iencaessubenc
+  \iencaessubencrot
+  \iencaessubdec
+  \iencaessubdecrot
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
@@ -1274,6 +1253,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   \VERB[RV]{xc.aessub.decrot} &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 1 \\
   \end{array}
   \]
+  $\VERB[RV]{mode}$ is encoded in the $\VERB[RV]{ca}$ field and
+  $\VERB[RV]{rot}$  is encoded in the $\VERB[RV]{cb}$ field.
 }{
   \eIf{$\VERB[RV]{mode} = 0$}{
     $t_0                 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0} )$ \;
@@ -1295,7 +1276,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 }
 
 \XCINSTR{xc.aesmix}{mode,      crd, crs1, crs2}{
-  % TODO: encoding
+  \iencaesmixenc
+  \iencaesmixdec
 }{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
@@ -1316,6 +1298,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   \VERB[RV]{xc.aesmix.dec}    &\mapsto& \VERB[RV]{mode} &=& 1                          \\
   \end{array}
   \]
+  $\VERB[RV]{mode}$ is encoded in the $\VERB[RV]{ca}$ field.
 }{
     $t_0                 \ASN                                \XCR[*][\OPER{crs1}]_{ 7 \RANGE  0}  $ \;
     $t_1                 \ASN                                \XCR[*][\OPER{crs1}]_{15 \RANGE  8}  $ \;

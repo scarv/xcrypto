@@ -46,42 +46,16 @@
 //      the results back,
 //
 `define PACK_WIDTH_ROTATE_RIGHT_OPERATION(AMNT) \
-reg [31:0] result15; \
-reg [31:0] result14; \
-reg [31:0] result13; \
-reg [31:0] result12; \
-reg [31:0] result11; \
-reg [31:0] result10; \
-reg [31:0] result9 ; \
-reg [31:0] result8 ; \
-reg [31:0] result7 ; \
-reg [31:0] result6 ; \
-reg [31:0] result5 ; \
-reg [31:0] result4 ; \
-reg [31:0] result3 ; \
-reg [31:0] result2 ; \
-reg [31:0] result1 ; \
-reg [31:0] result0 ; \
-reg [31:0] result  ; \
+reg [31:0] result15, result14, result13, result12, result11, \
+           result10, result9 , result8 , result7 , result6 , \
+           result5 , result4 , result3 , result2 , result1 , \
+           result0 ; \
 reg [31:0] result; \
 always @(*) begin \
-    result15 = 0; \
-    result14 = 0; \
-    result13 = 0; \
-    result12 = 0; \
-    result11 = 0; \
-    result10 = 0; \
-    result9  = 0; \
-    result8  = 0; \
-    result7  = 0; \
-    result6  = 0; \
-    result5  = 0; \
-    result4  = 0; \
-    result3  = 0; \
-    result2  = 0; \
-    result1  = 0; \
-    result0  = 0; \
-    result = 0; \
+    result15 = 0; result14 = 0; result13 = 0; result12 = 0; result11 = 0; \
+    result10 = 0; result9  = 0; result8  = 0; result7  = 0; result6  = 0; \
+    result5  = 0; result4  = 0; result3  = 0; result2  = 0; result1  = 0; \
+    result0  = 0; result   = 0; \
     if(pw == SCARV_COP_PW_1) begin \
         result = {2{`CRS1}} >> AMNT; \
     end else if(pw == SCARV_COP_PW_2) begin \
@@ -179,63 +153,51 @@ always @(*) begin \
     end \
 end \
 
+
 //
 // Arithmetic pack width operation macro
 //
 //      Applies "OP" to the right sizes of data type and then writes
 //      the results back,
 //
+//      If "HI" is set, the high half of the X bit partial result is
+//      selected for the final packed result. Otherwise the low half
+//      is used. This is used to represent the high and low packed
+//      multiply operations.
+//
 //      Makes the register "result" available for checking the result of
 //      A packed arithmetic operation.
 //
-`define PACK_WIDTH_ARITH_OPERATION_RESULT(OP) \
-reg [31:0] result15; \
-reg [31:0] result14; \
-reg [31:0] result13; \
-reg [31:0] result12; \
-reg [31:0] result11; \
-reg [31:0] result10; \
-reg [31:0] result9 ; \
-reg [31:0] result8 ; \
-reg [31:0] result7 ; \
-reg [31:0] result6 ; \
-reg [31:0] result5 ; \
-reg [31:0] result4 ; \
-reg [31:0] result3 ; \
-reg [31:0] result2 ; \
-reg [31:0] result1 ; \
-reg [31:0] result0 ; \
+`define PACK_WIDTH_ARITH_OPERATION_RESULT(OP,HI) \
+reg [63:0] result15, result14, result13, result12, result11, \
+           result10, result9 , result8 , result7 , result6 , \
+           result5 , result4 , result3 , result2 , result1 , \
+           result0 ; \
 reg [31:0] result  ; \
 always @(*) begin \
-    result15 = 0; \
-    result14 = 0; \
-    result13 = 0; \
-    result12 = 0; \
-    result11 = 0; \
-    result10 = 0; \
-    result9  = 0; \
-    result8  = 0; \
-    result7  = 0; \
-    result6  = 0; \
-    result5  = 0; \
-    result4  = 0; \
-    result3  = 0; \
-    result2  = 0; \
-    result1  = 0; \
-    result0  = 0; \
-    result   = 0; \
+    result15 = 0; result14 = 0; result13 = 0; result12 = 0; result11 = 0; \
+    result10 = 0; result9  = 0; result8  = 0; result7  = 0; result6  = 0; \
+    result5  = 0; result4  = 0; result3  = 0; result2  = 0; result1  = 0; \
+    result0  = 0; result   = 0; \
     if(pw == SCARV_COP_PW_1) begin \
-        result = `CRS1 OP `CRS2; \
+        result0 = `CRS1 OP `CRS2; \
+        result  = HI ?       \
+            result0[63:32] : \
+            result0[31: 0] ; \
     end else if(pw == SCARV_COP_PW_2) begin \
         result1 = `CRS1[31:16] OP `CRS2[31:16]; \
         result0 = `CRS1[15: 0] OP `CRS2[15: 0]; \
-        result = {result1[15: 0],result0[15: 0]}; \
+        result = HI ? \
+            {result1[31:16],result0[31:16]} : \
+            {result1[15: 0],result0[15: 0]} ; \
     end else if(pw ==  SCARV_COP_PW_4) begin \
         result3 = `CRS1[31:24] OP `CRS2[31:24]; \
         result2 = `CRS1[23:16] OP `CRS2[23:16]; \
         result1 = `CRS1[15: 8] OP `CRS2[15: 8]; \
         result0 = `CRS1[ 7: 0] OP `CRS2[ 7: 0]; \
-        result  = {result3[7:0],result2[7:0],result1[7:0],result0[7:0]};\
+        result  = HI ?                                             \
+            {result3[15:8],result2[15:8],result1[15:8],result0[15:8]}: \
+            {result3[7 :0],result2[ 7:0],result1[ 7:0],result0[ 7:0]}; \
     end else if(pw ==  SCARV_COP_PW_8) begin \
         result7 = `CRS1[31:28] OP `CRS2[31:28]; \
         result6 = `CRS1[27:24] OP `CRS2[27:24]; \
@@ -245,7 +207,10 @@ always @(*) begin \
         result2 = `CRS1[11: 8] OP `CRS2[11: 8]; \
         result1 = `CRS1[ 7: 4] OP `CRS2[ 7: 4]; \
         result0 = `CRS1[ 3: 0] OP `CRS2[ 3: 0]; \
-        result  = {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
+        result  = HI ?                                                   \
+                  {result7[7:4],result6[7:4],result5[7:4],result4[7:4],  \
+                   result3[7:4],result2[7:4],result1[7:4],result0[7:4]}: \
+                  {result7[3:0],result6[3:0],result5[3:0],result4[3:0],  \
                    result3[3:0],result2[3:0],result1[3:0],result0[3:0]}; \
     end else if(pw ==  SCARV_COP_PW_16) begin \
         result15 = `CRS1[31:30] OP `CRS2[31:30]; \
@@ -264,9 +229,53 @@ always @(*) begin \
         result2  = `CRS1[ 5: 4] OP `CRS2[ 5: 4]; \
         result1  = `CRS1[ 3: 2] OP `CRS2[ 3: 2]; \
         result0  = `CRS1[ 1: 0] OP `CRS2[ 1: 0]; \
-        result  = {result15[1:0],result14[1:0],result13[1:0],result12[1:0], \
-                   result11[1:0],result10[1:0],result9 [1:0],result8 [1:0], \
-                   result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0], \
-                   result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]};\
+        result  = HI ?                                                      \
+              {result15[3:2],result14[3:2],result13[3:2],result12[3:2],   \
+               result11[3:2],result10[3:2],result9 [3:2],result8 [3:2],   \
+               result7 [3:2],result6 [3:2],result5 [3:2],result4 [3:2],   \
+               result3 [3:2],result2 [3:2],result1 [3:2],result0 [3:2]} : \
+              {result15[1:0],result14[1:0],result13[1:0],result12[1:0],   \
+               result11[1:0],result10[1:0],result9 [1:0],result8 [1:0],   \
+               result7 [1:0],result6 [1:0],result5 [1:0],result4 [1:0],   \
+               result3 [1:0],result2 [1:0],result1 [1:0],result0 [1:0]} ; \
     end \
 end \
+
+
+//
+// Implement a 32x32 carryless multiply expression.
+//
+`define PW_CLMUL32(A,B,W)  (                \
+    ( (B>>0 )&1'b1 ? {{64-W{1'b0}},A} << 0  : 64'b0) ^              \
+    ( (B>>1 )&1'b1 ? {{64-W{1'b0}},A} << 1  : 64'b0) ^              \
+    ( (B>>2 )&1'b1 ? {{64-W{1'b0}},A} << 2  : 64'b0) ^              \
+    ( (B>>3 )&1'b1 ? {{64-W{1'b0}},A} << 3  : 64'b0) ^              \
+    ( (B>>4 )&1'b1 ? {{64-W{1'b0}},A} << 4  : 64'b0) ^              \
+    ( (B>>5 )&1'b1 ? {{64-W{1'b0}},A} << 5  : 64'b0) ^              \
+    ( (B>>6 )&1'b1 ? {{64-W{1'b0}},A} << 6  : 64'b0) ^              \
+    ( (B>>7 )&1'b1 ? {{64-W{1'b0}},A} << 7  : 64'b0) ^              \
+    ( (B>>8 )&1'b1 ? {{64-W{1'b0}},A} << 8  : 64'b0) ^              \
+    ( (B>>9 )&1'b1 ? {{64-W{1'b0}},A} << 9  : 64'b0) ^              \
+    ( (B>>10)&1'b1 ? {{64-W{1'b0}},A} << 10 : 64'b0) ^              \
+    ( (B>>11)&1'b1 ? {{64-W{1'b0}},A} << 11 : 64'b0) ^              \
+    ( (B>>12)&1'b1 ? {{64-W{1'b0}},A} << 12 : 64'b0) ^              \
+    ( (B>>13)&1'b1 ? {{64-W{1'b0}},A} << 13 : 64'b0) ^              \
+    ( (B>>14)&1'b1 ? {{64-W{1'b0}},A} << 14 : 64'b0) ^              \
+    ( (B>>15)&1'b1 ? {{64-W{1'b0}},A} << 15 : 64'b0) ^              \
+    ( (B>>16)&1'b1 ? {{64-W{1'b0}},A} << 16 : 64'b0) ^              \
+    ( (B>>17)&1'b1 ? {{64-W{1'b0}},A} << 17 : 64'b0) ^              \
+    ( (B>>18)&1'b1 ? {{64-W{1'b0}},A} << 18 : 64'b0) ^              \
+    ( (B>>19)&1'b1 ? {{64-W{1'b0}},A} << 19 : 64'b0) ^              \
+    ( (B>>20)&1'b1 ? {{64-W{1'b0}},A} << 20 : 64'b0) ^              \
+    ( (B>>21)&1'b1 ? {{64-W{1'b0}},A} << 21 : 64'b0) ^              \
+    ( (B>>22)&1'b1 ? {{64-W{1'b0}},A} << 22 : 64'b0) ^              \
+    ( (B>>23)&1'b1 ? {{64-W{1'b0}},A} << 23 : 64'b0) ^              \
+    ( (B>>24)&1'b1 ? {{64-W{1'b0}},A} << 24 : 64'b0) ^              \
+    ( (B>>25)&1'b1 ? {{64-W{1'b0}},A} << 25 : 64'b0) ^              \
+    ( (B>>26)&1'b1 ? {{64-W{1'b0}},A} << 26 : 64'b0) ^              \
+    ( (B>>27)&1'b1 ? {{64-W{1'b0}},A} << 27 : 64'b0) ^              \
+    ( (B>>28)&1'b1 ? {{64-W{1'b0}},A} << 28 : 64'b0) ^              \
+    ( (B>>29)&1'b1 ? {{64-W{1'b0}},A} << 29 : 64'b0) ^              \
+    ( (B>>30)&1'b1 ? {{64-W{1'b0}},A} << 30 : 64'b0) ^              \
+    ( (B>>31)&1'b1 ? {{64-W{1'b0}},A} << 31 : 64'b0) )
+

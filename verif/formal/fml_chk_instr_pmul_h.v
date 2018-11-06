@@ -11,19 +11,28 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_padd)
+//
+// Checker for bit packed multiply instruction.
+// - Only checks cases where pack width >= 4
+//
+`VTX_CHECKER_MODULE_BEGIN(instr_pmul_h)
 
 // Pack width of the instruction
 wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
 
 // Compute expected result into register called "result". See
 // `verif/formal/fml_pack_widths.vh` for macro definition.
-`PACK_WIDTH_ARITH_OPERATION_RESULT(+,0)
+`PACK_WIDTH_ARITH_OPERATION_RESULT(*,1)
+
+// Only check pmul_h instructions
+always @(posedge `VTX_CLK_NAME) if(vtx_valid) restrict(dec_pmul_h);
 
 //
-// padd
+// pmul_h
 //
-`VTX_CHECK_INSTR_BEGIN(padd) 
+`VTX_CHECK_INSTR_BEGIN(pmul_h) 
+
+    restrict(pw != SCARV_COP_PW_1 && pw != SCARV_COP_PW_2);
 
     // Correct pack width encoding value or instruction gives in bad
     // opcode result.
@@ -32,11 +41,14 @@ wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
     // Result comes from the PACK_WIDTH_ARITH_OPERATION_RESULT macro.
     if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
         `VTX_ASSERT_CRD_VALUE_IS(result)
+        `VTX_COVER(pw == SCARV_COP_PW_4 );
+        `VTX_COVER(pw == SCARV_COP_PW_8 );
+        `VTX_COVER(pw == SCARV_COP_PW_16);
     end
 
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(padd)
+`VTX_CHECK_INSTR_END(pmul_h)
 
 `VTX_CHECKER_MODULE_END
