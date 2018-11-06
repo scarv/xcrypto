@@ -42,6 +42,11 @@
 `define VTX_CHECK_INSTR_END(NAME) end 
 
 //
+// Assume EXPR does hold true
+//
+`define VTX_ASSUME(EXPR) assume(EXPR)
+
+//
 // Check EXPR is checked during a formal BMC run.
 //
 `define VTX_COVER(EXPR)  cover(EXPR)

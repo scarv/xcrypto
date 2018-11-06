@@ -13,9 +13,9 @@
 
 //
 // Checker for bit packed multiply instruction.
-// - Checks pack widths 4, 8 and 16
+// - Checks pack width 1 - i.e. a single 32x32 carryless multiply.
 //
-`VTX_CHECKER_MODULE_BEGIN(instr_pclmul_l)
+`VTX_CHECKER_MODULE_BEGIN(instr_pclmul_l_pw1)
 
 // Pack width of the instruction
 wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
@@ -35,8 +35,11 @@ always @(posedge `VTX_CLK_NAME) if(vtx_valid) restrict(dec_pclmul_l);
 // pclmul_l
 //
 `VTX_CHECK_INSTR_BEGIN(pclmul_l) 
-    
-    `VTX_ASSUME(pw != SCARV_COP_PW_1 && pw != SCARV_COP_PW_2);
+
+    `VTX_ASSUME(pw != SCARV_COP_PW_2  &&
+                pw != SCARV_COP_PW_4  &&
+                pw != SCARV_COP_PW_8  &&
+                pw != SCARV_COP_PW_16 );
 
     // Correct pack width encoding value or instruction gives in bad
     // opcode result.
@@ -46,10 +49,8 @@ always @(posedge `VTX_CLK_NAME) if(vtx_valid) restrict(dec_pclmul_l);
     if(vtx_instr_result == SCARV_COP_INSN_SUCCESS) begin
         `VTX_ASSERT_CRD_VALUE_IS(expected_result)
 
-        // Pack widths 1,2 checked by dedicated proofs
-        `VTX_COVER(pw == SCARV_COP_PW_4 );
-        `VTX_COVER(pw == SCARV_COP_PW_8 );
-        `VTX_COVER(pw == SCARV_COP_PW_16);
+        // Other Pack widths checked by dedicated proofs
+        `VTX_COVER(pw == SCARV_COP_PW_1 );
     end
 
     // Never causes writeback to GPRS
@@ -58,3 +59,4 @@ always @(posedge `VTX_CLK_NAME) if(vtx_valid) restrict(dec_pclmul_l);
 `VTX_CHECK_INSTR_END(pclmul_l)
 
 `VTX_CHECKER_MODULE_END
+
