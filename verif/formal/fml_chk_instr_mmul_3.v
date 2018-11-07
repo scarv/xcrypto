@@ -11,17 +11,17 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_mmul_1)
+`VTX_CHECKER_MODULE_BEGIN(instr_mmul_3)
 
 reg [63:0] value;
 
 // Assume only this instruction is ever run.
-always @(posedge `VTX_CLK_NAME) if(vtx_valid) assume(dec_mmul_1);
+always @(posedge `VTX_CLK_NAME) if(vtx_valid) assume(dec_mmul_3);
 
 //
-// mmul_1
+// mmul_3
 //
-`VTX_CHECK_INSTR_BEGIN(mmul_1) 
+`VTX_CHECK_INSTR_BEGIN(mmul_3) 
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
@@ -32,7 +32,7 @@ always @(posedge `VTX_CLK_NAME) if(vtx_valid) assume(dec_mmul_1);
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(mmul_1)
+`VTX_CHECK_INSTR_END(mmul_3)
 
 `VTX_CHECKER_MODULE_END
 

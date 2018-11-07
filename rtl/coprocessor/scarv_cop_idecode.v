@@ -112,7 +112,7 @@ wire class_mp           =
     dec_mequ   || dec_mlte   || dec_mgte     || dec_madd_3 || 
     dec_madd_2 || dec_msub_3 || dec_msub_2   || dec_msll_i || 
     dec_msll   || dec_msrl_i || dec_msrl     || dec_macc_2 || 
-    dec_macc_1 || dec_mmul_1 || dec_mclmul_1  ;
+    dec_macc_1 || dec_mmul_3 || dec_mclmul_3  ;
 
 wire class_bitwise      = 
     dec_mix_l || dec_mix_h || dec_bop  || dec_ins  || 
@@ -156,8 +156,8 @@ wire [4:0] subclass_mp =
     {5{dec_msrl }} & {SCARV_COP_SCLASS_MSRL  } | 
     {5{dec_macc_2}} & {SCARV_COP_SCLASS_MACC_2 } | 
     {5{dec_macc_1}} & {SCARV_COP_SCLASS_MACC_1 } | 
-    {5{dec_mmul_1 }} & {SCARV_COP_SCLASS_MMUL_1  } |
-    {5{dec_mclmul_1}} & {SCARV_COP_SCLASS_MCLMUL_1  } ;
+    {5{dec_mmul_3 }} & {SCARV_COP_SCLASS_MMUL_3  } |
+    {5{dec_mclmul_3}} & {SCARV_COP_SCLASS_MCLMUL_3  } ;
 
 wire [4:0] subclass_bitwise =
     {5{dec_mix_l}} & {SCARV_COP_SCLASS_MIX_L} |

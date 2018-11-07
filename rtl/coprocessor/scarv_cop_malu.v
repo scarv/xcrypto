@@ -55,8 +55,8 @@ wire is_msrl_i   = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MSRL_I;
 wire is_msrl     = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MSRL ;
 wire is_macc_2   = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MACC_2;
 wire is_macc_1   = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MACC_1;
-wire is_mmul_1   = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MMUL_1 ;
-wire is_mclmul_1 = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MCLMUL_1 ;
+wire is_mmul_3   = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MMUL_3 ;
+wire is_mclmul_3 = malu_ivalid && id_subclass == SCARV_COP_SCLASS_MCLMUL_3 ;
 
 //
 // MP instruction control FSM
@@ -87,8 +87,8 @@ end
 assign malu_idone = 
     fsm0 && (is_mequ  || is_mlte  || is_mgte                       ) ||
     fsm1 && (is_madd_2 || is_msub_2 || is_macc_1 || is_msll_i ||
-             is_msrl_i || is_msll  || is_msrl || is_mclmul_1       ) ||
-    fsm2 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_1      ) ;
+             is_msrl_i || is_msll  || is_msrl || is_mclmul_3       ) ||
+    fsm2 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_3      ) ;
 
 //
 // Utility wires
@@ -112,19 +112,19 @@ wire [31:0] clmul_lhs, clmul_rhs;
 wire [63:0] shf_lhs         ;
 
 // Writeback low word of carryless multiply
-wire wb_clmul_lo = fsm0 && is_mclmul_1;
+wire wb_clmul_lo = fsm0 && is_mclmul_3;
 
 // Writeback high word of tmp register.
 wire wb_tmp_hi = 
     fsm1 && (is_madd_2 || is_msub_2 || is_macc_1 || is_msll_i || 
-             is_msll  || is_msrl_i || is_msrl    || is_mclmul_1     ) ||
-    fsm2 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_1   
+             is_msll  || is_msrl_i || is_msrl    || is_mclmul_3     ) ||
+    fsm2 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_3   
                                                                     ) ;
 
 // Writeback low word of adder result.
 wire wb_add_lo =
     fsm0 && (is_madd_2 || is_msub_2 || is_macc_1                    ) ||
-    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_1       ) ;
+    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_3       ) ;
 
 // Writeback low word of shifter result.
 wire wb_shf_lo =
@@ -145,15 +145,15 @@ wire [63:0] n_tmp;
 wire       tmp_ld_add = 
     fsm0 && (is_madd_2 || is_madd_3 || is_msub_2 || is_msub_3 ||
              is_macc_1 || is_macc_2                                 ) ||
-    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_1       ) ;
+    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_3       ) ;
 
 // Load multiplier result into tmp.
 wire       tmp_ld_mul =
-    fsm0 && (is_mmul_1                                                  ) ;
+    fsm0 && (is_mmul_3                                                  ) ;
 
 // Load carryless multiplier result into tmp.
 wire       tmp_ld_clmul =
-    fsm0 && (is_mclmul_1                                                ) ;
+    fsm0 && (is_mclmul_3                                                ) ;
 
 // Load Shifter result into tmp.
 wire       tmp_ld_shf =
@@ -201,14 +201,14 @@ wire add_lhs_rs1 =
              is_macc_1 || is_macc_2                                 ) ;
 
 wire add_lhs_tmp = 
-    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_1       ) ;
+    fsm1 && (is_madd_3 || is_msub_3 || is_macc_2 || is_mmul_3       ) ;
 
 wire add_rhs_rs2 = 
     fsm0 && (is_madd_2 || is_madd_3 || is_msub_2 || is_msub_3       ) ||
     fsm1 && (is_macc_2                                                 ) ;
 
 wire add_rhs_rs3 =
-    fsm1 && (is_mmul_1  || is_madd_3 || is_msub_3                     ) ;
+    fsm1 && (is_mmul_3  || is_madd_3 || is_msub_3                     ) ;
 
 wire add_rhs_r23 =
     fsm0 && (is_macc_1 || is_macc_2                                   ) ;
@@ -229,8 +229,8 @@ assign result_add   = do_sub ? add_lhs - add_rhs :
 // 32x32 multiplier
 //
 
-assign mul_lhs = {64{fsm0 && is_mmul_1}} & {32'b0, malu_rs1};
-assign mul_rhs = {64{fsm0 && is_mmul_1}} & {32'b0, malu_rs2};
+assign mul_lhs = {64{fsm0 && is_mmul_3}} & {32'b0, malu_rs1};
+assign mul_rhs = {64{fsm0 && is_mmul_3}} & {32'b0, malu_rs2};
 
 assign result_mul   = mul_lhs * mul_rhs ;
 
@@ -238,8 +238,8 @@ assign result_mul   = mul_lhs * mul_rhs ;
 // 32x32 carryless multiplier
 //
 
-assign clmul_lhs = {64{fsm0 && is_mclmul_1}} & {32'b0, malu_rs1};
-assign clmul_rhs = {64{fsm0 && is_mclmul_1}} & {32'b0, malu_rs2};
+assign clmul_lhs = {64{fsm0 && is_mclmul_3}} & {32'b0, malu_rs1};
+assign clmul_rhs = {64{fsm0 && is_mclmul_3}} & {32'b0, malu_rs2};
 
 wire [63:0] clmul_reduce[63:0];
 

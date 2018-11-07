@@ -30,7 +30,8 @@ wire expect_crdm_change =
     dec_msrl      ||
     dec_macc_2    ||
     dec_macc_1    ||
-    dec_mmul_1    ; 
+    dec_mmul_3    ||
+    dec_mclmul_3  ; 
 
 genvar i;
 generate for(i = 0; i < 16; i = i + 2) begin

@@ -492,10 +492,10 @@ index f966fb6a50..9438dde7d7 100644
 +#define MASK_MACC_2  0xff087c7f
 +#define MATCH_MACC_1 0xc000782b
 +#define MASK_MACC_1  0xfff87c7f
-+#define MATCH_MMUL_1 0xd000782b
-+#define MASK_MMUL_1  0xf0087c7f
-+#define MATCH_MCLMUL_1 0xe000782b
-+#define MASK_MCLMUL_1  0xf0087c7f
++#define MATCH_MMUL_3 0xd000782b
++#define MASK_MMUL_3  0xf0087c7f
++#define MATCH_MCLMUL_3 0xe000782b
++#define MASK_MCLMUL_3  0xf0087c7f
 +#define MATCH_LD_BU 0x102b
 +#define MASK_LD_BU  0x707f
 +#define MATCH_LD_HU 0x202b
@@ -740,8 +740,8 @@ index 79e7214835..8d8652f2fe 100644
 +{"xc.msrl",     "x", "(XM),Xs,Xt,XS",        MATCH_MSRL, MASK_MSRL, match_opcode, 0},
 +{"xc.macc.2",    "x", "(XM),Xs,Xt",           MATCH_MACC_2, MASK_MACC_2, match_opcode, 0},
 +{"xc.macc.1",    "x", "(XM),Xs",              MATCH_MACC_1, MASK_MACC_1, match_opcode, 0},
-+{"xc.mmul.1",     "x", "(XM),Xs,Xt,XS",        MATCH_MMUL_1, MASK_MMUL_1, match_opcode, 0},
-+{"xc.mclmul.1",   "x", "(XM),Xs,Xt,XS",        MATCH_MCLMUL_1, MASK_MCLMUL_1, match_opcode, 0},
++{"xc.mmul.3",     "x", "(XM),Xs,Xt,XS",        MATCH_MMUL_3, MASK_MMUL_3, match_opcode, 0},
++{"xc.mclmul.3",   "x", "(XM),Xs,Xt,XS",        MATCH_MCLMUL_3, MASK_MCLMUL_3, match_opcode, 0},
 +{"xc.ld.bu",     "x", "XD,(Xh,Xd),Xl(s)",      MATCH_LD_BU, MASK_LD_BU, match_opcode, 0},
 +{"xc.ld.hu",     "x", "XD,(Xh),Xl(s)",         MATCH_LD_HU, MASK_LD_HU, match_opcode, 0},
 +{"xc.ld.w",      "x", "XD,Xl(s)",            MATCH_LD_W, MASK_LD_W, match_opcode, 0},

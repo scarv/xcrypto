@@ -83,8 +83,8 @@ localparam SCARV_COP_SCLASS_MSRL_I    = 5'd9 ;
 localparam SCARV_COP_SCLASS_MSRL      = 5'd10;
 localparam SCARV_COP_SCLASS_MACC_2    = 5'd11;
 localparam SCARV_COP_SCLASS_MACC_1    = 5'd12;
-localparam SCARV_COP_SCLASS_MMUL_1    = 5'd13;
-localparam SCARV_COP_SCLASS_MCLMUL_1  = 5'd14;
+localparam SCARV_COP_SCLASS_MMUL_3    = 5'd13;
+localparam SCARV_COP_SCLASS_MCLMUL_3  = 5'd14;
 
 localparam SCARV_COP_SCLASS_RSEED     = 5'd0;
 localparam SCARV_COP_SCLASS_RSAMP     = 5'd1;
