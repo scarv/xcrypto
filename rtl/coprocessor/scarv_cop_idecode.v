@@ -57,7 +57,7 @@ parameter ISE_MCCR_P2   = 1; //
 //  - dec_* for each instruction
 //  - dec_arg_* for each possible instruction argument field.
 //
-//  This file is expected to be found in the $COP_WORK directory.
+//  This file is expected to be found in the $XC_WORK directory.
 //
 `include "ise_decode.v"
 

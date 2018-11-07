@@ -1,4 +1,4 @@
-ETABLE  = $(COP_WORK)/crypto-ise.encodings.tex
+ETABLE  = $(XC_WORK)/crypto-ise.encodings.tex
 SOURCES = specification.tex implementation.tex
 TARGETS = $(patsubst %.tex, %.pdf, ${SOURCES})
 
@@ -18,7 +18,7 @@ ${TARGETS} : %.pdf : %.tex
 all      : ${TARGETS} $(ETABLE)
 
 $(ETABLE): ise-opcodes.txt
-	cat $< | $(COP_HOME)/bin/ise-parse-opcodes.py -tex > $@
+	cat $< | $(XC_HOME)/bin/ise-parse-opcodes.py -tex > $@
 
 diagrams: $(DIA_OUT)
 diagrams/%.eps : diagrams/%.dot

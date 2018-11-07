@@ -1,11 +1,11 @@
 
-OUT_DIR     ?= $(COP_WORK)/unit
+OUT_DIR     ?= $(XC_WORK)/unit
 
 INPUTS      ?= $(shell find -name "*.S")
 OUTPUTS     ?= $(addprefix $(OUT_DIR)/, $(INPUTS:%.S=%.hex))
 
-AS           = $(COP_HOME)/work/riscv-binutils-gdb/build/gas/as-new
-OBJDUMP      = $(COP_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
+AS           = $(XC_HOME)/work/riscv-binutils-gdb/build/gas/as-new
+OBJDUMP      = $(XC_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
 
 all: $(OUTPUTS)
 

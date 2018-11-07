@@ -5,17 +5,17 @@
 echo "-------------------------[Setting Up Project]--------------------------"
 
 # Top level environment variables
-export COP_HOME=`pwd`
-export COP_WORK=$COP_HOME/work
+export XC_HOME=`pwd`
+export XC_WORK=$XC_HOME/work
 
 if [ -z $YS_INSTALL ] ; then
     export YS_INSTALL=
 fi
 
-mkdir -p $COP_WORK
+mkdir -p $XC_WORK
 
-echo "COP_HOME      = $COP_HOME"
-echo "COP_WORK      = $COP_WORK"
+echo "XC_HOME      = $COP_HOME"
+echo "XC_WORK      = $COP_WORK"
 echo "YS_INSTALL    = $YS_INSTALL"
 
 echo "------------------------------[Finished]-------------------------------"

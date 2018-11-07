@@ -1,6 +1,6 @@
 
 RTL_TIMEOUT ?=200
-RTL_WAVES   ?= $(COP_HOME)/work/icarus/unit-waves.vcd
+RTL_WAVES   ?= $(XC_HOME)/work/icarus/unit-waves.vcd
 RTL_TRACE    =
 
 SIM_UNIT_TEST ?= 
@@ -8,14 +8,14 @@ SIM_UNIT_TEST ?=
 ICARUS      = iverilog
 IRUN        = vvp
 
-MANIFEST        ?= $(COP_HOME)/flow/icarus/manifest.cmd
-SIM              = $(COP_HOME)/work/icarus/isim-unit
-SIM_LOG         ?= $(COP_HOME)/work/icarus/sim-unit.log
+MANIFEST        ?= $(XC_HOME)/flow/icarus/manifest.cmd
+SIM              = $(XC_HOME)/work/icarus/isim-unit
+SIM_LOG         ?= $(XC_HOME)/work/icarus/sim-unit.log
 
-INTEG_MANIFEST  ?= $(COP_HOME)/flow/icarus/integration.cmd
-INTEG_SIM        = $(COP_HOME)/work/icarus/isim-integ
-INTEG_SIM_LOG   ?= $(COP_HOME)/work/icarus/sim-integ.log
-INTEG_HEX_TMP    = $(COP_WORK)/unit/integ-tmp.hex
+INTEG_MANIFEST  ?= $(XC_HOME)/flow/icarus/integration.cmd
+INTEG_SIM        = $(XC_HOME)/work/icarus/isim-integ
+INTEG_SIM_LOG   ?= $(XC_HOME)/work/icarus/sim-integ.log
+INTEG_HEX_TMP    = $(XC_WORK)/unit/integ-tmp.hex
 
 DEFINES = 
 
@@ -28,7 +28,7 @@ all: $(SIM)
 sim: $(SIM)
 $(SIM) :
 	-mkdir -p $(dir $(SIM))
-	$(ICARUS) -I$(COP_WORK) \
+	$(ICARUS) -I$(XC_WORK) \
         $(DEFINES) -g2012 \
         -o $(SIM) \
         -c$(MANIFEST)
@@ -51,7 +51,7 @@ run: $(SIM)
 integ-sim: $(INTEG_SIM)
 $(INTEG_SIM) :
 	-mkdir -p $(dir $(INTEG_SIM))
-	$(ICARUS) -I$(COP_WORK) \
+	$(ICARUS) -I$(XC_WORK) \
         $(DEFINES) -g2012 \
         -o $(INTEG_SIM) \
         -c$(INTEG_MANIFEST)
@@ -67,7 +67,7 @@ $(SIM_UNIT_TEST:%.hex=%.integ.hex) : $(SIM_UNIT_TEST)
 #
 # Run the integration testbench.
 #
-integ-run: RTL_WAVES=$(COP_HOME)/work/icarus/integ-waves.vcd
+integ-run: RTL_WAVES=$(XC_HOME)/work/icarus/integ-waves.vcd
 integ-run: $(INTEG_SIM) $(SIM_UNIT_TEST:%.hex=%.integ.hex)
 	$(IRUN) -l $(INTEG_SIM_LOG) \
         $(INTEG_SIM) \

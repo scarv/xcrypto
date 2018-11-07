@@ -10,17 +10,17 @@ SRC_RTL     ?= $(shell find ../../ -path "*rtl/*.v") \
 	           $(shell find ../../ -path "*rtl/*.vh")
 SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.vh") \
 	           $(shell find ../../ -path "*verif/*.v") 
-SRC_FORMAL  ?= $(COP_HOME)/verif/tb/tb_formal.v \
-               $(COP_HOME)/verif/formal/fml_pack_widths.vh \
-               $(COP_HOME)/verif/formal/fml_common.vh
+SRC_FORMAL  ?= $(XC_HOME)/verif/tb/tb_formal.v \
+               $(XC_HOME)/verif/formal/fml_pack_widths.vh \
+               $(XC_HOME)/verif/formal/fml_common.vh
 
-VLOG_out    = $(COP_HOME)/work/scarv_cop_top.v
+VLOG_out    = $(XC_HOME)/work/scarv_cop_top.v
 
-LOG_SYNTH   = $(COP_HOME)/work/yosys-synth.log
-LOG_SMT2    = $(COP_HOME)/work/smt2/synthesis.log
+LOG_SYNTH   = $(XC_HOME)/work/yosys-synth.log
+LOG_SMT2    = $(XC_HOME)/work/smt2/synthesis.log
 
-SMTDIR          ?= $(COP_WORK)/smt2
-CHECKS_DIR       = $(COP_HOME)/verif/formal
+SMTDIR          ?= $(XC_WORK)/smt2
+CHECKS_DIR       = $(XC_HOME)/verif/formal
 
 FML_ENGINE      ?= boolector
 FML_CHECK_NAME  ?= correct_invalid_opcode_response \
@@ -54,7 +54,7 @@ adder       : ../../rtl/coprocessor/scarv_cop_palu_adder.v
 
 .PHONY: smt2
 smt2: $(SMT2_out)
-$(SMTDIR)/%.smt2 : $(COP_HOME)/verif/formal/fml_chk_%.v \
+$(SMTDIR)/%.smt2 : $(XC_HOME)/verif/formal/fml_chk_%.v \
                    $(SRC_RTL) $(SRC_FORMAL)
 	@mkdir -p $(word 1, $(dir $(SMT2_out)))
 	$(YS) -qQT -l $@.log \
@@ -93,5 +93,5 @@ formal: $(SMT2_out)
                $(SMT2_out)
 
 clean:
-	rm -rf $(COP_WORK)/smt2 $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
-        $(COP_WORK)/*.log $(COP_WORK)/*.rpt
+	rm -rf $(XC_WORK)/smt2 $(SMT2_out) $(VLOG_out) $(SMT_VCD) $(LOG_SYNTH) \
+        $(XC_WORK)/*.log $(COP_WORK)/*.rpt

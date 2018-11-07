@@ -1,5 +1,5 @@
 
-TGT_DIR  = $(COP_WORK)/examples
+TGT_DIR  = $(XC_WORK)/examples
 
 EXE      ?= $(TGT_DIR)/integration-test.elf
 
