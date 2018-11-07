@@ -436,10 +436,10 @@ index f966fb6a50..9438dde7d7 100644
 +#define MASK_RNGSAMP  0xfffff87f
 +#define MATCH_RNGTEST 0x1620002b
 +#define MASK_RNGTEST  0xfffff07f
-+#define MATCH_CMOV 0x1a00002b
-+#define MASK_CMOV  0xff08787f
-+#define MATCH_CMOVN 0x1c00002b
-+#define MASK_CMOVN  0xff08787f
++#define MATCH_CMOV_T 0x1a00002b
++#define MASK_CMOV_T  0xff08787f
++#define MATCH_CMOV_F 0x1c00002b
++#define MASK_CMOV_F  0xff08787f
 +#define MATCH_AESSUB_ENC 0x2000002b
 +#define MASK_AESSUB_ENC  0xff08787f
 +#define MATCH_AESSUB_ENCROT 0x2008002b
@@ -712,8 +712,8 @@ index 79e7214835..8d8652f2fe 100644
 +{"xc.rngseed",  "x", "Xs",                 MATCH_RNGSEED, MASK_RNGSEED, match_opcode, 0},
 +{"xc.rngsamp",  "x", "XD",                 MATCH_RNGSAMP, MASK_RNGSAMP, match_opcode, 0},
 +{"xc.rngtest",  "x", "d",                  MATCH_RNGTEST, MASK_RNGTEST, match_opcode, 0},
-+{"xc.cmov",     "x", "XD,Xs,Xt",           MATCH_CMOV, MASK_CMOV, match_opcode, 0},
-+{"xc.cmovn",    "x", "XD,Xs,Xt",           MATCH_CMOVN, MASK_CMOVN, match_opcode, 0},
++{"xc.cmov.t",     "x", "XD,Xs,Xt",           MATCH_CMOV_T, MASK_CMOV_T, match_opcode, 0},
++{"xc.cmov.f",    "x", "XD,Xs,Xt",           MATCH_CMOV_F, MASK_CMOV_F, match_opcode, 0},
 +{"xc.aessub.enc"   , "x", "XD,Xs,Xt",  MATCH_AESSUB_ENC, MASK_AESSUB_ENC, match_opcode, 0},
 +{"xc.aessub.encrot", "x", "XD,Xs,Xt",  MATCH_AESSUB_ENCROT, MASK_AESSUB_ENCROT, match_opcode, 0},
 +{"xc.aessub.dec"   , "x", "XD,Xs,Xt",  MATCH_AESSUB_DEC, MASK_AESSUB_DEC, match_opcode, 0},

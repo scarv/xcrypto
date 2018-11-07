@@ -31,8 +31,8 @@ wire expect_crd_change =
     dec_psrl_i    ||  dec_pperm_h1  ||
     dec_prot_i    ||  dec_pperm_b0  ||
     dec_rngsamp   ||  dec_pperm_b1  ||
-    dec_cmov      ||  dec_pperm_b2  ||
-    dec_cmovn     ||  dec_pperm_b3  ||
+    dec_cmov_t    ||  dec_pperm_b2  ||
+    dec_cmov_f    ||  dec_pperm_b3  ||
     dec_gather_b  ||  dec_ins       ||
     dec_gather_h  ||  dec_ext       ||
     dec_mix_l     ||  dec_mix_h      ;

@@ -84,14 +84,14 @@ assign palu_cpr_rd_ben = {4{palu_idone}} & (
 wire        cmov_cond   = palu_rs2 == 0;
 wire [31:0] result_cmov = is_gpr2xcr ? gpr_rs1 : palu_rs1;
 
-wire        is_cmov   = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV  ;
-wire        is_cmovn  = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOVN ;
-wire        is_gpr2xcr = is_mov_insn && id_subclass == SCARV_COP_SCLASS_GPR2XCR;
+wire  is_cmov_t = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV_T  ;
+wire  is_cmov_f = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV_F  ;
+wire  is_gpr2xcr = is_mov_insn && id_subclass == SCARV_COP_SCLASS_GPR2XCR;
 
 wire        wen_cmov    = 
         (is_gpr2xcr             ) ||
-        (is_cmov  &&  cmov_cond) ||
-        (is_cmovn && !cmov_cond)  ;
+        (is_cmov_t &&  cmov_cond) ||
+        (is_cmov_f && !cmov_cond)  ;
 
 // ----------------------------------------------------------------------
 
