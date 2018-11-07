@@ -14,8 +14,12 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_gather_h)
 
 wire [31:0] exp_addrs   [1:0];
-assign exp_addrs[0] = vtx_instr_rs1 + `CRS2[15: 0];
-assign exp_addrs[1] = vtx_instr_rs1 + `CRS2[31:16];
+assign exp_addrs[1] = vtx_instr_rs1 + `CRS2[15: 0];
+assign exp_addrs[0] = vtx_instr_rs1 + `CRS2[31:16];
+
+wire [15:0] exp_rdata [1:0]; // Expected read data to be written to CRD
+assign exp_rdata[0] = vtx_mem_rdata_1 >> (16*(exp_addrs[1][1]));
+assign exp_rdata[1] = vtx_mem_rdata_0 >> (16*(exp_addrs[0][1]));
 
 //
 // gather_h
@@ -41,14 +45,14 @@ assign exp_addrs[1] = vtx_instr_rs1 + `CRS2[31:16];
         // 1st memory transaction
         `VTX_ASSERT(vtx_mem_cen_0  == 1'b1);
         `VTX_ASSERT(vtx_mem_wen_0  == 1'b0);
-        `VTX_ASSERT(vtx_mem_addr_0 == {exp_addrs[1][31:2],2'b00});
-//        `VTX_ASSERT(vtx_mem_wdata_0== `CRD[31:24])
+        `VTX_ASSERT(vtx_mem_addr_0 == {exp_addrs[0][31:2],2'b00});
+        `VTX_ASSERT(exp_rdata[0] == vtx_crd_val_post[15: 0]);
         
         // 0th memory transaction
         `VTX_ASSERT(vtx_mem_cen_1  == 1'b1);
         `VTX_ASSERT(vtx_mem_wen_1  == 1'b0);
-        `VTX_ASSERT(vtx_mem_addr_1 == {exp_addrs[0][31:2],2'b00});
-//        `VTX_ASSERT(vtx_mem_wdata_1== `CRD[23:16])
+        `VTX_ASSERT(vtx_mem_addr_1 == {exp_addrs[1][31:2],2'b00});
+        `VTX_ASSERT(exp_rdata[1] == vtx_crd_val_post[31:16]);
 
     end else if(vtx_instr_result == SCARV_COP_INSN_ST_ERR) begin
         

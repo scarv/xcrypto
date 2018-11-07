@@ -147,13 +147,13 @@ always @(posedge g_clk) if (!g_resetn) vtx_rand_sample <= 32'b0;
     else if(cop_rand_sample) vtx_rand_sample <= cop_random;
 
 // Memory transaction tracking per instruction.
-reg        vtx_mem_cen      [ 3:0]  ;
-reg        vtx_mem_wen      [ 3:0]  ;
-reg [31:0] vtx_mem_addr     [ 3:0]  ;
-reg [31:0] vtx_mem_wdata    [ 3:0]  ;
-reg [31:0] vtx_mem_rdata    [ 3:0]  ;
-reg [ 3:0] vtx_mem_ben      [ 3:0]  ;
-reg        vtx_mem_error    [ 3:0]  ;
+reg        vtx_mem_cen      [ 4:0]  ;
+reg        vtx_mem_wen      [ 4:0]  ;
+reg [31:0] vtx_mem_addr     [ 4:0]  ;
+reg [31:0] vtx_mem_wdata    [ 4:0]  ;
+reg [31:0] vtx_mem_rdata    [ 4:0]  ;
+reg [ 3:0] vtx_mem_ben      [ 4:0]  ;
+reg        vtx_mem_error    [ 4:0]  ;
 
 reg p_mem_cen;
 always @(posedge g_clk) if(!g_resetn) p_mem_cen <= 1'b0;
@@ -180,15 +180,19 @@ always @(posedge g_clk) begin
 end
 
 genvar i;
-generate for (i=1 ; i < 4;i=i+1) begin
-    always @(posedge g_clk) if(mem_txn_new) begin
-        vtx_mem_cen  [i] <= vtx_mem_cen  [i-1];
-        vtx_mem_wen  [i] <= vtx_mem_wen  [i-1];
-        vtx_mem_addr [i] <= vtx_mem_addr [i-1];
-        vtx_mem_wdata[i] <= vtx_mem_wdata[i-1];
-        vtx_mem_rdata[i] <= cop_mem_rdata;
-        vtx_mem_ben  [i] <= vtx_mem_ben  [i-1];
-        vtx_mem_error[i] <= vtx_mem_error[i-1];
+generate for (i=1 ; i < 5;i=i+1) begin
+    always @(posedge g_clk) begin
+        if(mem_txn_new) begin
+            vtx_mem_cen  [i] <= vtx_mem_cen  [i-1];
+            vtx_mem_wen  [i] <= vtx_mem_wen  [i-1];
+            vtx_mem_addr [i] <= vtx_mem_addr [i-1];
+            vtx_mem_wdata[i] <= vtx_mem_wdata[i-1];
+            vtx_mem_ben  [i] <= vtx_mem_ben  [i-1];
+        end
+        if(mem_txn_finish) begin
+            vtx_mem_rdata[i] <= vtx_mem_rdata[i-1];
+            vtx_mem_error[i] <= vtx_mem_error[i-1];
+        end
     end
 end endgenerate
 

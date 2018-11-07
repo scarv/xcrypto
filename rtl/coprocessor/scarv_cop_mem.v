@@ -169,10 +169,10 @@ always @(*) begin
 end
 
 assign cop_mem_wdata =
-    is_sw            ? cpr_rs2                                  :
-    is_sh || is_sc_h ? hw_wdata << (mem_address[1] ? 16 : 0)    :
-    is_sb || is_sc_b ? by_wdata << {mem_address[1:0],3'b00}     :
-                       32'b0                                    ;
+    is_sw                       ? cpr_rs2                                  :
+    is_sh                       ? hw_wdata << (mem_address[1] ? 16 : 0)    :
+    is_sb || is_sc_b || is_sc_h ? by_wdata << {mem_address[1:0],3'b00}     :
+                                  32'b0                                    ;
 
 // Memory transaction finish tracking
 wire mem_txn_good  = 
