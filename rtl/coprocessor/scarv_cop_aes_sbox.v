@@ -66,5 +66,6 @@ wire [7:0] out_inv =
     (in ^ mat_inv[6]) ^
     (in ^ mat_inv[7])) ;
 
+assign out = inv ? out_inv : out_fwd;
 
 endmodule

@@ -33,7 +33,7 @@ input  wire [31:0]  cpr_rs3          , // Source register 3
 input  wire         id_wb_h          , // Halfword index (load/store)
 input  wire         id_wb_b          , // Byte index (load/store)
 input  wire [31:0]  id_imm           , // Source immedate
-input  wire [ 2:0]  id_class         , // Instruction class
+input  wire [ 3:0]  id_class         , // Instruction class
 input  wire [ 4:0]  id_subclass      , // Instruction subclass
 
 output wire [ 3:0]  mem_cpr_rd_ben   , // Writeback byte enable

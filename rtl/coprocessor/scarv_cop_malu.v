@@ -29,7 +29,7 @@ input  wire [31:0]  malu_rs2         , // Source register 2
 input  wire [31:0]  malu_rs3         , // Source register 3
 
 input  wire [31:0]  id_imm           , // Source immedate
-input  wire [ 2:0]  id_class         , // Instruction class
+input  wire [ 3:0]  id_class         , // Instruction class
 input  wire [ 4:0]  id_subclass      , // Instruction subclass
 
 output wire [ 3:0]  malu_cpr_rd_ben  , // Writeback byte enable

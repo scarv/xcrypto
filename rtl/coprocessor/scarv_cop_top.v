@@ -71,7 +71,7 @@ input  wire             cop_mem_error     // Error
 
 wire          id_exception    ; // Illegal instruction exception.
 
-wire [ 2:0]   id_class        ; // Instruction class.
+wire [ 3:0]   id_class        ; // Instruction class.
 wire [ 4:0]   id_subclass     ; // Instruction subclass.
 
 wire [ 2:0]   id_pw           ; // Instruction pack width.
@@ -126,7 +126,12 @@ wire [31:0]   malu_cpr_rd_wdata; // Writeback data
 wire          rng_ivalid       ; // Valid instruction input
 wire          rng_idone        ; // Instruction complete
 wire [ 3:0]   rng_cpr_rd_ben   ; // Writeback byte enable
-wire [31:0]   rng_cpr_rd_wdata ;// Writeback data
+wire [31:0]   rng_cpr_rd_wdata ; // Writeback data
+
+wire          aes_ivalid       ; // Valid instruction input
+wire          aes_idone        ; // Instruction complete
+wire [ 3:0]   aes_cpr_rd_ben   ; // Writeback byte enable
+wire [31:0]   aes_cpr_rd_wdata ; // Writeback data
 
 //
 // Functional unit dispatch
@@ -140,6 +145,10 @@ assign palu_ivalid =
     id_class == SCARV_COP_ICLASS_MOVE         ||
     id_class == SCARV_COP_ICLASS_BITWISE      ||
     id_class == SCARV_COP_ICLASS_TWIDDLE      );
+
+assign aes_ivalid =
+    insn_valid  && (
+    id_class == SCARV_COP_ICLASS_AES          );
 
 assign malu_ivalid =
     insn_valid  && (
@@ -415,6 +424,29 @@ scarv_cop_palu i_scarv_cop_palu (
 .id_subclass      (id_subclass      ), // Instruction subclass
 .palu_cpr_rd_ben  (palu_cpr_rd_ben  ), // Writeback byte enable
 .palu_cpr_rd_wdata(palu_cpr_rd_wdata)  // Writeback data
+);
+
+
+//
+// instance: scarv_cop_aes
+//
+//  AES instruction implementations
+//
+//
+scarv_cop_aes i_scarv_cop_aes(
+.g_clk            (g_clk           ), // Global clock
+.g_resetn         (g_resetn        ), // Synchronous active low reset.
+.aes_ivalid       (aes_ivalid      ), // Valid instruction input
+.aes_idone        (aes_idone       ), // Instruction complete
+.aes_rs1          (crs1_rdata      ), // Source register 1
+.aes_rs2          (crs2_rdata      ), // Source register 2
+.aes_rs3          (crs3_rdata      ), // Source register 3
+.id_imm           (id_imm          ), // Source immedate
+.id_pw            (id_pw           ), // Pack width
+.id_class         (id_class        ), // Instruction class
+.id_subclass      (id_subclass     ), // Instruction subclass
+.aes_cpr_rd_ben   (aes_cpr_rd_ben  ), // Writeback byte enable
+.aes_cpr_rd_wdata (aes_cpr_rd_wdata)  // Writeback data
 );
 
 

@@ -20,7 +20,7 @@ input  wire [31:0] id_encoded      , // Encoding 32-bit instruction
 
 output wire        id_exception    , // Illegal instruction exception.
 
-output wire [ 2:0] id_class        , // Instruction class.
+output wire [ 3:0] id_class        , // Instruction class.
 output wire [ 4:0] id_subclass     , // Instruction subclass.
 
 output wire [ 2:0] id_pw           , // Instruction pack width.
@@ -118,14 +118,19 @@ wire class_bitwise      =
     dec_mix_l || dec_mix_h || dec_bop  || dec_ins  || 
     dec_ext  || dec_ld_liu  || dec_ld_hiu   ;
 
+wire class_aes          =
+    dec_aessub_enc || dec_aessub_encrot || dec_aessub_dec || 
+    dec_aessub_decrot || dec_aesmix_enc || dec_aesmix_dec;
+
 assign id_class = 
-    {3{class_packed_arith}} & SCARV_COP_ICLASS_PACKED_ARITH |
-    {3{class_twiddle     }} & SCARV_COP_ICLASS_TWIDDLE      |
-    {3{class_loadstore   }} & SCARV_COP_ICLASS_LOADSTORE    |
-    {3{class_random      }} & SCARV_COP_ICLASS_RANDOM       |
-    {3{class_move        }} & SCARV_COP_ICLASS_MOVE         |
-    {3{class_mp          }} & SCARV_COP_ICLASS_MP           |
-    {3{class_bitwise     }} & SCARV_COP_ICLASS_BITWISE      ;
+    {4{class_aes         }} & SCARV_COP_ICLASS_AES          |
+    {4{class_packed_arith}} & SCARV_COP_ICLASS_PACKED_ARITH |
+    {4{class_twiddle     }} & SCARV_COP_ICLASS_TWIDDLE      |
+    {4{class_loadstore   }} & SCARV_COP_ICLASS_LOADSTORE    |
+    {4{class_random      }} & SCARV_COP_ICLASS_RANDOM       |
+    {4{class_move        }} & SCARV_COP_ICLASS_MOVE         |
+    {4{class_mp          }} & SCARV_COP_ICLASS_MP           |
+    {4{class_bitwise     }} & SCARV_COP_ICLASS_BITWISE      ;
 
 
 //
