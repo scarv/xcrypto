@@ -27,7 +27,6 @@ input  wire             g_resetn        , // Synchronous active low reset.
 //
 // CPU / COP Interface
 input  wire             cpu_insn_req    , // Instruction request
-input  wire             cpu_abort_req   , // Abort Instruction
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
 
@@ -243,7 +242,6 @@ scarv_cop_top i_dut(
 `VTX_REGISTER_PORTS_CON(cprs_snoop, vtx_cprs_snoop)
 .cpu_insn_req  (cpu_insn_req ) , // Instruction request
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
-.cpu_abort_req (cpu_abort_req) , // Abort Instruction
 .cpu_insn_enc  (cpu_insn_enc ) , // Encoded instruction data
 .cpu_rs1       (cpu_rs1      ) , // RS1 source data
 .cop_wen       (cop_wen      ) , // COP write enable

@@ -123,7 +123,6 @@ wire        pcpi_ready    ;
 // XCrypto Co-Processor Interface
 wire        cpu_insn_req  ; // Instruction request
 wire        cop_insn_ack  ; // Instruction request acknowledge
-wire        cpu_abort_req ; // Abort Instruction
 wire [31:0] cpu_insn_enc  ; // Encoded instruction data
 wire [31:0] cpu_rs1       ; // RS1 source data
 
@@ -203,7 +202,6 @@ scarv_integ_prv_pcpi2cop i_pcpi2cop (
 .pcpi_ready   (pcpi_ready   ),
 .cpu_insn_req (cpu_insn_req ), // Instruction request
 .cop_insn_ack (cop_insn_ack ), // Instruction request acknowledge
-.cpu_abort_req(cpu_abort_req), // Abort Instruction
 .cpu_insn_enc (cpu_insn_enc ), // Encoded instruction data
 .cpu_rs1      (cpu_rs1      ), // RS1 source data
 .cop_wen      (cop_wen      ), // COP write enable
@@ -225,7 +223,6 @@ scarv_cop_top i_scarv_cop_top(
 .g_resetn     (g_resetn     ) , // Synchronous active low reset.
 .cpu_insn_req (cpu_insn_req ) , // Instruction request
 .cop_insn_ack (cop_insn_ack ) , // Instruction request acknowledge
-.cpu_abort_req(cpu_abort_req) , // Abort Instruction
 .cpu_insn_enc (cpu_insn_enc ) , // Encoded instruction data
 .cpu_rs1      (cpu_rs1      ) , // RS1 source data
 .cop_wen      (cop_wen      ) , // COP write enable

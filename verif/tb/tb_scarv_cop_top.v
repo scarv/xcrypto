@@ -92,9 +92,6 @@ always @(posedge g_clk) begin
     end
 end
 
-// Tie abort to zero for now
-initial cpu_abort_req = 0;
-
 // Random instruction dispatch to the DUT
 always @(posedge g_clk) begin
     if(!g_resetn) begin
@@ -145,7 +142,6 @@ always @(posedge g_clk) if(!cop_mem_stall) cop_mem_rdata <= $random;
 // CPU / COP Interface
 reg              cpu_insn_req    ; // Instruction request
 wire             cop_insn_ack    ; // Instruction request acknowledge
-reg              cpu_abort_req   ; // Abort Instruction
 reg  [31:0]      cpu_rs1         ; // RS1 source data
 
 wire             cop_wen         ; // COP write enable
@@ -184,7 +180,6 @@ scarv_cop_top i_dut(
 .g_resetn      (g_resetn     ) , // Synchronous active low reset.
 .cpu_insn_req  (cpu_insn_req ) , // Instruction request
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
-.cpu_abort_req (cpu_abort_req) , // Abort Instruction
 .cpu_insn_enc  (cop_insn_enc ) , // Encoded instruction data
 .cpu_rs1       (cpu_rs1      ) , // RS1 source data
 .cop_wen       (cop_wen      ) , // COP write enable

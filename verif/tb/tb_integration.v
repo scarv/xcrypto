@@ -36,8 +36,8 @@ initial #80 g_resetn    = 1;
 //
 integer    TB_MAX_CYCLES    = 1000;
 
-reg [31:0] TB_PASS_ADDRESS  = 32'h0000_000C;
-reg [31:0] TB_FAIL_ADDRESS  = 32'h0000_0008;
+reg [31:0] TB_PASS_ADDRESS  = 32'h0000_0001C;
+reg [31:0] TB_FAIL_ADDRESS  = 32'h0000_00010;
 
 reg [255*8:0] tb_wavesfile;
 reg [255*8:0] tb_imemfile;

@@ -135,14 +135,6 @@ control the rate of information flow between the CPU and the COP.
     that it has received the data from the CPU and will start working on the
     supplied instruction.
 }
-\SIGNALI{1}{cpu\_abort\_req}{
-    Set by the CPU to tell the COP to abort whatever instruction it is
-    executing (if any) and return to an idle state where it is ready to
-    accept new instructions. This signal is used to abort long multi-cycle
-    instructions in the presence of a pending interrupt.
-    There must be no combinatorial path from {\tt cpu\_insn\_abort} to
-    {\tt cop\_insn\_ack}.
-}
 \SIGNALI{32}{cpu\_insn\_enc}{
     The encoded instruction word to be executed by the COP.
 }

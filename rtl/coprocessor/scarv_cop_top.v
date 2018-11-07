@@ -38,7 +38,6 @@ output wire             cop_rand_sample , // cop_random valid when this high.
 // CPU / COP Interface
 input  wire             cpu_insn_req    , // Instruction request
 output reg              cop_insn_ack    , // Instruction request acknowledge
-input  wire             cpu_abort_req   , // Abort Instruction
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
 

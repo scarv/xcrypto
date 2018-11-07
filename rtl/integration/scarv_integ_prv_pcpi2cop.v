@@ -30,7 +30,6 @@ output        pcpi_ready    ,
 // XCrypto Co-Processor Interface
 output        cpu_insn_req  , // Instruction request
 input         cop_insn_ack  , // Instruction request acknowledge
-output        cpu_abort_req , // Abort Instruction
 output [31:0] cpu_insn_enc  , // Encoded instruction data
 output [31:0] cpu_rs1       , // RS1 source data
 
@@ -52,7 +51,6 @@ output        cpu_insn_ack    // Instruction finish acknowledge
 // PicoRV -> COP
 //
 assign cpu_insn_req  = pcpi_valid;
-assign cpu_abort_req = 1'b0; // Instruction abort unsupported.
 assign cpu_insn_enc  = pcpi_insn;
 assign cpu_rs1       = pcpi_rs1;
 
