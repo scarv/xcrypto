@@ -28,6 +28,10 @@ Build the documentation by running `make docs`
 - Documentation on the *reference implementation* of the ISE willl be found
   in `$XC_HOME/docs/implementation.pdf`.
 
+Depending on how Yosys is installed, one should also set the `YS_INSTALL`
+environment variable such that `$YS_INSTALL/yosys` is a valid path to the
+`yosys` executable.
+
 ### Project Organisation
 
 ```
@@ -40,8 +44,8 @@ Build the documentation by running `make docs`
 │   ├── common              - Shared files between examples
 │   └── integration-test    - "Hello World" example integration program
 ├── external                - External repositories
-│   ├── picorv32
-│   └── riscv-opcodes
+│   ├── picorv32            - Reference to the picorv32 core repo
+│   └── riscv-opcodes       - Reference to the offical riscv-opcodes repo
 ├── flow                    - Hardware simulation/implementation flow
 │   ├── gtkwave             - Wave views
 │   ├── icarus              - Simulation flow
@@ -51,7 +55,6 @@ Build the documentation by running `make docs`
 │   └── integration         - XCrypto/PicoRV32 integration example
 ├── verif
 │   ├── formal              - Formal verification checks
-│   ├── model               - Simulation model
 │   ├── tb                  - Simulation/integration/formal testbenches
 │   └── unit                - Simulation sanity tests
 └── work                    - Working directory for generated artifacts
@@ -87,10 +90,9 @@ run C code on a CPU and interface with the COP.
 
 - These use icarus verilog, and the modified binutils to run the tests
   found in `verif/unit/`.
-- These are *not* exhaustive correctness/compliance tests. They are used
-  as simple sanity checks.
-- Correctness of design behaviour is done by comparing with the ISE
-  model in `verif/model/model_ise.v`.
+- These are *not* correctness/compliance tests. They are used as simple 
+  sanity checks during the design cycle.
+- Checking for correctness should be done using the formal flow.
 
 Building the testbench:
 
@@ -161,3 +163,4 @@ will run 4 proofs in parallel. Change this number to match the available
 compute resources you have. One can also run a specfic subset of the
 available formal checks by delimiting the check names with spaces, and using
 a backslash to escape the spaces: `FML_CHECK_NAME=check1\ check2\ check3`.
+
