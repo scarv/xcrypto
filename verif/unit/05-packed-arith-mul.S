@@ -3,10 +3,10 @@
 
 test_start:
 
-    xc.ld.hi  c0, 0x0100
-    xc.ld.li  c0, 0x1011
-    xc.ld.hi  c1, 0x0000
-    xc.ld.li  c1, 6  
+    xc.ld.hiu  c0, 0x0100
+    xc.ld.liu  c0, 0x1011
+    xc.ld.hiu  c1, 0x0000
+    xc.ld.liu  c1, 6  
 
     xc.pmul.l  w, c2, c0, c1
     xc.pmul.l  h, c3, c0, c1
@@ -22,10 +22,10 @@ test_start:
     xc.xcr2gpr  x1, c5
     xc.xcr2gpr  x1, c6
 
-    xc.ld.hi  c0, 0x3210
-    xc.ld.li  c0, 0x3210
-    xc.ld.hi  c1, 0x0003
-    xc.ld.li  c1, 0x0004  
+    xc.ld.hiu  c0, 0x3210
+    xc.ld.liu  c0, 0x3210
+    xc.ld.hiu  c1, 0x0003
+    xc.ld.liu  c1, 0x0004  
 
     xc.pmul.l  w, c2, c0, c1
     xc.pmul.l  h, c3, c0, c1
@@ -41,10 +41,10 @@ test_start:
     xc.xcr2gpr  x1, c5
     xc.xcr2gpr  x1, c6
 
-    xc.ld.hi  c0, 0xF2F1
-    xc.ld.li  c0, 0xF2F1
-    xc.ld.hi  c1, 0x1111
-    xc.ld.li  c1, 0x1111
+    xc.ld.hiu  c0, 0xF2F1
+    xc.ld.liu  c0, 0xF2F1
+    xc.ld.hiu  c1, 0x1111
+    xc.ld.liu  c1, 0x1111
 
     xc.pmul.l  w, c2, c0, c1
     xc.pmul.l  h, c3, c0, c1
@@ -60,10 +60,10 @@ test_start:
     xc.xcr2gpr  x1, c5
     xc.xcr2gpr  x1, c6
 
-    xc.ld.hi  c0, 0xF4F3
-    xc.ld.li  c0, 0xF2F1
-    xc.ld.hi  c1, 0x2222
-    xc.ld.li  c1, 0x2222
+    xc.ld.hiu  c0, 0xF4F3
+    xc.ld.liu  c0, 0xF2F1
+    xc.ld.hiu  c1, 0x2222
+    xc.ld.liu  c1, 0x2222
 
     xc.pmul.l  w, c2, c0, c1
     xc.pmul.l  h, c3, c0, c1
@@ -79,10 +79,10 @@ test_start:
     xc.xcr2gpr  x1, c5
     xc.xcr2gpr  x1, c6
 
-    xc.ld.hi  c0, 0xF4F3
-    xc.ld.li  c0, 0xF2F1
-    xc.ld.hi  c1, 0x3333
-    xc.ld.li  c1, 0x3333
+    xc.ld.hiu  c0, 0xF4F3
+    xc.ld.liu  c0, 0xF2F1
+    xc.ld.hiu  c1, 0x3333
+    xc.ld.liu  c1, 0x3333
 
     xc.pmul.l  w, c2, c0, c1
     xc.pmul.l  h, c3, c0, c1

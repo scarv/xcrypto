@@ -502,10 +502,10 @@ index f966fb6a50..9438dde7d7 100644
 +#define MASK_LD_HU  0x10707f
 +#define MATCH_LD_W 0x302b
 +#define MASK_LD_W  0x10787f
-+#define MATCH_LD_HI 0x10302b
-+#define MASK_LD_HI  0x10787f
-+#define MATCH_LD_LI 0x10382b
-+#define MASK_LD_LI  0x10787f
++#define MATCH_LD_HIU 0x10302b
++#define MASK_LD_HIU  0x10787f
++#define MATCH_LD_LIU 0x10382b
++#define MASK_LD_LIU  0x10787f
 +#define MATCH_PPERM_W 0x10282b
 +#define MASK_PPERM_W  0xf8787f
 +#define MATCH_PPERM_H0 0x50282b
@@ -745,8 +745,8 @@ index 79e7214835..8d8652f2fe 100644
 +{"xc.ld.bu",     "x", "XD,(Xh,Xd),Xl(s)",      MATCH_LD_BU, MASK_LD_BU, match_opcode, 0},
 +{"xc.ld.hu",     "x", "XD,(Xh),Xl(s)",         MATCH_LD_HU, MASK_LD_HU, match_opcode, 0},
 +{"xc.ld.w",      "x", "XD,Xl(s)",            MATCH_LD_W, MASK_LD_W, match_opcode, 0},
-+{"xc.ld.hi",     "x", "XD,X5",           MATCH_LD_HI, MASK_LD_HI, match_opcode, 0},
-+{"xc.ld.li",     "x", "XD,X5",           MATCH_LD_LI, MASK_LD_LI, match_opcode, 0},
++{"xc.ld.hiu",     "x", "XD,X5",           MATCH_LD_HIU, MASK_LD_HIU, match_opcode, 0},
++{"xc.ld.liu",     "x", "XD,X5",           MATCH_LD_LIU, MASK_LD_LIU, match_opcode, 0},
 +{"xc.pperm.w",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_W, MASK_PPERM_W, match_opcode, 0},
 +{"xc.pperm.h0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H0, MASK_PPERM_H0, match_opcode, 0},
 +{"xc.pperm.h1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H1, MASK_PPERM_H1, match_opcode, 0},

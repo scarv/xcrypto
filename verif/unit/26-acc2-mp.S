@@ -3,20 +3,20 @@
 
 test_start:
 
-    xc.ld.hi  c0, 0x1111
-    xc.ld.li  c0, 0x1111
+    xc.ld.hiu  c0, 0x1111
+    xc.ld.liu  c0, 0x1111
 
-    xc.ld.hi  c1, 0x2222
-    xc.ld.li  c1, 0x2222
+    xc.ld.hiu  c1, 0x2222
+    xc.ld.liu  c1, 0x2222
 
-    xc.ld.hi  c2, 0x3333
-    xc.ld.li  c2, 0x3333
+    xc.ld.hiu  c2, 0x3333
+    xc.ld.liu  c2, 0x3333
 
-    xc.ld.hi  c3, 0x4444
-    xc.ld.li  c3, 0x4444
+    xc.ld.hiu  c3, 0x4444
+    xc.ld.liu  c3, 0x4444
 
-    xc.ld.hi  c9, 0xFFFF
-    xc.ld.li  c9, 0xFFFF
+    xc.ld.hiu  c9, 0xFFFF
+    xc.ld.liu  c9, 0xFFFF
 
     xc.xcr2gpr  x1, c0
     xc.xcr2gpr  x1, c1

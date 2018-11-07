@@ -3,8 +3,8 @@
 
 test_start:
 
-    xc.ld.hi c0, 0xF4E3
-    xc.ld.li c0, 0xD2C1
+    xc.ld.hiu c0, 0xF4E3
+    xc.ld.liu c0, 0xD2C1
 
     xc.pperm.w  c1, c0, 3,2,1,0
     xc.pperm.w  c2, c0, 0,1,2,3

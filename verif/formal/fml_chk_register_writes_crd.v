@@ -24,8 +24,8 @@ wire expect_crd_change =
     dec_padd      ||  dec_ld_bu     ||
     dec_psub      ||  dec_ld_hu     ||
     dec_pmul_l    ||  dec_ld_w      ||
-    dec_psll      ||  dec_ld_hi     ||
-    dec_psrl      ||  dec_ld_li     ||
+    dec_psll      ||  dec_ld_hiu    ||
+    dec_psrl      ||  dec_ld_liu    ||
     dec_prot      ||  dec_pperm_w   ||
     dec_psll_i    ||  dec_pperm_h0  ||
     dec_psrl_i    ||  dec_pperm_h1  ||

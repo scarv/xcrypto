@@ -3,10 +3,10 @@
 
 test_start:
 
-    xc.ld.hi  c0, 0xFFFF
-    xc.ld.li  c0, 0xFFFF
-    xc.ld.hi  c1, 0x0000
-    xc.ld.li  c1, 1
+    xc.ld.hiu  c0, 0xFFFF
+    xc.ld.liu  c0, 0xFFFF
+    xc.ld.hiu  c1, 0x0000
+    xc.ld.liu  c1, 1
 
     xc.psrl  w, c2, c0, c1
     xc.psrl  h, c3, c0, c1
