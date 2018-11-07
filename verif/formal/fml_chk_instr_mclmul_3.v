@@ -11,7 +11,7 @@
 
 `include "fml_pack_widths.vh"
 
-`VTX_CHECKER_MODULE_BEGIN(instr_mclmul_1)
+`VTX_CHECKER_MODULE_BEGIN(instr_mclmul_3)
 
 wire [63:0] in_crs1 = {32'b0,`CRS1};
 
@@ -34,11 +34,11 @@ always @(*) begin
 end
 
 //
-// mclmul_1
+// mclmul_3
 //
-`VTX_CHECK_INSTR_BEGIN(mclmul_1) 
+`VTX_CHECK_INSTR_BEGIN(mclmul_3) 
 
-    // MCLMUL_1 never causes exceptions
+    // MCLMUL_3 never causes exceptions
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
     
     // 64 bit register value check.
@@ -47,7 +47,7 @@ end
     // Never causes writeback to GPRS
     `VTX_ASSERT_WEN_IS_CLEAR
 
-`VTX_CHECK_INSTR_END(mclmul_1)
+`VTX_CHECK_INSTR_END(mclmul_3)
 
 `VTX_CHECKER_MODULE_END
 

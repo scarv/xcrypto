@@ -658,14 +658,14 @@ instruction execution.
     $rdm0\ASN tmp[31:0]$ 
  &  $rdm1\ASN tmp[63:32]$ 
 \\
-{\tt xc.mmul.1 }&
+{\tt xc.mmul.3 }&
     $tmp \ASN crs1 * crs2$ \newline 
  &  
     $tmp \ASN tmp + crs3$\newline 
     $rdm0\ASN tmp[31:0]$ 
  &  $rdm1\ASN tmp[63:32]$ 
 \\
-{\tt xc.mclmul.1 }&
+{\tt xc.mclmul.3 }&
     $tmp \ASN (crs1 \otimes crs2) \oplus crs3$\newline 
     $rdm0\ASN tmp[31:0]$ 
  &  $rdm1\ASN tmp[63:32]$ 

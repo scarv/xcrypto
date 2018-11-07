@@ -84,14 +84,14 @@ assign palu_cpr_rd_ben = {4{palu_idone}} & (
 wire        cmov_cond   = palu_rs2 == 0;
 wire [31:0] result_cmov = is_gpr2xcr ? gpr_rs1 : palu_rs1;
 
-wire        is_cmov   = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV  ;
-wire        is_cmovn  = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOVN ;
-wire        is_gpr2xcr = is_mov_insn && id_subclass == SCARV_COP_SCLASS_GPR2XCR;
+wire  is_cmov_t = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV_T  ;
+wire  is_cmov_f = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV_F  ;
+wire  is_gpr2xcr = is_mov_insn && id_subclass == SCARV_COP_SCLASS_GPR2XCR;
 
 wire        wen_cmov    = 
         (is_gpr2xcr             ) ||
-        (is_cmov  &&  cmov_cond) ||
-        (is_cmovn && !cmov_cond)  ;
+        (is_cmov_t &&  cmov_cond) ||
+        (is_cmov_f && !cmov_cond)  ;
 
 // ----------------------------------------------------------------------
 
@@ -104,8 +104,8 @@ wire bw_mix_h = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_MIX_H;
 wire bw_bop  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_BOP ;
 wire bw_ins  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS ; 
 wire bw_ext  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT ;
-wire bw_ld_li  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LI ;
-wire bw_ld_hi  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HI ;
+wire bw_ld_liu = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LIU;
+wire bw_ld_hiu = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HIU;
 
 // Result computation for the BOP.cr instruction
 wire [31:0] bop_result;
@@ -138,8 +138,8 @@ wire [31:0] mix_result =
 
 // AND/ORing the various bitwise results together.
 wire [31:0] result_bitwise = 
-    {32{bw_ld_li }} & {palu_rs3[31:16], id_imm[15:0]    } |
-    {32{bw_ld_hi }} & {id_imm[15:0]   , palu_rs3[15: 0] } |
+    {32{bw_ld_liu}} & {palu_rs3[31:16], id_imm[15:0]    } |
+    {32{bw_ld_hiu}} & {id_imm[15:0]   , palu_rs3[15: 0] } |
     {32{bw_bop }} & {bop_result                       } |
     {32{bw_bop }} & {bop_result                       } |
     {32{bw_ext }} & {ext_result                       } |

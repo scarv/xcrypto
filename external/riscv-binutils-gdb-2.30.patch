@@ -436,10 +436,10 @@ index f966fb6a50..9438dde7d7 100644
 +#define MASK_RNGSAMP  0xfffff87f
 +#define MATCH_RNGTEST 0x1620002b
 +#define MASK_RNGTEST  0xfffff07f
-+#define MATCH_CMOV 0x1a00002b
-+#define MASK_CMOV  0xff08787f
-+#define MATCH_CMOVN 0x1c00002b
-+#define MASK_CMOVN  0xff08787f
++#define MATCH_CMOV_T 0x1a00002b
++#define MASK_CMOV_T  0xff08787f
++#define MATCH_CMOV_F 0x1c00002b
++#define MASK_CMOV_F  0xff08787f
 +#define MATCH_AESSUB_ENC 0x2000002b
 +#define MASK_AESSUB_ENC  0xff08787f
 +#define MATCH_AESSUB_ENCROT 0x2008002b
@@ -492,20 +492,20 @@ index f966fb6a50..9438dde7d7 100644
 +#define MASK_MACC_2  0xff087c7f
 +#define MATCH_MACC_1 0xc000782b
 +#define MASK_MACC_1  0xfff87c7f
-+#define MATCH_MMUL_1 0xd000782b
-+#define MASK_MMUL_1  0xf0087c7f
-+#define MATCH_MCLMUL_1 0xe000782b
-+#define MASK_MCLMUL_1  0xf0087c7f
++#define MATCH_MMUL_3 0xd000782b
++#define MASK_MMUL_3  0xf0087c7f
++#define MATCH_MCLMUL_3 0xe000782b
++#define MASK_MCLMUL_3  0xf0087c7f
 +#define MATCH_LD_BU 0x102b
 +#define MASK_LD_BU  0x707f
 +#define MATCH_LD_HU 0x202b
 +#define MASK_LD_HU  0x10707f
 +#define MATCH_LD_W 0x302b
 +#define MASK_LD_W  0x10787f
-+#define MATCH_LD_HI 0x10302b
-+#define MASK_LD_HI  0x10787f
-+#define MATCH_LD_LI 0x10382b
-+#define MASK_LD_LI  0x10787f
++#define MATCH_LD_HIU 0x10302b
++#define MASK_LD_HIU  0x10787f
++#define MATCH_LD_LIU 0x10382b
++#define MASK_LD_LIU  0x10787f
 +#define MATCH_PPERM_W 0x10282b
 +#define MASK_PPERM_W  0xf8787f
 +#define MATCH_PPERM_H0 0x50282b
@@ -712,8 +712,8 @@ index 79e7214835..8d8652f2fe 100644
 +{"xc.rngseed",  "x", "Xs",                 MATCH_RNGSEED, MASK_RNGSEED, match_opcode, 0},
 +{"xc.rngsamp",  "x", "XD",                 MATCH_RNGSAMP, MASK_RNGSAMP, match_opcode, 0},
 +{"xc.rngtest",  "x", "d",                  MATCH_RNGTEST, MASK_RNGTEST, match_opcode, 0},
-+{"xc.cmov",     "x", "XD,Xs,Xt",           MATCH_CMOV, MASK_CMOV, match_opcode, 0},
-+{"xc.cmovn",    "x", "XD,Xs,Xt",           MATCH_CMOVN, MASK_CMOVN, match_opcode, 0},
++{"xc.cmov.t",     "x", "XD,Xs,Xt",           MATCH_CMOV_T, MASK_CMOV_T, match_opcode, 0},
++{"xc.cmov.f",    "x", "XD,Xs,Xt",           MATCH_CMOV_F, MASK_CMOV_F, match_opcode, 0},
 +{"xc.aessub.enc"   , "x", "XD,Xs,Xt",  MATCH_AESSUB_ENC, MASK_AESSUB_ENC, match_opcode, 0},
 +{"xc.aessub.encrot", "x", "XD,Xs,Xt",  MATCH_AESSUB_ENCROT, MASK_AESSUB_ENCROT, match_opcode, 0},
 +{"xc.aessub.dec"   , "x", "XD,Xs,Xt",  MATCH_AESSUB_DEC, MASK_AESSUB_DEC, match_opcode, 0},
@@ -740,13 +740,13 @@ index 79e7214835..8d8652f2fe 100644
 +{"xc.msrl",     "x", "(XM),Xs,Xt,XS",        MATCH_MSRL, MASK_MSRL, match_opcode, 0},
 +{"xc.macc.2",    "x", "(XM),Xs,Xt",           MATCH_MACC_2, MASK_MACC_2, match_opcode, 0},
 +{"xc.macc.1",    "x", "(XM),Xs",              MATCH_MACC_1, MASK_MACC_1, match_opcode, 0},
-+{"xc.mmul.1",     "x", "(XM),Xs,Xt,XS",        MATCH_MMUL_1, MASK_MMUL_1, match_opcode, 0},
-+{"xc.mclmul.1",   "x", "(XM),Xs,Xt,XS",        MATCH_MCLMUL_1, MASK_MCLMUL_1, match_opcode, 0},
++{"xc.mmul.3",     "x", "(XM),Xs,Xt,XS",        MATCH_MMUL_3, MASK_MMUL_3, match_opcode, 0},
++{"xc.mclmul.3",   "x", "(XM),Xs,Xt,XS",        MATCH_MCLMUL_3, MASK_MCLMUL_3, match_opcode, 0},
 +{"xc.ld.bu",     "x", "XD,(Xh,Xd),Xl(s)",      MATCH_LD_BU, MASK_LD_BU, match_opcode, 0},
 +{"xc.ld.hu",     "x", "XD,(Xh),Xl(s)",         MATCH_LD_HU, MASK_LD_HU, match_opcode, 0},
 +{"xc.ld.w",      "x", "XD,Xl(s)",            MATCH_LD_W, MASK_LD_W, match_opcode, 0},
-+{"xc.ld.hi",     "x", "XD,X5",           MATCH_LD_HI, MASK_LD_HI, match_opcode, 0},
-+{"xc.ld.li",     "x", "XD,X5",           MATCH_LD_LI, MASK_LD_LI, match_opcode, 0},
++{"xc.ld.hiu",     "x", "XD,X5",           MATCH_LD_HIU, MASK_LD_HIU, match_opcode, 0},
++{"xc.ld.liu",     "x", "XD,X5",           MATCH_LD_LIU, MASK_LD_LIU, match_opcode, 0},
 +{"xc.pperm.w",     "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_W, MASK_PPERM_W, match_opcode, 0},
 +{"xc.pperm.h0",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H0, MASK_PPERM_H0, match_opcode, 0},
 +{"xc.pperm.h1",    "x", "XD,Xs,Xw,Xx,Xy,Xz",  MATCH_PPERM_H1, MASK_PPERM_H1, match_opcode, 0},

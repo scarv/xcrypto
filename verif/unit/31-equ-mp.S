@@ -3,14 +3,14 @@
 
 test_start:
 
-    xc.ld.hi  c0, 0x1111
-    xc.ld.li  c0, 0x1111
-    xc.ld.hi  c1, 0x2222
-    xc.ld.li  c1, 0x2222
-    xc.ld.hi  c2, 0x0000
-    xc.ld.li  c2, 0x0000
-    xc.ld.hi  c3, 0x3333
-    xc.ld.li  c3, 0x3333
+    xc.ld.hiu  c0, 0x1111
+    xc.ld.liu  c0, 0x1111
+    xc.ld.hiu  c1, 0x2222
+    xc.ld.liu  c1, 0x2222
+    xc.ld.hiu  c2, 0x0000
+    xc.ld.liu  c2, 0x0000
+    xc.ld.hiu  c3, 0x3333
+    xc.ld.liu  c3, 0x3333
 
     xc.mequ  x0 , x0, c0, c3
     xc.mequ  x1 , x1, c1, c1

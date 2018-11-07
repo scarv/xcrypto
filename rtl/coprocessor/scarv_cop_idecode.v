@@ -65,7 +65,7 @@ assign id_crs1 = dec_arg_crs1;
 assign id_crs2 = dec_arg_crs2;
 
 wire   crd_in_crs3 = dec_mix_l || dec_mix_h || dec_ins ||
-                     dec_ld_li  || dec_ld_hi  || dec_ld_bu ||
+                     dec_ld_liu  || dec_ld_hiu  || dec_ld_bu ||
                      dec_ld_hu  || dec_scatter_b || dec_scatter_h;
 
 assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
@@ -106,17 +106,17 @@ wire class_random       =
     dec_rngseed || dec_rngsamp || dec_rngtest;
 
 wire class_move         = 
-    dec_xcr2gpr   || dec_gpr2xcr   || dec_cmov ||  dec_cmovn ;
+    dec_xcr2gpr   || dec_gpr2xcr   || dec_cmov_t ||  dec_cmov_f ;
 
 wire class_mp           = 
     dec_mequ   || dec_mlte   || dec_mgte     || dec_madd_3 || 
     dec_madd_2 || dec_msub_3 || dec_msub_2   || dec_msll_i || 
     dec_msll   || dec_msrl_i || dec_msrl     || dec_macc_2 || 
-    dec_macc_1 || dec_mmul_1 || dec_mclmul_1  ;
+    dec_macc_1 || dec_mmul_3 || dec_mclmul_3  ;
 
 wire class_bitwise      = 
     dec_mix_l || dec_mix_h || dec_bop  || dec_ins  || 
-    dec_ext  || dec_ld_li  || dec_ld_hi   ;
+    dec_ext  || dec_ld_liu  || dec_ld_hiu   ;
 
 assign id_class = 
     {3{class_packed_arith}} & SCARV_COP_ICLASS_PACKED_ARITH |
@@ -156,8 +156,8 @@ wire [4:0] subclass_mp =
     {5{dec_msrl }} & {SCARV_COP_SCLASS_MSRL  } | 
     {5{dec_macc_2}} & {SCARV_COP_SCLASS_MACC_2 } | 
     {5{dec_macc_1}} & {SCARV_COP_SCLASS_MACC_1 } | 
-    {5{dec_mmul_1 }} & {SCARV_COP_SCLASS_MMUL_1  } |
-    {5{dec_mclmul_1}} & {SCARV_COP_SCLASS_MCLMUL_1  } ;
+    {5{dec_mmul_3 }} & {SCARV_COP_SCLASS_MMUL_3  } |
+    {5{dec_mclmul_3}} & {SCARV_COP_SCLASS_MCLMUL_3  } ;
 
 wire [4:0] subclass_bitwise =
     {5{dec_mix_l}} & {SCARV_COP_SCLASS_MIX_L} |
@@ -165,8 +165,8 @@ wire [4:0] subclass_bitwise =
     {5{dec_bop }} & {SCARV_COP_SCLASS_BOP } |
     {5{dec_ins }} & {SCARV_COP_SCLASS_INS } | 
     {5{dec_ext }} & {SCARV_COP_SCLASS_EXT } |
-    {5{dec_ld_li }} & {SCARV_COP_SCLASS_LD_LI } |
-    {5{dec_ld_hi }} & {SCARV_COP_SCLASS_LD_HI } ;
+    {5{dec_ld_liu }} & {SCARV_COP_SCLASS_LD_LIU } |
+    {5{dec_ld_hiu }} & {SCARV_COP_SCLASS_LD_HIU } ;
     
 
 //
@@ -185,7 +185,7 @@ assign id_subclass =
 // Immediate decoding
 wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
 wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
-wire imm_li     = dec_ld_hi    || dec_ld_li;
+wire imm_li     = dec_ld_hiu   || dec_ld_liu;
 wire imm_8      = class_twiddle || dec_ext   || dec_ins;
 wire imm_sh_px  = dec_psll_i   || dec_psrl_i  || dec_prot_i;
 wire imm_sh_mp  = dec_msll_i   || dec_msrl_i;

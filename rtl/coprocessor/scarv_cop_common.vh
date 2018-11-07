@@ -25,8 +25,8 @@ localparam SCARV_COP_ICLASS_MOVE         = 3'b101;
 localparam SCARV_COP_ICLASS_MP           = 3'b110;
 localparam SCARV_COP_ICLASS_BITWISE      = 3'b111;
     
-localparam SCARV_COP_SCLASS_CMOV      = 5'b11010;
-localparam SCARV_COP_SCLASS_CMOVN     = 5'b11100;
+localparam SCARV_COP_SCLASS_CMOV_T    = 5'b11010;
+localparam SCARV_COP_SCLASS_CMOV_F    = 5'b11100;
 localparam SCARV_COP_SCLASS_GPR2XCR   = 5'b00001;
 localparam SCARV_COP_SCLASS_XCR2GPR   = 5'b00000;
 
@@ -54,8 +54,8 @@ localparam SCARV_COP_SCLASS_MIX_H     = 5'd1;
 localparam SCARV_COP_SCLASS_BOP       = 5'd2;
 localparam SCARV_COP_SCLASS_INS       = 5'd3; 
 localparam SCARV_COP_SCLASS_EXT       = 5'd4;
-localparam SCARV_COP_SCLASS_LD_LI     = 5'd5;
-localparam SCARV_COP_SCLASS_LD_HI     = 5'd6;
+localparam SCARV_COP_SCLASS_LD_LIU    = 5'd5;
+localparam SCARV_COP_SCLASS_LD_HIU    = 5'd6;
 
 localparam SCARV_COP_SCLASS_PADD      = 5'b00001;
 localparam SCARV_COP_SCLASS_PSUB      = 5'b00010;
@@ -83,8 +83,8 @@ localparam SCARV_COP_SCLASS_MSRL_I    = 5'd9 ;
 localparam SCARV_COP_SCLASS_MSRL      = 5'd10;
 localparam SCARV_COP_SCLASS_MACC_2    = 5'd11;
 localparam SCARV_COP_SCLASS_MACC_1    = 5'd12;
-localparam SCARV_COP_SCLASS_MMUL_1    = 5'd13;
-localparam SCARV_COP_SCLASS_MCLMUL_1  = 5'd14;
+localparam SCARV_COP_SCLASS_MMUL_3    = 5'd13;
+localparam SCARV_COP_SCLASS_MCLMUL_3  = 5'd14;
 
 localparam SCARV_COP_SCLASS_RSEED     = 5'd0;
 localparam SCARV_COP_SCLASS_RSAMP     = 5'd1;

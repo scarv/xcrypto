@@ -28,8 +28,8 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.cmov}{crd, crs1, crs2}{
-  \ienccmov
+\XCINSTR{xc.cmov.t}{crd, crs1, crs2}{
+  \ienccmovt
 }{
   Conditionally move one $\XCR$ register to another.
 }{
@@ -40,8 +40,8 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.cmovn}{crd, crs1, crs2}{
-  \ienccmov
+\XCINSTR{xc.cmov.f}{crd, crs1, crs2}{
+  \ienccmovf
 }{
   Conditionally move one $\XCR$ register to another.
 }{
@@ -293,8 +293,8 @@
 \subsubsection{Class-$2.3$: bit-oriented}
 \label{sec:spec:instruction:2:3}
 
-\XCINSTR{xc.ld.li}{crd, imm16}{
-  \iencldli
+\XCINSTR{xc.ld.liu}{crd, imm16}{
+  \iencldliu
 }{
   Load an immediate halfword
   into the lower (or least-significant) halfword of a $\XCR$ register, 
@@ -309,8 +309,8 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.ld.hi}{crd, imm16}{
-  \iencldhi 
+\XCINSTR{xc.ld.hiu}{crd, imm16}{
+  \iencldhiu 
 }{
   Load an immediate halfword
   into the upper (or  most-significant) halfword of a $\XCR$ register, 
@@ -1011,8 +1011,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.mmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmmulone
+\XCINSTR{xc.mmul.3}{(crd2, crd1), crs1, crs2, crs3}{
+  \iencmmulthree
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
   the $32$-bit multiplicands
@@ -1039,8 +1039,8 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.mclmul.1}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmclmulone
+\XCINSTR{xc.mclmul.3}{(crd2, crd1), crs1, crs2, crs3}{
+  \iencmclmulthree
 }{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
