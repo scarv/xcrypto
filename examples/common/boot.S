@@ -14,11 +14,15 @@ irq_vector:             # We land here on an interrupt
 .section .text.__fail
 .global __fail
 __fail:                 # Fail target for self checking tests
+    nop
+    nop
     j __fail
 
 .section .text.__pass
 .global __pass
 __pass:                 # Pass target for self checking tests.
+    nop
+    nop
     j __pass
 
 .section .text
