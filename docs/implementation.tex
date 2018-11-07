@@ -3,7 +3,7 @@
 \usepackage{shared} \addbibresource{shared.bib}
 
 \title{RISC-V \XCID ISE Reference Implementation}
-\date{Version $1.0.5$ (\today)}
+\date{Version $0.9.0$ (\today)}
 \author{Ben Marshall}
 \author{Daniel Page}
 \author{Thinh Pham}
@@ -71,7 +71,7 @@ to implement the ISE, nor is it the best for any given set of design
 constraints. It would be perfectly acceptable to create a single CPU core
 which tightly integrates the ISE into it's execution pipeline (as one might
 with a core supporting the floating-point F extension), rather than
-attatching to it as a co-processor. There are numerous performance and
+attaching to it as a co-processor. There are numerous performance and
 efficiency improvements to be had from such an approach. We used a
 co-processor architecture because it make re-use with existing CPU designs
 (such as picorv32 or Rocket) much easier.
@@ -116,7 +116,7 @@ It is principally made up of:
 \label{sec:cpu-cop-if}
 
 The CPU/COP interface is the channel through which the CPU can send
-instructions to the COP and recieve results.
+instructions to the COP and receive results.
 The four signals
 {\tt cpu\_insn\_req, cop\_insn\_ack, cpu\_insn\_ack} and
 {\tt cop\_insn\_rsp}
@@ -166,13 +166,13 @@ control the rate of information flow between the CPU and the COP.
 }
 \SIGNALO{1}{cop\_insn\_rsp}{
     Co-processor response. Used to indicate processing of the current
-    instruction has finished and that we are ready for the next one. Writeback
+    instruction has finished and that we are ready for the next one. Write-back
     and response data is valid when this signal is set.
     There must be no combinatorial path from {\tt cpu\_insn\_rsp} to
     {\tt cpu\_insn\_ack}.
 }
 \SIGNALI{1}{cpu\_insn\_ack}{
-    Allows the CPU to signal to the co-processor it has recieved all
+    Allows the CPU to signal to the co-processor it has received all
     information from the execution of an instruction.
 }
 }{}{tab:sigs-cpu-cop}
@@ -194,7 +194,8 @@ control the rate of information flow between the CPU and the COP.
  \bottomrule
 \end{tabular}
 \caption{Encodings for the \SIGREF{cop\_result} signal. All other encoding
-values are reserved and should not be used.}
+values are reserved and should not be used. These encodings are
+mapped to constants in {\tt \$XC\_HOME/rtl/coprocessor/scarv\_cop\_common.vh}}
 \label{tab:cop-result-encodings}
 \end{table}
 
@@ -208,7 +209,7 @@ transactions over the CPU/COP interface.
 \includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-1.png}
 \caption{Simple instruction request, acknowledge, result with delays.
 The first transaction shows an instruction request in cycle 1, followed
-by the acknlowedgement and result in cycle 2.
+by the acknowledgement and result in cycle 2.
 The second shows that if {\tt cop\_insn\_ack} is set already, then
 instructions can be accepted immediately and their result returned on the next
 cycle.  The third shows how the request / acknowledge protocol handles
@@ -221,7 +222,7 @@ stalls.}
 \includegraphics[width=\textwidth]{./diagrams/cpu-cop-if-2.png}
 \caption{This figure shows the same three transactions as in figure
 \ref{fig:cpu-cop-if-waves-1} but with the requests issued back to back.
-In the set of transactions, the results of each transacton are not always
+In the set of transactions, the results of each transaction are not always
 accepted on the next cycle. In the second set, we see the interface working
 at maximum throughput, with every request accepted in the same cycle, and
 results always accepted in the next cycle.}
@@ -248,7 +249,7 @@ section \ref{sec:if-clk-reset}.
 
 \SIGNALS{
 \SIGNALO{1}{cop\_mem\_cen}{
-    Memory chip enable, signaling an active transaction. When asserted this
+    Memory chip enable, signalling an active transaction. When asserted this
     signal must stay set until the following cycle, where it can be cleared
     iff {\tt cop\_mem\_stall} is clear. If the stall signal is not clear, it
     must remain set until either stall is clear, or {\tt cop\_mem\_error}
@@ -353,7 +354,7 @@ stages.}
 \subsection{Instruction Decode Block ({\tt scarv\_cop\_idecode})}
 
 This block is responsible for taking the 32-bit encoded instructions from
-the \cpucopif and extracting the relevent fields for each instruction. This
+the \cpucopif and extracting the relevant fields for each instruction. This
 will be a highly re-usable block.
 
 This block will be completely combinatorial. It will be up to the wider
@@ -386,9 +387,9 @@ decoded output fields will be valid for every instruction.
 \SIGNALO{ 4}{id\_crs1}{Decoded crypto ISE source register 1.}
 \SIGNALO{ 4}{id\_crs2}{Decoded crypto ISE source register 2.}
 \SIGNALO{ 4}{id\_crs3}{Decoded crypto ISE source register 3.}
-\SIGNALO{ 4}{id\_crd1}{Decoded crypto ISE desgination register 1.}
+\SIGNALO{ 4}{id\_crd1}{Decoded crypto ISE destination register 1.}
 \SIGNALO{ 4}{id\_crd2}{
-    Decoded crypto ISE desgination register 2. Only used by the
+    Decoded crypto ISE destination register 2. Only used by the
     multi-precision instructions.
 }
 \SIGNALO{ 5}{id\_rd}{
@@ -406,9 +407,9 @@ decoded output fields will be valid for every instruction.
     \item Load/Store Offsets.
     \item Shift amounts for packed and multi-precision instructions.
     \item LUT values for {\tt xc.bop}
-    \item Positions and sizes for bitfield instructions {\tt xc.ins}
+    \item Positions and sizes for bit-field instructions {\tt xc.ins}
           and {\tt xc.ext}.
-    \item {\tt xc.ld.hi} and {\tt xc.ld.li} Immediates.
+    \item {\tt xc.ld.hiu} and {\tt xc.ld.liu} Immediate.
     \item Permutation types/positions.
     \end{itemize}
 
@@ -443,16 +444,18 @@ decoded output fields will be valid for every instruction.
  \bottomrule
 \end{tabular}
 \caption{Encodings for the \SIGREF{id\_class} signal. All other encoding
-values are reserved and should not be used.}
+values are reserved and should not be used.
+These encodings are mapped to constants in
+{\tt \$XC\_HOME/rtl/coprocessor/scarv\_cop\_common.vh}}
 \label{tab:id-class-encodings}
 \end{table}
 
 The actual instruction decode logic is contained in
-{\tt \$COP\_HOME/work/ise\_decode.v}.
+{\tt \$XC\_HOME/work/ise\_decode.v}.
 This is a file generated automatically from
-{\tt \$COP\_HOME/docs/ise\_opcodes.txt}
+{\tt \$XC\_HOME/docs/ise\_opcodes.txt}
 by
-{\tt \$COP\_HOME/bin/ise-parse-opcodes.py}.
+{\tt \$XC\_HOME/bin/ise-parse-opcodes.py}.
 The generated file is pulled into the design using a {\tt `include}
 preprocessor statement.
 
@@ -489,9 +492,6 @@ The 4-bit \SIGREF{crd\_wen} signal is a per-byte lane write enable
 signal. Byte $i$ of \SIGREF{creg\_d\_wdata} is only written back if
 bit $i$ of the write enable signal is set.
 }{tab:sigs-regfile-write}
-
-Though many of the COP instructions are implemented using multi-cycle
-FSMs they can still be issued to the COP back to back.
 
 \subsection{Packed Arithmetic Block ({\tt scarv\_cop\_palu})}
 
@@ -530,7 +530,7 @@ performed.
     Identifies which instruction is being executed by the packed ALU block.
 }
 \SIGNALO{4}{palu\_cpr\_rd\_ben}{
-    4-bit byte write enable signal for writeback data.
+    4-bit byte write enable signal for write-back data.
 }
 \SIGNALO{32}{palu\_cpr\_wdata}{
     Data to be written to the $\CPR$ register file
@@ -551,7 +551,7 @@ operations.
 This block is responsible for implementing all of the multi-precision
 arithmetic and comparison instructions.
 
-The block can source upto two registers at a time.
+The block can source upto three registers at a time.
 It can write a single 32-bit value at a time.
 This puts a lower bound on the latency of most multi-precision instructions.
 The latency is acceptable in an area-optimised implementation and still
@@ -585,7 +585,7 @@ sequence.
     shift amounts.
 }
 \SIGNALO{4}{malu\_cpr\_rd\_ben}{
-    4-bit byte write enable signal for writeback data.
+    4-bit byte write enable signal for write-back data.
 }
 \SIGNALO{32}{malu\_cpr\_wdata}{
     Data to be written to the $\CPR$ register file
@@ -721,7 +721,7 @@ It contains it's own FSM for controlling the memory interface
 and particularly the {\tt SCATTER.x} and {\tt GATHER.x} instructions.
 The states and transitions for the FSM are shown in figure 
 \ref{fig:mem-block-fsm}. 
-In the figure, edges labled {\em launch} are
+In the figure, edges labelled {\em launch} are
 where memory transactions are started.
 {\em Stall} edges are used to
 account for cycles where the memory interface does not respond immediately.
@@ -743,7 +743,7 @@ Note that memory transactions will always be launched when exiting the
 \end{figure}
 
 The memory block is responsible for driving the \nameref{sec:mem-if}.
-In addition to those siganls, the block also has the following signals
+In addition to those signals, the block also has the following signals
 listed in table \ref{tab:sigs-mem-block}.
 
 \SIGNALS{
@@ -801,7 +801,7 @@ listed in table \ref{tab:sigs-mem-block}.
     Crypto source register 3.
 }
 \SIGNALO{4}{mem\_cpr\_rd\_ben}{
-    4-bit byte write enable signal for writeback data.
+    4-bit byte write enable signal for write-back data.
 }
 \SIGNALO{32}{mem\_cpr\_wdata}{
     Data to be written to the $\CPR$ register file
@@ -850,7 +850,7 @@ The RNG block acts as a random number source. It interacts with only the
     described by \SIGREF{id\_class}) so it can be executed.
 }
 \SIGNALO{4}{rng\_cpr\_rd\_ben}{
-    4-bit byte write enable signal for writeback data.
+    4-bit byte write enable signal for write-back data.
 }
 \SIGNALO{32}{rng\_cpr\_wdata}{
     Data to be written to the $\CPR$ register file
