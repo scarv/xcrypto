@@ -1,5 +1,5 @@
 
-# XCrypto RISC-V Instruction Set Extension
+# XCrypto: a cryptographic ISE for RISC-V
 
 *This project describes a complete Instruction Set Extension (ISE) for the
 RISC-V architecture for accelerating cryptographic workloads. It is
