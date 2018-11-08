@@ -14,8 +14,8 @@ fi
 
 mkdir -p $XC_WORK
 
-echo "XC_HOME      = $COP_HOME"
-echo "XC_WORK      = $COP_WORK"
-echo "YS_INSTALL    = $YS_INSTALL"
+echo "XC_HOME    = $XC_HOME"
+echo "XC_WORK    = $XC_WORK"
+echo "YS_INSTALL = $YS_INSTALL"
 
 echo "------------------------------[Finished]-------------------------------"
