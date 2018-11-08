@@ -9,8 +9,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.xcr2gpr}{rd, crs1}{
-  \iencxcrtwogpr
-}{
   Move a $\XCR$ register to a $\GPR$ register.
 }{ 
   $\GPR[*][{\VERB[RV]{rd}}] \ASN \XCR[*][{\VERB[RV]{crs1}}]$\;
@@ -19,8 +17,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gpr2xcr}{crd, rs1}{
-  \iencgprtwoxcr
-}{
   Move a $\GPR$ register to a $\XCR$ register.
 }{
   $\XCR[*][{\VERB[RV]{crd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}]$\;
@@ -29,8 +25,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.cmov.t}{crd, crs1, crs2}{
-  \ienccmovt
-}{
   Conditionally move one $\XCR$ register to another.
 }{
   \If{$\XCR[*][{\VERB[RV]{crs2}}] =    0$}{
@@ -41,8 +35,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.cmov.f}{crd, crs1, crs2}{
-  \ienccmovf
-}{
   Conditionally move one $\XCR$ register to another.
 }{
   \If{$\XCR[*][{\VERB[RV]{crs2}}] \neq 0$}{
@@ -53,8 +45,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ld.bu}{crd, h, b, imm11(rs1)}{
-  \iencldbu
-}{
   Load a     byte from memory
   into a specific     byte of a $\XCR$ register.
   If \VERB[RV]{h} or \VERB[RV]{b} are non-zero,
@@ -77,8 +67,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ld.hu}{crd, h,    imm11(rs1)}{
-  \iencldhu
-}{
   Load a halfword from memory
   into a specific halfword of a $\XCR$ register,
   If \VERB[RV]{h} is non-zero,
@@ -102,8 +90,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ld.w} {crd,        imm11(rs1)}{
-  \iencldw
-}{
   Load a     word from memory 
   into                        a $\XCR$ register.
 }{
@@ -121,8 +107,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.b} {rs2, h, b, imm11(rs1)}{
-  \iencstb
-}{
   Store a specific     byte of a $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
@@ -137,8 +121,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.h} {rs2, h,    imm11(rs1)}{
-  \iencsth
-}{
   Store a specific halfword of a $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
@@ -155,8 +137,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.w} {rs2,       imm11(rs1)}{
-  \iencstw
-}{
   Store                        a $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
@@ -180,8 +160,6 @@
 \label{sec:spec:instruction:2:1}
 
 \XCINSTR{xc.rngtest}{rd1}{
-  \iencrngtest
-}{
   Inspect the RNG state, applying a suitable ``health check'' on the level 
   of entropy available: the status flag is stored in a $\GPR$ register.
   If, after execution \VERB[RV]{xc.rngseed},
@@ -202,8 +180,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.rngseed}{crs1}{
-  \iencrngseed
-}{
   Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\XCR$ register.
 }{
   $\RNG \ASN \XCR[*][{\VERB[RV]{crs1}}]$ \;
@@ -212,8 +188,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.rngsamp}{crd}{
-  \iencrngsamp
-}{
   Sample           $32$-bits of entropy from the RNG, writing to   a $\XCR$ register.
 }{
   $\XCR[*][{\VERB[RV]{crd}}] \ASN \RNG$ \;
@@ -227,9 +201,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.scatter.b}{crd, rs2, crs2}{
-  \iencscatterb
-}{
-
+% TODO: desc
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -244,9 +216,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.scatter.h}{crd, rs2, crs2}{
-  \iencscatterh
-}{
-
+% TODO: desc
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -259,9 +229,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gather.b}{crd, rs1, crs2}{
-  \iencgatherb
-}{
-
+% TODO: desc
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -276,9 +244,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gather.h}{rd, rs1, crs2}{
-  \iencgatherh
-}{
-
+% TODO: desc
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -294,8 +260,6 @@
 \label{sec:spec:instruction:2:3}
 
 \XCINSTR{xc.ld.liu}{crd, imm16}{
-  \iencldliu
-}{
   Load an immediate halfword
   into the lower (or least-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
@@ -310,8 +274,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ld.hiu}{crd, imm16}{
-  \iencldhiu 
-}{
   Load an immediate halfword
   into the upper (or  most-significant) halfword of a $\XCR$ register, 
   leaving the other halfword in said register un-modified.
@@ -326,8 +288,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.bop}{crd, crs1, crs2, lut4}{
-  \iencbop
-}{
   Compute the $i$-bit of a result by apply a $2$-input, $1$-output Boolean 
   function $f$ to corresponding $i$-th bits of two operands.  The function
   $f$ is specified as a look-up table \VERB[RV]{lut4}, so the instruction 
@@ -356,8 +316,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ext}{crd, crs, cs, cl}{
-  \iencext
-}{
   Extract a contiguous sequences of $2$-bit crumbs 
   from              one $\XCR$ register, and
   insert them as the LSBs in another $\XCR$ register.
@@ -370,8 +328,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.ins}{crd, crs, cs, cl}{
-  \iencins
-}{
   Extract a contiguous sequences of $2$-bit crumbs 
   from the LSBSs of one $\XCR$ register, and
   insert   them           in another $\XCR$ register.
@@ -384,8 +340,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mix.l}{rd, rs1, rs2, rtamt}{
-  \iencmixl
-}{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  
   \[
@@ -412,8 +366,6 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mix.h}{rd, rs1, rs2, rtamt}{
-  \iencmixh
-}{
   Form a result by mix together bits from two operands based on a mask:
   the instruction essentially computes  
   \[
@@ -484,8 +436,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.padd}{pw, crd, crs1, crs2}{
-  \iencpadd
-}{
   Compute a   register-based packed addition, 
   implying $\odot = +$.
   Note that, wrt. the encoding,
@@ -502,8 +452,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.psub}{pw, crd, crs1, crs2}{
-  \iencpsub
-}{
   Compute a   register-based packed subtraction, 
   implying $\odot = -$.
   Note that, wrt. the encoding,
@@ -520,8 +468,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.l}{pw, crd, crs1, crs2}{
-  \iencpmull
-}{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
   Note that, wrt. the encoding,
@@ -542,8 +488,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pmul.h}{pw, crd, crs1, crs2}{
-  \iencpmulh
-}{
   Compute a   register-based packed multiplication,
   implying $\odot = \times$.
   Note that, wrt. the encoding,
@@ -564,8 +508,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-  \iencpclmull
-}{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
@@ -586,8 +528,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-  \iencpclmulh
-}{
   Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
@@ -608,8 +548,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.psll}{pw, crd, crs1, crs2}{
-  \iencpsll
-}{
   Compute a   register-based packed left-shift,
   implying $\odot = \LSH$.
   Note that, wrt. the encoding,
@@ -635,8 +573,6 @@ where cases marked invalid are reserved.
 
 % TODO: cshamt => pshamt ?
 \XCINSTR{xc.psll.i}{pw, crd, crs1, cshamt}{
-  \iencpslli
-}{
   Compute an immediate-based packed left-shift,
   implying $\odot = \LSH$.
   Note that, wrt. the encoding,
@@ -661,8 +597,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.psrl}{pw, crd, crs1, crs2}{
-  \iencpsrl
-}{
   Compute a   register-based packed right-shift,
   implying $\odot = \RSH$.
   Note that, wrt. the encoding,
@@ -688,8 +622,6 @@ where cases marked invalid are reserved.
 
 % TODO: cshamt => pshamt ?
 \XCINSTR{xc.psrl.i}{pw, crd, crs1, cshamt}{
-  \iencpsrli
-}{
   Compute an immediate-based packed left-shift,
   implying $\odot = \RSH$.
   Note that, wrt. the encoding,
@@ -714,8 +646,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.prot}{pw, crd, crs1, crs2}{
-  \iencprot
-}{
   Compute a   register-based packed left-rotate,
   implying $\odot = \LRT$.
   Note that, wrt. the encoding,
@@ -736,8 +666,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.prot.i}{pw, crd, crs1, cshamt}{
-  \iencproti
-}{
   Compute an immediate-based packed left-rotate,
   implying $\odot = \LRT$.
   Note that, wrt. the encoding,
@@ -758,8 +686,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pperm.w}{crd, crs1, b0, b1, b2, b3}{
-  \iencppermw
-}{
   Permute bytes   of               some $\XCR$ register,
   storing the result in               another $\XCR$ register.
 }{
@@ -773,9 +699,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pperm.hx}{crd, crs1, b0, b1, b2, b3}{
-  \iencppermhzero
-  \iencppermhone
-}{
   Permute nibbles of a halfword in some $\XCR$ register,
   storing the result in a halfword of another $\XCR$ register.
   Note that the index 
@@ -794,11 +717,6 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pperm.bx}{crd, crs1, b0, b1, b2, b3}{
-  \iencppermbzero
-  \iencppermbone
-  \iencppermbtwo
-  \iencppermbthree
-}{
   Permute crumbs  of a byte     in some $\XCR$ register,
   storing the result in a byte     of another $\XCR$ register.
   Note that the index 
@@ -865,8 +783,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.madd.2}{(crd2, crd1), crs1, crs2      }{
-  \iencmaddtwo
-}{
   Compute a   register-based multi-precision (or ``long'') addition:
   one can interpret
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -889,8 +805,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.madd.3}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmaddthree
-}{
   Compute a   register-based multi-precision (or ``long'') addition:
   one can interpret
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -915,8 +829,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msub.2}{(crd2, crd1), crs1, crs2      }{
-  \iencmsubtwo
-}{
   Compute a   register-based multi-precision (or ``long'') subtraction:
   one can interpret
   $\XCR[*][{\VERB[RV]{crs1}}]$ as the    minuend,
@@ -938,8 +850,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msub.3}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmsubthree
-}{
   Compute a   register-based multi-precision (or ``long'') subtraction:
   one can interpret
   $\XCR[*][{\VERB[RV]{crs1}}]$ as the    minuend,
@@ -963,8 +873,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.macc.1}{(crd2, crd1), crs1      }{
-  \iencmaccone
-}{
   Compute a   register-based multi-precision (or ``long'') accumulation,
   with the
   $32$-bit addend
@@ -986,8 +894,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.macc.2}{(crd2, crd1), crs1, crs2}{
-  \iencmacctwo
-}{
   Compute a   register-based multi-precision (or ``long'') accumulation,
   with the
   $32$-bit addends
@@ -1012,8 +918,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mmul.3}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmmulthree
-}{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
   the $32$-bit multiplicands
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1040,8 +944,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mclmul.3}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmclmulthree
-}{
   Compute a   register-based multi-precision (or ``long'') multiply-accumulate in $\B{F}_2[\IND]$:
   the $32$-bit multiplicands
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1068,8 +970,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msll}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmsll
-}{
   Compute a   register-based multi-precision (or ``long'')  left-shift:
   a $64$-bit value is formed by concatenating
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1100,8 +1000,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msll.i}{(crd2, crd1), crs1, crs2, shamt}{
-  \iencmslli
-}{
   Compute an immediate-based multi-precision (or ``long'')  left-shift:
   a $64$-bit value is formed by concatenating
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1124,8 +1022,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msrl}{(crd2, crd1), crs1, crs2, crs3}{
-  \iencmsrl
-}{
   Compute a   register-based multi-precision (or ``long'') right-shift:
   a $64$-bit value is formed by concatenating
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1156,8 +1052,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.msrl.i}{(crd2, crd1), crs1, crs2, shamt}{
-  \iencmsrli
-}{
   Compute an immediate-based multi-precision (or ``long'') right-shift:
   a $64$-bit value is formed by concatenating
   $\XCR[*][{\VERB[RV]{crs1}}]$
@@ -1180,8 +1074,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mequ}{rd, rs1, crs2, crs3}{
-  \iencmequ
-}{
   Compute a ``chained'' (or ``long'') 
   equality 
   comparison between
@@ -1197,8 +1089,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mlte}{rd, rs1, crs2, crs3}{
-  \iencmlte
-}{
   Compute a ``chained'' (or ``long'') 
      less-than
   comparison between
@@ -1215,8 +1105,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.mgte}{rd, rs1, crs2, crs3}{
-  \iencmgte
-}{
   Compute a ``chained'' (or ``long'') 
   greater-than
   comparison between
@@ -1236,11 +1124,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 \label{sec:spec:instruction:3:1}
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
-  \iencaessubenc
-  \iencaessubencrot
-  \iencaessubdec
-  \iencaessubdecrot
-}{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of an AES 
   {\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197}
@@ -1289,9 +1172,6 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 }
 
 \XCINSTR{xc.aesmix}{mode,      crd, crs1, crs2}{
-  \iencaesmixenc
-  \iencaesmixdec
-}{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
   apply a (carefully structured) form of the AES 
   {\tt ShiftRows}~\cite[Section 5.1.2]{SCARV:FIPS:197} 

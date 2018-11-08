@@ -102,10 +102,6 @@
 { #5 }
 }
 
-% Shorter bit box commands for encoding description
-\newcommandx{\BB}[2]{\bitbox{#1}{{\tt #2}}}
-\newcommandx{\BH}[2]{\bitbox{#1}{{\bf #2}}}
-
 % Assembly instruction definition
 \newcommandx{\INST}[2]{
   \ASM{#1}
@@ -152,20 +148,18 @@
 
 \newcommand{\XCSYNTAXUSE}[1]{\csname rmk-#1\endcsname}
 
-\newcommandx{\XCINSTR}[6][6={}]{
+\newcommandx{\XCINSTR}[4]{
   \paragraph{\VERB[RV]{#1}}
   \label{sec:spec:instruction:#1} \XCSYNTAXDEF{#1}{#2}
 
   \begin{itemize}[labelindent=0pt,align=left,noitemsep]
   \item {\bf Description:} 
-        #4
+        #3
   \item {\bf Encoding:}
 
         \begin{center}
         \begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
-        \bitheader{0-31}
-        \\
-        #3
+        \bitheader{0-31} \\ \XCENCODE{#1}
         \end{bytefield}
         \end{center}
 
@@ -177,7 +171,7 @@
         \begin{array}{c}
         \begin{algorithm}[H]
         \Begin {
-          #5
+          #4
         }
         \end{algorithm}
         \end{array}

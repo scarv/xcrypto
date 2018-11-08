@@ -1,0 +1,154 @@
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.xcr2gpr}       
+\XCENCODE{xc.gpr2xcr}       
+\XCENCODE{xc.cmov.t}        
+\XCENCODE{xc.cmov.f}        
+\XCENCODE{xc.ld.bu}         
+\XCENCODE{xc.ld.hu}         
+\XCENCODE{xc.ld.b}          
+\XCENCODE{xc.ld.h}          
+\XCENCODE{xc.ld.w}          
+\XCENCODE{xc.st.b}          
+\XCENCODE{xc.st.h}          
+\XCENCODE{xc.st.w}          
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $1$,   per \REFSEC{sec:spec:instruction:1}.}
+\label{fig:instr_encode:1}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.rngtest}       
+\XCENCODE{xc.rngseed}       
+\XCENCODE{xc.rngsamp}       
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.1$, per \REFSEC{sec:spec:instruction:2:1}.}
+\label{fig:instr_encode:2:1}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.scatter.b}     
+\XCENCODE{xc.scatter.h}     
+\XCENCODE{xc.gather.b}      
+\XCENCODE{xc.gather.h}      
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.2$, per \REFSEC{sec:spec:instruction:2:2}.}
+\label{fig:instr_encode:2:2}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center} 
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.ld.hiu}        
+\XCENCODE{xc.ld.liu}        
+\XCENCODE{xc.bop}           
+\XCENCODE{xc.ext}           
+\XCENCODE{xc.ins}           
+\XCENCODE{xc.mix.l}         
+\XCENCODE{xc.mix.h}         
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.3$, per \REFSEC{sec:spec:instruction:2:3}.}
+\label{fig:instr_encode:2:3}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}            
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}                                                            
+\\
+\XCENCODE{xc.padd}          
+\XCENCODE{xc.psub}          
+\XCENCODE{xc.pmul.l}        
+\XCENCODE{xc.pmul.h}        
+\XCENCODE{xc.pclmul.l}      
+\XCENCODE{xc.pclmul.h}      
+\XCENCODE{xc.psll}          
+\XCENCODE{xc.psll.i}        
+\XCENCODE{xc.psrl}          
+\XCENCODE{xc.psrl.i}        
+\XCENCODE{xc.prot}          
+\XCENCODE{xc.prot.i}        
+\XCENCODE{xc.pperm.w}       
+\XCENCODE{xc.pperm.h0}      
+\XCENCODE{xc.pperm.h1}      
+\XCENCODE{xc.pperm.b0}      
+\XCENCODE{xc.pperm.b1}      
+\XCENCODE{xc.pperm.b2}      
+\XCENCODE{xc.pperm.b3}      
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.4$, per \REFSEC{sec:spec:instruction:2:4}.}
+\label{fig:instr_encode:2:4}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.madd.2}        
+\XCENCODE{xc.madd.3}        
+\XCENCODE{xc.msub.2}        
+\XCENCODE{xc.msub.3}        
+\XCENCODE{xc.macc.1}        
+\XCENCODE{xc.macc.2}        
+\XCENCODE{xc.mmul.3}        
+\XCENCODE{xc.mclmul.3}      
+\XCENCODE{xc.msll}          
+\XCENCODE{xc.msll.i}        
+\XCENCODE{xc.msrl}          
+\XCENCODE{xc.msrl.i}        
+\XCENCODE{xc.mequ}          
+\XCENCODE{xc.mlte}          
+\XCENCODE{xc.mgte}          
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.5$, per \REFSEC{sec:spec:instruction:2:5}.}
+\label{fig:instr_encode:2:5}
+\end{figure}                                                                   
+
+% -----------------------------------------------------------------------------   
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.aessub}        
+\XCENCODE{xc.aesmix}        
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.1$, per \REFSEC{sec:spec:instruction:3:1}.}
+\label{fig:instr_encode:3:1}
+\end{figure}                                                                   
+
+% =============================================================================

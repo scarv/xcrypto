@@ -248,33 +248,6 @@ def str_arg(arg0,name,match,arguments):
 def str_inst(name,arguments):
   return name.replace('.rv32','').upper()
 
-def print_header(cmd):
-  print """\\newcommand{%s}[2]{
-\\begin{figure}[H]
-\\centering
-\\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
-\\bitheader{0-31}               \\\\
-""" % cmd
-
-def print_subtitle(title):
-  print """
-&
-\\multicolumn{10}{c}{} & \\\\
-&
-\\multicolumn{10}{c}{\\bf %s} & \\\\
-\\cline{2-11}
-  """ % title
-
-def print_footer(caption=''):
-  print """
-\end{bytefield}
-\captionsetup{singlelinecheck=off}
-\caption[x]{#1}
-\label{#2}
-\end{figure}}
-  """
-
-
 def print_inst(n):
     ifields = opcodebits[n]
     fs      = []
@@ -291,56 +264,45 @@ def print_inst(n):
 
     for hi,lo,val in fs:
         width = 1 + hi - lo
-        print("\\BB{%d}{%s}" % (width,val))
-
-    print("\\BH{10}{%s}\\\\" % n)
-
-
-def print_insts(names):
-  for n in names:
-    print_inst(n)
+        print( r'\bitbox{%d}{\tt %s}%%' % (width,val))
+    print( r'\bitbox{%d}{\bf\tt %s}\\%%' % ( 10,  n))
 
 def make_latex_table():
- 
-  used   = []
+  print  ( r'\newcommandx{\XCENCODE}[1]{' '%%'         )
+  print  ( r'  \IfStrEqCase{#1}{'         '%%'         )
 
-  mplist = [n for n in namelist if ".mp" in n]
-  used   += mplist
+  # general cases
 
-  pxlist = [n for n in namelist if not n in used and
-                                   n != "ext.px" and
-                                   n != "dep.px" and (
-                                    ".px" in n or \
-                                    "scatter" in n or
-                                    "gather" in n or
-                                    "mix" in n or
-                                    "bop" in n)]
-  used   += pxlist
-  
-  ellist = [n for n in namelist if not n in used]
+  for n in namelist :
+    print( r'    {%s}{'                   '%%' % ( n ) ) 
+    print_inst( n )
+    print( r'    }'                       '%%'         )
 
-  print_header("\\encodingspx")
-  print_insts(pxlist)
-  print_footer('Instruction listing for RISC-V')
-  
-  print_header("\\encodingsmp")
-  print_insts(mplist)
-  print_footer('Instruction listing for RISC-V')
-  
-  print_header("\\encodingsel")
-  print_insts(ellist)
-  print_footer('Instruction listing for RISC-V')
+  # special cases
 
-  # Per-instruction encoding table commands.
-  for n in namelist:
-      sn = n.replace(".","")
-      for d in digits:
-          sn = sn.replace(d,digits[d])
-      print("\\newcommand{\\ienc%s}[0]{"%(sn))
-      print_inst(n)
-      print("}")
-      print
+  print  ( r'    {xc.pperm.hx}{'          '%%'         )
+  print_inst( 'xc.pperm.h0' )
+  print_inst( 'xc.pperm.h1' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.pperm.bx}{'          '%%'         )
+  print_inst( 'xc.pperm.b0' )
+  print_inst( 'xc.pperm.b1' )
+  print_inst( 'xc.pperm.b2' )
+  print_inst( 'xc.pperm.b3' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.aessub}{'            '%%'         )
+  print_inst( 'xc.aessub.enc'    )
+  print_inst( 'xc.aessub.encrot' )
+  print_inst( 'xc.aessub.dec'    )
+  print_inst( 'xc.aessub.decrot' )
+  print  ( r'    }'                       '%%'         )
+  print  ( r'    {xc.aesmix}{'            '%%'         )
+  print_inst( 'xc.aesmix.enc'    )
+  print_inst( 'xc.aesmix.dec'    )
+  print  ( r'    }'                       '%%'         )
 
+  print  ( r'  }'                         '%%'         )
+  print  ( r'}'                           '%%'         )
 
 def signed(value, width):
   if 0 <= value < (1<<(width-1)):
