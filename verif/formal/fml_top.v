@@ -71,7 +71,7 @@ input  wire             cop_mem_error     // Error
 // Assume reset at the start of the trace and that there is only one
 // reset event.
 //
-initial assume(g_resetn == 1'b0);
+initial `VTX_ASSUME(g_resetn == 1'b0);
 
 always @(posedge g_clk) begin
     if($past(g_resetn)) restrict(g_resetn == 1'b1);
@@ -79,9 +79,9 @@ end
 
 // No requests during a reset
 always @(posedge g_clk) if(!g_resetn) begin
-    assume(!cpu_insn_req);
-    assume(!cop_mem_stall);
-    assume(!cop_mem_error);
+    `VTX_ASSUME(!cpu_insn_req);
+    `VTX_ASSUME(!cop_mem_stall);
+    `VTX_ASSUME(!cop_mem_error);
 end
 
 //
@@ -91,7 +91,7 @@ always @(posedge g_clk) begin
     if(!$past(cop_mem_cen)) begin
         // The error signal can only be asserted when the chip enable is high
         // in the previous cycle.
-        assume(cop_mem_error == 1'b0);
+        `VTX_ASSUME(cop_mem_error == 1'b0);
     end
 end
 
@@ -105,9 +105,9 @@ always @(posedge g_clk) if(g_resetn) begin
 
     end else if($past(cpu_insn_req && !cop_insn_ack)) begin
         
-        assume($stable(cpu_insn_req));
-        assume($stable(cpu_insn_enc));
-        assume($stable(cpu_rs1     ));
+        `VTX_ASSUME($stable(cpu_insn_req));
+        `VTX_ASSUME($stable(cpu_insn_enc));
+        `VTX_ASSUME($stable(cpu_rs1     ));
 
     end else if($past( cpu_insn_req &&  cop_insn_ack)) begin
 
@@ -202,7 +202,7 @@ end endgenerate
 
 always @(posedge g_clk) vtx_reset <= g_resetn;
 
-initial assume(vtx_valid == 0);
+initial `VTX_ASSUME(vtx_valid == 0);
 
 //
 // Capture input instructions to the COP
