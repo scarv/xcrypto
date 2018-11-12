@@ -1,4 +1,5 @@
 +incdir+$(XC_HOME)/rtl/coprocessor
++incdir+$(XC_HOME)/verif/formal
 $(XC_HOME)/rtl/coprocessor/scarv_cop_aes_sbox.v
 $(XC_HOME)/rtl/coprocessor/scarv_cop_aes.v
 $(XC_HOME)/rtl/coprocessor/scarv_cop_cprs.v
