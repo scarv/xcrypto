@@ -12,7 +12,8 @@ SRC_VERIF   ?= $(shell find ../../ -path "*verif/*.vh") \
 	           $(shell find ../../ -path "*verif/*.v") 
 SRC_FORMAL  ?= $(XC_HOME)/verif/tb/tb_formal.v \
                $(XC_HOME)/verif/formal/fml_pack_widths.vh \
-               $(XC_HOME)/verif/formal/fml_common.vh
+               $(XC_HOME)/verif/formal/fml_common.vh \
+               $(XC_HOME)/verif/formal/fml_top.v
 
 VLOG_out    = $(XC_HOME)/work/scarv_cop_top.v
 

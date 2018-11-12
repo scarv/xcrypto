@@ -81,7 +81,7 @@ assign palu_cpr_rd_ben = {4{palu_idone}} & (
 //  Conditional Move Instructions
 //
 
-wire        cmov_cond   = palu_rs2 == 0;
+wire        cmov_cond   = palu_rs2 != 0;
 wire [31:0] result_cmov = is_gpr2xcr ? gpr_rs1 : palu_rs1;
 
 wire  is_cmov_t = is_mov_insn && id_subclass == SCARV_COP_SCLASS_CMOV_T  ;

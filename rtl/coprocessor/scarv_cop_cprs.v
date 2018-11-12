@@ -9,7 +9,7 @@
 // 
 // 
 
-`ifdef FORMAL
+`ifndef SYNTHESIS
 `include "fml_common.vh"
 `endif
 
@@ -24,7 +24,7 @@ input  wire             g_clk         , // Global clock
 output wire             g_clk_req     , // Clock request
 input  wire             g_resetn      , // Synchronous active low reset.
 
-`ifdef FORMAL
+`ifndef SYNTHESIS
 `VTX_REGISTER_PORTS_OUT(cprs_snoop)
 `endif
 
@@ -52,7 +52,7 @@ assign g_clk_req = crd_wen;
 // Storage for the registers
 reg [31:0] cprs [15:0];
 
-`ifdef FORMAL
+`ifndef SYNTHESIS
 `VTX_REGISTER_PORTS_ASSIGNR(cprs_snoop,cprs)
 `endif
 
@@ -74,6 +74,8 @@ generate for (i = 0; i < 16; i = i + 1) begin : gen_cprs
         
         if(!g_resetn) begin
             `ifdef FORMAL
+                // If running the yosys formal flow, allow initial
+                // register values to be any constant value.
                 cprs[i] <= $anyconst;
             `else
                 cprs[i] <= 32'b0;
