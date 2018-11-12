@@ -275,7 +275,7 @@ wire        shift_ret_z = (is_msrl || is_msll) && |malu_rs3[31:6];
 wire   shf_gated        = is_msrl_i || is_msll_i ||
                           is_msrl  || is_msll;
 
-assign shf_lhs          = {64{shf_gated}} & {malu_rs1, malu_rs2}    ;
+assign shf_lhs          = {64{shf_gated}} & {malu_rs2, malu_rs1}    ;
 
 assign result_shf       = shift_ret_z ? 64'b0                        :
                           shiftright  ? shf_lhs >> shamt             :

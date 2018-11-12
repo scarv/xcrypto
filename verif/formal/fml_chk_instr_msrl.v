@@ -22,7 +22,7 @@ reg [63:0] value;
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
-    value = {`CRS1 , `CRS2} >> `CRS3;
+    value = {`CRS2 , `CRS1} >> `CRS3;
 
     if(`CRS3 >= 64) begin
         

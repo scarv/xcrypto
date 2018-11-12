@@ -22,7 +22,7 @@ reg [63:0] value;
 
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
 
-    value = {`CRS1 , `CRS2} << dec_arg_cmshamt;
+    value = {`CRS2 , `CRS1} << dec_arg_cmshamt;
 
     `VTX_ASSERT_CRDM_VALUE_IS(value)
 

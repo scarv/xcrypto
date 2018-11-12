@@ -19,7 +19,7 @@
     `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS)
     `VTX_ASSERT_WEN_IS_CLEAR
     
-    if(vtx_crs2_val_pre != 0) begin
+    if(vtx_crs2_val_pre == 0) begin
         `VTX_ASSERT_CRD_VALUE_IS(vtx_crs1_val_pre)
     end else begin
         `VTX_ASSERT_CRD_VALUE_IS(vtx_crd_val_pre)
@@ -27,4 +27,4 @@
 
 `VTX_CHECK_INSTR_END(cmov_f)
 
-`VTX_CHECKER_MODULE_END
+`VTX_CHECKER_MODULE_END(instr_cmov_f)
