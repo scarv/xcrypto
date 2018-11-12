@@ -9,7 +9,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.xcr2gpr}{rd, crs1}{
-  Move a $\XCR$ register to a $\GPR$ register.
+  Move an $\XCR$ register to a $\GPR$ register.
 }{ 
   $\GPR[*][{\VERB[RV]{rd}}] \ASN \XCR[*][{\VERB[RV]{crs1}}]$\;
 }
@@ -17,7 +17,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gpr2xcr}{crd, rs1}{
-  Move a $\GPR$ register to a $\XCR$ register.
+  Move a $\GPR$ register to an $\XCR$ register.
 }{
   $\XCR[*][{\VERB[RV]{crd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}]$\;
 }
@@ -46,7 +46,7 @@
 
 \XCINSTR{xc.ld.bu}{crd, h, b, imm11(rs1)}{
   Load a     byte from memory
-  into a specific     byte of a $\XCR$ register.
+  into a specific     byte of an $\XCR$ register.
   If \VERB[RV]{h} or \VERB[RV]{b} are non-zero,
   the other bytes in the destination register are left un-modified.
   If \VERB[RV]{h} and \VERB[RV]{b} are zero,
@@ -68,7 +68,7 @@
 
 \XCINSTR{xc.ld.hu}{crd, h,    imm11(rs1)}{
   Load a halfword from memory
-  into a specific halfword of a $\XCR$ register,
+  into a specific halfword of an $\XCR$ register,
   If \VERB[RV]{h} is non-zero,
   the low halfword of the destination register is left un-modified.
   If \VERB[RV]{h} is zero,
@@ -91,7 +91,7 @@
 
 \XCINSTR{xc.ld.w} {crd,        imm11(rs1)}{
   Load a     word from memory 
-  into                        a $\XCR$ register.
+  into                        an $\XCR$ register.
 }{
   $addr                                          \ASN \GPR[*][{\VERB[RV]{rs1}}] + \EXT[32]{\pm}( \VERB[RV]{imm11} )$ \;
   $index_0                                       \ASN                                            0$ \;
@@ -107,7 +107,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.b} {rs2, h, b, imm11(rs1)}{
-  Store a specific     byte of a $\XCR$ register into memory.
+  Store a specific     byte of an $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
@@ -121,7 +121,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.h} {rs2, h,    imm11(rs1)}{
-  Store a specific halfword of a $\XCR$ register into memory.
+  Store a specific halfword of an $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
@@ -137,7 +137,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.st.w} {rs2,       imm11(rs1)}{
-  Store                        a $\XCR$ register into memory.
+  Store                        an $\XCR$ register into memory.
   Note that, wrt. the encoding,
   $
   \VERB[RV]{imm11} = \VERB[RV]{imm11hi} \CONS \VERB[RV]{imm11lo} .
@@ -171,7 +171,7 @@
   entropy; the next output sampled via \VERB[RV]{xc.rngsamp} 
   therefore
          can
-  (resp. cannot)
+  (resp. cannot, or at least should not)
   be used.
 }{
   $\GPR[*][{\VERB[RV]{rd1}}] \TEST{\ASN} \RNG$ \;
@@ -180,7 +180,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.rngseed}{crs1}{
-  Inject (or seed) $32$-bits of entropy into the RNG, reading from a $\XCR$ register.
+  Inject (or seed) $32$-bits of entropy into the RNG, reading from an $\XCR$ register.
 }{
   $\RNG \ASN \XCR[*][{\VERB[RV]{crs1}}]$ \;
 }
@@ -188,7 +188,7 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.rngsamp}{crd}{
-  Sample           $32$-bits of entropy from the RNG, writing to   a $\XCR$ register.
+  Sample           $32$-bits of entropy from the RNG, writing to   an $\XCR$ register.
 }{
   $\XCR[*][{\VERB[RV]{crd}}] \ASN \RNG$ \;
 }
@@ -201,7 +201,15 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.scatter.b}{crd, rs2, crs2}{
-% TODO: desc
+  Perform a ``scattered'' store of 
+  four     bytes 
+  from an $\XCR$ register
+  into memory;
+  for the $i$-th store, a base-offset style effective address is formed 
+  from a
+                    a  $\GPR$ register (the   base)
+  plus
+  a     byte within an $\XCR$ register (the offset).
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -216,7 +224,15 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.scatter.h}{crd, rs2, crs2}{
-% TODO: desc
+  Perform a ``scattered'' store of 
+  two  halfwords
+  from an $\XCR$ register
+  into memory;
+  for the $i$-th store, a base-offset style effective address is formed 
+  from a
+                    a  $\GPR$ register (the   base)
+  plus
+  a halfword within an $\XCR$ register (the offset).
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -229,7 +245,15 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gather.b}{crd, rs1, crs2}{
-% TODO: desc
+  Perform a  ``gathered''  load of 
+  four     bytes 
+  from memory 
+  into an $\XCR$ register;
+  for the $i$-th  load, a base-offset style effective address is formed 
+  from a
+                    a  $\GPR$ register (the   base)
+  plus
+  a     byte within an $\XCR$ register (the offset).
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -244,7 +268,15 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.gather.h}{rd, rs1, crs2}{
-% TODO: desc
+  Perform a  ``gathered''  load of 
+  two  halfwords
+  from memory 
+  into an $\XCR$ register;
+  for the $i$-th  load, a base-offset style effective address is formed 
+  from a
+                    a  $\GPR$ register (the   base)
+  plus
+  a halfword within an $\XCR$ register (the offset).
 }{
   $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{0}$ \;
   $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[16]{\XCR[*][{\VERB[RV]{crs2}}]}{1}$ \;
@@ -261,7 +293,7 @@
 
 \XCINSTR{xc.ld.liu}{crd, imm16}{
   Load an immediate halfword
-  into the lower (or least-significant) halfword of a $\XCR$ register, 
+  into the lower (or least-significant) halfword of an $\XCR$ register, 
   leaving the other halfword in said register un-modified.
   Note that, wrt. the encoding,
   $
@@ -275,7 +307,7 @@
 
 \XCINSTR{xc.ld.hiu}{crd, imm16}{
   Load an immediate halfword
-  into the upper (or  most-significant) halfword of a $\XCR$ register, 
+  into the upper (or  most-significant) halfword of an $\XCR$ register, 
   leaving the other halfword in said register un-modified.
   Note that, wrt. the encoding,
   $
@@ -288,10 +320,25 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.bop}{crd, crs1, crs2, lut4}{
-  Compute the $i$-bit of a result by apply a $2$-input, $1$-output Boolean 
-  function $f$ to corresponding $i$-th bits of two operands.  The function
-  $f$ is specified as a look-up table \VERB[RV]{lut4}, so the instruction 
-  essentially computes
+  Compute each $i$-bit of a $32$-bit result by applying a given $2$-input, 
+  $1$-output Boolean function $f$ to corresponding $i$-th bits of the two 
+  operands.  The function $f$ is specified as a truth-table encoded as the
+  immediate \VERB[RV]{lut4}: given
+  \[
+  \begin{array}{|cc|c|}
+  \hline
+  \multicolumn{3}{|c|}{f}     \\
+  \hline
+  x_i & y_i & r_i               \\
+  \hline
+    0 &   0 & \VERB[RV]{lut4}_0 \\
+    0 &   1 & \VERB[RV]{lut4}_1 \\
+    1 &   0 & \VERB[RV]{lut4}_2 \\
+    1 &   1 & \VERB[RV]{lut4}_3 \\
+  \hline
+  \end{array}
+  \]
+  the instruction essentially computes
   $
   \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i} ) = \INDEX{\VERB[RV]{lut4}}{x_i \CONS y_i}
   $
@@ -303,9 +350,8 @@
   \VERB[RV]{lut4} &=& \RADIX{0110}{2} &\Longrightarrow& f &=& \XOR \\
   \end{array}
   \]
-  the instructions
-  \VERB[RV]{AND.cr}, \VERB[RV]{AND.cr}, and \VERB[RV]{AND.cr}
-  can be, and are, synthesised using \VERB[RV]{xc.bop}.
+  \VERB[RV]{xc.bop} can be used to synthesise a set of standard Boolean
+  instructions (e.g., by analogy, per those in RV32I).
 }{
   \For{$i = 0$ {\bf upto} $31$} {
     $index \ASN \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
@@ -317,7 +363,7 @@
 
 \XCINSTR{xc.ext}{crd, crs, cs, cl}{
   Extract a contiguous sequences of $2$-bit crumbs 
-  from              one $\XCR$ register, and
+  from             one $\XCR$ register, and
   insert them as the LSBs in another $\XCR$ register.
 }{
   $lo \ASN 2 \cdot \VERB[RV]{cs}         $ \;
@@ -329,7 +375,7 @@
 
 \XCINSTR{xc.ins}{crd, crs, cs, cl}{
   Extract a contiguous sequences of $2$-bit crumbs 
-  from the LSBSs of one $\XCR$ register, and
+  from the LSBs of one $\XCR$ register, and
   insert   them           in another $\XCR$ register.
 }{
   $lo \ASN 2 \cdot \VERB[RV]{cs}         $ \;
@@ -402,7 +448,7 @@ $\odot$, register or immediate variants essentially compute
       for $r$, $x$, and $y$ in $\XCR$ registers.
       and
 \item $\INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w][u]{\odot}           y    $,
-      for $r$,      and $x$ in $\XCR$ registers, and an $y$ immediate,
+      for $r$       and $x$ in $\XCR$ registers, and an immediate $y$,
 \end{enumerate}
 
 \noindent
@@ -422,10 +468,10 @@ As such, said encoding yields the following cases
 \[
 \begin{array}{ccrcc@{\;}c@{\;}rc@{\;}c@{\;}r}
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{000}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{001}{2} &\mapsto& \VERB[RV]{n} &=&  2 & w &=& 32     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{010}{2} &\mapsto& \VERB[RV]{n} &=&  4 & w &=& 32     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{011}{2} &\mapsto& \VERB[RV]{n} &=&  8 & w &=& 32     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=& 32     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{001}{2} &\mapsto& \VERB[RV]{n} &=&  2 & w &=& 16     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{010}{2} &\mapsto& \VERB[RV]{n} &=&  4 & w &=&  8     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{011}{2} &\mapsto& \VERB[RV]{n} &=&  8 & w &=&  4     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=&  2     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{101}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{110}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{111}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
@@ -508,7 +554,7 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.l}{pw, crd, crs1, crs2}{
-  Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND{x}]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
@@ -528,7 +574,7 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.pclmul.h}{pw, crd, crs1, crs2}{
-  Compute a   register-based packed multiplication in $\B{F}_2[\IND]$ (or ``carry-less'' multiplication),
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND{x}]$ (or ``carry-less'' multiplication),
   implying $\odot = \otimes$.
   Note that, wrt. the encoding,
   $
@@ -571,7 +617,6 @@ where cases marked invalid are reserved.
 
 % -----------------------------------------------------------------------------
 
-% TODO: cshamt => pshamt ?
 \XCINSTR{xc.psll.i}{pw, crd, crs1, cshamt}{
   Compute an immediate-based packed left-shift,
   implying $\odot = \LSH$.
@@ -620,7 +665,6 @@ where cases marked invalid are reserved.
 
 % -----------------------------------------------------------------------------
 
-% TODO: cshamt => pshamt ?
 \XCINSTR{xc.psrl.i}{pw, crd, crs1, cshamt}{
   Compute an immediate-based packed left-shift,
   implying $\odot = \RSH$.
@@ -1125,7 +1169,7 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
 
 \XCINSTR{xc.aessub}{mode, rot, crd, crs1, crs2}{
   Per~\cite[Figures 5]{SCARV:TilGro:06}, 
-  apply a (carefully structured) form of an AES 
+  apply a (carefully structured) form of the AES 
   {\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197}
   operation:
   this is applicable to a column-oriented implementation of AES, whereby
