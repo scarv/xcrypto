@@ -17,6 +17,9 @@ $> git submodule update --init --recursive
 $> source ./bin/source.me.sh
 ```
 
+Or, look at the latest packaged release 
+[here](https://github.com/scarv/xcrypto/releases).
+
 Note that one must run the `git submodule update` command in order to
 pull the external repositories (like PicoRV32) required for the integration
 testbench.
@@ -26,6 +29,8 @@ Build the documentation by running `make docs`
 - The ISE specification will be found in `${XC_HOME}/docs/specification.pdf`
 - Documentation on the *reference implementation* of the ISE willl be found
   in `${XC_HOME}/docs/implementation.pdf`.
+- Pre-built documentation for the specification and implementation can
+  be found on the [releases](https://github.com/scarv/xcrypto/releases) page.
 
 Depending on how Yosys is installed, one should also set the `YS_INSTALL`
 environment variable such that `${YS_INSTALL}/yosys` is a valid path to the
