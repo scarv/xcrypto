@@ -55,9 +55,10 @@
       and 
       a ``little'' core (which delivers efficiency wrt. energy consumption).
       The underlying goal is to capitalise on the characteristics of each as 
-      and when need be, vs. a single core representing a compromise between 
-      those characteristics.  Along similar lines, one could imagine some
-      form of {\sf efficient.SECURE} analogue: we have a 
+      and when need be (at run-time), vs. a single core which represents a 
+      (design-time) compromise between those characteristics.  Along similar 
+      lines, one could imagine some form of {\sf efficient.SECURE} analogue: 
+      we have a 
       an ``efficient'' core (which ignores   security, focusing on delivery of efficiency)
       and
       a  ``secure''    core (which ignores efficiency, focusing on delivery of   security),
@@ -68,9 +69,9 @@
 
       \begin{itemize}
       \item {\bf         Security}.
-            An unfortunate fact is that security is commonly relegated to a 
-            second-class design metric, and so, by implication, viewed as 
-            being of secondary importance;
+            An unfortunate fact is that security will commonly be relegated 
+            to a second-class design metric, and so, by implication, viewed 
+            as being of secondary importance;
             see, e.g., \cite{SCARV:Lee:03,SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
             In contrast, \XCID treats security as a first-class metric, and
             so {\em at least} as important as more traditional alternatives.
@@ -129,7 +130,7 @@
             to the host core.
       \item {\bf    Measurability}.
             Given the remit of extending RV32I, any feature in \XCID should 
-            offer reproducible, demonstrable value vs. this baseline; for 
+            offer reproducible, demonstrable value vs. this baseline.  For 
             a given feature, this goal should be supported by provision of 
             associated reference implementations of cryptographically 
             interesting benchmark kernels.

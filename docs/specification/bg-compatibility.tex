@@ -12,7 +12,9 @@
 
       \begin{enumerate}
       \item Cryptographic Extensions Task Group,
-      \item BitManip                      Group,
+      \item BitManip\footnote{
+            \url{https://github.com/cliffordwolf/xbitmanip}
+            }                             Group,
             and
       \item P             Extension  Task Group (i.e., the embedded DSP-like ISE).
       \end{enumerate}
@@ -30,11 +32,11 @@
             \RVCUSTOM{1}~\cite[Table 19.1]{SCARV:RV:ISA:I:17}
             space, i.e., a $25$-bit space with prefix $\RADIX{0101011}{2}$,
       \item all instruction mnemonics include a domain-separating prefix,
-            meaning, for example \VERB[RV]{foo} becomes \VERB[RV]{xc.foo}.
+            meaning, for example, \VERB[RV]{foo} becomes \VERB[RV]{xc.foo}.
       \end{itemize}
       
       \noindent
-      Note that these should be considered flexible placeholders; they can
+      Note that these should be considered flexible placeholders: they can
       be changed to suit future constraints with little or no impact.
 
 \item \XCID is intended to be agnostic wrt. implementation for a given host 

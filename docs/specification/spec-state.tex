@@ -30,7 +30,7 @@ x87 state, {\em must} be robustly mitigated.
 
 % =============================================================================
 
-\subsubsection{Register file}
+\subsubsection{$\XCR$ register file}
 \label{sec:spec:state:xcr}
 
 \XCID 
@@ -72,7 +72,7 @@ Note that
 
 % =============================================================================
 
-\subsubsection{Control and Status Registers (CSRs)}
+\subsubsection{$\SPR{XCCR}$ and $\SPR{XCSR}$ Control and Status Registers (CSRs)}
 \label{sec:spec:state:csr}
 
 \begin{table}[p]
@@ -89,6 +89,21 @@ Note that
 \caption{A summary of \XCID CSRs, per~\cite[Table 2.1]{SCARV:RV:ISA:II:17}.}
 \label{tab:csr}
 \end{table}
+
+\begin{figure}[p]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+  \bitbox{30}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $S        $}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $U        $}}
+\\
+\end{bytefield}
+\end{center}
+\caption{A diagrammatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
+\label{fig:xccr}
+\end{figure}
 
 \begin{figure}[p]
 \begin{center}
@@ -115,20 +130,20 @@ Note that
 \label{fig:xcsr}
 \end{figure}
 
-\begin{figure}[p]
+\begin{table}[p]
 \begin{center}
-\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
-\bitheader{0-31}               
-\\
-  \bitbox{30}{\rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $S        $}}
-& \bitbox{ 1}{\rotatebox{90}{\tiny $U        $}}
-\\
-\end{bytefield}
+\begin{tabular}{|lc|l|}
+\hline
+Field        & Index  & Description                                                                                             \\
+\hline\hline
+$U         $ & $ 0$   & \XCID is accessible in user       mode (set), or not (clear)                                            \\
+$S         $ & $ 1$   & \XCID is accessible in supervisor mode (set), or not (clear)                                            \\
+\hline
+\end{tabular}
 \end{center}
-\caption{A diagrammatic description of the $\SPR{XCCR}$ register; note that blanked out bits are reserved.}
-\label{fig:xccr}
-\end{figure}
+\caption{A tabular     description of the $\SPR{XCCR}$ register.}
+\label{tab:xccr}
+\end{table}
 
 \begin{table}[p]
 \begin{center}
@@ -154,27 +169,16 @@ $PACK_{16} $ & $12$   & Are packed operations on $\VERB[RV]{n} = 16$ sub-words o
 \label{tab:xcsr}
 \end{table}
 
-\begin{table}[p]
-\begin{center}
-\begin{tabular}{|lc|l|}
-\hline
-Field        & Index  & Description                                                                                             \\
-\hline\hline
-$U         $ & $ 0$   & \XCID is accessible in user       mode (set), or not (clear)                                            \\
-$S         $ & $ 1$   & \XCID is accessible in supervisor mode (set), or not (clear)                                            \\
-\hline
-\end{tabular}
-\end{center}
-\caption{A tabular     description of the $\SPR{XCCR}$ register.}
-\label{tab:xccr}
-\end{table}
-
 \XCID 
 demands two additional
 non-standard, machine-class CSRs~\cite[Section 2]{SCARV:RV:ISA:II:17}
 summarised in \REFTAB{tab:csr}:
 
 \begin{enumerate}
+\item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
+      is described in \REFFIG{fig:xccr} and \REFTAB{tab:xccr}
+      the purpose of this CSR is to 
+      control the            configuration of an \XCID implementation.
 \item The \XCID Status  Register (XCSR), denoted $\SPR{XCSR}$,
       is described in \REFFIG{fig:xcsr} and \REFTAB{tab:xcsr};
       the purpose of this CSR is to 
@@ -190,10 +194,6 @@ summarised in \REFTAB{tab:csr}:
                             \SPR{XCSR}[*][PACK_{16}]
       \]
       with the single field retained for ease of inspection.
-\item The \XCID Control Register (XCCR), denoted $\SPR{XCCR}$,
-      is described in \REFFIG{fig:xccr} and \REFTAB{tab:xccr}
-      the purpose of this CSR is to 
-      control the            configuration of an \XCID implementation.
 \end{enumerate}
 
 % =============================================================================
@@ -209,8 +209,8 @@ summarised in \REFTAB{tab:csr}:
       it destroys during execution.
 \item The first eight registers, 
       i.e., $\XCR[*][0]$ through $\XCR[*][7]$, 
-      are considered to be function arguments (including return values); 
-      all other registers, 
+      are considered to be function arguments (including return values).
+      All other registers, 
       i.e., $\XCR[*][8]$ upward,
       are considered to be temporaries.
 \item Any $\XCR$ registers pushed to the stack should be stored 

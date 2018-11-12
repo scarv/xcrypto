@@ -26,10 +26,10 @@ Description                                & Class           & Numeric ID & Mnem
 \end{table}
 
 Per \REFSEC{sec:bg:concept}, \XCID is a {\em meta}-extension in that it has 
-a) one     required, baseline feature class,
+a) one     required, baseline feature class
    which must {\em always} be supported,
    plus
-b) several optional           feature classes,
+b) several optional           feature classes
    which can be {\em selectively} supported to suit.
 To some extent, this mirrors the extensibility afforded by RV32I itself, 
 with similar motivation: doing so allows one to tailor the ISE (resp. ISA) 
@@ -127,7 +127,8 @@ Although most are analogous to RV32I, there are some differences: note that
 \label{sec:bg:feature:2:1}
 
 Almost all cryptographic workloads have a strong requirement for efficient
-generation of high-quality randomness; this stems from use-cases such as
+generation of high-quality randomness.  This fact stems from use-cases such
+as
 a) generation of key material, be it ephemeral or long term,
    or
 b) implementation of (randomised) countermeasures
@@ -221,7 +222,7 @@ a) security
    (e.g., bit-sliced implementation~\cite{SCARV:KasSch:09} AES~\cite{SCARV:FIPS:197} to mitigate cache-based side-channel attacks),
    or
 b) efficiency
-   (e.g., use of hardware-friendly bit-permutations in DES~\cite{SCARV:FIPS:46_3})
+   (e.g., use of hardware-friendly bit-permutations in DES~\cite{SCARV:FIPS:46_3}).
 As a result, numerous proposals for associated ISEs exist; these typically
 act to accelerate in software what would otherwise represent a high (even 
 prohibitive) overhead.  \XCID adopts a similar approach.
@@ -254,7 +255,7 @@ central features:
 
 \noindent
 Note that
-a) a deliberate use of the term operation is intended to highlight the fact 
+a) deliberate use of the term operation is intended to highlight the fact 
    that non-arithmetic operations are viable instances of the same concept,
    and
 b) care should be taken to distinguish this concept from traditional vector 
@@ -295,7 +296,7 @@ arithmetic; this includes support for implementations via ISEs defined for
 RISC-based processors.
 
 \XCID includes a suite of instructions 
-(e.g., \VERB[RV]{xc.madd.3})
+(e.g., \VERB[RV]{xc.madd.3}; see \REFSEC{sec:spec:instruction:xc.madd.3})
 which mirror low-level steps in higher-level algorithms for multi-precision 
 integer arithmetic; in part, these mirror features in 
 XS1~\cite[Section 18]{SCARV:XS1:09} 
@@ -331,7 +332,7 @@ encryption (e.g., of network traffic), and, as such, is supported by a
 rich lineage of designs and results (see, e.g., \REFAPPX{appx:related}).
 
 \XCID includes a suite of instructions 
-(e.g., \VERB[RV]{xc.aes.sub} and \VERB[RV]{xc.aes.mix})
+(e.g., \VERB[RV]{xc.aes.sub} and \VERB[RV]{xc.aes.mix}; see \REFSEC{sec:spec:instruction:xc.aessub} and \REFSEC{sec:spec:instruction:xc.aesmix})
 drawn directly from the design of
 Tillich and Gro{\ss}sch\"{a}dl~\cite{SCARV:TilGro:06}.
 The constituent ISE supports a $32$-bit, column-oriented implementation 
@@ -340,7 +341,7 @@ of AES, focusing on the
 {\tt ShiftRows}~\cite[Section 5.1.2]{SCARV:FIPS:197}, 
 and
 {\tt MixColumns}~\cite[Section 5.1.3]{SCARV:FIPS:197}
-round functions; it does so in a manner than 
+round functions.  It does so in a manner than 
 a) reduces the latency of executing those round functions, 
    while also
 b) eliminating the need for look-up tables and associated memory access
