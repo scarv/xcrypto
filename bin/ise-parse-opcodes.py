@@ -311,7 +311,7 @@ def signed(value, width):
     return value - (1<<width)
 
 def make_dec_wirename(instrname):
-    return "dec_%s"     % instrname.lower().replace(".","_")
+    return "dec_%s"     % instrname.lower().replace("xc.","").replace(".","_")
 
 def make_verilog(match,mask):
     """
