@@ -1,4 +1,3 @@
-
 # XCrypto: a cryptographic ISE for RISC-V
 
 *This project describes a complete Instruction Set Extension (ISE) for the
@@ -12,8 +11,8 @@ CPU core is included.*
 Setup the project workspace first:
 
 ```sh
-$> git clone git@github.com:scarv/hw-crypto-cop.git
-$> cd hw-crypto-cop
+$> git clone git@github.com:scarv/xcrypto.git
+$> cd xcrypto
 $> git submodule update --init --recursive
 $> source ./bin/source.me.sh
 ```
@@ -24,12 +23,12 @@ testbench.
 
 Build the documentation by running `make docs`
 
-- The ISE specification will be found in `$XC_HOME/docs/specification.pdf`
+- The ISE specification will be found in `${XC_HOME}/docs/specification.pdf`
 - Documentation on the *reference implementation* of the ISE willl be found
-  in `$XC_HOME/docs/implementation.pdf`.
+  in `${XC_HOME}/docs/implementation.pdf`.
 
 Depending on how Yosys is installed, one should also set the `YS_INSTALL`
-environment variable such that `$YS_INSTALL/yosys` is a valid path to the
+environment variable such that `${YS_INSTALL}/yosys` is a valid path to the
 `yosys` executable.
 
 ### Project Organisation
@@ -70,15 +69,15 @@ Use the script `bin/setup-binutils.sh` as below to download, configure
 and build the modified toolset.
 
 ```sh
-$> cd $XC_HOME/
+$> cd ${XC_HOME}
 $> source bin/setup-binutils.sh
 ```
 
 You will end up with `as-new` in 
-`$(XC_HOME)/work/riscv-binutils-gdb/build/gas/`. This is the assembler to use.
+`${XC_HOME}/work/riscv-binutils-gdb/build/gas`. This is the assembler to use.
 
 Other programs like `ld`/`gold` and `objdump` are in
-`$(XC_HOME)/work/riscv-binutils-gdb/build/binutils/`.
+`${XC_HOME}/work/riscv-binutils-gdb/build/binutils`.
 
 ### Running Simulations
 
@@ -109,7 +108,7 @@ $> make icarus_run_all  # Run all unit tests as a regression
 ```
 
 The `<file>` path should point at a unit-test hex file, present in
-`$XC_HOME/work/unit/*.hex`. Using `$COP_HOME` as part of an absolute path
+`${XC_HOME}/work/unit/*.hex`. Using `${XC_HOME}` as part of an absolute path
 to the hex file is advised.
 
 **Integration Tests**
@@ -135,8 +134,8 @@ $> make icarus_run_integ SIM_UNIT_TEST=<file>
 ```
 
 where `<file>` points to a hex file. 
-Use `$XC_HOME/work/examples/integration-test.hex` as an example.
-Waveforms will be put in `$XC_HOME/work/icarus/integ-waves.vcd`.
+Use `${XC_HOME}/work/examples/integration-test.hex` as an example.
+Waveforms will be put in `${XC_HOME}/work/icarus/integ-waves.vcd`.
 
 ## Formal testbench
 
