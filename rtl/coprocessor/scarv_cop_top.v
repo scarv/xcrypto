@@ -256,7 +256,7 @@ always @(posedge g_clk) if(!g_resetn) begin
 // BEGIN PIPELINE PROGRESSION CONTROL
 
 wire    fu_done         = 
-    mem_idone || palu_idone || malu_idone || rng_idone ||
+    mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
     (id_exception && insn_accept);
 
 wire    insn_valid      = insn_accept ||

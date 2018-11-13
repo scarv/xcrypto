@@ -173,11 +173,19 @@ wire [4:0] subclass_bitwise =
     {5{dec_ld_liu }} & {SCARV_COP_SCLASS_LD_LIU } |
     {5{dec_ld_hiu }} & {SCARV_COP_SCLASS_LD_HIU } ;
     
+wire [4:0] subclass_aes = 
+    {5{dec_aessub_enc   }} & SCARV_COP_SCLASS_AESSUB_ENC    |
+    {5{dec_aessub_encrot}} & SCARV_COP_SCLASS_AESSUB_ENCROT |
+    {5{dec_aessub_dec   }} & SCARV_COP_SCLASS_AESSUB_DEC    |
+    {5{dec_aessub_decrot}} & SCARV_COP_SCLASS_AESSUB_DECROT |
+    {5{dec_aesmix_enc   }} & SCARV_COP_SCLASS_AESMIX_ENC    |
+    {5{dec_aesmix_dec   }} & SCARV_COP_SCLASS_AESMIX_DEC    ;
 
 //
 // Identify individual instructions within a class using the subclass
 // field.
 assign id_subclass = 
+    {5{class_aes         }} & {subclass_aes         } |
     {5{class_packed_arith}} & {encoded[29:25]       } |
     {5{class_twiddle     }} & {1'b0, encoded[23:21] } |
     {5{class_loadstore   }} & {subclass_load_store  } |

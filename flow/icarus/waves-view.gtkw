@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Fri Nov  2 13:42:11 2018
+[*] Tue Nov 13 14:52:50 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/unit-waves.vcd"
-[dumpfile_mtime] "Fri Nov  2 13:41:31 2018"
-[dumpfile_size] 236901
+[dumpfile_mtime] "Tue Nov 13 14:51:51 2018"
+[dumpfile_size] 222497
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
 [size] 1467 1025
 [pos] -1 -1
-*-10.636792 2020 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-9.203566 1340 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [treeopen] tb_scarv_cop_top.i_dut.
+[treeopen] tb_scarv_cop_top.i_dut.i_scarv_cop_aes.
 [treeopen] tb_scarv_cop_top.i_dut.i_scarv_cop_palu.
 [sst_width] 246
 [signals_width] 440
@@ -55,7 +56,6 @@ tb_scarv_cop_top.cop_waddr[4:0]
 tb_scarv_cop_top.cop_wdata[31:0]
 @28
 tb_scarv_cop_top.cop_wen
-tb_scarv_cop_top.cpu_abort_req
 tb_scarv_cop_top.cpu_insn_req
 @22
 tb_scarv_cop_top.cpu_rs1[31:0]
@@ -4167,6 +4167,7 @@ tb_scarv_cop_top.i_dut.cop_insn_ack
 tb_scarv_cop_top.i_dut.malu_idone
 tb_scarv_cop_top.i_dut.palu_idone
 tb_scarv_cop_top.i_dut.mem_idone
+tb_scarv_cop_top.i_dut.aes_idone
 tb_scarv_cop_top.i_dut.fu_done
 @200
 -
@@ -4192,9 +4193,76 @@ tb_scarv_cop_top.i_dut.cop_wen
 @1000200
 -DUT I/O
 @800200
+-DUT AES
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_cpr_rd_ben[3:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_cpr_rd_wdata[31:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_ivalid
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_class[3:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_imm[31:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_pw[2:0]
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_subclass[4:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_idone
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs1[31:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs2[31:0]
+@23
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs3[31:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_dec
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_enc
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm[1:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_0
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_1
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_2
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_3
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_instr
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output_dec[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output_enc[7:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mode_enc
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.n_mix_fsm[1:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.rotate
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_input_0[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_input_1[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_input_2[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_input_3[7:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_invert
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_output[31:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_output_0[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_output_1[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_output_2[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_output_3[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.i_sbox_0.in[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.i_sbox_0.out_fwd[7:0]
+@28
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_dec
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_decrot
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_enc
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_encrot
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_instr
+@22
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t0[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t1[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t2[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t3[7:0]
+@1000200
+-DUT AES
+@c00200
 -DUT Decode
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_invalid_opcode
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.class_aes
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.class_bitwise
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.class_loadstore
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.class_move
@@ -4237,6 +4305,12 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_arg_rs1[4:0]
 @c00200
 -One-hot
 @28
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aesmix_dec
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aesmix_enc
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aessub_dec
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aessub_decrot
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aessub_enc
+tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_aessub_encrot
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_ld_w
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_gpr2xcr
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_xcr2gpr
@@ -4294,11 +4368,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.dec_pperm_h1
 -One-hot
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.encoded[31:0]
-@28
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.id_class[2:0]
-@23
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.id_subclass[4:0]
-@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.id_crd1[3:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.id_crd2[3:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.id_crs1[3:0]
@@ -4322,13 +4392,9 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.imm_lut
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.imm_sh_mp
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.imm_sh_px
 tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.imm_st
-@22
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.subclass_bitwise[3:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.subclass_load_store[3:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_idecode.subclass_mp[3:0]
-@1000200
+@1401200
 -DUT Decode
-@800200
+@c00200
 -DUT RNG FU
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.cop_rand_sample
@@ -4337,7 +4403,6 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_rng.cop_random[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.g_clk
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.g_resetn
-tb_scarv_cop_top.i_dut.i_scarv_cop_rng.id_class[2:0]
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.id_imm[31:0]
 @28
@@ -4358,7 +4423,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_rng.gen_lfsr32.n_lsb
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.gen_lfsr32.n_rng_value[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.gen_lfsr32.rng_value[31:0]
-@1000200
+@1401200
 -DUT RNG FU
 @c00200
 -DUT CPRs
@@ -4460,9 +4525,6 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_mem.fsm_h1
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.fsm_idle
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.gpr_rs1[31:0]
-@28
-tb_scarv_cop_top.i_dut.i_scarv_cop_mem.id_class[2:0]
-@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.id_imm[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_mem.is_ga_b
@@ -4652,26 +4714,13 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_shifter.r
 @800200
 -PALU Multiplier
 @22
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.add_mask[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.a[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.b[31:0]
 @24
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.accumulator[63:0]
 @200
 -
-@22
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.shf_a[31:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.shf_c[31:0]
-@24
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.shf_sham[4:0]
-@200
 -
-@22
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.add_a[63:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.add_b[63:0]
-@24
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.add_c[63:0]
-@200
 -
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.start
@@ -4690,8 +4739,6 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.pw_2
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.pw_4
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.pw_8
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.pw_16
-@22
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.result[63:0]
 @200
 -
 @1000200
@@ -4703,7 +4750,6 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_palu.i_palu_multiplier.result[63:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_malu.g_clk
 tb_scarv_cop_top.i_dut.i_scarv_cop_malu.g_resetn
-tb_scarv_cop_top.i_dut.i_scarv_cop_malu.id_class[2:0]
 @c00022
 tb_scarv_cop_top.i_dut.i_scarv_cop_malu.id_imm[31:0]
 @28
@@ -4844,9 +4890,6 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_palu.ei_len[4:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.ei_start[4:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.ext_result[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.gpr_rs1[31:0]
-@28
-tb_scarv_cop_top.i_dut.i_scarv_cop_palu.id_class[2:0]
-@22
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.id_imm[31:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_palu.id_pw[2:0]
