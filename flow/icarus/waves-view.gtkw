@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Tue Nov 13 14:52:50 2018
+[*] Fri Nov 16 10:33:12 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/icarus/unit-waves.vcd"
-[dumpfile_mtime] "Tue Nov 13 14:51:51 2018"
-[dumpfile_size] 222497
+[dumpfile_mtime] "Fri Nov 16 10:32:36 2018"
+[dumpfile_size] 287526
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/icarus/waves-view.gtkw"
 [timestart] 0
-[size] 1467 1025
+[size] 960 1025
 [pos] -1 -1
-*-9.203566 1340 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-11.996143 2570 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_scarv_cop_top.
 [treeopen] tb_scarv_cop_top.i_dut.
 [treeopen] tb_scarv_cop_top.i_dut.i_scarv_cop_aes.
 [treeopen] tb_scarv_cop_top.i_dut.i_scarv_cop_palu.
 [sst_width] 246
-[signals_width] 440
+[signals_width] 355
 [sst_expanded] 1
 [sst_vpaned_height] 224
 @c00200
@@ -4152,6 +4152,7 @@ tb_scarv_cop_top.imemfile[2040:0]
 -Testbench
 @800200
 -DUT
+@c00200
 -DUT I/O
 @24
 tb_scarv_cop_top.i_dut.cop_fsm[2:0]
@@ -4190,7 +4191,7 @@ tb_scarv_cop_top.i_dut.cop_wdata[31:0]
 tb_scarv_cop_top.i_dut.n_cop_wdata[31:0]
 @28
 tb_scarv_cop_top.i_dut.cop_wen
-@1000200
+@1401200
 -DUT I/O
 @800200
 -DUT AES
@@ -4208,27 +4209,30 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_pw[2:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.id_subclass[4:0]
 @28
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_idone
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mode_enc
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs1[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs2[31:0]
-@23
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.aes_rs3[31:0]
-@28
+@800201
+-MIX
+@29
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_dec
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_enc
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm[1:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_0
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_1
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_2
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_fsm_3
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_instr
-@22
+@23
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t0[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t1[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t2[7:0]
+tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t3[7:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output[7:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output_dec[7:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mix_output_enc[7:0]
+@1000201
+-MIX
+@c00200
+-SBOX
 @28
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.mode_enc
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.n_mix_fsm[1:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.rotate
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sbox_input_0[7:0]
@@ -4251,11 +4255,8 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_decrot
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_enc
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_encrot
 tb_scarv_cop_top.i_dut.i_scarv_cop_aes.sub_instr
-@22
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t0[7:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t1[7:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t2[7:0]
-tb_scarv_cop_top.i_dut.i_scarv_cop_aes.t3[7:0]
+@1401200
+-SBOX
 @1000200
 -DUT AES
 @c00200
@@ -4425,7 +4426,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_rng.gen_lfsr32.n_rng_value[31:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_rng.gen_lfsr32.rng_value[31:0]
 @1401200
 -DUT RNG FU
-@c00200
+@800200
 -DUT CPRs
 @22
 tb_scarv_cop_top.i_dut.malu_cpr_rd_wdata[31:0]
@@ -4459,7 +4460,7 @@ tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wen[3:0]
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_addr[3:0]
 @22
 tb_scarv_cop_top.i_dut.i_scarv_cop_cprs.crd_wdata[31:0]
-@1401200
+@1000200
 -DUT CPRs
 @c00200
 -DUT Memory FU

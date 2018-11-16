@@ -11,8 +11,8 @@ test_start:
     xc.aessub.enc    c2, c0, c1
     xc.xcr2gpr       a0, c2
 
-    xc.aessub.dec    c2, c0, c1
-    xc.xcr2gpr       a0, c2
+    xc.aessub.dec    c3, c2, c2
+    xc.xcr2gpr       a0, c3
 
     xc.aessub.decrot c2, c0, c1
     xc.xcr2gpr       a0, c2

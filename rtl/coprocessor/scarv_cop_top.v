@@ -168,7 +168,8 @@ assign rng_ivalid =
 assign crd_wen   = palu_cpr_rd_ben |
                    mem_cpr_rd_ben  |
                    malu_cpr_rd_ben |
-                   rng_cpr_rd_ben  ;
+                   rng_cpr_rd_ben  |
+                   aes_cpr_rd_ben  ;
 
 assign crd_addr  = !malu_ivalid ? id_crd :
                    !malu_idone  ? id_crd1:
@@ -177,7 +178,8 @@ assign crd_addr  = !malu_ivalid ? id_crd :
 assign crd_wdata = palu_cpr_rd_wdata |
                    mem_cpr_rd_wdata  |
                    malu_cpr_rd_wdata |
-                   rng_cpr_rd_wdata  ;
+                   rng_cpr_rd_wdata  |
+                   aes_cpr_rd_wdata  ;
 
 //
 // GPR Writeback data and instruction result selection

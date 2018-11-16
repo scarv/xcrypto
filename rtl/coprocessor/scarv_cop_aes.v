@@ -52,90 +52,123 @@ wire mode_enc   = sub_enc || sub_encrot || mix_enc;
 wire rotate     = sub_encrot || sub_decrot;
 
 assign aes_idone        = 
-    sub_instr ||
-    ((mix_enc || mix_dec) && mix_fsm_3);
+    (sub_instr            && aes_fsm_3) ||
+    ((mix_enc || mix_dec) && aes_fsm_3);
 
 assign aes_cpr_rd_ben   = 
-    {4{sub_instr}} |
-    ({3'b0,mix_instr} << mix_fsm);
+    sub_ben_rot                   |
+    ({3'b0,mix_instr} << aes_fsm);
 
 assign aes_cpr_rd_wdata = 
     {32{sub_instr}} & sbox_output   |
-    {24'b0, {8{mix_instr}} & mix_output} << {mix_fsm,3'b0};
+    {24'b0, {8{mix_instr}} & mix_output} << {aes_fsm,3'b0};
 
 //
 // Mix columns state machine.
-reg  [1:0] mix_fsm;
-wire [1:0] n_mix_fsm = mix_fsm + 1;
+reg  [1:0] aes_fsm;
+wire [1:0] n_aes_fsm = aes_fsm + 1;
 
-wire       mix_fsm_0 = mix_fsm == 2'd0 && mix_instr;
-wire       mix_fsm_1 = mix_fsm == 2'd1 && mix_instr;
-wire       mix_fsm_2 = mix_fsm == 2'd2 && mix_instr;
-wire       mix_fsm_3 = mix_fsm == 2'd3 && mix_instr;
+wire       aes_fsm_0 = aes_fsm == 2'd0;
+wire       aes_fsm_1 = aes_fsm == 2'd1;
+wire       aes_fsm_2 = aes_fsm == 2'd2;
+wire       aes_fsm_3 = aes_fsm == 2'd3;
 
 always @(posedge g_clk) begin
     if(!g_resetn) begin
-        mix_fsm <= 2'b00;
-    end else if(mix_enc || mix_dec) begin
-        mix_fsm <= n_mix_fsm;
+        aes_fsm <= 2'b00;
+    end else if(mix_instr || sub_instr) begin
+        aes_fsm <= n_aes_fsm;
     end
 end
 
 //
-// multiplication function for two 8 bit numbers
-function [7:0] xmul;
-    input [7:0] lhs;
-    input [7:0] rhs;
-    
-    xmul = 
-        ({8{rhs[0]}} & (lhs << 0)) ^
-        ({8{rhs[1]}} & (lhs << 1)) ^
-        ({8{rhs[2]}} & (lhs << 2)) ^
-        ({8{rhs[3]}} & (lhs << 3)) ^
-        ({8{rhs[4]}} & (lhs << 4)) ^
-        ({8{rhs[5]}} & (lhs << 5)) ^
-        ({8{rhs[6]}} & (lhs << 6)) ^
-        ({8{rhs[7]}} & (lhs << 7)) ;
+// Multiply by 2 in GF(2^8) modulo 8'h1b
+//
+function [7:0] xtime2;
+    input [7:0] a;
+
+    xtime2 = ((a >> 7) & 1'b1) ? (a << 1) ^ 8'h1b :
+                                (a << 1)         ;
 endfunction
 
 //
+// Multiply by 3 in GF(2^8)
+//
+function [7:0] xtime3;
+    input [7:0] a;
+
+    xtime3 = xtime2(a) ^ a;
+
+endfunction
+
+//
+// Paired down multiply by X in GF(2^8)
+//
+function [7:0] xtimeN;
+    input[7:0] a;
+    input[3:0] b;
+
+    xtimeN = 
+        (b[0] ?                         a   : 0) ^
+        (b[1] ? xtime2(                 a)  : 0) ^
+        (b[2] ? xtime2(xtime2(          a)) : 0) ^
+        (b[3] ? xtime2(xtime2(xtime2(   a))): 0) ;
+
+endfunction
+
+
+//
 // MIX instruction logic
-wire [7:0] t0 = aes_rs1[ 7: 0];
-wire [7:0] t1 = aes_rs2[15: 8];
-wire [7:0] t2 = aes_rs1[23:16];
-wire [7:0] t3 = aes_rs2[31:24];
+wire [7:0] t0 = aes_rs1[ 7: 0] & {8{mix_instr}};
+wire [7:0] t1 = aes_rs2[15: 8] & {8{mix_instr}};
+wire [7:0] t2 = aes_rs1[23:16] & {8{mix_instr}};
+wire [7:0] t3 = aes_rs2[31:24] & {8{mix_instr}};
 
-wire [7:0] mix_output_enc =
-  {7{mix_fsm_0}} & (xmul( 2,t0) ^ xmul( 3,t1) ^ xmul( 1,t2) ^ xmul( 1,t3)) |
-  {7{mix_fsm_1}} & (xmul( 1,t0) ^ xmul( 2,t1) ^ xmul( 3,t2) ^ xmul( 1,t3)) |
-  {7{mix_fsm_2}} & (xmul( 1,t0) ^ xmul( 1,t1) ^ xmul( 2,t2) ^ xmul( 3,t3)) |
-  {7{mix_fsm_3}} & (xmul( 3,t0) ^ xmul( 1,t1) ^ xmul( 1,t2) ^ xmul( 2,t3)) ;
+reg  [7:0] mix_output_enc;
+reg  [7:0] mix_output_dec;
 
-wire [7:0] mix_output_dec =
-  {7{mix_fsm_0}} & (xmul(14,t0) ^ xmul(11,t1) ^ xmul(13,t2) ^ xmul( 9,t3)) |
-  {7{mix_fsm_1}} & (xmul( 9,t0) ^ xmul(14,t1) ^ xmul(11,t2) ^ xmul(13,t3)) |
-  {7{mix_fsm_2}} & (xmul(13,t0) ^ xmul( 9,t1) ^ xmul(14,t2) ^ xmul(11,t3)) |
-  {7{mix_fsm_3}} & (xmul(11,t0) ^ xmul(13,t1) ^ xmul( 9,t2) ^ xmul(14,t3)) ;
+always @(*) begin : p_compute_mix_output_enc
+    case(aes_fsm)
+        2'b00: mix_output_enc = xtime2(t0) ^ xtime3(t1) ^ t2 ^ t3;
+        2'b01: mix_output_enc = xtime2(t1) ^ xtime3(t2) ^ t0 ^ t3;
+        2'b10: mix_output_enc = xtime2(t2) ^ xtime3(t3) ^ t0 ^ t1;
+        2'b11: mix_output_enc = xtime2(t3) ^ xtime3(t0) ^ t1 ^ t2;
+    endcase
+end
+
+always @(*) begin : p_compute_mix_output_dec
+    case(aes_fsm)
+        2'b00: mix_output_dec = 
+            xtimeN(t0,8'he)^xtimeN(t1,8'hb)^xtimeN(t2,8'hd)^xtimeN(t3,8'h9);
+        2'b01: mix_output_dec =
+            xtimeN(t0,8'h9)^xtimeN(t1,8'he)^xtimeN(t2,8'hb)^xtimeN(t3,8'hd);
+        2'b10: mix_output_dec =
+            xtimeN(t0,8'hd)^xtimeN(t1,8'h9)^xtimeN(t2,8'he)^xtimeN(t3,8'hb);
+        2'b11: mix_output_dec =
+            xtimeN(t0,8'hb)^xtimeN(t1,8'hd)^xtimeN(t2,8'h9)^xtimeN(t3,8'he);
+    endcase
+end
 
 wire [7:0] mix_output = mode_enc ? mix_output_enc : mix_output_dec;
 
 //
 // SBOX signal input/output
-wire [ 7:0] sbox_input_0    = {8{sub_instr}} & aes_rs1[ 7: 0];
-wire [ 7:0] sbox_input_1    = {8{sub_instr}} & aes_rs2[15: 8];
-wire [ 7:0] sbox_input_2    = {8{sub_instr}} & aes_rs1[23:16];
-wire [ 7:0] sbox_input_3    = {8{sub_instr}} & aes_rs2[31:24];
+wire [ 7:0] sbox_input_0    = 
+    {8{sub_instr && aes_fsm_0}} & aes_rs1[ 7: 0]|
+    {8{sub_instr && aes_fsm_1}} & aes_rs2[15: 8]|
+    {8{sub_instr && aes_fsm_2}} & aes_rs1[23:16]|
+    {8{sub_instr && aes_fsm_3}} & aes_rs2[31:24];
 
 wire        sbox_invert     = !mode_enc;
 
 wire [ 7:0] sbox_output_0;
-wire [ 7:0] sbox_output_1;
-wire [ 7:0] sbox_output_2;
-wire [ 7:0] sbox_output_3;
 
-wire [31:0] sbox_output = rotate ? 
-    {sbox_output_2, sbox_output_1, sbox_output_0, sbox_output_3} :
-    {sbox_output_3, sbox_output_2, sbox_output_1, sbox_output_0} ;
+wire [31:0] sbox_output = {sbox_output_0,sbox_output_0,
+                           sbox_output_0,sbox_output_0};
+
+wire [3:0] sub_ben      = {3'b0, sub_instr} << aes_fsm;
+wire [3:0] sub_ben_rot  = rotate ? {sub_ben[2:0],sub_ben[3]} :
+                                    sub_ben                  ;
 
 //
 // SBOX Instances
@@ -144,24 +177,6 @@ scarv_cop_aes_sbox i_sbox_0 (
 .in (sbox_input_0    ),
 .inv(sbox_invert     ),
 .out(sbox_output_0   ) 
-);
-
-scarv_cop_aes_sbox i_sbox_1 (
-.in (sbox_input_1    ),
-.inv(sbox_invert     ),
-.out(sbox_output_1   ) 
-);
-
-scarv_cop_aes_sbox i_sbox_2 (
-.in (sbox_input_2    ),
-.inv(sbox_invert     ),
-.out(sbox_output_2   ) 
-);
-
-scarv_cop_aes_sbox i_sbox_3 (
-.in (sbox_input_3    ),
-.inv(sbox_invert     ),
-.out(sbox_output_3   ) 
 );
 
 endmodule
