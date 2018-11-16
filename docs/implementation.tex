@@ -314,7 +314,10 @@ This section describes the main internal blocks and interfaces of the COP.
 \centering
 \includegraphics[width=0.7\textwidth]{diagrams/cop-block-diagram.png}
 \caption{A block diagram of the main components and data paths of
-the COP.}
+the COP. Note that while inputs and outputs of the COP are registered,
+there are several multi-cycle components inside each of the functional
+units. Hence while it may look like this block is a single cycle
+implementation, in reality it is not.}
 \label{fig:cop-block-diagram}
 \end{figure}
 
@@ -492,6 +495,62 @@ The 4-bit \SIGREF{crd\_wen} signal is a per-byte lane write enable
 signal. Byte $i$ of \SIGREF{creg\_d\_wdata} is only written back if
 bit $i$ of the write enable signal is set.
 }{tab:sigs-regfile-write}
+
+
+\subsection{AES Block ({\tt scarv\_cop\_aes})}
+
+This block is responsible for implementing all of the AES accelerator
+instructions.
+It's interface is described in table \ref{tab:sigs-aes-block}.
+
+\SIGNALS{
+\SIGNALI{1}{aes\_ivalid}{
+    Indicates that the input instruction data is valid and that the 
+    block should execute the specified instruction.
+}
+\SIGNALO{1}{aes\_idone}{
+    Indicates that the block has finished executing an instruction
+    and is ready for another on the next cycle.
+}
+\SIGNALI{32}{aes\_rs1}{CPR Register operand 1}
+\SIGNALI{32}{aes\_rs2}{CPR Register operand 2}
+\SIGNALI{4}{id\_class}{
+    Identifies which class of instruction the COP is executing.
+}
+\SIGNALI{3}{id\_subclass}{
+    Identifies which instruction is being executed by the packed ALU block.
+}
+\SIGNALO{4}{aes\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for write-back data.
+}
+\SIGNALO{32}{aes\_cpr\_wdata}{
+    Data to be written to the $\CPR$ register file
+}
+\SIGNALO{32}{aes\_cpr\_wen}{
+    AES result $\CPR$ write enable.
+}
+}{Interface signals for the AES block. All signals are
+synchronous to \SIGREF{g\_clk}.}
+{tab:sigs-aes-block}
+
+The instructions handled by the AES block are:
+\begin{itemize}
+\item {\tt xc.aessub.enc}
+\item {\tt xc.aessub.encrot}
+\item {\tt xc.aessub.dec}
+\item {\tt xc.aessub.decrot}
+\item {\tt xc.aesmix.enc}
+\item {\tt xc.aesmix.dec}
+\end{itemize}
+
+All of these instructions take 4 cycles to execute.
+
+The {\em aessub} instructions compute 1 sbox lookup per cycle.
+The mix instructions perform one bytes worth of result computation per cycle.
+Higher performance / lower area implementations of this block are easily
+achievable.
+The current implementation, as with the rest of the reference implementation,
+is aimed at being simple and easy to understand to an unfamiliar observer.
 
 \subsection{Packed Arithmetic Block ({\tt scarv\_cop\_palu})}
 

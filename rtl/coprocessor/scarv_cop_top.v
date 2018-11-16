@@ -168,7 +168,8 @@ assign rng_ivalid =
 assign crd_wen   = palu_cpr_rd_ben |
                    mem_cpr_rd_ben  |
                    malu_cpr_rd_ben |
-                   rng_cpr_rd_ben  ;
+                   rng_cpr_rd_ben  |
+                   aes_cpr_rd_ben  ;
 
 assign crd_addr  = !malu_ivalid ? id_crd :
                    !malu_idone  ? id_crd1:
@@ -177,7 +178,8 @@ assign crd_addr  = !malu_ivalid ? id_crd :
 assign crd_wdata = palu_cpr_rd_wdata |
                    mem_cpr_rd_wdata  |
                    malu_cpr_rd_wdata |
-                   rng_cpr_rd_wdata  ;
+                   rng_cpr_rd_wdata  |
+                   aes_cpr_rd_wdata  ;
 
 //
 // GPR Writeback data and instruction result selection
@@ -256,7 +258,7 @@ always @(posedge g_clk) if(!g_resetn) begin
 // BEGIN PIPELINE PROGRESSION CONTROL
 
 wire    fu_done         = 
-    mem_idone || palu_idone || malu_idone || rng_idone ||
+    mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
     (id_exception && insn_accept);
 
 wire    insn_valid      = insn_accept ||
@@ -437,9 +439,6 @@ scarv_cop_aes i_scarv_cop_aes(
 .aes_idone        (aes_idone       ), // Instruction complete
 .aes_rs1          (crs1_rdata      ), // Source register 1
 .aes_rs2          (crs2_rdata      ), // Source register 2
-.aes_rs3          (crs3_rdata      ), // Source register 3
-.id_imm           (id_imm          ), // Source immedate
-.id_pw            (id_pw           ), // Pack width
 .id_class         (id_class        ), // Instruction class
 .id_subclass      (id_subclass     ), // Instruction subclass
 .aes_cpr_rd_ben   (aes_cpr_rd_ben  ), // Writeback byte enable
