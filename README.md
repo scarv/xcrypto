@@ -8,7 +8,15 @@ CPU core is included.*
 
 ## Getting Started
 
-Setup the project workspace first:
+**The best place to start** getting a feel for what XCrypto does is to look
+at the specification documents on the releases page
+[here](https://github.com/scarv/xcrypto/releases).
+These explain both the ISE itself, the instructions and how to program it.
+They also describe the reference implementation we have constructed for
+evaluating the ISE with existing RISC-V cores.
+
+**If you want to start playing with it** then you can setup the project
+workspace as follows:
 
 ```sh
 $> git clone git@github.com:scarv/xcrypto.git
@@ -16,9 +24,6 @@ $> cd xcrypto
 $> git submodule update --init --recursive
 $> source ./bin/source.me.sh
 ```
-
-Or, look at the latest packaged release 
-[here](https://github.com/scarv/xcrypto/releases).
 
 Note that one must run the `git submodule update` command in order to
 pull the external repositories (like PicoRV32) required for the integration
