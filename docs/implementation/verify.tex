@@ -197,6 +197,10 @@ verification flow.
     A new check was added that asserts all accepted instructions are
     retired within 36 cycles or fewer, thus proving the absence of
     deadlocks.
+\item AES instructions did not store their partial results before
+    writing them back to the register file. If source registers were the
+    same as the destination register, this could lead to corruption of
+    results.
 \end{itemize}
 
 
@@ -208,8 +212,6 @@ verification effort which were not fillable due to time constraints on
 the project.
 
 \begin{itemize}
-\item Scatter/gather instruction data loaded/stored is currently
-    not checked, though this is a todo item.
 \item The design and verification was done by a single person. This
     is considered bad practice, as that person lacks a "fresh pair
     of eyes" needed to critically analyse a design.

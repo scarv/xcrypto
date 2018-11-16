@@ -23,10 +23,7 @@ output wire         aes_idone       , // Instruction complete
 
 input  wire [31:0]  aes_rs1         , // Source register 1
 input  wire [31:0]  aes_rs2         , // Source register 2
-input  wire [31:0]  aes_rs3         , // Source register 3
 
-input  wire [31:0]  id_imm          , // Source immedate
-input  wire [ 2:0]  id_pw           , // Pack width
 input  wire [ 3:0]  id_class        , // Instruction class
 input  wire [ 4:0]  id_subclass     , // Instruction subclass
 

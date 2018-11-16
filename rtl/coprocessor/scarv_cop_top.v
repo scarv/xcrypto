@@ -439,9 +439,6 @@ scarv_cop_aes i_scarv_cop_aes(
 .aes_idone        (aes_idone       ), // Instruction complete
 .aes_rs1          (crs1_rdata      ), // Source register 1
 .aes_rs2          (crs2_rdata      ), // Source register 2
-.aes_rs3          (crs3_rdata      ), // Source register 3
-.id_imm           (id_imm          ), // Source immedate
-.id_pw            (id_pw           ), // Pack width
 .id_class         (id_class        ), // Instruction class
 .id_subclass      (id_subclass     ), // Instruction subclass
 .aes_cpr_rd_ben   (aes_cpr_rd_ben  ), // Writeback byte enable
