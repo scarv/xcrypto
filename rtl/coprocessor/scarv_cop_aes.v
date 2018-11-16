@@ -55,13 +55,11 @@ assign aes_idone        =
     (sub_instr            && aes_fsm_3) ||
     ((mix_enc || mix_dec) && aes_fsm_3);
 
-assign aes_cpr_rd_ben   = 
-    sub_ben_rot                   |
-    ({3'b0,mix_instr} << aes_fsm);
+assign aes_cpr_rd_ben   = {4{aes_idone}} ;
 
 assign aes_cpr_rd_wdata = 
     {32{sub_instr}} & sbox_output   |
-    {24'b0, {8{mix_instr}} & mix_output} << {aes_fsm,3'b0};
+    {32{mix_instr}} & mix_result    ;
 
 //
 // Mix columns state machine.
@@ -119,6 +117,7 @@ endfunction
 
 //
 // MIX instruction logic
+//
 wire [7:0] t0 = aes_rs1[ 7: 0] & {8{mix_instr}};
 wire [7:0] t1 = aes_rs2[15: 8] & {8{mix_instr}};
 wire [7:0] t2 = aes_rs1[23:16] & {8{mix_instr}};
@@ -151,24 +150,52 @@ end
 
 wire [7:0] mix_output = mode_enc ? mix_output_enc : mix_output_dec;
 
+wire [31:0] mix_result = {tmp_reg[31:8], mix_output};
+
 //
 // SBOX signal input/output
 wire [ 7:0] sbox_input_0    = 
-    {8{sub_instr && aes_fsm_0}} & aes_rs1[ 7: 0]|
-    {8{sub_instr && aes_fsm_1}} & aes_rs2[15: 8]|
-    {8{sub_instr && aes_fsm_2}} & aes_rs1[23:16]|
-    {8{sub_instr && aes_fsm_3}} & aes_rs2[31:24];
+    {8{sub_instr && aes_fsm_0}} & aes_rs1[ 7: 0] |
+    {8{sub_instr && aes_fsm_1}} & aes_rs2[15: 8] |
+    {8{sub_instr && aes_fsm_2}} & aes_rs1[23:16] |
+    {8{sub_instr && aes_fsm_3}} & aes_rs2[31:24] ;
 
 wire        sbox_invert     = !mode_enc;
 
 wire [ 7:0] sbox_output_0;
 
-wire [31:0] sbox_output = {sbox_output_0,sbox_output_0,
-                           sbox_output_0,sbox_output_0};
+wire [31:0] sbox_output =  
+   {sub_ben_rot[3] ? sbox_output_0 : tmp_reg[31:24], 
+    sub_ben_rot[2] ? sbox_output_0 : tmp_reg[23:16],
+    sub_ben_rot[1] ? sbox_output_0 : tmp_reg[15: 8],
+    sub_ben_rot[0] ? sbox_output_0 : tmp_reg[ 7: 0]};
 
 wire [3:0] sub_ben      = {3'b0, sub_instr} << aes_fsm;
 wire [3:0] sub_ben_rot  = rotate ? {sub_ben[2:0],sub_ben[3]} :
                                     sub_ben                  ;
+
+//
+// Temporary result storage.
+//
+
+reg [31:0] tmp_reg;
+
+always @(posedge g_clk) begin
+    if(!g_resetn) begin
+        tmp_reg = 1'b0;
+    end
+    if(sub_instr) begin
+        if(sub_ben_rot[0]) tmp_reg[ 7: 0] <= sbox_output_0;
+        if(sub_ben_rot[1]) tmp_reg[15: 8] <= sbox_output_0;
+        if(sub_ben_rot[2]) tmp_reg[23:16] <= sbox_output_0;
+        if(sub_ben_rot[3]) tmp_reg[31:24] <= sbox_output_0;
+    end else if(mix_instr) begin
+        if(aes_fsm_3) tmp_reg[ 7: 0] <= mix_output;
+        if(aes_fsm_2) tmp_reg[15: 8] <= mix_output;
+        if(aes_fsm_1) tmp_reg[23:16] <= mix_output;
+        if(aes_fsm_0) tmp_reg[31:24] <= mix_output;
+    end
+end
 
 //
 // SBOX Instances

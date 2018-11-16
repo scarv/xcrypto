@@ -1,20 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Mon Nov  5 15:45:53 2018
+[*] Fri Nov 16 13:41:17 2018
 [*]
-[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_pmul_l.vcd"
-[dumpfile_mtime] "Mon Nov  5 15:16:55 2018"
-[dumpfile_size] 275120
+[dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/smt2/instr_aesmix_enc.vcd"
+[dumpfile_mtime] "Fri Nov 16 13:24:25 2018"
+[dumpfile_size] 282105
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/formal-flow-view.gtkw"
 [timestart] 0
-[size] 1467 1025
+[size] 1920 1025
 [pos] -1 -1
-*-5.941504 100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-5.381693 36 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_formal.
 [treeopen] tb_formal.i_dut.
 [treeopen] tb_formal.i_dut.i_scarv_cop_palu.
+[treeopen] tb_formal.i_fml_top.
 [sst_width] 298
-[signals_width] 359
+[signals_width] 276
 [sst_expanded] 1
 [sst_vpaned_height] 301
 @28
@@ -29,8 +30,8 @@ tb_formal.i_dut.cop_insn_ack
 @22
 tb_formal.i_dut.cpu_insn_enc[31:0]
 tb_formal.i_dut.cpu_rs1[31:0]
-@200
--
+@c00200
+-MEMORY BUS
 @22
 tb_formal.i_dut.cop_mem_addr[31:0]
 tb_formal.i_dut.cop_mem_ben[3:0]
@@ -45,22 +46,54 @@ tb_formal.i_dut.cop_mem_stall
 tb_formal.i_dut.cop_mem_wdata[31:0]
 @28
 tb_formal.i_dut.cop_mem_wen
-tb_formal.mem_txn_finish
+@1401200
+-MEMORY BUS
+@28
+tb_formal.i_dut.i_scarv_cop_aes.aes_idone
+tb_formal.i_dut.i_scarv_cop_aes.sbox_invert
+tb_formal.i_dut.i_scarv_cop_aes.aes_ivalid
+@23
+tb_formal.i_dut.i_scarv_cop_aes.sbox_input_0[7:0]
+@22
+tb_formal.i_dut.i_scarv_cop_aes.sbox_output_0[7:0]
+tb_formal.i_dut.i_scarv_cop_aes.aes_cpr_rd_ben[3:0]
+tb_formal.i_dut.i_scarv_cop_aes.aes_cpr_rd_wdata[31:0]
+tb_formal.i_dut.i_scarv_cop_aes.t0[7:0]
+tb_formal.i_dut.i_scarv_cop_aes.t1[7:0]
+tb_formal.i_dut.i_scarv_cop_aes.t2[7:0]
+tb_formal.i_dut.i_scarv_cop_aes.t3[7:0]
 @200
 -
-@2028
-^1 /home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/filter-pack-width.txt
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.pw[2:0]
-@29
-tb_formal.i_dut.i_scarv_cop_idecode.dec_pmul_h
-@28
-tb_formal.i_dut.i_scarv_cop_idecode.dec_pmul_l
 @22
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.a[31:0]
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.b[31:0]
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.ctr[5:0]
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.accumulator[63:0]
-tb_formal.i_dut.i_scarv_cop_palu.i_palu_multiplier.result[31:0]
+tb_formal.i_dut.i_scarv_cop_cprs.crd_addr[3:0]
+tb_formal.i_dut.i_scarv_cop_cprs.crd_wdata[31:0]
+tb_formal.i_dut.i_scarv_cop_cprs.crd_wen[3:0]
+@200
+-
+@22
+tb_formal.i_fml_top.i_fml_checks.t0[7:0]
+tb_formal.i_fml_top.i_fml_checks.t1[7:0]
+tb_formal.i_fml_top.i_fml_checks.t2[7:0]
+tb_formal.i_fml_top.i_fml_checks.t3[7:0]
+@200
+-
+@28
+tb_formal.i_fml_top.i_fml_checks.vtx_valid
+@22
+tb_formal.i_fml_top.i_fml_checks.encoded[31:0]
+@28
+tb_formal.i_fml_top.i_fml_checks.dec_aesmix_dec
+tb_formal.i_fml_top.i_fml_checks.dec_aesmix_enc
+tb_formal.i_fml_top.i_fml_checks.dec_aessub_dec
+tb_formal.i_fml_top.i_fml_checks.dec_aessub_decrot
+tb_formal.i_fml_top.i_fml_checks.dec_aessub_enc
+tb_formal.i_fml_top.i_fml_checks.dec_aessub_encrot
+@22
+tb_formal.i_fml_top.i_fml_checks.mixenc_expected[31:0]
+tb_formal.i_fml_top.i_fml_checks.vtx_crd_val_post[31:0]
+tb_formal.i_fml_top.i_fml_checks.vtx_crs1_val_pre[31:0]
+tb_formal.i_fml_top.i_fml_checks.vtx_crs2_val_pre[31:0]
+tb_formal.i_fml_top.i_fml_checks.vtx_crs3_val_pre[31:0]
 @200
 -
 @28
@@ -69,31 +102,6 @@ tb_formal.i_dut.cpu_insn_ack
 tb_formal.i_dut.cop_result[2:0]
 @200
 -
-@24
-tb_formal.i_fml_checks.dec_arg_crd[3:0]
-tb_formal.i_fml_checks.dec_arg_crs1[3:0]
-tb_formal.i_fml_checks.dec_arg_crs2[3:0]
-tb_formal.i_fml_checks.dec_arg_crs3[3:0]
-@200
 -
-@2028
-^1 /home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/filter-pack-width.txt
-tb_formal.i_fml_checks.pw[2:0]
-@22
-tb_formal.i_fml_checks.result[31:0]
-tb_formal.i_fml_checks.vtx_crd_val_post[31:0]
-@28
-tb_formal.i_fml_checks.vtx_valid
-@22
-tb_formal.i_fml_checks.vtx_crd_val_pre[31:0]
-tb_formal.i_fml_checks.vtx_crs1_val_pre[31:0]
-tb_formal.i_fml_checks.vtx_crs2_val_pre[31:0]
-tb_formal.i_fml_checks.vtx_crs3_val_pre[31:0]
-tb_formal.i_fml_checks.vtx_instr_enc[31:0]
-@28
-tb_formal.mem_txn_finish
-@22
-tb_formal.i_fml_checks.vtx_crdm_val_pre[63:0]
-tb_formal.i_fml_checks.vtx_crdm_val_post[63:0]
 [pattern_trace] 1
 [pattern_trace] 0
