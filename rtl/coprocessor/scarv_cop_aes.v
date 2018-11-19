@@ -135,13 +135,13 @@ end
 always @(*) begin : p_compute_mix_output_dec
     case(aes_fsm)
         2'b00: mix_output_dec = 
-            xtimeN(t0,8'he)^xtimeN(t1,8'hb)^xtimeN(t2,8'hd)^xtimeN(t3,8'h9);
+            xtimeN(t0,4'he)^xtimeN(t1,4'hb)^xtimeN(t2,4'hd)^xtimeN(t3,4'h9);
         2'b01: mix_output_dec =
-            xtimeN(t0,8'h9)^xtimeN(t1,8'he)^xtimeN(t2,8'hb)^xtimeN(t3,8'hd);
+            xtimeN(t0,4'h9)^xtimeN(t1,4'he)^xtimeN(t2,4'hb)^xtimeN(t3,4'hd);
         2'b10: mix_output_dec =
-            xtimeN(t0,8'hd)^xtimeN(t1,8'h9)^xtimeN(t2,8'he)^xtimeN(t3,8'hb);
+            xtimeN(t0,4'hd)^xtimeN(t1,4'h9)^xtimeN(t2,4'he)^xtimeN(t3,4'hb);
         2'b11: mix_output_dec =
-            xtimeN(t0,8'hb)^xtimeN(t1,8'hd)^xtimeN(t2,8'h9)^xtimeN(t3,8'he);
+            xtimeN(t0,4'hb)^xtimeN(t1,4'hd)^xtimeN(t2,4'h9)^xtimeN(t3,4'he);
     endcase
 end
 
