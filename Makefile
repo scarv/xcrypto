@@ -125,9 +125,13 @@ icarus_run_integ: icarus_integ_tb
 unit_tests:
 	$(MAKE) -C $(XC_HOME)/verif/unit all
 
+.PHONY: verilator_build
+verilator_build:
+	$(MAKE) -C $(XC_HOME)/flow/verilator build
+
 
 #
 # Build the unit tests, examples yosys and icarus models but don't run 
 # anything yet.
 #
-build_all: icarus_build unit_tests icarus_integ_tb examples docs
+build_all: icarus_build unit_tests icarus_integ_tb examples docs verilator_build

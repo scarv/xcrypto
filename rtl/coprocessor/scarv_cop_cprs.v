@@ -9,7 +9,7 @@
 // 
 // 
 
-`ifndef SYNTHESIS
+`ifdef FORMAL
 `include "fml_common.vh"
 `endif
 
@@ -24,7 +24,7 @@ input  wire             g_clk         , // Global clock
 output wire             g_clk_req     , // Clock request
 input  wire             g_resetn      , // Synchronous active low reset.
 
-`ifndef SYNTHESIS
+`ifdef FORMAL
 `VTX_REGISTER_PORTS_OUT(cprs_snoop)
 `endif
 
@@ -52,7 +52,7 @@ assign g_clk_req = crd_wen;
 // Storage for the registers
 reg [31:0] cprs [15:0];
 
-`ifndef SYNTHESIS
+`ifdef FORMAL
 `VTX_REGISTER_PORTS_ASSIGNR(cprs_snoop,cprs)
 `endif
 

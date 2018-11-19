@@ -25,7 +25,7 @@ input  wire             g_resetn        , // Synchronous active low reset.
 
 //
 // Status Interface
-`ifndef SYNTHESIS
+`ifdef FORMAL
 output wire [31:0]      cop_random      , // The most recent random sample
 output wire             cop_rand_sample , // cop_random valid when this high.
 
@@ -381,7 +381,7 @@ scarv_cop_cprs i_scarv_cop_cprs(
 .g_clk     (g_clk     ), // Global clock
 .g_clk_req (g_clk_req ), // Clock request
 .g_resetn  (g_resetn  ), // Synchronous active low reset.
-`ifndef SYNTHESIS
+`ifdef FORMAL
 `VTX_REGISTER_PORTS_RAISE(cprs_snoop)
 `endif
 .crs1_ren  (crs1_ren  ), // Port 1 read enable
@@ -509,7 +509,7 @@ scarv_cop_rng i_scarv_cop_rng(
 .g_resetn        (g_resetn        ), // Synchronous active low reset.
 .rng_ivalid      (rng_ivalid      ), // Valid instruction input
 .rng_idone       (rng_idone       ), // Instruction complete
-`ifndef SYNTHESIS
+`ifdef FORMAL
 .cop_random      (cop_random      ), // Latest random sample value
 .cop_rand_sample (cop_rand_sample ), // random sample value valid
 `endif

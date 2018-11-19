@@ -179,7 +179,7 @@ reg [31:0] tmp_reg;
 
 always @(posedge g_clk) begin
     if(!g_resetn) begin
-        tmp_reg = 1'b0;
+        tmp_reg <= 1'b0;
     end
     if(sub_instr) begin
         if(sub_ben_rot[0]) tmp_reg[ 7: 0] <= sbox_output_0;
