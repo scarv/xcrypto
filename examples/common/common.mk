@@ -13,6 +13,10 @@ $(TGT_DIR)/%.o : ../common/%.S
 	-mkdir -p $(TGT_DIR)
 	$(AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
 
+$(TGT_DIR)/%.o: ../common/%.c
+	-mkdir -p $(TGT_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $^ $(LDFLAGS)
+
 $(TGT_DIR)/%.dis : $(TGT_DIR)/%.elf
 	-mkdir -p $(TGT_DIR)
 	$(X_OBJDUMP) -j.text -dt $< > $@
