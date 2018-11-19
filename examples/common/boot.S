@@ -70,3 +70,25 @@ reset_handler:
 .global irq_handler
 irq_handler:            # Un-handled -> infinite loop.
     j irq_handler;
+
+
+.global putchar
+putchar:                # Simple asm implmentation of putchar.
+    li  t0, 0xFFFFFFFF
+    sb  a0, 0(t0)       # Writes low byte of a0 to address 0xFFFFFFFF
+    ret
+
+.global putstr
+putstr:                # Simple asm implmentation of putchar.
+    li  t0, 0xFFFFFFFF
+
+    putchar_loop:
+
+        lbu  t1, 0(a0)
+        beqz t1, putchar_finish
+        addi a0, a0, 1
+        sb   t1, 0(t0)
+        j    putchar_loop
+
+    putchar_finish:
+        ret

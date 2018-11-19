@@ -3,8 +3,6 @@
 
 #include "common.h"
 
-extern void     __pass();
-extern void     __fail();
 extern void     __move_to_cop(uint32_t a);
 extern uint32_t __move_to_gpr();
 

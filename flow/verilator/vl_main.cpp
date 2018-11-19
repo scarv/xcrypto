@@ -224,6 +224,12 @@ void axi_write_channel_response (
         } else {
             *axi_bvalid = 1;
             write_request_t * f = q -> front();
+            
+            //std::cout<<"Wrote " << std::hex << f -> wdata <<" to " <<
+            //    std::hex << f->waddr <<
+            //    " strb=" << std::hex << (int)f->wstrb <<std::endl;
+
+
             q -> pop();
             delete f;
         }
@@ -231,6 +237,27 @@ void axi_write_channel_response (
     }
 }
 
+
+/*
+@brief Emulates a UART RX reciever by monitoring write data transactions.
+@details Looks for data writes to 0xFFFFFFFC where strob==8. If this
+    is seen then print the low byte of the write data to the console.
+*/
+void emulate_uart_rx (
+    write_req_queue_t * q
+){
+    if(q -> empty()) {
+        return;
+    }
+
+    if(q -> front() -> complete) {
+        if(q -> front() -> waddr == 0xFFFFFFFC &&
+           q -> front() -> wstrb == 0x8) {
+            char tp = (q -> front() -> wdata >> 24) & 0xFF;
+            std::cout << tp;
+        }
+    }
+}
 
 /*
 @brief Called on every rising edge of the main clock.
@@ -290,6 +317,10 @@ void posedge_gclk(top_module_t top) {
         &top -> cop_axi_wdata,
         &cop_write_requests
     );
+
+    // Emulate any UART RX information
+    emulate_uart_rx(&cop_write_requests);
+    emulate_uart_rx(&prv_write_requests);
 
     // Handle picorv AXI read response channel
     axi_read_channel_response(
@@ -354,7 +385,6 @@ void process_arguments(int argc, char ** argv) {
         }
     }
 }
-
 
 /*!
 @brief Check if pass/fail conditions for the simulation are met.

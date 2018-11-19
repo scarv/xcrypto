@@ -20,6 +20,8 @@ export LDFLAGS  += -T$(LDSCRIPT)
 
 all:
 	$(MAKE) -C integration-test all
+	$(MAKE) -C helloworld all
 
 clean:
 	$(MAKE) -C integration-test clean
+	$(MAKE) -C helloworld clean
