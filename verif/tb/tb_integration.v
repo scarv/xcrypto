@@ -16,20 +16,27 @@
 //
 //  The top level integration testbench.
 //
-module tb_integration ();
+module tb_integration (
+`ifdef USE_VERILATOR_CLK_RESET
+input wire g_clk,
+input wire g_resetn
+`endif
+);
 
 //
 // Clock and reset generation
 //
 
-reg g_clk;
-reg g_resetn;
+`ifndef USE_VERILATOR_CLK_RESET
+reg g_clk    /*verilator public*/;
+reg g_resetn /*verilator public*/;
 
 initial g_clk           = 0;
-always @(g_clk) #20 g_clk <= !g_clk;
-
 initial g_resetn        = 0;
+
+always @(g_clk) #20 g_clk <= !g_clk;
 initial #80 g_resetn    = 1;
+`endif
 
 //
 // Simulation Parameter Handling
@@ -86,6 +93,7 @@ end
 
 //
 // Setup wave dumping
+`ifndef NO_WAVE_DUMP
 initial begin
     if($value$plusargs("WAVES=%s",tb_wavesfile)) begin
         $display("WAVES : %s", tb_wavesfile);
@@ -95,6 +103,7 @@ initial begin
     $dumpfile(tb_wavesfile);
     $dumpvars(0,tb_integration);
 end
+`endif
 
 //
 // Testbench wiring

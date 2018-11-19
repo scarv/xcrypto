@@ -129,6 +129,9 @@ unit_tests:
 verilator_build:
 	$(MAKE) -C $(XC_HOME)/flow/verilator build
 
+verilator_run: RTL_TIMEOUT=3000
+verilator_run:
+	$(MAKE) -C $(XC_HOME)/flow/verilator run
 
 #
 # Build the unit tests, examples yosys and icarus models but don't run 
