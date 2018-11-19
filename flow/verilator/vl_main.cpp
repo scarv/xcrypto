@@ -15,7 +15,7 @@ const vluint32_t TB_PASS_ADDRESS  = 0x00000001C;
 const vluint32_t TB_FAIL_ADDRESS  = 0x000000010;
 
 //! Maximum runtime for the simulation
-const vluint64_t    max_time    = 30000;
+const vluint64_t    max_time    = 300000;
 
 //! Typedef for the top level module of the design.
 typedef Vscarv_prv_xcrypt_top* top_module_t;

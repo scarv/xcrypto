@@ -19,7 +19,7 @@ $(TGT_DIR)/%.o: ../common/%.c
 
 $(TGT_DIR)/%.dis : $(TGT_DIR)/%.elf
 	-mkdir -p $(TGT_DIR)
-	$(X_OBJDUMP) -j.text -dt $< > $@
+	$(X_OBJDUMP) -j.text -j.data -dt $< > $@
 
 $(TGT_DIR)/%.srec : $(TGT_DIR)/%.elf
 	-mkdir -p $(TGT_DIR)

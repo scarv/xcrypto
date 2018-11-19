@@ -74,13 +74,13 @@ irq_handler:            # Un-handled -> infinite loop.
 
 .global putchar
 putchar:                # Simple asm implmentation of putchar.
-    li  t0, 0xFFFFFFFF
+    la  t0, 0xFFFFFFFF
     sb  a0, 0(t0)       # Writes low byte of a0 to address 0xFFFFFFFF
     ret
 
 .global putstr
 putstr:                # Simple asm implmentation of putchar.
-    li  t0, 0xFFFFFFFF
+    la  t0, 0xFFFFFFFF
 
     putchar_loop:
 
@@ -92,3 +92,33 @@ putstr:                # Simple asm implmentation of putchar.
 
     putchar_finish:
         ret
+
+#
+# Function for printing unsigned decimal numbers as hex to "stdout"
+#
+.global puthex
+puthex:             
+    la  t0, 0xFFFFFFFF
+    la  t1, puthex_lut
+    li  a2, 28
+
+    lb  t3, 0(t1)
+    sb  t3, 0(t0)
+    lb  t3, 16(t1)
+    sb  t3, 0(t0)
+    
+    puthex_loop:
+
+        srl  a1, a0, a2     # Copy integer to write and shift down by a2
+        addi a2, a2, -4     #
+        andi t2, a1, 0xF    # Get nibble to print/convert to hex
+        add  t3, t2, t1     # Offset into puthex_lut
+        lbu  t3, 0(t3)      # Load char from hexlut.
+        sb   t3, 0(t0)      # Store to stdout
+        bgez a2, puthex_loop
+
+    ret
+
+.data
+puthex_lut:
+    .string "0123456789ABCDEFx"
