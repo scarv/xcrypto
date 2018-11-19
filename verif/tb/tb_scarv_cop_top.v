@@ -162,9 +162,6 @@ wire [ 3:0]      cop_mem_ben     ; // Write Byte enable
 reg              cop_mem_stall   ; // Stall
 reg              cop_mem_error   ; // Error
 
-wire [31:0]      cop_random      ; // The most recent random sample
-wire             cop_rand_sample ; // cop_random valid when this high.
-
 //
 // Model signals
 wire cop_insn_valid  = cpu_insn_req && cop_insn_ack; // New input instruction
@@ -188,8 +185,6 @@ scarv_cop_top i_dut(
 .cop_result    (cop_result   ) , // COP execution result
 .cop_insn_rsp  (cop_insn_rsp ) , // COP instruction finished
 .cpu_insn_ack  (cpu_insn_ack ) , // Instruction finish acknowledge
-.cop_random      (cop_random      ), // Latest random sample value
-.cop_rand_sample (cop_rand_sample ), // random sample value valid
 .cop_mem_cen   (cop_mem_cen  ) , // Chip enable
 .cop_mem_wen   (cop_mem_wen  ) , // write enable
 .cop_mem_addr  (cop_mem_addr ) , // Read/write address (word aligned)
