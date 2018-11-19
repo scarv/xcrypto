@@ -11,6 +11,7 @@ SRC_RTL     ?= $(shell find ../../ -path "*rtl/coprocessor/*.v") \
 	           $(shell find ../../ -path "*rtl/integration/*.vh") \
                $(XC_HOME)/external/picorv32/picorv32.v  \
 
+CPP_FILES   = vl_main.cpp srec.cpp
 
 TOP_MODULE  ?= scarv_prv_xcrypt_top
 SIM_EXE      = $(XC_HOME)/flow/verilator/obj_dir/$(TOP_MODULE)
@@ -28,8 +29,8 @@ build: $(SIM_EXE)
 #
 # Construct the verilated executable.
 #
-$(SIM_EXE) : $(SRC_RTL) vl_main.cpp
-	$(VERILATOR) $(VL_FLAGS) --cc $(SRC_RTL) --exe vl_main.cpp -o $@
+$(SIM_EXE) : $(SRC_RTL) $(CPP_FILES)
+	$(VERILATOR) $(VL_FLAGS) --cc $(SRC_RTL) --exe $(CPP_FILES) -o $@
 	$(MAKE) -C obj_dir -f V$(TOP_MODULE).mk
 
 #
@@ -37,4 +38,4 @@ $(SIM_EXE) : $(SRC_RTL) vl_main.cpp
 #
 run: $(SIM_EXE)
 	$(SIM_EXE) +TIMEOUT=$(RTL_TIMEOUT) \
-                +IMEM=$(SIM_UNIT_TEST:%.hex=%.integ.hex) 
+                +IMEM=$(SIM_UNIT_TEST:%.hex=%.srec) 

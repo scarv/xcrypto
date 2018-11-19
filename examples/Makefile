@@ -5,6 +5,7 @@ export AS       = $(RISCV)/bin/riscv64-unknown-elf-as
 export LD       = $(RISCV)/bin/riscv64-unknown-elf-ld
 export X_AS     = $(XC_HOME)/work/riscv-binutils-gdb/build/gas/as-new
 export X_OBJDUMP= $(XC_HOME)/work/riscv-binutils-gdb/build/binutils/objdump
+export X_OBJCOPY= $(XC_HOME)/work/riscv-binutils-gdb/build/binutils/objcopy
 
 export INC_DIR  = $(XC_HOME)/examples/common
 

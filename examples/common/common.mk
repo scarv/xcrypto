@@ -3,7 +3,7 @@ TGT_DIR  = $(XC_WORK)/examples
 
 EXE      ?= $(TGT_DIR)/$(TEST_NAME).elf
 
-all: $(EXE) $(EXE:%.elf=%.dis) $(EXE:%.elf=%.hex)
+all: $(EXE) $(EXE:%.elf=%.dis) $(EXE:%.elf=%.hex) $(EXE:%.elf=%.srec)
 
 $(TGT_DIR)/%.o : %.x.S
 	-mkdir -p $(TGT_DIR)
@@ -20,6 +20,10 @@ $(TGT_DIR)/%.o: ../common/%.c
 $(TGT_DIR)/%.dis : $(TGT_DIR)/%.elf
 	-mkdir -p $(TGT_DIR)
 	$(X_OBJDUMP) -j.text -dt $< > $@
+
+$(TGT_DIR)/%.srec : $(TGT_DIR)/%.elf
+	-mkdir -p $(TGT_DIR)
+	$(X_OBJCOPY) -O srec --srec-forceS3 $< $@
 
 $(TGT_DIR)/$(TEST_NAME).o: $(TEST_NAME).c
 	-mkdir -p $(TGT_DIR)
