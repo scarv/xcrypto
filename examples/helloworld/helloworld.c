@@ -9,5 +9,22 @@ int main() {
         puthex(i);
         putstr("\n");
     }
+
+    uint32_t random = 32;
+    uint32_t rtest      ;
+
+    rngseed(&random);
+
+    for(int i = 0; i < 32; i ++) {
+        putstr("i = ");
+        
+        rngsamp(&random);
+        rtest = rngtest();
+        
+        puthex(rtest);
+        putstr(" - ");
+        puthex(random);
+        putstr("\n");
+    }
     __pass();
 }

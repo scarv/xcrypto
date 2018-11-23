@@ -74,13 +74,13 @@ irq_handler:            # Un-handled -> infinite loop.
 
 .global putchar
 putchar:                # Simple asm implmentation of putchar.
-    la  t0, 0xFFFFFFFF
+    li  t0, 0xFFFFFFFF
     sb  a0, 0(t0)       # Writes low byte of a0 to address 0xFFFFFFFF
     ret
 
 .global putstr
 putstr:                # Simple asm implmentation of putchar.
-    la  t0, 0xFFFFFFFF
+    li  t0, 0xFFFFFFFF
 
     putchar_loop:
 
@@ -98,7 +98,7 @@ putstr:                # Simple asm implmentation of putchar.
 #
 .global puthex
 puthex:             
-    la  t0, 0xFFFFFFFF
+    li  t0, 0xFFFFFFFF
     la  t1, puthex_lut
     li  a2, 28
 
@@ -122,3 +122,34 @@ puthex:
 .data
 puthex_lut:
     .string "0123456789ABCDEFx"
+
+
+.text
+
+#
+# Function for seeding the XCrypto RNG
+#
+.global rngseed
+rngseed:
+    xc.ld.w     c0, 0(a0)
+	xc.rngseed  c0
+    ret
+
+#
+# Function for reading a single random number from the XCrypto module.
+#
+.global rngsamp
+rngsamp:
+	xc.rngsamp  c0
+    xc.st.w     c0, 0(a0)
+    ret
+
+#
+# Function for checking if the RNG is "good"
+#
+.global rngtest
+rngtest:
+	xc.rngtest  a0
+    ret
+
+

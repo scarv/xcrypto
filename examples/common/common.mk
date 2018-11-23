@@ -11,7 +11,7 @@ $(TGT_DIR)/%.o : %.x.S
 
 $(TGT_DIR)/%.o : ../common/%.S
 	-mkdir -p $(TGT_DIR)
-	$(AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
+	$(X_AS) $(ASFLAGS) $(INC_DIRS) -c -o $@ $^
 
 $(TGT_DIR)/%.o: ../common/%.c
 	-mkdir -p $(TGT_DIR)

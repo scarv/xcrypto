@@ -10,12 +10,17 @@
 
 #include "Vscarv_prv_xcrypt_top.h"
 #include "verilated.h"
+#include "verilated_vcd_c.h"
 
-const vluint32_t TB_PASS_ADDRESS  = 0x00000001C;
-const vluint32_t TB_FAIL_ADDRESS  = 0x000000010;
+vluint32_t TB_PASS_ADDRESS  = 0x00000001C;
+vluint32_t TB_FAIL_ADDRESS  = 0x000000010;
 
 //! Maximum runtime for the simulation
-const vluint64_t    max_time    = 300000;
+vluint64_t    max_time    = 30000000;
+
+//! Path to dump wave files too
+bool         dump_waves        = false;
+std::string  vcd_wavefile_path;
 
 //! Typedef for the top level module of the design.
 typedef Vscarv_prv_xcrypt_top* top_module_t;
@@ -119,7 +124,7 @@ void axi_read_channel_response(
         
         vluint32_t rdata = mem_read_word(raddr);
 
-        //std::cout << "mem[" << raddr <<"] = " << std::hex<<rdata<<std::endl;
+        //std::cout << ">> mem[" << raddr <<"] = " << std::hex<<rdata<<std::endl;
 
         *axi_rdata  = rdata;
         *axi_rvalid = 1;
@@ -225,7 +230,25 @@ void axi_write_channel_response (
             *axi_bvalid = 1;
             write_request_t * f = q -> front();
             
-            //std::cout<<"Wrote " << std::hex << f -> wdata <<" to " <<
+            vluint32_t addr = f -> waddr;
+            vluint32_t data = f -> wdata;
+            vluint8_t  strb = f -> wstrb;
+            assert(f -> complete);
+
+            if(strb & 0x1){
+                main_memory[addr+0] = (vluint8_t)((data >> 0) & 0xff);
+            }
+            if(strb & 0x2){
+                main_memory[addr+1] = (vluint8_t)((data >> 8) & 0xff);
+            }
+            if(strb & 0x4){
+                main_memory[addr+2] = (vluint8_t)((data >>16) & 0xff);
+            }
+            if(strb & 0x8){
+                main_memory[addr+3] = (vluint8_t)((data >>24) & 0xff);
+            }
+
+            //std::cout<<">> Wrote " << std::hex << f -> wdata <<" to " <<
             //    std::hex << f->waddr <<
             //    " strb=" << std::hex << (int)f->wstrb <<std::endl;
 
@@ -358,7 +381,7 @@ void posedge_gclk(top_module_t top) {
 @brief loads hex files into memory.
 */
 void load_main_memory(std::string fpath) {
-    std::cout << "Loading memory image: " << fpath << std::endl;
+    std::cout << ">> Loading memory image: " << fpath << std::endl;
 
     srec::srec_file fc (fpath);
 
@@ -383,6 +406,42 @@ void process_arguments(int argc, char ** argv) {
             std::string fpath = s.substr(6);
             load_main_memory(fpath);
         }
+        else if(s.find("+WAVES=") != std::string::npos) {
+            std::string fpath = s.substr(7);
+            vcd_wavefile_path = fpath;
+            if(vcd_wavefile_path != "") {
+                dump_waves        = true;
+                std::cout << ">> Dumping waves to: " << vcd_wavefile_path 
+                          << std::endl;
+            }
+        }
+        else if(s.find("+TIMEOUT=") != std::string::npos) {
+            std::string time = s.substr(9);
+            max_time = std::stoul(time) * 10;
+            std::cout << ">> Timeout after " << time <<" cycles."<<std::endl;
+        }
+        else if(s.find("+PASS_ADDR=") != std::string::npos) {
+            std::string addr = s.substr(11);
+            TB_PASS_ADDRESS = std::stoul(addr,NULL,0) & 0xFFFFFFFF;
+            std::cout << ">> Pass Address: 0x" << std::hex << TB_PASS_ADDRESS
+                      << std::endl;
+        }
+        else if(s.find("+FAIL_ADDR=") != std::string::npos) {
+            std::string addr = s.substr(11);
+            TB_FAIL_ADDRESS = std::stoul(addr,NULL,0) & 0xFFFFFFFF;
+            std::cout << ">> Fail Address: 0x" << std::hex << TB_FAIL_ADDRESS
+                      << std::endl;
+        }
+        else if(s == "--help" || s == "-h") {
+            std::cout << argv[0] << " [arguments]" << std::endl
+            << "\t+IMEM=<srec input file path>  -" << std::endl
+            << "\t+WAVES=<VCD dump file path>   -" << std::endl
+            << "\t+TIMEOUT=<timeout after N>    -" << std::endl
+            << "\t+PASS_ADDR=<hex number>       -" << std::endl
+            << "\t+FAIL_ADDR=<hex number>       -" << std::endl
+            ;
+            exit(0);
+        }
     }
 }
 
@@ -396,10 +455,10 @@ bool check_pass_fail(
 ){
     if(*axi_arvalid) {
         if(*axi_araddr == TB_PASS_ADDRESS) {
-            std::cout <<"SIM PASS" << std::endl;
+            std::cout <<">> SIM PASS" << std::endl;
             return true;
         } else if(*axi_araddr == TB_FAIL_ADDRESS) {
-            std::cout <<"SIM FAIL" << std::endl;
+            std::cout <<">> SIM FAIL" << std::endl;
             return true;
         }
     }
@@ -417,6 +476,17 @@ int main(int argc, char** argv, char** env) {
     process_arguments(argc,argv);
     
     top_module_t top        = new Vscarv_prv_xcrypt_top;
+    
+    Verilated::traceEverOn(true);
+    
+    VerilatedVcdC* tfp;
+    
+    if(dump_waves) {
+        tfp = new VerilatedVcdC;
+        top -> trace(tfp, 99);
+        tfp -> open(vcd_wavefile_path.c_str());
+    }
+
     vluint64_t   main_time  = 0;       // Current simulation time
 
     // Put model in reset.
@@ -464,11 +534,19 @@ int main(int argc, char** argv, char** env) {
             &top -> prv_axi_arvalid,
             &top -> prv_axi_araddr
         );
+
+        if(dump_waves) {
+            tfp -> dump(main_time);
+        }
     
         if(stop) {break;}
     }
 
-    std::cout << "FINISH" << std::endl;
+    if(dump_waves) {
+        tfp -> close();
+    }
+
+    std::cout << ">> FINISH" << std::endl;
 
     delete top;
     exit(0);

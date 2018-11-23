@@ -19,4 +19,13 @@ extern void putstr(char * str);
 //! Write a hexadecimal representation of a 32-bit number to stdout.
 extern void puthex(uint32_t tp);
 
+//! Read a random value from XCrypto.
+extern void rngsamp(uint32_t * r);
+
+//! Seed the RNG with a new value
+extern void rngseed(uint32_t * r);
+
+//! Is the RNG functioning correctly? (Self reporting)
+extern int rngtest();
+
 #endif
