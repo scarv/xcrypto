@@ -91,9 +91,27 @@ Other programs like `ld`/`gold` and `objdump` are in
 
 ### Running Simulations
 
-There are two simulation testbenches for the design. The first is a set of
-very basic unit tests, the second are integration tests which allow one to
-run C code on a CPU and interface with the COP.
+There are two simulation testbenches for the design. The integration
+testbench acts as a general ISA simulator, which allows one to write
+and run C code on a PicoRV32 CPU attatched to the reference XCrypto
+implementation. The second is only for testing during design and
+implementaton of the RTL, and will be of little interest to those wanting
+to write code for the ISE.
+
+**Integration Tests**
+
+These tests work as part of an example integration of the COP with the
+[picorv32](https://github.com/cliffordwolf/picorv32) core.
+The integrated design subsystem is found in `rtl/integration`.
+It can be used to write experimental / development code without having to
+have an actual hardware platform on which to implement the reference
+design.
+
+Information on how to build and use the simulation binary is found
+in [$XC_HOME/flow/verilator/README.md](./flow/verilator/README.md).
+
+Example code to run in the integration testbench is found in 
+`examples/integration-test`
 
 **Unit Tests**
 
@@ -120,32 +138,6 @@ $> make icarus_run_all  # Run all unit tests as a regression
 The `<file>` path should point at a unit-test hex file, present in
 `${XC_HOME}/work/unit/*.hex`. Using `${XC_HOME}` as part of an absolute path
 to the hex file is advised.
-
-**Integration Tests**
-
-These tests work as part of an example integration of the COP with the
-[picorv32](https://github.com/cliffordwolf/picorv32) core.
-The integrated design subsystem is found in `rtl/integration`.
-
-Example code to run in the integration testbench is found in 
-`examples/integration-test`
-
-Building the testbench:
-
-```sh
-$> make examples        # Build the integration test examples
-$> make icarus_integ_tb # Build the integration testbench
-```
-
-Running integration tests:
-
-```sh
-$> make icarus_run_integ SIM_UNIT_TEST=<file>
-```
-
-where `<file>` points to a hex file. 
-Use `${XC_HOME}/work/examples/integration-test.hex` as an example.
-Waveforms will be put in `${XC_HOME}/work/icarus/integ-waves.vcd`.
 
 ## Formal testbench
 
