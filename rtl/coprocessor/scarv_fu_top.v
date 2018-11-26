@@ -233,84 +233,12 @@ assign u_rs1      = cpu_rs1      ;
 
 wire    fu_done         = 
     mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
-    (id_exception && insn_accept);
+    id_exception;
 
-wire    insn_valid      = insn_accept ||
-                          cop_fsm == FSM_EXECUTING;
-wire    insn_accept     = cpu_insn_req && cop_fsm == FSM_WAITING;
-wire    insn_retired    = cpu_insn_ack;
-wire    insn_finish     = fu_done;
+wire    insn_valid      = cpu_insn_req;
 
-localparam FSM_IDLE         = 0;
-localparam FSM_WAITING      = 1;
-localparam FSM_EXECUTING    = 2;
-localparam FSM_FINISHED     = 3;
-
-reg           n_cop_insn_ack;
-reg           n_cop_insn_rsp;
-
-reg     [2:0] cop_fsm;
-reg     [2:0] n_cop_fsm;
-
-always @(*) begin
-    
-    n_cop_fsm       = FSM_IDLE;
-    n_cop_insn_ack  = 1'b1;
-    n_cop_insn_rsp  = 1'b0;
-    
-    case(cop_fsm)
-
-    FSM_IDLE     : begin    // 0
-        n_cop_fsm       = FSM_WAITING;
-        n_cop_insn_ack  = 1'b1;
-    end
-
-    FSM_WAITING  : begin    // 1
-        n_cop_insn_ack = 1'b1;
-        if(cpu_insn_req && n_cop_insn_ack) begin
-            if(insn_finish) begin
-                n_cop_fsm   = FSM_WAITING;
-                n_cop_insn_rsp = 1'b1;
-                n_cop_insn_ack = 1'b1;
-            end else begin
-                n_cop_fsm   = FSM_EXECUTING;
-                n_cop_insn_ack = 1'b0;
-            end
-        end else begin
-            n_cop_fsm       = FSM_WAITING;
-        end
-    end
-    
-    FSM_EXECUTING: begin    // 2
-        if(insn_finish) begin
-            n_cop_fsm       = FSM_FINISHED;
-            n_cop_insn_rsp  = 1'b1;
-        end else begin
-            n_cop_fsm       = FSM_EXECUTING;
-        end
-    end
-
-    FSM_FINISHED : begin    // 3
-        if(insn_retired) begin
-            n_cop_fsm       = FSM_WAITING;
-            n_cop_insn_ack  = 1'b1;
-        end else begin
-            n_cop_fsm       = FSM_FINISHED;
-            n_cop_insn_rsp  = 1'b1;
-        end
-    end
-
-endcase end
-
-assign cop_insn_ack = g_resetn ? n_cop_insn_ack : 1'b0;
-assign cop_insn_rsp = g_resetn ? n_cop_insn_rsp : 1'b0;
-
-always @(posedge g_clk) if(!g_resetn) begin
-    cop_fsm <= FSM_IDLE;
-end else begin
-    cop_fsm <= n_cop_fsm;
-end
-
+assign  cop_insn_rsp    = insn_valid && fu_done;
+assign  cop_insn_ack    = cop_insn_rsp;
 
 // END PIPELINE PROGRESSION CONTROL
 //

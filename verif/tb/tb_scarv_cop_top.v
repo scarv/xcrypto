@@ -122,7 +122,7 @@ always @(posedge g_clk) begin
     if(!g_resetn) begin
         cpu_insn_ack <= 1'b0;
     end else begin
-        cpu_insn_ack <= $random;
+        cpu_insn_ack <= $random | 1'b1;
     end
 end
 
@@ -171,7 +171,7 @@ wire cop_insn_finish = cop_insn_rsp && cpu_insn_ack; // instr output valid.
 //
 // DUT Instance
 //
-scarv_cop_top i_dut(
+scarv_fu_top i_dut(
 .g_clk         (g_clk        ) , // Global clock
 .g_clk_req     (g_clk_req    ) , // Clock request
 .g_resetn      (g_resetn     ) , // Synchronous active low reset.
