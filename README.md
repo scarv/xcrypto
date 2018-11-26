@@ -53,6 +53,7 @@ environment variable such that `${YS_INSTALL}/yosys` is a valid path to the
 │   ├── common              - Shared files between examples
 │   └── integration-test    - "Hello World" example integration program
 ├── external                - External repositories
+│   ├── libscarv            - Reference software implementation examples
 │   ├── picorv32            - Reference to the picorv32 core repo
 │   └── riscv-opcodes       - Reference to the offical riscv-opcodes repo
 ├── flow                    - Hardware simulation/implementation flow

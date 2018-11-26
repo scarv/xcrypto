@@ -26,6 +26,20 @@ extern void rngsamp(uint32_t * r);
 extern void rngseed(uint32_t * r);
 
 //! Is the RNG functioning correctly? (Self reporting)
-extern int rngtest();
+extern uint32_t rngtest();
+
+//! Sample the clock cycle counter (used for timing checks)
+inline uint32_t rdcycle() {
+    uint32_t tr;
+    asm volatile ("rdcycle %0":"=r"(tr));
+    return tr;
+}
+
+//! Sample the clock cycle counter (used for timing checks)
+inline uint32_t rdinstret() {
+    uint32_t tr;
+    asm volatile ("rdinstret %0":"=r"(tr));
+    return tr;
+}
 
 #endif

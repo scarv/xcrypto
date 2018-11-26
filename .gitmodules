@@ -4,3 +4,6 @@
 [submodule "external/picorv32"]
 	path = external/picorv32
 	url = https://github.com/cliffordwolf/picorv32.git
+[submodule "external/libscarv"]
+	path = external/libscarv
+	url = git@github.com:scarv/sw-libscarv.git

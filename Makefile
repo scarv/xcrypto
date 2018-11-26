@@ -30,8 +30,12 @@ docs:
 # into hex files. These can then be fed into the HDL simulator.
 #
 .PHONY: examples
-examples:
+examples: libscarv
 	$(MAKE) -C $(XC_HOME)/examples all
+
+.PHONY: libscarv
+libscarv:
+	$(MAKE) -C $(XC_HOME)/external/libscarv -f Makefile.arch-riscv objects
 
 .PHONY: clean
 clean:
@@ -137,4 +141,4 @@ verilator_run:
 # Build the unit tests, examples yosys and icarus models but don't run 
 # anything yet.
 #
-build_all: icarus_build unit_tests icarus_integ_tb examples docs verilator_build
+build_all: libscarv icarus_build unit_tests icarus_integ_tb examples docs verilator_build

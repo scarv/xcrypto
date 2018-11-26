@@ -124,7 +124,9 @@ void axi_read_channel_response(
         
         vluint32_t rdata = mem_read_word(raddr);
 
-        //std::cout << ">> mem[" << raddr <<"] = " << std::hex<<rdata<<std::endl;
+        if(q == &cop_read_requests) {
+            //std::cout << ">> cop ld mem[" << raddr <<"] = " << std::hex<<rdata<<std::endl;
+        }
 
         *axi_rdata  = rdata;
         *axi_rvalid = 1;
@@ -248,9 +250,11 @@ void axi_write_channel_response (
                 main_memory[addr+3] = (vluint8_t)((data >>24) & 0xff);
             }
 
-            //std::cout<<">> Wrote " << std::hex << f -> wdata <<" to " <<
-            //    std::hex << f->waddr <<
-            //    " strb=" << std::hex << (int)f->wstrb <<std::endl;
+            if(q == &cop_write_requests) {
+                //std::cout<<">> Wrote " << std::hex << f -> wdata <<" to "<<
+                //    std::hex << f->waddr <<
+                //    " strb=" << std::hex << (int)f->wstrb <<std::endl;
+            }
 
 
             q -> pop();

@@ -101,11 +101,6 @@ puthex:
     li  t0, 0xFFFFFFFF
     la  t1, puthex_lut
     li  a2, 28
-
-    lb  t3, 0(t1)
-    sb  t3, 0(t0)
-    lb  t3, 16(t1)
-    sb  t3, 0(t0)
     
     puthex_loop:
 
