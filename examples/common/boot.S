@@ -62,7 +62,7 @@ reset_handler:
     li  x31, 0
 
     # Setup the stack pointer
-    li sp, 0x2000
+    li sp, 0xC0008000
 
     j   main
 
