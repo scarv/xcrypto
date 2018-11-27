@@ -454,6 +454,7 @@ void process_arguments(int argc, char ** argv) {
         }
         else if(s == "--help" || s == "-h") {
             std::cout << argv[0] << " [arguments]" << std::endl
+            << "\t+q                            -" << std::endl
             << "\t+IMEM=<srec input file path>  -" << std::endl
             << "\t+WAVES=<VCD dump file path>   -" << std::endl
             << "\t+TIMEOUT=<timeout after N>    -" << std::endl
