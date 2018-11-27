@@ -19,6 +19,8 @@ evaluating the ISE with existing RISC-V cores.
 workspace as follows:
 
 ```sh
+$> export RISCV=/path/to/riscv-tools/installation
+$> export VERILATOR_ROOT=/path/to/verilator/build
 $> git clone git@github.com:scarv/xcrypto.git
 $> cd xcrypto
 $> git submodule update --init --recursive

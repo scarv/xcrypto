@@ -5,6 +5,25 @@ This file describes how to build and use the verilator flow in order
 to run simulations of RISC-V/XCrypro programs on models of the actual
 reference implementation, coupled with a PicoRV32 CPU.
 
+## Installing Verilator
+
+Verilator must be installed *from source* in order to be used properly.
+This is due to known issues with how the verilator apt packages handle
+the C++ headers needed to build verilated models.
+
+```sh
+$> git clone http://git.veripool.org/git/verilator
+$> cd verilator
+$> export VERILATOR_ROOT=`pwd`   # if your shell is bash
+$> autoconf
+$> ./configure
+$> make
+```
+
+One need not install verilator across the system, it can be used wherever
+it was built, so long as the `$VERILATOR_ROOT` environment variable is
+set appropriately.
+
 ## Building the model
 
 From the top of the repository (`$XC_HOME`), run the following commands:
