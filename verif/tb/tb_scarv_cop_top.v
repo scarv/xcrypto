@@ -122,7 +122,7 @@ always @(posedge g_clk) begin
     if(!g_resetn) begin
         cpu_insn_ack <= 1'b0;
     end else begin
-        cpu_insn_ack <= $random;
+        cpu_insn_ack <= $random | 1'b1;
     end
 end
 

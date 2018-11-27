@@ -10,11 +10,17 @@
 // 
 
 //
-// module: scarv_cop_top
+// module: scarv_fu_top
 //
-//  The top level module of the Crypto ISE co-processor.
+//  The top level module of the Crypto ISE Functional unit block.
+//  - This is an experimental block which acts like a functional unit,
+//    rather than a pipelined co-processor.
+//  - it does not register it's inputs, and implementes a subset of the
+//    CPU/COP interface handling.
+//  - All instructions have 1 cycle less latency than the COP implementation
+//    when using this FU.
 //
-module scarv_cop_top (
+module scarv_fu_top (
 
 //
 // Clock and reset interface
@@ -35,15 +41,15 @@ output wire             cop_rand_sample , // cop_random valid when this high.
 //
 // CPU / COP Interface
 input  wire             cpu_insn_req    , // Instruction request
-output                  cop_insn_ack    , // Instruction request acknowledge
+output wire             cop_insn_ack    , // Instruction request acknowledge
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
 
-output                  cop_wen         , // COP write enable
-output      [ 4:0]      cop_waddr       , // COP destination register address
-output      [31:0]      cop_wdata       , // COP write data
-output      [ 2:0]      cop_result      , // COP execution result
-output                  cop_insn_rsp    , // COP instruction finished
+output wire             cop_wen         , // COP write enable
+output wire [ 4:0]      cop_waddr       , // COP destination register address
+output wire [31:0]      cop_wdata       , // COP write data
+output wire [ 2:0]      cop_result      , // COP execution result
+output wire             cop_insn_rsp    , // COP instruction finished
 input  wire             cpu_insn_ack    , // Instruction finish acknowledge
 
 //
@@ -61,15 +67,6 @@ input  wire             cop_mem_error     // Error
 
 // Common constants & definitions
 `include "scarv_cop_common.vh"
-
-//
-// If set, use the faster version of the COP/CPU interface where the
-// COP assumes that:
-// - `cpu_insn_ack` is always set.
-// - `cpu_insn_enc` and `cpu_rs1` are stable until `cop_insn_rsp` is set
-// - `cop_insn_rsp` and `cop_insn_ack` are equivilent.
-//
-parameter FAST_COP_CPU_IF = 0;
 
 //
 // Glue logic wires
@@ -109,11 +106,6 @@ wire [31:0]   crs3_rdata      ; // CPR Port 3 read data
 wire [ 3:0]   crd_wen         ; // CPR Port 4 write enable
 wire [ 3:0]   crd_addr        ; // CPR Port 4 address
 wire [31:0]   crd_wdata       ; // CPR Port 4 write data
-
-wire          insn_valid;
-wire          insn_finish;
-wire          insn_accept;
-wire          fu_done;
 
 wire          palu_ivalid      ; // Valid instruction input
 wire          palu_idone       ; // Instruction complete
@@ -239,167 +231,20 @@ assign n_cop_result=
 wire [31:0] u_insn_enc;
 wire [31:0] u_rs1;
 
-//
-// Start of generate statements to switch between the "fast" and
-// "normal" interface protocols.
-//
-
-generate if(FAST_COP_CPU_IF == 0) begin
-
-    // Declare output ports as registers.
-    reg        cop_wen     ;  // COP write enable
-    reg [ 4:0] cop_waddr   ;  // COP destination register address
-    reg [31:0] cop_wdata   ;  // COP write data
-    reg [ 2:0] cop_result  ;  // COP execution result
-
-    //
-    // COP Output response registers
-    always @(posedge g_clk) if(!g_resetn) begin
-        cop_wen    <= 1'b0; // COP write enable
-        cop_waddr  <= 5'b0; // COP destination register address
-        cop_wdata  <= 32'b0; // COP write data
-        cop_result <= 3'b0; // COP execution result
-    end else if(insn_finish) begin
-        cop_wen    <= n_cop_wen   ; // COP write enable
-        cop_waddr  <= n_cop_waddr ; // COP destination register address
-        cop_wdata  <= n_cop_wdata ; // COP write data
-        cop_result <= n_cop_result; // COP execution result
-    end
-
-    //
-    // Register inputs to the COP
-    reg  [31:0] r_insn_enc;
-    reg  [31:0] r_rs1;
-
-    assign u_insn_enc = (insn_accept) ? cpu_insn_enc : r_insn_enc;
-    assign u_rs1      = (insn_accept) ? cpu_rs1      : r_rs1     ;
-
-    always @(posedge g_clk) if(!g_resetn) begin
-            r_insn_enc <= 32'b0;
-        end else if(cpu_insn_req && cop_insn_ack)
-            r_insn_enc <= cpu_insn_enc;    
-
-    always @(posedge g_clk) if(!g_resetn) begin
-            r_rs1      <= 32'b0;
-        end else if(cpu_insn_req && cop_insn_ack)
-            r_rs1      <= cpu_rs1     ;    
-
-end else if(FAST_COP_CPU_IF == 1) begin
-    
-    // Declare output ports as wires.
-    wire        cop_wen     ;  // COP write enable
-    wire [ 4:0] cop_waddr   ;  // COP destination register address
-    wire [31:0] cop_wdata   ;  // COP write data
-    wire [ 2:0] cop_result  ;  // COP execution result
-        
-    assign cop_wen    = n_cop_wen   ; // COP write enable
-    assign cop_waddr  = n_cop_waddr ; // COP destination register address
-    assign cop_wdata  = n_cop_wdata ; // COP write data
-    assign cop_result = n_cop_result; // COP execution result
-
-    assign u_insn_enc = cpu_insn_enc;
-    assign u_rs1      = cpu_rs1     ;
-
-end endgenerate
+assign u_insn_enc = cpu_insn_enc ;
+assign u_rs1      = cpu_rs1      ;
 
 //
 // BEGIN PIPELINE PROGRESSION CONTROL
 
-generate if(FAST_COP_CPU_IF == 0) begin
+wire    fu_done         = 
+    mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
+    id_exception;
 
-    assign  fu_done         = 
-        mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
-        (id_exception && insn_accept);
-    
-    assign  insn_valid      = insn_accept ||
-                              cop_fsm == FSM_EXECUTING;
-    assign  insn_accept     = cpu_insn_req && cop_insn_ack;
-    wire    insn_retired    = cop_insn_rsp && cpu_insn_ack;
-    assign  insn_finish     = fu_done;
-    
-    localparam FSM_IDLE         = 0;
-    localparam FSM_WAITING      = 1;
-    localparam FSM_EXECUTING    = 2;
-    localparam FSM_FINISHED     = 3;
-    
-    reg           n_cop_insn_ack;
-    reg           n_cop_insn_rsp;
-    
-    reg     [2:0] cop_fsm;
-    reg     [2:0] n_cop_fsm;
-    
-    always @(*) begin
-        
-        n_cop_fsm       = FSM_IDLE;
-        n_cop_insn_ack  = 1'b0;
-        n_cop_insn_rsp  = 1'b0;
-        
-        case(cop_fsm)
-    
-        FSM_IDLE     : begin    // 0
-            n_cop_fsm       = FSM_WAITING;
-            n_cop_insn_ack  = 1'b1;
-        end
-    
-        FSM_WAITING  : begin    // 1
-            n_cop_insn_ack = 1'b1;
-            if(cpu_insn_req && n_cop_insn_ack) begin
-                if(insn_finish) begin
-                    n_cop_fsm   = FSM_FINISHED;
-                    n_cop_insn_rsp = 1'b1;
-                    n_cop_insn_ack = 1'b0;
-                end else begin
-                    n_cop_fsm   = FSM_EXECUTING;
-                    n_cop_insn_ack = 1'b0;
-                end
-            end else begin
-                n_cop_fsm       = FSM_WAITING;
-            end
-        end
-        
-        FSM_EXECUTING: begin    // 2
-            if(insn_finish) begin
-                n_cop_fsm       = FSM_FINISHED;
-                n_cop_insn_rsp  = 1'b1;
-            end else begin
-                n_cop_fsm       = FSM_EXECUTING;
-            end
-        end
-    
-        FSM_FINISHED : begin    // 3
-            if(insn_retired) begin
-                n_cop_fsm       = FSM_WAITING;
-                n_cop_insn_ack  = 1'b1;
-            end else begin
-                n_cop_fsm       = FSM_FINISHED;
-                n_cop_insn_rsp  = 1'b1;
-            end
-        end
-    
-    endcase end
-    
-    always @(posedge g_clk) cop_insn_ack <= g_resetn ? n_cop_insn_ack : 1'b0;
-    always @(posedge g_clk) cop_insn_rsp <= g_resetn ? n_cop_insn_rsp : 1'b0;
-    
-    always @(posedge g_clk) if(!g_resetn) begin
-        cop_fsm <= FSM_IDLE;
-    end else begin
-        cop_fsm <= n_cop_fsm;
-    end
+wire    insn_valid      = cpu_insn_req;
 
-end else if(FAST_COP_CPU_IF == 1) begin
-
-    assign  fu_done         = 
-        mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
-        id_exception;
-
-    assign  insn_valid      = cpu_insn_req;
-
-    assign  cop_insn_rsp    = insn_valid && fu_done;
-    assign  cop_insn_ack    = cop_insn_rsp;
-
-end endgenerate
-
+assign  cop_insn_rsp    = insn_valid && fu_done;
+assign  cop_insn_ack    = cop_insn_rsp;
 
 // END PIPELINE PROGRESSION CONTROL
 //
