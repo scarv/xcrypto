@@ -248,12 +248,6 @@ wire [31:0] u_rs1;
 
 generate if(FAST_COP_CPU_IF == 0) begin
 
-    // Declare output ports as registers.
-    reg        cop_wen     ;  // COP write enable
-    reg [ 4:0] cop_waddr   ;  // COP destination register address
-    reg [31:0] cop_wdata   ;  // COP write data
-    reg [ 2:0] cop_result  ;  // COP execution result
-
     //
     // COP Output response registers
     always @(posedge g_clk) if(!g_resetn) begin
@@ -287,12 +281,6 @@ generate if(FAST_COP_CPU_IF == 0) begin
             r_rs1      <= cpu_rs1     ;    
 
 end else if(FAST_COP_CPU_IF == 1) begin
-    
-    // Declare output ports as wires.
-    wire        cop_wen     ;  // COP write enable
-    wire [ 4:0] cop_waddr   ;  // COP destination register address
-    wire [31:0] cop_wdata   ;  // COP write data
-    wire [ 2:0] cop_result  ;  // COP execution result
         
     assign cop_wen    = n_cop_wen   ; // COP write enable
     assign cop_waddr  = n_cop_waddr ; // COP destination register address
