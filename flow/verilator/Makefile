@@ -1,6 +1,8 @@
 
 ifndef VERILATOR_ROOT
-    $(error "Please set the VERILATOR_ROOT environment variable")
+    $(warning "Please set the VERILATOR_ROOT environment variable.")
+    $(warning "See $(XC_ROOT)/flow/verilator/README.md")
+    $(error   "Cannot continue without VERILATOR_ROOT")
 endif
 
 VERILATOR   ?= $(VERILATOR_ROOT)/bin/verilator

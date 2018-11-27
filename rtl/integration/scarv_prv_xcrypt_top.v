@@ -218,7 +218,9 @@ scarv_integ_prv_pcpi2cop i_pcpi2cop (
 //
 //  The top level module of the Crypto ISE co-processor.
 //
-scarv_cop_top i_scarv_cop_top(
+scarv_cop_top #(
+    .FAST_COP_CPU_IF(1) // Use the faster CPU/COP interface
+) i_scarv_cop_top(
 .g_clk        (g_clk        ) , // Global clock
 .g_resetn     (g_resetn     ) , // Synchronous active low reset.
 .cpu_insn_req (cpu_insn_req ) , // Instruction request
