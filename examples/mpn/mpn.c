@@ -72,14 +72,14 @@ void dump_test_infix_2(
     putchar(')');
 }
             
-
-#define RUN_MPN_TEST_CARRY(FUNCTION) { \
+#define RUN_MPN_TEST_PROLOGUE(FUNCTION) \
     zero_mpn(result, MPN_MAXLEN); \
     gen_random_mpn(input_lhs,lhs_len); \
     gen_random_mpn(input_rhs,rhs_len); \
     uint32_t start_t = rdcycle(); \
-    uint32_t start_i = rdinstret(); \
-    carry = FUNCTION(result, input_lhs, lhs_len, input_rhs, rhs_len); \
+    uint32_t start_i = rdinstret(); 
+
+#define RUN_MPN_TEST_EPILOGUE(FUNCTION) \
     cycles = rdcycle() - start_t; \
     instrs = rdinstret() - start_i; \
     dump_test_infix_2( \
@@ -89,24 +89,17 @@ void dump_test_infix_2(
         result, carry,\
         cycles, instrs\
     ); \
+
+#define RUN_MPN_TEST_CARRY(FUNCTION) { \
+    RUN_MPN_TEST_PROLOGUE(FUNCTION) \
+    carry = FUNCTION(result, input_lhs, lhs_len, input_rhs, rhs_len); \
+    RUN_MPN_TEST_EPILOGUE(FUNCTION) \
 }
 
 #define RUN_MPN_TEST_NO_CARRY(FUNCTION) { \
-    zero_mpn(result, MPN_MAXLEN); \
-    gen_random_mpn(input_lhs,lhs_len); \
-    gen_random_mpn(input_rhs,rhs_len); \
-    uint32_t start_t = rdcycle(); \
-    uint32_t start_i = rdinstret(); \
+    RUN_MPN_TEST_PROLOGUE(FUNCTION) \
     FUNCTION(result, input_lhs, lhs_len, input_rhs, rhs_len); \
-    cycles = rdcycle() - start_t; \
-    instrs = rdinstret() - start_i; \
-    dump_test_infix_2( \
-        #FUNCTION,  \
-        input_lhs, input_rhs,  \
-        lhs_len, rhs_len, \
-        result, 0,\
-        cycles, instrs\
-    ); \
+    RUN_MPN_TEST_EPILOGUE(FUNCTION) \
 }
 
 int main() {
