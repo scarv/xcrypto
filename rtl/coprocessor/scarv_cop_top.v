@@ -69,6 +69,8 @@ input  wire             cop_mem_error     // Error
 // - `cpu_insn_enc` and `cpu_rs1` are stable until `cop_insn_rsp` is set
 // - `cop_insn_rsp` and `cop_insn_ack` are equivilent.
 //
+// See implementation guide, section 2.3.2 for more information.
+//
 parameter FAST_COP_CPU_IF = 0;
 
 //

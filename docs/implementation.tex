@@ -199,10 +199,55 @@ mapped to constants in {\tt \$XC\_HOME/rtl/coprocessor/scarv\_cop\_common.vh}}
 \label{tab:cop-result-encodings}
 \end{table}
 
+\subsubsection{Interface Fast Mode}
+
+The default CPU/COP interface implementation takes a very conservative
+view about how whatever CPU it is attatched too behaves.
+This means that by default, it will add an extra cycle of latency to all
+XCrypto instructions because of how the input data is registered.
+
+There is also a {\em fast} interface mode, which can be used if the host
+CPU can meet the following criteria:
+
+\begin{itemize}
+\item The CPU can always immediately accept a response / result from the
+    COP. That is, the COP never needs to wait for the CPU before
+    retiring an XCrypto instruction.
+    This is equivilent to saying that for the protocol definition
+    given above, the {\tt cpu\_insn\_ack} signal is always set.
+\item The CPU keeps {\tt cpu\_insn\_enc} and {\tt cpu\_rs1} signals
+    stable until the COP finishes executing, as indicated by the
+    {\tt cop\_insn\_rsp} signal.
+\end{itemize}
+
+When in {\em fast} mode, the COP will assert {\tt cop\_insn\_ack} only
+in the cycle when the instruction finishes. This makes it equivilent
+to the {\tt cop\_insn\_rsp} signal.
+
+The protocol for the CPU is then simplified to:
+\begin{enumerate}
+\item
+Assert {\tt cpu\_insn\_req}, keeping {\tt cpu\_insn\_enc} and
+{\tt cpu\_rs1} stable.
+\item
+Wait for {\tt cop\_insn\_rsp} to be asserted, indicating the instruction
+is completed and the results are valid.
+\item
+On the cycle {\em after} {\tt cop\_insn\_rsp} is asserted, the CPU may
+make a new request to the COP with a new instruction (i.e. goto
+step 1 and repeat), or deassert {\tt cpu\_insn\_req}.
+\end{enumerate}
+
+Note that if a request to the COP is made in cycle $N$, and the COP finishes
+the instruction in cycle $N+1$, then 
+{\tt cpu\_insn\_enc} and {\tt cpu\_rs1}
+must remain stable across cycles $N$ and $N+1$, and may finally change
+in cycle $N+2$.
+
 \subsubsection{Example Transactions}
 
 This section gives a non-exhaustive list of timing diagrams for example
-transactions over the CPU/COP interface.
+transactions over the CPU/COP interface in {\em normal} mode.
 
 \begin{figure}[H]
 \centering
