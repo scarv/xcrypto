@@ -1,4 +1,5 @@
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifndef COMMON_H
@@ -40,6 +41,25 @@ inline uint32_t rdinstret() {
     uint32_t tr;
     asm volatile ("rdinstret %0":"=r"(tr));
     return tr;
+}
+
+//! naieve memset implementation
+void *memset(void *s, int c, size_t n){
+    unsigned char * k = s;
+    for(size_t i = 0; i < n; i ++) {
+        k[i] = (unsigned char)c;
+    }
+    return s;
+}
+
+//! naieve memcpy implementation
+void *memcpy(void *str1, const void *str2, size_t n) {
+    unsigned char * s1 = str1;
+    unsigned char * s2 = str2;
+    for(size_t i = 0; i < n; i ++) {
+        s1[i] = s2[i];
+    }
+    return str1;
 }
 
 #endif

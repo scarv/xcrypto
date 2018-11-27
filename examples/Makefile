@@ -11,9 +11,9 @@ export X_OBJCOPY= $(XC_HOME)/work/riscv-binutils-gdb/build/binutils/objcopy
 
 export INC_DIR  = -I$(XC_HOME)/examples/common -I$(LIBSCARV)/include
 
-export ASFLAGS  += -march=rv32ix -mabi=ilp32 
+export ASFLAGS  += -march=rv32imx -mabi=ilp32 
 
-export CFLAGS   += -mabi=ilp32 -march=rv32i -O2 -Wall $(INC_DIR) \
+export CFLAGS   += -mabi=ilp32 -march=rv32im -O2 -Wall $(INC_DIR) \
                   -nostartfiles -nostdlib
 
 export LDSCRIPT ?= $(XC_HOME)/examples/common/linker.ld
@@ -23,7 +23,9 @@ export LDFLAGS  += -T$(LDSCRIPT)
 all:
 	$(MAKE) -C integration-test all
 	$(MAKE) -C helloworld all
+	$(MAKE) -C mpn all
 
 clean:
 	$(MAKE) -C integration-test clean
 	$(MAKE) -C helloworld clean
+	$(MAKE) -C mpn clean
