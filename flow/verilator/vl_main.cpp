@@ -15,6 +15,9 @@
 vluint32_t TB_PASS_ADDRESS  = 0x00000001C;
 vluint32_t TB_FAIL_ADDRESS  = 0x000000010;
 
+//! Whether or not to print status / info messages.
+bool quiet = false;
+
 //! Maximum runtime for the simulation
 vluint64_t    max_time    = 30000000;
 
@@ -385,7 +388,9 @@ void posedge_gclk(top_module_t top) {
 @brief loads hex files into memory.
 */
 void load_main_memory(std::string fpath) {
-    std::cout << ">> Loading memory image: " << fpath << std::endl;
+    if(!quiet){
+        std::cout << ">> Loading memory image: " << fpath << std::endl;
+    }
 
     srec::srec_file fc (fpath);
 
@@ -415,26 +420,37 @@ void process_arguments(int argc, char ** argv) {
             vcd_wavefile_path = fpath;
             if(vcd_wavefile_path != "") {
                 dump_waves        = true;
+                if(!quiet){
                 std::cout << ">> Dumping waves to: " << vcd_wavefile_path 
                           << std::endl;
+                }
             }
         }
         else if(s.find("+TIMEOUT=") != std::string::npos) {
             std::string time = s.substr(9);
             max_time = std::stoul(time) * 10;
+            if(!quiet) {
             std::cout << ">> Timeout after " << time <<" cycles."<<std::endl;
+            }
         }
         else if(s.find("+PASS_ADDR=") != std::string::npos) {
             std::string addr = s.substr(11);
             TB_PASS_ADDRESS = std::stoul(addr,NULL,0) & 0xFFFFFFFF;
+            if(!quiet){
             std::cout << ">> Pass Address: 0x" << std::hex << TB_PASS_ADDRESS
                       << std::endl;
+            }
         }
         else if(s.find("+FAIL_ADDR=") != std::string::npos) {
             std::string addr = s.substr(11);
             TB_FAIL_ADDRESS = std::stoul(addr,NULL,0) & 0xFFFFFFFF;
+            if(!quiet){
             std::cout << ">> Fail Address: 0x" << std::hex << TB_FAIL_ADDRESS
                       << std::endl;
+            }
+        }
+        else if(s == "+q") {
+            quiet = true;
         }
         else if(s == "--help" || s == "-h") {
             std::cout << argv[0] << " [arguments]" << std::endl
@@ -459,10 +475,14 @@ bool check_pass_fail(
 ){
     if(*axi_arvalid) {
         if(*axi_araddr == TB_PASS_ADDRESS) {
-            std::cout <<">> SIM PASS" << std::endl;
+            if(!quiet){
+                std::cout <<">> SIM PASS" << std::endl;
+            }
             return true;
         } else if(*axi_araddr == TB_FAIL_ADDRESS) {
-            std::cout <<">> SIM FAIL" << std::endl;
+            if(!quiet){
+                std::cout <<">> SIM FAIL" << std::endl;
+            }
             return true;
         }
     }
@@ -550,7 +570,9 @@ int main(int argc, char** argv, char** env) {
         tfp -> close();
     }
 
-    std::cout << ">> FINISH" << std::endl;
+    if(!quiet) {
+        std::cout << ">> FINISH" << std::endl;
+    }
 
     delete top;
     exit(0);

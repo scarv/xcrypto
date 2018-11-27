@@ -42,6 +42,7 @@ Get help about using the simulation binary thusly:
 ```sh
 $> $XC_HOME/work/verilator/scarv_prv_xcrypt_top --help
 ../../work/verilator/scarv_prv_xcrypt_top [arguments]
+    +q                            - Be quiet
 	+IMEM=<srec input file path>  -
 	+WAVES=<VCD dump file path>   -
 	+TIMEOUT=<timeout after N>    -
@@ -51,6 +52,8 @@ $> $XC_HOME/work/verilator/scarv_prv_xcrypt_top --help
 
 Where:
 
+- `+q` causes the simulator to print nothing except for what the host
+    program itself prints. Must be specified *first*.
 - `+IMEM=` is the path to the srec file which describes the initial
     memory content of the simulation.
 - `+WAVES=` Is a file path where a complete waveform trace of the

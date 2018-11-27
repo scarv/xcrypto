@@ -49,7 +49,8 @@ $(SIM_EXE) : $(SRC_RTL) $(CPP_FILES)
 run: RTL_TIMEOUT=$(VERILATOR_TIMEOUT)
 run: $(SIM_EXE)
 	@mkdir -p $(dir $(WAVES_FILE))
-	$(SIM_EXE) +TIMEOUT=$(RTL_TIMEOUT) \
+	$(SIM_EXE) +q \
+               +TIMEOUT=$(RTL_TIMEOUT) \
                +IMEM=$(SIM_UNIT_TEST:%.hex=%.srec) \
                +WAVES=$(WAVES_FILE) \
                +PASS_ADDR=$(VERILATOR_PASS_ADDR) \
