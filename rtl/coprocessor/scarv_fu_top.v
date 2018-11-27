@@ -194,9 +194,14 @@ assign crd_wdata = palu_cpr_rd_wdata |
 //  instruction.
 //
 
-assign cop_waddr = id_rd;
+wire        n_cop_wen   ; // COP write enable
+wire [ 4:0] n_cop_waddr ; // COP destination register address
+wire [31:0] n_cop_wdata ; // COP write data
+wire [ 2:0] n_cop_result; // COP execution result
 
-assign cop_wen   = 
+assign n_cop_waddr = id_rd;
+
+assign n_cop_wen   = 
     (id_class     == SCARV_COP_ICLASS_MOVE    &&
      id_subclass  == SCARV_COP_SCLASS_XCR2GPR   )  ||
     (id_class     == SCARV_COP_ICLASS_RANDOM  &&
@@ -206,7 +211,7 @@ assign cop_wen   =
       id_subclass == SCARV_COP_SCLASS_MLTE ||
       id_subclass == SCARV_COP_SCLASS_MGTE ) )   ;
 
-assign cop_wdata = 
+assign n_cop_wdata = 
     id_class == SCARV_COP_ICLASS_MOVE   ? palu_cpr_rd_wdata : 
     id_class == SCARV_COP_ICLASS_RANDOM ? rng_cpr_rd_wdata  : 
                                           malu_cpr_rd_wdata ;
@@ -214,13 +219,14 @@ assign cop_wdata =
 //
 //  and/or the result of the instruction together. Note
 //  SCARV_COP_INSN_SUCCESS == 0
-assign cop_result= 
+assign n_cop_result= 
     id_exception ?  SCARV_COP_INSN_BAD_INS : (
     {3{!mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_LAD |
     {3{!mem_is_store & mem_bus_error }} & SCARV_COP_INSN_LD_ERR  |
     {3{ mem_is_store & mem_addr_error}} & SCARV_COP_INSN_BAD_SAD |
     {3{ mem_is_store & mem_bus_error }} & SCARV_COP_INSN_ST_ERR  |
                                           SCARV_COP_INSN_SUCCESS );
+
 
 wire [31:0] u_insn_enc;
 wire [31:0] u_rs1;
