@@ -2,10 +2,6 @@
 TEST_NAME=mpn
 OBJECTS  = $(TGT_DIR)/$(TEST_NAME).o \
            $(TGT_DIR)/boot.o \
-           $(LIBSCARV)/build/lib/mpn_add.o \
-           $(LIBSCARV)/build/lib/mpn_sub.o \
-           $(LIBSCARV)/build/lib/mpn_mul.o \
-           $(LIBSCARV)/build/lib/mpn_cmp.o \
-           $(LIBSCARV)/build/lib/mpn.o \
+           $(LIBSCARV)/build/lib/libscarv.a
 
 include ../common/common.mk

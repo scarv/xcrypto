@@ -50,7 +50,7 @@ int main() {
 
     uint32_t start_t = rdcycle();
     uint32_t start_i = rdinstret();
-    mpn_ret = mpn_add_xc(mpn_r, mpn_a, 4, mpn_b, 4);
+    mpn_ret = mpn_add(mpn_r, mpn_a, 4, mpn_b, 4);
     uint32_t end_t   = rdcycle();
     uint32_t end_i   = rdinstret();
 
