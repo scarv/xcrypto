@@ -5,5 +5,7 @@ OBJECTS  = $(TGT_DIR)/$(TEST_NAME).o \
            $(LIBSCARV)/build/lib/mpn_add.o \
            $(LIBSCARV)/build/lib/mpn_sub.o \
            $(LIBSCARV)/build/lib/mpn_mul.o \
+           $(LIBSCARV)/build/lib/mpn_cmp.o \
+           $(LIBSCARV)/build/lib/mpn.o \
 
 include ../common/common.mk

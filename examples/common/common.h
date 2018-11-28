@@ -12,10 +12,13 @@ extern void     __pass();
 extern void     __fail();
 
 //! Write a character to stdout.
-extern void putchar(int character);
+extern int  putchar(int character);
 
-//! Write a string to a stream.
+//! Write a string to a stream with no trailing '\n' character.
 extern void putstr(char * str);
+
+//! Write a string to a stream with a trailing '\n' character.
+extern int  puts(char * str);
 
 //! Write a hexadecimal representation of a 32-bit number to stdout.
 extern void puthex(uint32_t tp);
@@ -54,8 +57,8 @@ void *memset(void *s, int c, size_t n){
 
 //! naieve memcpy implementation
 void *memcpy(void *str1, const void *str2, size_t n) {
-    unsigned char * s1 = str1;
-    unsigned char * s2 = str2;
+    unsigned char       * s1 = str1;
+    const unsigned char * s2 = str2;
     for(size_t i = 0; i < n; i ++) {
         s1[i] = s2[i];
     }

@@ -72,12 +72,18 @@ irq_handler:            # Un-handled -> infinite loop.
     j irq_handler;
 
 
+#
+# Put character function
+#
 .global putchar
 putchar:                # Simple asm implmentation of putchar.
     li  t0, 0xFFFFFFFF
     sb  a0, 0(t0)       # Writes low byte of a0 to address 0xFFFFFFFF
     ret
 
+#
+# Put string function
+#
 .global putstr
 putstr:                # Simple asm implmentation of putchar.
     li  t0, 0xFFFFFFFF
@@ -92,6 +98,17 @@ putstr:                # Simple asm implmentation of putchar.
 
     putchar_finish:
         ret
+
+#
+# puts function, implemented as per the C std library
+#
+.global puts
+puts:
+    call    putstr     # Immediately call putstr
+    li      t1, 0xA    # Load newline char
+    sb      t1, 0(t0)  # store to 0 address loaded by putstr.
+    li      a0, 0      # Return 0 indicating success
+    ret
 
 #
 # Function for printing unsigned decimal numbers as hex to "stdout"

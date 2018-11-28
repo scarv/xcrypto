@@ -4,145 +4,148 @@
 #include "scarv/mpn.h"
 #include "scarv/limb.h"
 
-// Maximum length of an MPN number to test.
-#define MPN_MAXLEN  4
 
-/*!
-@brief Create a new random multi-precision number
-@param mpn - pre-allocated buffer to hold the number
-@param len - The length of the number.
-*/
-void gen_random_mpn (limb_t * mpn, uint32_t len) {
-
-    int a = len > MPN_MAXLEN ? MPN_MAXLEN : len;
-
-    for(int i = 0; i < a; i ++){
-        rngsamp(&mpn[i]);
-    }
-
-}
-
-/*!
-@brief Set an MPN to zero.
-*/
-void zero_mpn (limb_t * mpn, uint32_t len) {
+int test_mpn_rand( limb_t* r, int l_min, int l_max ) {
     
-    for(int i = 0; i < len; i ++) {
-        mpn[i] = 0;
+    int rnum;
+    rngsamp(&rnum);
+    rnum = rnum & l_max;
+
+    int l_r = ( rnum % ( l_max + 1 - l_min) ) + l_min;
+
+    for (int i = 0; i < l_r; i ++) {
+        rngsamp(&r[i]);
     }
+
+    return l_r;
+} 
+
+void test_mpn_dump( char* id, limb_t* x, int l_x ) {
+    putstr(id);
+    putstr( " = long( '");
+
+    for( int i = l_x - 1; i >= 0; i-- ) {
+        puthex( x[ i ] );
+    }
+
+    putstr( "', 16 )\n" );
 }
 
+void test_mpn( int n, int l_min, int l_max ) {
+  for( int i = 0; i < n; i++ ) {
+    limb_t x[ 2 * l_max + 2 ]; int l_x;
+    limb_t y[ 2 * l_max + 2 ]; int l_y;
+    limb_t r[ 2 * l_max + 2 ]; int l_r;
 
-/*
-@brief Prints a single operation, inputs and outputs as a python tuple.
-*/
-void dump_test_infix_2(
-    char   * op, 
-    limb_t * lhs,
-    limb_t * rhs,
-    int      lhs_len,
-    int      rhs_len,
-    limb_t * result,
-    limb_t   carry,
-    uint32_t cycles,
-    uint32_t instrs
-) {
-    putchar('(');
-    putstr(op); putchar(',');
-    putstr("0x");
-    for(int i =lhs_len; i >= 0; i --) {
-        puthex(lhs[i]);
+    putstr("# mpn_add ");
+    puthex(i);
+    putchar('/');
+    puthex(n);
+    putstr("\n");
+
+    l_x = test_mpn_rand( x, l_min, l_max );
+    l_y = test_mpn_rand( y, l_min, l_max );
+
+      l_r = MAX( l_x, l_y ) + 1; 
+      r[ l_r - 1 ] = mpn_add( r, x, l_x, y, l_y ); 
+      l_r = mpn_lop( r, l_r );
+
+    test_mpn_dump( "x", x, l_x );  
+    test_mpn_dump( "y", y, l_y );  
+    test_mpn_dump( "r", r, l_r );  
+
+      putstr( "t = x + y                         " "\n" );
+  
+      putstr( "if( r != t ) :                    " "\n" );
+      putstr( "  print 'failed test_mpn: add '   " "\n" );
+      putstr( "  print 'x == %s' % ( hex( x ) )" "\n" );
+      putstr( "  print 'y == %s' % ( hex( y ) )" "\n" );
+      putstr( "  print 'r == %s' % ( hex( r ) )" "\n" );
+      putstr( "  print '  != %s' % ( hex( t ) )" "\n" );
+  }
+
+  for( int i = 0; i < n; i++ ) {
+    limb_t x[ 2 * l_max + 2 ]; int l_x;
+    limb_t y[ 2 * l_max + 2 ]; int l_y;
+    limb_t r[ 2 * l_max + 2 ]; int l_r;
+
+    putstr("# mpn_sub ");
+    puthex(i);
+    putchar('/');
+    puthex(n);
+    putstr("\n");
+
+    l_x = test_mpn_rand( x, l_min, l_max );
+    l_y = test_mpn_rand( y, l_min, l_max );
+  
+    if( mpn_cmp( x, l_x, y, l_y ) >= 0 ) {
+      l_r = MAX( l_x, l_y ) + 1; 
+      r[ l_r - 1 ] = mpn_sub( r, x, l_x, y, l_y ); 
+      l_r = mpn_lop( r, l_r );
+    } 
+    else {
+      l_r = MAX( l_y, l_x ) + 1; 
+      r[ l_r - 1 ] = mpn_sub( r, y, l_y, x, l_x ); 
+      l_r = mpn_lop( r, l_r );
     }
-    putchar(',');
-    putstr("0x");
-    for(int i =rhs_len; i >= 0; i --) {
-        puthex(rhs[i]);
+
+    test_mpn_dump( "x", x, l_x );  
+    test_mpn_dump( "y", y, l_y );  
+    test_mpn_dump( "r", r, l_r );  
+
+    if( mpn_cmp( x, l_x, y, l_y ) >= 0 ) {
+      putstr( "t = x - y                         " "\n" );
     }
-    putchar(',');
-    putstr("0x"); puthex(lhs_len); putchar(',');
-    putstr("0x"); puthex(rhs_len); putchar(',');
-    putstr("0x");
-    for(int i =MPN_MAXLEN; i >= 0; i --) {
-        puthex(result[i]);
+    else {
+      putstr( "t = y - x                         " "\n" );
     }
-    putchar(',');
-    putstr("0x"); puthex(carry); putchar(',');
-    putstr("0x"); puthex(cycles); putchar(',');
-    putstr("0x"); puthex(instrs);
-    putchar(')');
-}
-            
-#define RUN_MPN_TEST_PROLOGUE(FUNCTION) \
-    zero_mpn(result, MPN_MAXLEN); \
-    gen_random_mpn(input_lhs,lhs_len); \
-    gen_random_mpn(input_rhs,rhs_len); \
-    uint32_t start_t = rdcycle(); \
-    uint32_t start_i = rdinstret(); 
 
-#define RUN_MPN_TEST_EPILOGUE(FUNCTION) \
-    cycles = rdcycle() - start_t; \
-    instrs = rdinstret() - start_i; \
-    dump_test_infix_2( \
-        #FUNCTION,  \
-        input_lhs, input_rhs,  \
-        lhs_len, rhs_len, \
-        result, carry,\
-        cycles, instrs\
-    ); \
+      putstr( "if( r != t ) :                    " "\n" );
+      putstr( "  print 'failed test_mpn: sub'    " "\n" );
+      putstr( "  print 'x == %s' % ( hex( x ) )" "\n" );
+      putstr( "  print 'y == %s' % ( hex( y ) )" "\n" );
+      putstr( "  print 'r == %s' % ( hex( r ) )" "\n" );
+      putstr( "  print '  != %s' % ( hex( t ) )" "\n" );
+  }
 
-#define RUN_MPN_TEST_CARRY(FUNCTION) { \
-    RUN_MPN_TEST_PROLOGUE(FUNCTION) \
-    carry = FUNCTION(result, input_lhs, lhs_len, input_rhs, rhs_len); \
-    RUN_MPN_TEST_EPILOGUE(FUNCTION) \
+  for( int i = 0; i < n; i++ ) {
+    limb_t x[ 2 * l_max + 2 ]; int l_x;
+    limb_t y[ 2 * l_max + 2 ]; int l_y;
+    limb_t r[ 2 * l_max + 2 ]; int l_r;
+    
+    putstr("# mpn_mul ");
+    puthex(i);
+    putchar('/');
+    puthex(n);
+    putstr("\n");
+
+    l_x = test_mpn_rand( x, l_min, l_max );
+    l_y = test_mpn_rand( y, l_min, l_max );
+
+      l_r = l_x + l_y;
+                     mpn_mul( r, x, l_x, y, l_y ); 
+      l_r = mpn_lop( r, l_r );
+
+    test_mpn_dump( "x", x, l_x );  
+    test_mpn_dump( "y", y, l_y );  
+    test_mpn_dump( "r", r, l_r );  
+
+      putstr( "t = x * y                         " "\n" );
+
+      putstr( "if( r != t ) :                    " "\n" );
+      putstr( "  print 'failed test_mpn: mul'    " "\n" );
+      putstr( "  print 'x == %s' % ( hex( x ) )" "\n" );
+      putstr( "  print 'y == %s' % ( hex( y ) )" "\n" );
+      putstr( "  print 'r == %s' % ( hex( r ) )" "\n" );
+      putstr( "  print '  != %s' % ( hex( t ) )" "\n" );
+  }
+  putstr("#finish\n");
 }
 
-#define RUN_MPN_TEST_NO_CARRY(FUNCTION) { \
-    RUN_MPN_TEST_PROLOGUE(FUNCTION) \
-    FUNCTION(result, input_lhs, lhs_len, input_rhs, rhs_len); \
-    RUN_MPN_TEST_EPILOGUE(FUNCTION) \
-}
 
 int main() {
 
-    limb_t   input_lhs [MPN_MAXLEN];
-    limb_t   input_rhs [MPN_MAXLEN];
-    limb_t   result    [MPN_MAXLEN];
-    limb_t   carry;
-
-    uint32_t cycles;
-    uint32_t instrs;
-
-    putstr("data=(");
-
-    for (int lhs_len  = 1; lhs_len < MPN_MAXLEN; lhs_len ++) {
-
-        for (int rhs_len  = 1; rhs_len < MPN_MAXLEN; rhs_len ++) {
-
-            //
-            // MPN_ADD
-            //
-
-            RUN_MPN_TEST_CARRY(mpn_add)
-            putstr(",\n");
-
-            //
-            // MPN_SUB
-            //
-            
-            RUN_MPN_TEST_CARRY(mpn_sub)
-            putstr(",\n");
-
-            //
-            // MPN_MUL
-            //
-            
-            RUN_MPN_TEST_NO_CARRY(mpn_mul)
-            putstr(",\n");
-
-        }
-
-    }
-    putstr(")\n");
+    test_mpn(10, 1, 6);
 
     __pass();
 }
