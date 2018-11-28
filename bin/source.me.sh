@@ -7,6 +7,7 @@ echo "-------------------------[Setting Up Project]--------------------------"
 # Top level environment variables
 export XC_HOME=`pwd`
 export XC_WORK=$XC_HOME/work
+export LIBSCARV=$XC_HOME/external/libscarv
 
 if [ -z $YS_INSTALL ] ; then
     # Export a dummy "Yosys Root" path environment variable.
@@ -27,6 +28,7 @@ mkdir -p $XC_WORK
 echo "XC_HOME        = $XC_HOME"
 echo "XC_WORK        = $XC_WORK"
 echo "YS_INSTALL     = $YS_INSTALL"
+echo "LIBSCARV       = $LIBSCARV"
 echo "RISCV          = $RISCV"
 echo "VERILATOR_ROOT = $VERILATOR_ROOT"
 

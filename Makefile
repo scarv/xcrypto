@@ -35,7 +35,7 @@ examples: libscarv
 
 .PHONY: libscarv
 libscarv:
-	$(MAKE) -C $(XC_HOME)/external/libscarv -f Makefile.arch-riscv objects
+	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-riscv objects
 
 .PHONY: clean
 clean:
