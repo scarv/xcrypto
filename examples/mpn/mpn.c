@@ -32,6 +32,25 @@ void test_mpn_dump( char* id, limb_t* x, int l_x ) {
 }
 
 void test_mpn( int n, int l_min, int l_max ) {
+  
+  uint64_t instr_total = 0;
+  uint64_t cycle_total = 0;
+  uint32_t instr_start = 0;
+  uint32_t cycle_start = 0;
+  uint32_t instr_end   = 0;
+  uint32_t cycle_end   = 0;
+
+  #define BMARK_START()   instr_start = rdinstret(); cycle_start = rdcycle()
+  #define BMARK_END()     instr_end   = rdinstret(); cycle_end   = rdcycle()
+  #define BMARK_DUMP(FN)  putstr("performance.append((\""); \
+                          putstr( #FN ); putstr("\","); \
+                          puthex(l_x); putchar(','); \
+                          puthex(l_y); putchar(','); \
+                          puthex(instr_start); putchar(','); \
+                          puthex(instr_end  ); putchar(','); \
+                          puthex(cycle_start); putchar(','); \
+                          puthex(cycle_end  ); putstr ("))\n"); \
+
   for( int i = 0; i < n; i++ ) {
     limb_t x[ 2 * l_max + 2 ]; int l_x;
     limb_t y[ 2 * l_max + 2 ]; int l_y;
@@ -42,7 +61,10 @@ void test_mpn( int n, int l_min, int l_max ) {
     
 
       l_r = MAX( l_x, l_y ) + 1; 
+      BMARK_START();
       r[ l_r - 1 ] = mpn_add( r, x, l_x, y, l_y ); 
+      BMARK_END();
+      BMARK_DUMP(mpn_add);
       l_r = mpn_lop( r, l_r );
 
     test_mpn_dump( "x", x, l_x );  
@@ -69,12 +91,18 @@ void test_mpn( int n, int l_min, int l_max ) {
   
     if( mpn_cmp( x, l_x, y, l_y ) >= 0 ) {
       l_r = MAX( l_x, l_y ) + 1; 
+      BMARK_START();
       r[ l_r - 1 ] = mpn_sub( r, x, l_x, y, l_y ); 
+      BMARK_END();
+      BMARK_DUMP(mpn_sub);
       l_r = mpn_lop( r, l_r );
     } 
     else {
       l_r = MAX( l_y, l_x ) + 1; 
+      BMARK_START();
       r[ l_r - 1 ] = mpn_sub( r, y, l_y, x, l_x ); 
+      BMARK_END();
+      BMARK_DUMP(mpn_sub);
       l_r = mpn_lop( r, l_r );
     }
 
@@ -106,7 +134,10 @@ void test_mpn( int n, int l_min, int l_max ) {
     l_y = test_mpn_rand( y, l_min, l_max );
 
       l_r = l_x + l_y;
+      BMARK_START();
                      mpn_mul( r, x, l_x, y, l_y ); 
+      BMARK_END();
+      BMARK_DUMP(mpn_mul);
       l_r = mpn_lop( r, l_r );
 
     test_mpn_dump( "x", x, l_x );  
@@ -122,13 +153,15 @@ void test_mpn( int n, int l_min, int l_max ) {
       putstr( "  print 'r == %s' % ( hex( r ).rjust(150) )" "\n" );
       putstr( "  print '  != %s' % ( hex( t ).rjust(150) )" "\n" );
   }
-
+  
   putstr("#finish\n");
 
 }
 
 
 int main() {
+  
+    putstr("performance = []");
 
     test_mpn(20, 1, 6);
 
