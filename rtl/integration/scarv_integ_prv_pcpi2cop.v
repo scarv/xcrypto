@@ -69,7 +69,7 @@ assign cpu_insn_ack  = 1'b1; // PicoRV accepts all responses immediately.
 //
 assign pcpi_wr       =  cop_wen;
 assign pcpi_rd       =  cop_wdata;
-assign pcpi_wait     = !cop_insn_rsp;
-assign pcpi_ready    =  cop_insn_rsp;
+assign pcpi_wait     = !cop_insn_rsp && pcpi_valid;
+assign pcpi_ready    =  cop_insn_rsp && cop_result != 3'b010;
 
 endmodule
