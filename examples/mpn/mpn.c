@@ -43,13 +43,13 @@ void test_mpn( int n, int l_min, int l_max ) {
   #define BMARK_START()   instr_start = rdinstret(); cycle_start = rdcycle()
   #define BMARK_END()     instr_end   = rdinstret(); cycle_end   = rdcycle()
   #define BMARK_DUMP(FN)  putstr("performance.append((\""); \
-                          putstr( #FN ); putstr("\","); \
-                          puthex(l_x); putchar(','); \
-                          puthex(l_y); putchar(','); \
-                          puthex(instr_start); putchar(','); \
-                          puthex(instr_end  ); putchar(','); \
-                          puthex(cycle_start); putchar(','); \
-                          puthex(cycle_end  ); putstr ("))\n"); \
+                          putstr( #FN );       putstr("\",0x"); \
+                          puthex(l_x);         putstr(",0x"); \
+                          puthex(l_y);         putstr(",0x"); \
+                          puthex(instr_start); putstr(",0x"); \
+                          puthex(instr_end  ); putstr(",0x"); \
+                          puthex(cycle_start); putstr(",0x"); \
+                          puthex(cycle_end  ); putstr("))\n"); \
 
   for( int i = 0; i < n; i++ ) {
     limb_t x[ 2 * l_max + 2 ]; int l_x;
@@ -161,9 +161,9 @@ void test_mpn( int n, int l_min, int l_max ) {
 
 int main() {
   
-    putstr("performance = []");
+    putstr("performance = []\n");
 
-    test_mpn(20, 1, 6);
+    test_mpn(100, 1, 6);
 
     __pass();
 }

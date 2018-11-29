@@ -21,6 +21,14 @@ export FML_ENGINE     = boolector
 export SIM_UNIT_TEST ?= $(XC_WORK)/unit/00-mvcop.hex
 export RTL_TIMEOUT   ?= 300
 
+export VERILATOR_SIM ?= $(XC_HOME)/work/verilator/scarv_prv_xcrypt_top
+
+#
+# Should be either "riscv" or "riscv-xcrypto"
+#
+.PHONY: $(LIBSCARV_ARCH)
+export LIBSCARV_ARCH ?= riscv-xcrypto
+
 .PHONY: docs
 docs:
 	$(MAKE) -C $(XC_HOME)/docs all
@@ -34,14 +42,24 @@ examples: libscarv
 	$(MAKE) -C $(XC_HOME)/examples all
 
 .PHONY: libscarv
-libscarv:
-	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-riscv-xcrypto objects lib disasm
+libscarv: $(LIBSCARV_ARCH)
+	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-$(LIBSCARV_ARCH) objects lib
 
 libscarv-clean:
-	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-riscv-xcrypto spotless
+	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-$(LIBSCARV_ARCH) spotless
+
+
+.PHONY: benchmarks
+benchmarks: verilator_build examples
+	$(MAKE) -C $(XC_HOME)/flow/benchmarks all
+
+.PHONY: benchmarks-clean
+benchmarks-clean:
+	$(MAKE) -C $(XC_HOME)/flow/benchmarks clean
+
 
 .PHONY: clean
-clean:
+clean: libscarv-clean benchmarks-clean
 	$(MAKE) -C $(XC_HOME)/docs     clean
 	$(MAKE) -C $(XC_HOME)/examples clean
 	$(MAKE) -C $(XC_HOME)/verif/unit clean

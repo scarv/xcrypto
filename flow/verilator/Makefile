@@ -16,7 +16,7 @@ SRC_RTL     ?= $(shell find ../../ -path "*rtl/coprocessor/*.v") \
 CPP_FILES   = vl_main.cpp srec.cpp
 
 TOP_MODULE  ?= scarv_prv_xcrypt_top
-SIM_EXE      = $(XC_HOME)/work/verilator/$(TOP_MODULE)
+SIM_EXE      = $(VERILATOR_SIM)
 
 VL_FLAGS    ?= -Wall -top-module $(TOP_MODULE) \
 	            -Wno-style -Wno-fatal \
