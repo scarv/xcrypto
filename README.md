@@ -60,6 +60,8 @@ environment variable such that `${YS_INSTALL}/yosys` is a valid path to the
 │   └── riscv-opcodes       - Reference to the offical riscv-opcodes repo
 ├── flow                    - Hardware simulation/implementation flow
 │   ├── gtkwave             - Wave views
+│   ├── benchmarks          - Performance benchmarking flow
+│   ├── verilator           - Subsystem simulator flow
 │   ├── icarus              - Simulation flow
 │   └── yosys               - Formal SMT2 generation and synthesis
 ├── rtl
