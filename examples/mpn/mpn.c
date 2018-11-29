@@ -15,7 +15,6 @@ int test_mpn_rand( limb_t* r, int l_min, int l_max ) {
 
     for (int i = 0; i < l_r; i ++) {
         rngsamp(&r[i]);
-        //r[i] = i+1;
     }
 
     return l_r;
@@ -37,15 +36,10 @@ void test_mpn( int n, int l_min, int l_max ) {
     limb_t x[ 2 * l_max + 2 ]; int l_x;
     limb_t y[ 2 * l_max + 2 ]; int l_y;
     limb_t r[ 2 * l_max + 2 ]; int l_r;
-
-    putstr("# mpn_add ");
-    puthex(i);
-    putchar('/');
-    puthex(n);
-    putstr("\n");
-
+    
     l_x = test_mpn_rand( x, l_min, l_max );
     l_y = test_mpn_rand( y, l_min, l_max );
+    
 
       l_r = MAX( l_x, l_y ) + 1; 
       r[ l_r - 1 ] = mpn_add( r, x, l_x, y, l_y ); 
@@ -59,22 +53,16 @@ void test_mpn( int n, int l_min, int l_max ) {
   
       putstr( "if( r != t ) :                    " "\n" );
       putstr( "  print 'failed test_mpn: add '   " "\n" );
-      putstr( "  print 'x == %s' % ( hex( x ) )" "\n" );
-      putstr( "  print 'y == %s' % ( hex( y ) )" "\n" );
-      putstr( "  print 'r == %s' % ( hex( r ) )" "\n" );
-      putstr( "  print '  != %s' % ( hex( t ) )" "\n" );
+      putstr( "  print 'x == %s' % ( hex( x ).rjust(75) )" "\n" );
+      putstr( "  print 'y == %s' % ( hex( y ).rjust(75) )" "\n" );
+      putstr( "  print 'r == %s' % ( hex( r ).rjust(75) )" "\n" );
+      putstr( "  print '  != %s' % ( hex( t ).rjust(75) )" "\n" );
   }
 
   for( int i = 0; i < n; i++ ) {
     limb_t x[ 2 * l_max + 2 ]; int l_x;
     limb_t y[ 2 * l_max + 2 ]; int l_y;
     limb_t r[ 2 * l_max + 2 ]; int l_r;
-
-    putstr("# mpn_sub ");
-    puthex(i);
-    putchar('/');
-    puthex(n);
-    putstr("\n");
 
     l_x = test_mpn_rand( x, l_min, l_max );
     l_y = test_mpn_rand( y, l_min, l_max );
@@ -113,21 +101,9 @@ void test_mpn( int n, int l_min, int l_max ) {
     limb_t x[ 2 * l_max + 2 ]; int l_x;
     limb_t y[ 2 * l_max + 2 ]; int l_y;
     limb_t r[ 2 * l_max + 2 ]; int l_r;
-    
-    putstr("# mpn_mul ");
-    puthex(i);
-    putchar('/');
-    puthex(n);
-    putstr("\n");
 
     l_x = test_mpn_rand( x, l_min, l_max );
     l_y = test_mpn_rand( y, l_min, l_max );
-
-    putstr("# ");
-    puthex(l_min); putstr(" ");
-    puthex(l_max); putstr(" ");
-    puthex(l_x  ); putstr(" ");
-    puthex(l_y  ); putstr("\n");
 
       l_r = l_x + l_y;
                      mpn_mul( r, x, l_x, y, l_y ); 
@@ -146,13 +122,15 @@ void test_mpn( int n, int l_min, int l_max ) {
       putstr( "  print 'r == %s' % ( hex( r ).rjust(150) )" "\n" );
       putstr( "  print '  != %s' % ( hex( t ).rjust(150) )" "\n" );
   }
+
   putstr("#finish\n");
+
 }
 
 
 int main() {
 
-    test_mpn(10, 1, 6);
+    test_mpn(20, 1, 6);
 
     __pass();
 }
