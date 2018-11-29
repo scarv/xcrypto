@@ -208,7 +208,10 @@ wire add_rhs_rs2 =
     fsm1 && (is_macc_2                                                 ) ;
 
 wire add_rhs_rs3 =
-    fsm1 && (is_mmul_3  || is_madd_3 || is_msub_3                     ) ;
+    fsm1 && (is_mmul_3  || is_madd_3                                  ) ;
+
+wire add_rhs_rs3_0 =
+    fsm1 && (is_msub_3                                                ) ;
 
 wire add_rhs_r23 =
     fsm0 && (is_macc_1 || is_macc_2                                   ) ;
@@ -218,9 +221,10 @@ assign add_lhs =
     {64{add_lhs_tmp}}   & {          tmp     }   ;
 
 assign add_rhs =
-    {64{add_rhs_rs2}}   & {32'b0   , malu_rs2}   |
-    {64{add_rhs_rs3}}   & {32'b0   , malu_rs3}   |
-    {64{add_rhs_r23}}   & {malu_rs2, malu_rs3}   ;
+    {64{add_rhs_rs2  }}   & {32'b0   , malu_rs2   }   |
+    {64{add_rhs_rs3  }}   & {32'b0   , malu_rs3   }   |
+    {64{add_rhs_rs3_0}}   & {63'b0   , malu_rs3[0]}   |
+    {64{add_rhs_r23  }}   & {malu_rs2, malu_rs3   }   ;
 
 assign result_add   = do_sub ? add_lhs - add_rhs :
                                add_lhs + add_rhs ;
