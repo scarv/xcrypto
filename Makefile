@@ -150,7 +150,7 @@ unit_tests:
 	$(MAKE) -C $(XC_HOME)/verif/unit all
 
 .PHONY: verilator_build
-verilator_build:
+verilator_build: rtl_decoder
 	$(MAKE) -C $(XC_HOME)/flow/verilator build
 
 verilator_run: RTL_TIMEOUT=3000
