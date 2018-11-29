@@ -116,6 +116,15 @@ in [$XC_HOME/flow/verilator/README.md](./flow/verilator/README.md).
 Example code to run in the integration testbench is found in 
 `examples/integration-test`
 
+**Benchmarking**
+
+The integration testbench described in 
+[$XC_HOME/flow/verilator/README.md](./flow/verilator/README.md)
+is also used to run the benchmarking programs.
+More information on the benchmarking flow can be found in
+[$XC_HOME/flow/benchmarks/README.md](./flow/benchmarks/README.md).
+
+
 **Unit Tests**
 
 - These use icarus verilog, and the modified binutils to run the tests
