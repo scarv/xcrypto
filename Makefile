@@ -26,7 +26,6 @@ export VERILATOR_SIM ?= $(XC_HOME)/work/verilator/scarv_prv_xcrypt_top
 #
 # Should be either "riscv" or "riscv-xcrypto"
 #
-.PHONY: $(LIBSCARV_ARCH)
 export LIBSCARV_ARCH ?= riscv-xcrypto
 
 .PHONY: docs
@@ -42,7 +41,7 @@ examples: libscarv
 	$(MAKE) -C $(XC_HOME)/examples all
 
 .PHONY: libscarv
-libscarv: $(LIBSCARV_ARCH)
+libscarv: 
 	$(MAKE) -C $(LIBSCARV) -f Makefile.arch-$(LIBSCARV_ARCH) objects lib
 
 libscarv-clean:
@@ -50,7 +49,7 @@ libscarv-clean:
 
 
 .PHONY: benchmarks
-benchmarks: verilator_build examples
+benchmarks:
 	$(MAKE) -C $(XC_HOME)/flow/benchmarks all
 
 .PHONY: benchmarks-clean
