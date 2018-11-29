@@ -162,8 +162,10 @@ void test_mpn( int n, int l_min, int l_max ) {
 int main() {
   
     putstr("performance = []\n");
-
-    test_mpn(100, 1, 6);
+    
+    for(int i = 1; i < 10; i ++) {
+        test_mpn(5, i, i);
+    }
 
     __pass();
 }

@@ -13,8 +13,14 @@ fig = plt.figure()
 colors = {
     "mpn_add" : 'ro',
     "mpn_sub" : 'gx',
-    "mpn_mul" : 'b.'
+    "mpn_mul" : 'b^'
 }
+
+funcs = [
+    "mpn_add",
+    "mpn_sub",
+    "mpn_mul"
+]
 
 for record in performance:
     func, lx,ly,instr_s,instr_e,cycle_s,cycle_e = record

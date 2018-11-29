@@ -16,11 +16,11 @@ clean:
 mpn_benchmark: $(MPN_OUTPUT) $(MPN_PLOT)
 
 $(MPN_OUTPUT) :
-	$(VERILATOR_SIM) +q +TIMEOUT=3000000 \
+	$(VERILATOR_SIM) +q +TIMEOUT=4000000 \
         +PASS_ADDR=0xC000001C +FAIL_ADDR=0xC0000010 \
         +IMEM=/home/ben/scarv/repos/hw-crypto-cop/work/examples/mpn.srec \
         > $@
 
 $(MPN_PLOT) : $(MPN_OUTPUT)
 	cat $(MPN_OUTPUT) $(MPN_PROCESS) | python
-	mv plot.svg $@
+	mv plot*.svg $@
