@@ -394,7 +394,7 @@ index f60bea15c8..afaa7dda07 100644
  		  if (*s == ' ')
  		    ++s;
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index f966fb6a50..9438dde7d7 100644
+index f966fb6a50..3b5f2b1cf5 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -1,6 +1,136 @@
@@ -535,10 +535,10 @@ index f966fb6a50..9438dde7d7 100644
  #define MASK_SLLI_RV32  0xfe00707f
  #define MATCH_SRLI_RV32 0x5013
 diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
-index b87c719626..71f37b47ef 100644
+index b87c719626..6f9c84c79d 100644
 --- a/include/opcode/riscv.h
 +++ b/include/opcode/riscv.h
-@@ -191,6 +191,119 @@ static const char * const riscv_pred_succ[16] =
+@@ -191,6 +191,121 @@ static const char * const riscv_pred_succ[16] =
  #define RISCV_BRANCH_ALIGN (1 << RISCV_BRANCH_ALIGN_BITS)
  #define RISCV_BRANCH_REACH (RISCV_IMM_REACH * RISCV_BRANCH_ALIGN)
  
@@ -565,28 +565,30 @@ index b87c719626..71f37b47ef 100644
 +#define ENCODE_X_IMM11LO(X)  ((X &  OP_MASK_XIMM11LO) << OP_SH_XIMM11LO)
 +#define ENCODE_X_IMM5(X)  ((X &  OP_MASK_XIMM5) << OP_SH_XIMM5)
 +#define ENCODE_X_LUT4(X)  ((X &  OP_MASK_XLUT4) << OP_SH_XLUT4)
-+#define EXTRACT_X_B0(X) ((X >> OP_SH_XOP_SH_XB0)  & OP_MASK_XOP_MASK_XB0)
-+#define EXTRACT_X_B1(X) ((X >> OP_SH_XOP_SH_XB1)  & OP_MASK_XOP_MASK_XB1)
-+#define EXTRACT_X_B2(X) ((X >> OP_SH_XOP_SH_XB2)  & OP_MASK_XOP_MASK_XB2)
-+#define EXTRACT_X_B3(X) ((X >> OP_SH_XOP_SH_XB3)  & OP_MASK_XOP_MASK_XB3)
-+#define EXTRACT_X_CA(X) ((X >> OP_SH_XOP_SH_XCA)  & OP_MASK_XOP_MASK_XCA)
-+#define EXTRACT_X_CB(X) ((X >> OP_SH_XOP_SH_XCB)  & OP_MASK_XOP_MASK_XCB)
-+#define EXTRACT_X_CC(X) ((X >> OP_SH_XOP_SH_XCC)  & OP_MASK_XOP_MASK_XCC)
-+#define EXTRACT_X_CD(X) ((X >> OP_SH_XOP_SH_XCD)  & OP_MASK_XOP_MASK_XCD)
-+#define EXTRACT_X_CL(X) ((X >> OP_SH_XOP_SH_XCL)  & OP_MASK_XOP_MASK_XCL)
-+#define EXTRACT_X_CMSHAMT(X) ((X >> OP_SH_XOP_SH_XCMSHAMT)  & OP_MASK_XOP_MASK_XCMSHAMT)
-+#define EXTRACT_X_CRD(X) ((X >> OP_SH_XOP_SH_XCRD)  & OP_MASK_XOP_MASK_XCRD)
-+#define EXTRACT_X_CRDM(X) ((X >> OP_SH_XOP_SH_XCRDM)  & OP_MASK_XOP_MASK_XCRDM)
-+#define EXTRACT_X_CRS1(X) ((X >> OP_SH_XOP_SH_XCRS1)  & OP_MASK_XOP_MASK_XCRS1)
-+#define EXTRACT_X_CRS2(X) ((X >> OP_SH_XOP_SH_XCRS2)  & OP_MASK_XOP_MASK_XCRS2)
-+#define EXTRACT_X_CRS3(X) ((X >> OP_SH_XOP_SH_XCRS3)  & OP_MASK_XOP_MASK_XCRS3)
-+#define EXTRACT_X_CS(X) ((X >> OP_SH_XOP_SH_XCS)  & OP_MASK_XOP_MASK_XCS)
-+#define EXTRACT_X_CSHAMT(X) ((X >> OP_SH_XOP_SH_XCSHAMT)  & OP_MASK_XOP_MASK_XCSHAMT)
-+#define EXTRACT_X_IMM11(X) ((X >> OP_SH_XOP_SH_XIMM11)  & OP_MASK_XOP_MASK_XIMM11)
-+#define EXTRACT_X_IMM11HI(X) ((X >> OP_SH_XOP_SH_XIMM11HI)  & OP_MASK_XOP_MASK_XIMM11HI)
-+#define EXTRACT_X_IMM11LO(X) ((X >> OP_SH_XOP_SH_XIMM11LO)  & OP_MASK_XOP_MASK_XIMM11LO)
-+#define EXTRACT_X_IMM5(X) ((X >> OP_SH_XOP_SH_XIMM5)  & OP_MASK_XOP_MASK_XIMM5)
-+#define EXTRACT_X_LUT4(X) ((X >> OP_SH_XOP_SH_XLUT4)  & OP_MASK_XOP_MASK_XLUT4)
++#define ENCODE_X_RTAMT(X)  ((X &  OP_MASK_XRTAMT) << OP_SH_XRTAMT)
++#define EXTRACT_X_B0(X) ((X >> OP_SH_XB0)  & OP_MASK_XB0)
++#define EXTRACT_X_B1(X) ((X >> OP_SH_XB1)  & OP_MASK_XB1)
++#define EXTRACT_X_B2(X) ((X >> OP_SH_XB2)  & OP_MASK_XB2)
++#define EXTRACT_X_B3(X) ((X >> OP_SH_XB3)  & OP_MASK_XB3)
++#define EXTRACT_X_CA(X) ((X >> OP_SH_XCA)  & OP_MASK_XCA)
++#define EXTRACT_X_CB(X) ((X >> OP_SH_XCB)  & OP_MASK_XCB)
++#define EXTRACT_X_CC(X) ((X >> OP_SH_XCC)  & OP_MASK_XCC)
++#define EXTRACT_X_CD(X) ((X >> OP_SH_XCD)  & OP_MASK_XCD)
++#define EXTRACT_X_CL(X) ((X >> OP_SH_XCL)  & OP_MASK_XCL)
++#define EXTRACT_X_CMSHAMT(X) ((X >> OP_SH_XCMSHAMT)  & OP_MASK_XCMSHAMT)
++#define EXTRACT_X_CRD(X) ((X >> OP_SH_XCRD)  & OP_MASK_XCRD)
++#define EXTRACT_X_CRDM(X) ((X >> OP_SH_XCRDM)  & OP_MASK_XCRDM)
++#define EXTRACT_X_CRS1(X) ((X >> OP_SH_XCRS1)  & OP_MASK_XCRS1)
++#define EXTRACT_X_CRS2(X) ((X >> OP_SH_XCRS2)  & OP_MASK_XCRS2)
++#define EXTRACT_X_CRS3(X) ((X >> OP_SH_XCRS3)  & OP_MASK_XCRS3)
++#define EXTRACT_X_CS(X) ((X >> OP_SH_XCS)  & OP_MASK_XCS)
++#define EXTRACT_X_CSHAMT(X) ((X >> OP_SH_XCSHAMT)  & OP_MASK_XCSHAMT)
++#define EXTRACT_X_IMM11(X) ((X >> OP_SH_XIMM11)  & OP_MASK_XIMM11)
++#define EXTRACT_X_IMM11HI(X) ((X >> OP_SH_XIMM11HI)  & OP_MASK_XIMM11HI)
++#define EXTRACT_X_IMM11LO(X) ((X >> OP_SH_XIMM11LO)  & OP_MASK_XIMM11LO)
++#define EXTRACT_X_IMM5(X) ((X >> OP_SH_XIMM5)  & OP_MASK_XIMM5)
++#define EXTRACT_X_LUT4(X) ((X >> OP_SH_XLUT4)  & OP_MASK_XLUT4)
++#define EXTRACT_X_RTAMT(X) ((X >> OP_SH_XRTAMT)  & OP_MASK_XRTAMT)
 +#define OP_MASK_XB0 0b11
 +#define OP_MASK_XB1 0b11
 +#define OP_MASK_XB2 0b11
@@ -658,7 +660,7 @@ index b87c719626..71f37b47ef 100644
  /* RV fields.  */
  
  #define OP_MASK_OP		0x7f
-@@ -245,6 +358,7 @@ static const char * const riscv_pred_succ[16] =
+@@ -245,6 +360,7 @@ static const char * const riscv_pred_succ[16] =
  
  #define NGPR 32
  #define NFPR 32
@@ -666,7 +668,7 @@ index b87c719626..71f37b47ef 100644
  
  /* Replace bits MASK << SHIFT of STRUCT with the equivalent bits in
     VALUE << SHIFT.  VALUE is evaluated exactly once.  */
-@@ -338,6 +452,7 @@ extern const char * const riscv_gpr_names_numeric[NGPR];
+@@ -338,6 +454,7 @@ extern const char * const riscv_gpr_names_numeric[NGPR];
  extern const char * const riscv_gpr_names_abi[NGPR];
  extern const char * const riscv_fpr_names_numeric[NFPR];
  extern const char * const riscv_fpr_names_abi[NFPR];
@@ -674,8 +676,94 @@ index b87c719626..71f37b47ef 100644
  
  extern const struct riscv_opcode riscv_opcodes[];
  
+diff --git a/opcodes/riscv-dis.c b/opcodes/riscv-dis.c
+index cc642d4ad3..cbdc9d6e14 100644
+--- a/opcodes/riscv-dis.c
++++ b/opcodes/riscv-dis.c
+@@ -119,6 +119,8 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+   int rs1 = (l >> OP_SH_RS1) & OP_MASK_RS1;
+   int rd = (l >> OP_SH_RD) & OP_MASK_RD;
+   fprintf_ftype print = info->fprintf_func;
++  char c;
++  int aux;
+ 
+   if (*d != '\0')
+     print (info->stream, "\t");
+@@ -127,6 +129,72 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+     {
+       switch (*d)
+ 	{
++     case 'X':
++       switch (c = *++d){
++         case 'w': print(info->stream, "%d", (int)EXTRACT_X_B0(l)); break;
++         case 'x': print(info->stream, "%d", (int)EXTRACT_X_B1(l)); break;
++         case 'y': print(info->stream, "%d", (int)EXTRACT_X_B2(l)); break;
++         case 'z': print(info->stream, "%d", (int)EXTRACT_X_B3(l)); break;
++         case 'p':       /* ca cb cc */
++            aux = (EXTRACT_X_CA(l) << 2) |
++                  (EXTRACT_X_CB(l) << 1) |
++                  (EXTRACT_X_CC(l) << 0) ;
++            // Extract and print friendly pack width letter.
++            switch(aux) {
++                case 0 : print(info->stream,"w"); break;
++                case 1 : print(info->stream,"h"); break;
++                case 2 : print(info->stream,"b"); break;
++                case 3 : print(info->stream,"n"); break;
++                case 4 : print(info->stream,"c"); break;
++                default:
++                    print(info->stream,"?"); break;
++            }
++            break;
++         case 'a': print(info->stream, "%d", (int)EXTRACT_X_CA(l)); break;
++         case 'b': print(info->stream, "%d", (int)EXTRACT_X_CB(l)); break;
++         case 'c': print(info->stream, "%d", (int)EXTRACT_X_CC(l)); break;
++         case 'd': print(info->stream, "%d", (int)EXTRACT_X_CD(l)); break;
++         case 'L': print(info->stream, "%d", (int)EXTRACT_X_CL(l)); break;
++         case 'r': print(info->stream, "%d", (int)EXTRACT_X_CMSHAMT(l)); break;
++         case 'D': print(info->stream, "c%d",(int)EXTRACT_X_CRD(l)); break;
++         case 'M': /* crdm */
++            aux = (int)EXTRACT_X_CRDM(l) << 1;
++            print(info -> stream, "c%d,c%d", aux, aux | 1);
++            break;
++         case 's': print(info->stream, "c%d",(int)EXTRACT_X_CRS1(l)); break;
++         case 't': print(info->stream, "c%d",(int)EXTRACT_X_CRS2(l)); break;
++         case 'S': print(info->stream, "c%d",(int)EXTRACT_X_CRS3(l)); break;
++         case 'k': print(info->stream, "%d", (int)EXTRACT_X_CS(l)); break;
++         case 'R': print(info->stream, "%d", (int)EXTRACT_X_CSHAMT(l));break;
++         case 'h': print(info->stream, "%d", (int)EXTRACT_X_CC(l));break;
++         case 'B': print(info->stream, "%d", (int)EXTRACT_X_CD(l));break;
++         case 'l': print(info->stream, "%d", (int)EXTRACT_X_IMM11(l));break;
++         case 'm':       /* imm11hi, imm11lo */
++            print(info->stream, "<IMM>");
++            break;
++         case 'n':      /* imm11lo */
++            print(info->stream, "<IMM>");
++            break;
++         case '5':       /* imm11 imm5 */
++            print(info->stream, "<IMM>");
++            break;
++         case '4': print(info->stream, "%d", (int)EXTRACT_X_LUT4(l));break;
++	
++         case ',':
++	     case '(':
++	     case ')':
++	     case '[':
++	     case ']':
++	        print (info->stream, "%c", *d);
++	        break;
++     
++         default:
++            print(info -> stream, "Unknown XCrypto operand type `X%c'",c);
++            return;
++        }
++
++        break;
++
+ 	case 'C': /* RVC */
+ 	  switch (*++d)
+ 	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index 79e7214835..8d8652f2fe 100644
+index 79e7214835..b9e7281fe4 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -56,6 +56,11 @@ const char * const riscv_fpr_names_abi[NFPR] = {

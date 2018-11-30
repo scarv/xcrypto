@@ -33,8 +33,6 @@ void test_mpn_dump( char* id, limb_t* x, int l_x ) {
 
 void test_mpn( int n, int l_min, int l_max ) {
   
-  uint64_t instr_total = 0;
-  uint64_t cycle_total = 0;
   uint32_t instr_start = 0;
   uint32_t cycle_start = 0;
   uint32_t instr_end   = 0;
