@@ -142,7 +142,7 @@ def make_c_extra(match,mask):
         tp.append("#define %s %s" %(sname, flow))
         tp.append("#define %s(X)  ((X &  %s) << %s)" %(
             enc_name,mname,sname))
-        tp.append("#define %s(X) ((X >> OP_SH_X%s)  & OP_MASK_X%s)" %(
+        tp.append("#define %s(X) ((X >> %s)  & %s)" %(
             ext_name,sname,mname))
         tp.append("#define %s(X) ((%s(X)) == (%s(X)))" %(
             val_name,enc_name,ext_name))
