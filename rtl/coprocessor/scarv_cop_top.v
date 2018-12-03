@@ -248,19 +248,29 @@ wire [31:0] u_rs1;
 
 generate if(FAST_COP_CPU_IF == 0) begin
 
+    reg            r_cop_wen   ; // COP write enable
+    reg [ 4:0]     r_cop_waddr ; // COP destination register address
+    reg [31:0]     r_cop_wdata ; // COP write data
+    reg [ 2:0]     r_cop_result; // COP execution result
+
     //
     // COP Output response registers
     always @(posedge g_clk) if(!g_resetn) begin
-        cop_wen    <= 1'b0; // COP write enable
-        cop_waddr  <= 5'b0; // COP destination register address
-        cop_wdata  <= 32'b0; // COP write data
-        cop_result <= 3'b0; // COP execution result
+        r_cop_wen    <= 1'b0; // COP write enable
+        r_cop_waddr  <= 5'b0; // COP destination register address
+        r_cop_wdata  <= 32'b0; // COP write data
+        r_cop_result <= 3'b0; // COP execution result
     end else if(insn_finish) begin
-        cop_wen    <= n_cop_wen   ; // COP write enable
-        cop_waddr  <= n_cop_waddr ; // COP destination register address
-        cop_wdata  <= n_cop_wdata ; // COP write data
-        cop_result <= n_cop_result; // COP execution result
+        r_cop_wen    <= n_cop_wen   ; // COP write enable
+        r_cop_waddr  <= n_cop_waddr ; // COP destination register address
+        r_cop_wdata  <= n_cop_wdata ; // COP write data
+        r_cop_result <= n_cop_result; // COP execution result
     end
+    
+    assign cop_wen    = r_cop_wen   ;
+    assign cop_waddr  = r_cop_waddr ;
+    assign cop_wdata  = r_cop_wdata ;
+    assign cop_result = r_cop_result;
 
     //
     // Register inputs to the COP
@@ -367,9 +377,15 @@ generate if(FAST_COP_CPU_IF == 0) begin
         end
     
     endcase end
+
+    reg r_cop_insn_ack;
+    reg r_cop_insn_rsp;
+
+    assign cop_insn_ack = r_cop_insn_ack;
+    assign cop_insn_rsp = r_cop_insn_rsp;
     
-    always @(posedge g_clk) cop_insn_ack <= g_resetn ? n_cop_insn_ack : 1'b0;
-    always @(posedge g_clk) cop_insn_rsp <= g_resetn ? n_cop_insn_rsp : 1'b0;
+    always @(posedge g_clk) r_cop_insn_ack <= g_resetn ? n_cop_insn_ack : 1'b0;
+    always @(posedge g_clk) r_cop_insn_rsp <= g_resetn ? n_cop_insn_rsp : 1'b0;
     
     always @(posedge g_clk) if(!g_resetn) begin
         cop_fsm <= FSM_IDLE;
