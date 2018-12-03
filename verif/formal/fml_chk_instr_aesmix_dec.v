@@ -13,8 +13,8 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_aesmix_dec)
 
 wire [7:0] t0 = `CRS1[ 7: 0];
-wire [7:0] t1 = `CRS2[15: 8];
-wire [7:0] t2 = `CRS1[23:16];
+wire [7:0] t1 = `CRS1[15: 8];
+wire [7:0] t2 = `CRS2[23:16];
 wire [7:0] t3 = `CRS2[31:24];
 
 function [7:0] xt2;
@@ -40,10 +40,10 @@ reg [7:0] exp3;
 wire [31:0] mixdec_expected = {exp3,exp2,exp1,exp0};
 
 always @(*) begin
-    exp0 = xtX(t0,4'hb) ^ xtX(t1,4'hd) ^ xtX(t2,4'h9) ^ xtX(t3,4'he) ;
-    exp1 = xtX(t0,4'hd) ^ xtX(t1,4'h9) ^ xtX(t2,4'he) ^ xtX(t3,4'hb) ;
-    exp2 = xtX(t0,4'h9) ^ xtX(t1,4'he) ^ xtX(t2,4'hb) ^ xtX(t3,4'hd) ;
-    exp3 = xtX(t0,4'he) ^ xtX(t1,4'hb) ^ xtX(t2,4'hd) ^ xtX(t3,4'h9) ;
+    exp3 = xtX(t0,4'hb) ^ xtX(t1,4'hd) ^ xtX(t2,4'h9) ^ xtX(t3,4'he) ;
+    exp2 = xtX(t0,4'hd) ^ xtX(t1,4'h9) ^ xtX(t2,4'he) ^ xtX(t3,4'hb) ;
+    exp1 = xtX(t0,4'h9) ^ xtX(t1,4'he) ^ xtX(t2,4'hb) ^ xtX(t3,4'hd) ;
+    exp0 = xtX(t0,4'he) ^ xtX(t1,4'hb) ^ xtX(t2,4'hd) ^ xtX(t3,4'h9) ;
 end
 
 //

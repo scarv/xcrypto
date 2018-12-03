@@ -116,8 +116,8 @@ endfunction
 // MIX instruction logic
 //
 wire [7:0] t0 = aes_rs1[ 7: 0] & {8{mix_instr}};
-wire [7:0] t1 = aes_rs2[15: 8] & {8{mix_instr}};
-wire [7:0] t2 = aes_rs1[23:16] & {8{mix_instr}};
+wire [7:0] t1 = aes_rs1[15: 8] & {8{mix_instr}};
+wire [7:0] t2 = aes_rs2[23:16] & {8{mix_instr}};
 wire [7:0] t3 = aes_rs2[31:24] & {8{mix_instr}};
 
 reg  [7:0] mix_output_enc;
@@ -147,7 +147,7 @@ end
 
 wire [7:0] mix_output = mode_enc ? mix_output_enc : mix_output_dec;
 
-wire [31:0] mix_result = {tmp_reg[31:8], mix_output};
+wire [31:0] mix_result = {mix_output, tmp_reg[23:0]};
 
 //
 // SBOX signal input/output
@@ -187,10 +187,10 @@ always @(posedge g_clk) begin
         if(sub_ben_rot[2]) tmp_reg[23:16] <= sbox_output_0;
         if(sub_ben_rot[3]) tmp_reg[31:24] <= sbox_output_0;
     end else if(mix_instr) begin
-        if(aes_fsm_3) tmp_reg[ 7: 0] <= mix_output;
-        if(aes_fsm_2) tmp_reg[15: 8] <= mix_output;
-        if(aes_fsm_1) tmp_reg[23:16] <= mix_output;
-        if(aes_fsm_0) tmp_reg[31:24] <= mix_output;
+        if(aes_fsm_0) tmp_reg[ 7: 0] <= mix_output;
+        if(aes_fsm_1) tmp_reg[15: 8] <= mix_output;
+        if(aes_fsm_2) tmp_reg[23:16] <= mix_output;
+        if(aes_fsm_3) tmp_reg[31:24] <= mix_output;
     end
 end
 

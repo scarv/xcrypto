@@ -13,8 +13,8 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_aesmix_enc)
 
 wire [7:0] t0 = `CRS1[ 7: 0];
-wire [7:0] t1 = `CRS2[15: 8];
-wire [7:0] t2 = `CRS1[23:16];
+wire [7:0] t1 = `CRS1[15: 8];
+wire [7:0] t2 = `CRS2[23:16];
 wire [7:0] t3 = `CRS2[31:24];
 
 function [7:0] xt2;
@@ -35,10 +35,10 @@ reg [7:0] exp3;
 wire [31:0] mixenc_expected = {exp3,exp2,exp1,exp0};
 
 always @(*) begin
-    exp3 = xt2(t0) ^ xt3(t1) ^     t2  ^     t3  ;
-    exp2 =     t0  ^ xt2(t1) ^ xt3(t2) ^     t3  ;
-    exp1 =     t0  ^     t1  ^ xt2(t2) ^ xt3(t3) ;
-    exp0 = xt3(t0) ^     t1  ^     t2  ^ xt2(t3) ;
+    exp0 = xt2(t0) ^ xt3(t1) ^     t2  ^     t3  ;
+    exp1 =     t0  ^ xt2(t1) ^ xt3(t2) ^     t3  ;
+    exp2 =     t0  ^     t1  ^ xt2(t2) ^ xt3(t3) ;
+    exp3 = xt3(t0) ^     t1  ^     t2  ^ xt2(t3) ;
 end
 
 //
