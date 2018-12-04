@@ -338,8 +338,8 @@ index f60bea15c8..afaa7dda07 100644
 +          (unsigned long) imm_expr->X_add_number,1023);
 +          break;
 +        }
-+        INSERT_OPERAND (XIMM11HI, *ip, imm_expr->X_add_number>>3);
-+        INSERT_OPERAND (XIMM11LO, *ip, imm_expr->X_add_number & 0x7);
++        INSERT_OPERAND (XIMM11HI, *ip, imm_expr->X_add_number>>4);
++        INSERT_OPERAND (XIMM11LO, *ip, imm_expr->X_add_number & 0xF);
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
 +        continue;
