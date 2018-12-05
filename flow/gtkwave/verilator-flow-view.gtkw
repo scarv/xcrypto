@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Mon Dec  3 14:06:53 2018
+[*] Wed Dec  5 09:49:26 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/verilator/vl_waves.vcd"
-[dumpfile_mtime] "Mon Dec  3 11:06:05 2018"
-[dumpfile_size] 2460861722
+[dumpfile_mtime] "Wed Dec  5 09:43:39 2018"
+[dumpfile_size] 44648190
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/verilator-flow-view.gtkw"
-[timestart] 910370
+[timestart] 248842
 [size] 1920 1025
 [pos] -1 -1
-*-9.559031 912877 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.967694 250293 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] scarv_prv_xcrypt_top.
 [treeopen] scarv_prv_xcrypt_top.i_picorv32_axi.
 [treeopen] scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.
@@ -34,7 +34,7 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.cop_insn_rsp
 scarv_prv_xcrypt_top.i_scarv_cop_top.cpu_rs1[31:0]
 @28
 scarv_prv_xcrypt_top.i_scarv_cop_top.cpu_insn_ack
-@201
+@200
 -
 @28
 scarv_prv_xcrypt_top.i_scarv_cop_top.cop_result[2:0]
@@ -49,7 +49,7 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.n_cop_waddr[4:0]
 scarv_prv_xcrypt_top.i_scarv_cop_top.n_cop_wdata[31:0]
 @28
 scarv_prv_xcrypt_top.i_scarv_cop_top.n_cop_wen
-@c00200
+@800200
 -MEM
 @22
 scarv_prv_xcrypt_top.i_scarv_cop_top.cop_mem_addr[31:0]
@@ -65,7 +65,13 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.cop_mem_stall
 scarv_prv_xcrypt_top.i_scarv_cop_top.cop_mem_wdata[31:0]
 @28
 scarv_prv_xcrypt_top.i_scarv_cop_top.cop_mem_wen
-@1401200
+scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_mem.mem_idone
+scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_mem.mem_is_store
+scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_mem.mem_ivalid
+scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_mem.mem_addr_error
+@22
+scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_mem.mem_address[31:0]
+@1000200
 -MEM
 @c00200
 -MALU
@@ -159,7 +165,7 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_malu.wb_shf_lo
 scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_malu.wb_tmp_hi
 @1401200
 -MALU
-@c00200
+@800200
 -CPRS
 @22
 scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(0)[31:0]
@@ -178,8 +184,35 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(12)[31:0]
 scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(13)[31:0]
 scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(14)[31:0]
 scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(15)[31:0]
-@1401200
+@1000200
 -CPRS
+@800200
+-PRV Memory
+@22
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_araddr[31:0]
+@800028
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
+@28
+(0)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
+(1)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
+(2)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
+@1001200
+-group_end
+@28
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arvalid
+@22
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_awaddr[31:0]
+@28
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_awprot[2:0]
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_awready
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_awvalid
+@22
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_wdata[31:0]
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_wstrb[3:0]
+@28
+scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_wvalid
+@1000200
+-PRV Memory
 @800200
 -GPRS
 @22
@@ -235,7 +268,9 @@ scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(9)[31:0]
 +{a2} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(12)[31:0]
 +{a3} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(13)[31:0]
 +{a4} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(14)[31:0]
+@23
 +{a5} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(15)[31:0]
+@22
 +{a6} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(16)[31:0]
 +{a7} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(17)[31:0]
 scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(18)[31:0]
