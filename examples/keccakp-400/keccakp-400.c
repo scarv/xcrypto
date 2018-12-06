@@ -31,15 +31,20 @@ int main() {
     putstr("\n");
     */
     
-    uint32_t rounds      = 11;
+    uint32_t rounds      = 20;
     uint32_t instr_start = rdinstret();
     uint32_t cycle_start = rdcycle();
+
+    putstr("Running 20 rounds of KeccakP-400\n");
     
-    KeccakP400_Permute_Nrounds(keccak_state1, rounds);
+    KeccakP400_Permute_20rounds(keccak_state1);
+
+    //KeccakP400_rho(keccak_state1);
+    //KeccakP400_rho_asm(keccak_state2);
 
     uint32_t instr_count = rdinstret() - instr_start;
     uint32_t cycle_count = rdcycle()   - cycle_start;
-    
+
     /*
     for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
         puthex(keccak_state1[i]);
