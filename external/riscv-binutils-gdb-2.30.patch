@@ -718,7 +718,7 @@ index cc642d4ad3..cbdc9d6e14 100644
 +         case 'b': print(info->stream, "%d", (int)EXTRACT_X_CB(l)); break;
 +         case 'c': print(info->stream, "%d", (int)EXTRACT_X_CC(l)); break;
 +         case 'd': print(info->stream, "%d", (int)EXTRACT_X_CD(l)); break;
-+         case 'L': print(info->stream, "%d", (int)EXTRACT_X_CL(l)); break;
++         case 'L': print(info->stream, "%d", ((int)EXTRACT_X_CL(l))*2); break;
 +         case 'r': print(info->stream, "%d", (int)EXTRACT_X_CMSHAMT(l)); break;
 +         case 'D': print(info->stream, "c%d",(int)EXTRACT_X_CRD(l)); break;
 +         case 'M': /* crdm */
@@ -728,7 +728,7 @@ index cc642d4ad3..cbdc9d6e14 100644
 +         case 's': print(info->stream, "c%d",(int)EXTRACT_X_CRS1(l)); break;
 +         case 't': print(info->stream, "c%d",(int)EXTRACT_X_CRS2(l)); break;
 +         case 'S': print(info->stream, "c%d",(int)EXTRACT_X_CRS3(l)); break;
-+         case 'k': print(info->stream, "%d", (int)EXTRACT_X_CS(l)); break;
++         case 'k': print(info->stream, "%d", ((int)EXTRACT_X_CS(l))*2); break;
 +         case 'R': print(info->stream, "%d", (int)EXTRACT_X_CSHAMT(l));break;
 +         case 'h': print(info->stream, "%d", (int)EXTRACT_X_CC(l));break;
 +         case 'B': print(info->stream, "%d", (int)EXTRACT_X_CD(l));break;
