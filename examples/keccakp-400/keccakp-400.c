@@ -19,33 +19,35 @@ int main() {
 
     rand_init_state(keccak_state1);
 
-    /*
+    
     for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
         keccak_state2[i] = keccak_state1[i];
 
-        puthex((uint32_t)keccak_state1[i]);
+        /*puthex((uint32_t)keccak_state1[i]);
         putstr(", ");
         puthex((uint32_t)keccak_state2[i]);
-        putstr("\n");
+        putstr("\n");*/
     }
     putstr("\n");
-    */
     
-    uint32_t rounds      = 20;
-    uint32_t instr_start = rdinstret();
-    uint32_t cycle_start = rdcycle();
-
-    putstr("Running 20 rounds of KeccakP-400\n");
     
-    KeccakP400_Permute_20rounds(keccak_state1);
+    uint32_t rounds      = 1;
 
-    //KeccakP400_rho(keccak_state1);
-    //KeccakP400_rho_asm(keccak_state2);
+    putstr("Running KeccakP-400\n");
+    
+    uint32_t acc_instr_start = rdinstret();
+    uint32_t acc_cycle_start = rdcycle();
+    KeccakP400Round(keccak_state1,0);
+    uint32_t acc_instr_count = rdinstret() - acc_instr_start;
+    uint32_t acc_cycle_count = rdcycle()   - acc_cycle_start;
+    
+    uint32_t ref_instr_start = rdinstret();
+    uint32_t ref_cycle_start = rdcycle();
+    KeccakP400RoundReference(keccak_state2,0);
+    uint32_t ref_instr_count = rdinstret() - ref_instr_start;
+    uint32_t ref_cycle_count = rdcycle()   - ref_cycle_start;
 
-    uint32_t instr_count = rdinstret() - instr_start;
-    uint32_t cycle_count = rdcycle()   - cycle_start;
-
-    /*
+    
     for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
         puthex(keccak_state1[i]);
         putstr(", ");
@@ -58,17 +60,19 @@ int main() {
         putstr("\n");
     }
     putstr("\n");
-    */
+    
 
-    putstr("# Cycle Count: ");
-    puthex(cycle_count);
-    putstr("\n# Instr Count: ");
-    puthex(instr_count);
+    putstr("# Reference\n");
+    putstr("#   Cycle Count: ");
+    puthex(ref_cycle_count);
+    putstr("\n#   Instr Count: ");
+    puthex(ref_instr_count);
     putstr("\n");
-    putstr("# Cycle/Round: ");
-    puthex(cycle_count/rounds);
-    putstr("\n# Instr/Round: ");
-    puthex(instr_count/rounds);
+    putstr("# Accelerated\n");
+    putstr("#   Cycle Count: ");
+    puthex(acc_cycle_count);
+    putstr("\n#   Instr Count: ");
+    puthex(acc_instr_count);
     putstr("\n");
 
     __pass();
