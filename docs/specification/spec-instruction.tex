@@ -390,7 +390,7 @@
   the instruction essentially computes  
   \[
   \INDEX{r}{i} = \left\{\begin{array}{ll}
-                        \INDEX{x}{i} \OP[32][u]{\RRT}   \VERB[RV]{rtamt}        & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{x}{i} \OP[32][u]{\RRT}   \VERB[RV]{rtamt}        & \mbox{~if $\INDEX{m}{i} = 1$} \\
                         \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
                         \end{array}
                         \right.
@@ -403,7 +403,7 @@
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT}   \VERB[RV]{rtamt}       $ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 1$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
     }
   }
@@ -416,7 +416,7 @@
   the instruction essentially computes  
   \[
   \INDEX{r}{i} = \left\{\begin{array}{ll}
-                        \INDEX{x}{i} \OP[32][u]{\RRT} ( \VERB[RV]{rtamt} + 16 ) & \mbox{~if $\INDEX{m}{i} = 0$} \\
+                        \INDEX{x}{i} \OP[32][u]{\RRT} ( \VERB[RV]{rtamt} + 16 ) & \mbox{~if $\INDEX{m}{i} = 1$} \\
                         \INDEX{r}{i}                                            & \mbox{~otherwise            } \\
                         \end{array}
                         \right.
@@ -429,7 +429,7 @@
 }{
   $t \ASN \XCR[*][{\VERB[RV]{crs1}}] \OP[32][u]{\RRT} ( \VERB[RV]{rtamt} + 16 )$ \;
   \For{$i = 0$ {\bf upto} $31$}{
-    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 0$}{
+    \If{$\INDEX{\XCR[*][{\VERB[RV]{rs2}}]}{i} = 1$}{
       $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{t}{i}$
     }
   }
