@@ -690,8 +690,8 @@ where cases marked invalid are reserved.
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.prot}{pw, crd, crs1, crs2}{
-  Compute a   register-based packed left-rotate,
-  implying $\odot = \LRT$.
+  Compute a   register-based packed right-rotate,
+  implying $\odot = \RRT$.
   Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
@@ -703,15 +703,15 @@ where cases marked invalid are reserved.
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
-    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RRT}   \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i}$ \;
   }
 }
 
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.prot.i}{pw, crd, crs1, cshamt}{
-  Compute an immediate-based packed left-rotate,
-  implying $\odot = \LRT$.
+  Compute an immediate-based packed right-rotate,
+  implying $\odot = \RRT$.
   Note that, wrt. the encoding,
   $
   \VERB[RV]{n} = 1 \LSH ( \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} ) ,
@@ -723,7 +723,7 @@ where cases marked invalid are reserved.
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
-    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\LRT}   \VERB[RV]{cshamt}$ \;
+    $\INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX[w]{\XCR[*][{\VERB[RV]{crs1}}]}{i} \OP[w][u]{\RRT}   \VERB[RV]{cshamt}$ \;
   }
 }
 
