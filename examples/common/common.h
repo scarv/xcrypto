@@ -23,6 +23,14 @@ extern int  puts(char * str);
 //! Write a hexadecimal representation of a 32-bit number to stdout.
 extern void puthex(uint32_t tp);
 
+//! Write a hexadecimal representation of a 64-bit number to stdout.
+extern void puthex64(uint64_t tp) {
+    uint32_t a = tp & 0xFFFFFFFF;
+    uint32_t b = (tp >> 32) & 0xFFFFFFFF;
+    puthex(b);
+    puthex(a);
+}
+
 //! Read a random value from XCrypto.
 extern void rngsamp(uint32_t * r);
 

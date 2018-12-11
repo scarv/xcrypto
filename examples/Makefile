@@ -24,9 +24,11 @@ all:
 	$(MAKE) -C mpn all
 	$(MAKE) -C aes-test all
 	$(MAKE) -C keccakp-400 all
+	$(MAKE) -C keccakp-1600 all
 
 clean:
 	$(MAKE) -C integration-test clean
 	$(MAKE) -C helloworld clean
 	$(MAKE) -C mpn clean
 	$(MAKE) -C keccakp-400 clean
+	$(MAKE) -C keccakp-1600 clean

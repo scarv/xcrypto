@@ -2,30 +2,34 @@
 #include <stdint.h>
 #include "common.h"
 
-#include "scarv/KeccakP-400-SnP.h"
+#include "scarv/KeccakP-1600-SnP.h"
 
-void rand_init_state(tKeccak400Lane * state) {
-    for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
+void rand_init_state(tKeccak1600Lane * state) {
+    for(int i = 0; i < 25; i ++) {
+        uint64_t ta;
         uint32_t sample;
         rngsamp(&sample);
-        state[i] = (tKeccak400Lane)sample;
+        ta |= sample;
+        rngsamp(&sample);
+        ta = (ta << 32) | sample;
+        state[i] = (tKeccak1600Lane)ta;
     }
 }
 
 int main() {
   
-    tKeccak400Lane keccak_state1 [KeccakP400_stateSizeInBytes/2];
-    tKeccak400Lane keccak_state2 [KeccakP400_stateSizeInBytes/2];
+    tKeccak1600Lane keccak_state1 [25];
+    tKeccak1600Lane keccak_state2 [25];
 
     rand_init_state(keccak_state1);
 
     
-    for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
+    for(int i = 0; i < 25; i ++) {
         keccak_state2[i] = keccak_state1[i];
 
-        /*puthex((uint32_t)keccak_state1[i]);
+        /*puthex64(keccak_state1[i]);
         putstr(", ");
-        puthex((uint32_t)keccak_state2[i]);
+        puthex64(keccak_state2[i]);
         putstr("\n");*/
     }
     putstr("\n");
@@ -33,25 +37,25 @@ int main() {
     
     uint32_t rounds      = 1;
 
-    putstr("Running KeccakP-400\n");
+    putstr("Running KeccakP-1600\n");
     
     uint32_t acc_instr_start = rdinstret();
     uint32_t acc_cycle_start = rdcycle();
-    KeccakP400Round(keccak_state1,0);
+    KeccakP1600Round(keccak_state1,0);
     uint32_t acc_instr_count = rdinstret() - acc_instr_start;
     uint32_t acc_cycle_count = rdcycle()   - acc_cycle_start;
     
     uint32_t ref_instr_start = rdinstret();
     uint32_t ref_cycle_start = rdcycle();
-    KeccakP400RoundReference(keccak_state2,0);
+    KeccakP1600RoundReference(keccak_state2,0);
     uint32_t ref_instr_count = rdinstret() - ref_instr_start;
     uint32_t ref_cycle_count = rdcycle()   - ref_cycle_start;
 
     
-    for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
-        puthex(keccak_state1[i]);
+    for(int i = 0; i < 25; i ++) {
+        puthex64(keccak_state1[i]);
         putstr(", ");
-        puthex(keccak_state2[i]);
+        puthex64(keccak_state2[i]);
 
         if(keccak_state1[i] != keccak_state2[i]) {
             putstr(" !");
