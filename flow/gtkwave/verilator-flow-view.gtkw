@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Wed Dec  5 09:49:26 2018
+[*] Wed Dec 12 13:06:44 2018
 [*]
 [dumpfile] "/home/ben/scarv/repos/hw-crypto-cop/work/verilator/vl_waves.vcd"
-[dumpfile_mtime] "Wed Dec  5 09:43:39 2018"
-[dumpfile_size] 44648190
+[dumpfile_mtime] "Wed Dec 12 13:05:10 2018"
+[dumpfile_size] 62641313
 [savefile] "/home/ben/scarv/repos/hw-crypto-cop/flow/gtkwave/verilator-flow-view.gtkw"
-[timestart] 248842
+[timestart] 251163
 [size] 1920 1025
 [pos] -1 -1
-*-8.967694 250293 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-10.057288 254383 118993 254383 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] scarv_prv_xcrypt_top.
 [treeopen] scarv_prv_xcrypt_top.i_picorv32_axi.
 [treeopen] scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.
@@ -190,13 +190,13 @@ scarv_prv_xcrypt_top.i_scarv_cop_top.i_scarv_cop_cprs.cprs(15)[31:0]
 -PRV Memory
 @22
 scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_araddr[31:0]
-@800028
+@c00028
 scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
 @28
 (0)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
 (1)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
 (2)scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arprot[2:0]
-@1001200
+@1401200
 -group_end
 @28
 scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_arvalid
@@ -213,6 +213,8 @@ scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_wstrb[3:0]
 scarv_prv_xcrypt_top.i_picorv32_axi.mem_axi_wvalid
 @1000200
 -PRV Memory
+@28
+scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.instr_xor
 @800200
 -GPRS
 @22
@@ -261,22 +263,95 @@ scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(4)[31:0]
 @1401200
 -group_end
 @22
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(8)[31:0]
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(9)[31:0]
++{fp/s0} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(8)[31:0]
+@23
++{s1} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(9)[31:0]
+@22
 +{a0} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(10)[31:0]
 +{a1} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(11)[31:0]
 +{a2} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(12)[31:0]
 +{a3} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(13)[31:0]
 +{a4} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(14)[31:0]
-@23
 +{a5} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(15)[31:0]
-@22
 +{a6} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(16)[31:0]
 +{a7} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(17)[31:0]
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(18)[31:0]
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
-scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(21)[31:0]
++{s2} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(18)[31:0]
+@c00022
++{s3} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+@28
+(0)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(1)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(2)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(3)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(4)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(5)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(6)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(7)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(8)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(9)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(10)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(11)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(12)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(13)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(14)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(15)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(16)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(17)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(18)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(19)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(20)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(21)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(22)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(23)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(24)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(25)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(26)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(27)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(28)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(29)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(30)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+(31)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(19)[31:0]
+@1401200
+-group_end
+@c00022
++{s4} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+@28
+(0)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(1)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(2)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(3)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(4)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(5)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(6)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(7)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(8)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(9)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(10)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(11)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(12)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(13)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(14)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(15)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(16)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(17)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(18)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(19)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(20)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(21)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(22)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(23)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(24)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(25)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(26)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(27)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(28)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(29)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(30)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+(31)scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(20)[31:0]
+@1401200
+-group_end
+@22
++{s5} scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(21)[31:0]
 scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(22)[31:0]
 scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(23)[31:0]
 scarv_prv_xcrypt_top.i_picorv32_axi.picorv32_core.cpuregs(24)[31:0]

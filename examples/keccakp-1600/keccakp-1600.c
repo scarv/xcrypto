@@ -41,13 +41,13 @@ int main() {
     
     uint32_t acc_instr_start = rdinstret();
     uint32_t acc_cycle_start = rdcycle();
-    KeccakP1600Round(keccak_state1,0);
+    KeccakP1600Round(keccak_state1,2);
     uint32_t acc_instr_count = rdinstret() - acc_instr_start;
     uint32_t acc_cycle_count = rdcycle()   - acc_cycle_start;
     
     uint32_t ref_instr_start = rdinstret();
     uint32_t ref_cycle_start = rdcycle();
-    KeccakP1600RoundReference(keccak_state2,0);
+    KeccakP1600RoundReference(keccak_state2,2);
     uint32_t ref_instr_count = rdinstret() - ref_instr_start;
     uint32_t ref_cycle_count = rdcycle()   - ref_cycle_start;
 
