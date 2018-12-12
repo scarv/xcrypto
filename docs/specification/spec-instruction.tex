@@ -200,7 +200,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.scatter.b}{crd, rs2, crs2}{
+\XCINSTR{xc.scatter.b}{crd, crs2(rs1)}{
   Perform a ``scattered'' store of 
   four     bytes 
   from an $\XCR$ register
@@ -223,7 +223,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.scatter.h}{crd, rs2, crs2}{
+\XCINSTR{xc.scatter.h}{crd, crs2(rs1)}{
   Perform a ``scattered'' store of 
   two  halfwords
   from an $\XCR$ register
@@ -244,7 +244,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.gather.b}{crd, rs1, crs2}{
+\XCINSTR{xc.gather.b}{crd, crs2(rs1)}{
   Perform a  ``gathered''  load of 
   four     bytes 
   from memory 
@@ -267,7 +267,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.gather.h}{rd, rs1, crs2}{
+\XCINSTR{xc.gather.h}{crd, crs2(rs1)}{
   Perform a  ``gathered''  load of 
   two  halfwords
   from memory 
