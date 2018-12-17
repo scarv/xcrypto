@@ -270,8 +270,8 @@ assign result_clmul = clmul_reduce[0] ^ malu_rs3;
 wire        shiftright  = is_msrl  || is_msrl_i                  ;
 
 wire [5:0]  shamt       = 
-    is_msrl_i || is_msll_i ? {2'b0,id_imm[3:0]}    : 
-                               malu_rs3[5:0]         ;
+    is_msrl_i || is_msll_i ? id_imm  [5:0] : 
+                             malu_rs3[5:0] ;
 
 // Shift results return zero if shift amount greater than 63.
 wire        shift_ret_z = (is_msrl || is_msll) && |malu_rs3[31:6];
