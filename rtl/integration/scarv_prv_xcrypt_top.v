@@ -157,7 +157,7 @@ wire        cop_mem_error = 1'b0;
 //  Convert the COP memory interface to an AXI4 lite interface using the
 //  existing PicoRV32 axi adapter module.
 //
-picorv32_axi_adapter i_cop_mem2axi (
+scarv_axi_adapter i_cop_mem2axi (
 .clk            (g_clk          ),
 .resetn         (g_resetn       ),
 .mem_axi_awvalid(cop_axi_awvalid),
@@ -313,3 +313,4 @@ picorv32_axi #(
 
 
 endmodule
+
