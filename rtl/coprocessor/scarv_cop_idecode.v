@@ -210,10 +210,10 @@ assign id_imm =
     {32{imm_st      }} & {{21{encoded[31]}}, encoded[31:25],encoded[10:7] } |
     {32{imm_li      }} & {16'b0, encoded[31:21],encoded[19:15]            } |
     {32{imm_8       }} & {24'b0, encoded[31:24]                           } |
-    {32{imm_sh_px   }} & {27'b0, dec_arg_cshamt                           } |
-    {32{imm_sh_mp   }} & {27'b0, dec_arg_cmshamt                          } |
-    {32{imm_lut     }} & {27'b0, dec_arg_lut4                             } |
-    {32{imm_rtamt   }} & {27'b0, dec_arg_rtamt                            } ;
+    {32{imm_sh_px   }} & {28'b0, dec_arg_cshamt                           } |
+    {32{imm_sh_mp   }} & {26'b0, dec_arg_cmshamt                          } |
+    {32{imm_lut     }} & {28'b0, dec_arg_lut4                             } |
+    {32{imm_rtamt   }} & {28'b0, dec_arg_rtamt                            } ;
 
 assign id_wb_h = dec_arg_cc ;
 assign id_wb_b = imm_ld ? dec_arg_cd : dec_arg_ca;

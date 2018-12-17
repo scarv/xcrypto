@@ -184,8 +184,8 @@ index f60bea15c8..afaa7dda07 100644
 +    case 'r': /* cmshamt */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number >= 16) {
-+          as_bad (_("Crypto ISE Improper multi-precision shift (%lu). Should be 0 <= x <= 16"),
++        if ((unsigned long) imm_expr->X_add_number >= 64) {
++          as_bad (_("Crypto ISE Improper multi-precision shift (%lu). Should be 0 <= x < 64"),
 +          (unsigned long) imm_expr->X_add_number);
 +          break;
 +        }
@@ -480,14 +480,14 @@ index f966fb6a50..3b5f2b1cf5 100644
 +#define MASK_MSUB_3  0xf0087c7f
 +#define MATCH_MSUB_2 0x6000702b
 +#define MASK_MSUB_2  0xff087c7f
-+#define MATCH_MSLL_I 0x7000742b
-+#define MASK_MSLL_I  0xf0087c7f
-+#define MATCH_MSLL 0x8000742b
++#define MATCH_MSLL 0x742b
 +#define MASK_MSLL  0xf0087c7f
-+#define MATCH_MSRL_I 0x9000742b
-+#define MASK_MSRL_I  0xf0087c7f
-+#define MATCH_MSRL 0xa000742b
++#define MATCH_MSRL 0x4000742b
 +#define MASK_MSRL  0xf0087c7f
++#define MATCH_MSLL_I 0x8000742b
++#define MASK_MSLL_I  0xc0087c7f
++#define MATCH_MSRL_I 0xc000742b
++#define MASK_MSRL_I  0xc0087c7f
 +#define MATCH_MACC_2 0xb000782b
 +#define MASK_MACC_2  0xff087c7f
 +#define MATCH_MACC_1 0xc000782b
@@ -598,7 +598,7 @@ index b87c719626..6f9c84c79d 100644
 +#define OP_MASK_XCC 0b1
 +#define OP_MASK_XCD 0b1
 +#define OP_MASK_XCL 0b1111
-+#define OP_MASK_XCMSHAMT 0b1111
++#define OP_MASK_XCMSHAMT 0b111111
 +#define OP_MASK_XCRD 0b1111
 +#define OP_MASK_XCRDM 0b111
 +#define OP_MASK_XCRS1 0b1111
