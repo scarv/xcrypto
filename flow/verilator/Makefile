@@ -19,8 +19,8 @@ TOP_MODULE  ?= scarv_prv_xcrypt_top
 SIM_EXE      = $(VERILATOR_SIM)
 
 VL_FLAGS    ?= -Wall -top-module $(TOP_MODULE) \
-	            -Wno-style -Wno-fatal \
-                --trace \
+	            -Wno-style -Wno-fatal -O3 \
+                --trace --no-threads --noassert \
                 +define+NO_WAVE_DUMP=1+USE_VERILATOR_CLK_RESET=1 \
                 -I$(XC_HOME)/rtl/coprocessor \
                 -I$(XC_HOME)/work
@@ -41,7 +41,7 @@ build: $(SIM_EXE)
 $(SIM_EXE) : $(SRC_RTL) $(CPP_FILES)
 	@mkdir -p $(dir $(SIM_EXE))
 	$(VERILATOR) $(VL_FLAGS) --cc $(SRC_RTL) --exe $(CPP_FILES) -o $@
-	$(MAKE) -C obj_dir -f V$(TOP_MODULE).mk
+	$(MAKE) OPT_FAST="-O3 -fno-stack-protector" -C obj_dir -f V$(TOP_MODULE).mk
 
 #
 # Run the simulation executable
