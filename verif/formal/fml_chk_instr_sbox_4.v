@@ -18,12 +18,12 @@ wire [3:0]  sbox[15:0];
 wire [31:0] sbox_4_result;
 
 genvar i;
-generate for(i = 0; i < 15; i = i + 1) begin
+generate for(i = 0; i < 16; i = i + 1) begin
     
     assign sbox[i] = sbox_flat[(4*i)+3:4*i];
 
     if(i < 8) begin
-        assign sbox_4_result[(4*i)+3:4*i] = sbox[i];
+        assign sbox_4_result[(4*i)+3:4*i] = sbox[`CRS1[(4*i)+3:4*i]];
     end
 
 end endgenerate
