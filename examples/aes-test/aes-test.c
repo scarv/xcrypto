@@ -16,7 +16,7 @@ void test_aes_rand( uint8_t* r, int l_r ) {
 		if (i+2<l_r) {r[i+2] = rnd & 0xFF; rnd>>=8;}
 		if (i+3<l_r) {r[i+3] = rnd & 0xFF; rnd>>=8;}
   } 
-}  
+}   
 
 void test_aes_dump( char* id, uint8_t* x, int l_x ) {
 //   printf( "%s = binascii.a2b_hex( '", id );
@@ -49,7 +49,7 @@ int main() {
 
 	uint32_t random = 32; 
 	rngseed(&random);      
-/* 
+ 
 	uint32_t key_cyc, cyc, start_t, end_t; 
 	uint32_t key_ins, ins, start_i, end_i;     
 	
@@ -57,21 +57,42 @@ int main() {
 
 	#if defined( CONF_AES_ENABLE_ENC ) 
 	for( int i = 0; i < n; i++ ) {
-		uint8_t c[ 16 ], m[ 16 ], k[ 16 ];
+		uint8_t r[16], s[16], c[ 16 ], m[ 16 ], k[ 16 ];
 
-   	test_aes_rand( m, 16 );
-   	test_aes_rand( k, 16 );
- 		    
-    #if defined( CONF_AES_PRECOMP_RK )  
-	   	uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ]; 
+   	test_aes_rand( m, 16 );  
+   	test_aes_rand( k, 16 );   
+ 		           
+    #if defined( CONF_AES_PRECOMP_RK )     
+	   	uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
 			start_t = rdcycle(); start_i = rdinstret();
-	   	aes_enc_exp( rk, k );
+	   	aes_enc_exp( rk, k );  
 			end_t   = rdcycle(); end_i   = rdinstret();
 			key_cyc = end_t-start_t; key_ins = end_i-start_i;
    
+			#if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+    	U8_TO_U8_T(   s, m );
+    	#else
+    	U8_TO_U8_N(   s, m );
+    	#endif
+			
 			start_t = rdcycle(); start_i = rdinstret();
-			aes_enc( c, m, rk );
+			#if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+				#if !defined ( CONF_AES_ENC_XCRYPT )
+				aes_enc( r, s, rk,  AES_ENC_SBOX );
+				#else
+				aes_enc( r, s, rk,  AES_ENC_SBOX,  AES_MULX );
+				#endif
+			#else 
+			aes_enc( r, s, rk );
+			#endif
 			end_t   = rdcycle(); end_i   = rdinstret();
+
+	    #if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+	    U8_TO_U8_T(   c, r );
+	    #else
+	    U8_TO_U8_N(   c, r );
+	    #endif
+
    	#else  
       start_t = rdcycle(); start_i = rdinstret();
 			aes_enc( c, m, rk );
@@ -99,9 +120,6 @@ int main() {
    	putstr( "  print '  != %s' % ( binascii.b2a_hex( t ) )" "\n" );
  	}   
 	#endif             
-  
-//    putstr("Cycles: "); puthex(end_t-start_t); putstr("\n");
-//    putstr("Instrs: "); puthex(end_i-start_i); putstr("\n");
  	  
   #if defined( CONF_AES_ENABLE_DEC )
   for( int i = 0; i < n; i++ ) {
@@ -109,7 +127,7 @@ int main() {
  
     test_aes_rand( c, 16 );
     test_aes_rand( k, 16 );  
-  
+   
     #if defined( CONF_AES_PRECOMP_RK )    
     uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
 		start_t = rdcycle(); start_i = rdinstret();
@@ -147,19 +165,19 @@ int main() {
     putstr( "  print '  != %s' % ( binascii.b2a_hex( t ) )" "\n" );
   }
   #endif
-*/	
 
+/*
 //uint8_t tt1[16]= {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 //uint8_t tt2[ 16 ];
 	uint8_t tt2[ 16 ] = {0x16,0x26,0x36,0x46,0x56,0x76,0x86,0x96,14,15,16,17,18,19,20};
 	uint8_t tt3[ 16 ];
 	uint8_t tt4[ 16 ];
-
+ 
 //  test_aes_rand( tt2, 16 );
   test_aes_rand( tt4, 16 );  
 
 	U8_TO_U8_N(   tt3, tt2 );
-
+ 
 	uint32_t* tt32;
 	tt32 = (uint32_t *) tt2;	puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); 	
 	tt32 = (uint32_t *) tt3;	puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); putstr("\n"); 
@@ -192,6 +210,6 @@ int main() {
 //	uint32_t* tt32;
 	tt32 = (uint32_t *) tt2; puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n");     	
 	tt32 = (uint32_t *) tt3; puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); putstr("\n"); 
-      
+   */  
   __pass();
 }
