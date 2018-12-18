@@ -16,7 +16,7 @@ void test_aes_rand( uint8_t* r, int l_r ) {
 		if (i+2<l_r) {r[i+2] = rnd & 0xFF; rnd>>=8;}
 		if (i+3<l_r) {r[i+3] = rnd & 0xFF; rnd>>=8;}
   } 
-}  
+}   
 
 void test_aes_dump( char* id, uint8_t* x, int l_x ) {
 //   printf( "%s = binascii.a2b_hex( '", id );
@@ -60,12 +60,12 @@ int main() {
 		uint8_t r[16], s[16], c[ 16 ], m[ 16 ], k[ 16 ];
 
    	test_aes_rand( m, 16 );  
-   	test_aes_rand( k, 16 );  
- 		          
+   	test_aes_rand( k, 16 );   
+ 		           
     #if defined( CONF_AES_PRECOMP_RK )     
 	   	uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
 			start_t = rdcycle(); start_i = rdinstret();
-	   	aes_enc_exp( rk, k ); 
+	   	aes_enc_exp( rk, k );  
 			end_t   = rdcycle(); end_i   = rdinstret();
 			key_cyc = end_t-start_t; key_ins = end_i-start_i;
    
@@ -77,7 +77,11 @@ int main() {
 			
 			start_t = rdcycle(); start_i = rdinstret();
 			#if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
-			aes_enc( r, s, rk,  AES_ENC_SBOX );
+				#if !defined ( CONF_AES_ENC_XCRYPT )
+				aes_enc( r, s, rk,  AES_ENC_SBOX );
+				#else
+				aes_enc( r, s, rk,  AES_ENC_SBOX,  AES_MULX );
+				#endif
 			#else 
 			aes_enc( r, s, rk );
 			#endif
@@ -123,7 +127,7 @@ int main() {
  
     test_aes_rand( c, 16 );
     test_aes_rand( k, 16 );  
-  
+   
     #if defined( CONF_AES_PRECOMP_RK )    
     uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
 		start_t = rdcycle(); start_i = rdinstret();
@@ -168,12 +172,12 @@ int main() {
 	uint8_t tt2[ 16 ] = {0x16,0x26,0x36,0x46,0x56,0x76,0x86,0x96,14,15,16,17,18,19,20};
 	uint8_t tt3[ 16 ];
 	uint8_t tt4[ 16 ];
-
+ 
 //  test_aes_rand( tt2, 16 );
   test_aes_rand( tt4, 16 );  
 
 	U8_TO_U8_N(   tt3, tt2 );
-
+ 
 	uint32_t* tt32;
 	tt32 = (uint32_t *) tt2;	puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); 	
 	tt32 = (uint32_t *) tt3;	puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); putstr("\n"); 
@@ -206,6 +210,6 @@ int main() {
 //	uint32_t* tt32;
 	tt32 = (uint32_t *) tt2; puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n");     	
 	tt32 = (uint32_t *) tt3; puthex(tt32[3]); puthex(tt32[2]); puthex(tt32[1]); puthex(tt32[0]);	putstr("\n"); putstr("\n"); 
-*/      
+   */  
   __pass();
 }
