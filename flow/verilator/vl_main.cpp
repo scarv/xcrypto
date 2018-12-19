@@ -118,23 +118,22 @@ void axi_read_channel_response(
     vluint32_t * axi_rdata,
     read_req_queue_t * q
 ){
-    if(*axi_rvalid && !*axi_rready) {
-        // Do nothing, wait for device to accept prior response.
-
-    } else if(!q -> empty()) {
+    if(!q -> empty()) {
         // handle the next response.
         vluint32_t raddr = q -> front();
         
         vluint32_t rdata = mem_read_word(raddr);
 
         if(q == &cop_read_requests) {
-            //std::cout << ">> cop ld mem[" << raddr <<"] = " << std::hex<<rdata<<std::endl;
+            //std::cout << ">> cop ld mem[" << std::hex<<raddr <<"] = " << std::hex<<rdata<<std::endl;
         }
 
         *axi_rdata  = rdata;
         *axi_rvalid = 1;
 
-        q -> pop();
+        if(*axi_rvalid && *axi_rready) {
+            q -> pop();
+        }
 
     } else {
         // No responses left to handle. Clear rvalid.
