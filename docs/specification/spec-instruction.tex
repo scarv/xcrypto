@@ -439,8 +439,8 @@
 % -----------------------------------------------------------------------------
 
 
-\XCINSTR{xc.sbox.4}{crd, crs1, crs2, crs3}{
-    Apply an arbitrary 4-bit S-Box to the contents of 
+\XCINSTR{xc.lut}{crd, crs1, crs2, crs3}{
+    Apply an arbitrary 4-bit Look-up Table (LUT) to the contents of 
     $\XCR[*][{\VERB[RV]{crs1}}]$,
     placing the result in
     $\XCR[*][{\VERB[RV]{crd}}]$.
@@ -448,7 +448,7 @@
     $\XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}]$
     where
     \[
-        sbox[i] = \INDEX[4]{{
+        lut[i] = \INDEX[4]{{
             (\XCR[*][{\VERB[RV]{crs3}}] \CONS \XCR[*][{\VERB[RV]{crs2}}])
         }}{i}
     \]
@@ -458,11 +458,16 @@
     $\XCR[*][{\VERB[RV]{crs2}}] = 0xABCD1234$
     and
     $\XCR[*][{\VERB[RV]{crs3}}] = 0x456789EF$
-    then $sbox[0] = 4$, $sbox[1] = 3,$
-    $sbox[7] = A$ and $sbox[8] = F$.
+    then $lut[0] = 4$, $lut[1] = 3,$
+    $lut[7] = A$ and $lut[8] = F$.
+
+    The instruction can be used to create a 2-bit lookup table as well
+    by padding the values of 
+    $\XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}]$
+    appropriately.
 }{
     \For{$i=0$ {\bf upto} $15$}{
-        \INDEX[4]{\XCR[*][{\VERB[RV]{crd}}]}{i} = sbox[
+        \INDEX[4]{\XCR[*][{\VERB[RV]{crd}}]}{i} = lut[
              \INDEX[4]{\XCR[*][{\VERB[RV]{crs1}}]}{i}        
             ]
     }
