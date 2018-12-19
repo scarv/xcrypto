@@ -116,7 +116,7 @@ wire class_mp           =
 
 wire class_bitwise      = 
     dec_mix_l || dec_mix_h  || dec_bop    || dec_ins    || 
-    dec_ext   || dec_ld_liu || dec_ld_hiu || dec_sbox_4  ;
+    dec_ext   || dec_ld_liu || dec_ld_hiu || dec_lut  ;
 
 wire class_aes          =
     dec_aessub_enc || dec_aessub_encrot || dec_aessub_dec || 
@@ -172,7 +172,7 @@ wire [4:0] subclass_bitwise =
     {5{dec_ext }} & {SCARV_COP_SCLASS_EXT } |
     {5{dec_ld_liu }} & {SCARV_COP_SCLASS_LD_LIU } |
     {5{dec_ld_hiu }} & {SCARV_COP_SCLASS_LD_HIU } |
-    {5{dec_sbox_4}} & {SCARV_COP_SCLASS_SBOX_4} ;
+    {5{dec_lut}} & {SCARV_COP_SCLASS_LUT} ;
     
 wire [4:0] subclass_aes = 
     {5{dec_aessub_enc   }} & SCARV_COP_SCLASS_AESSUB_ENC    |

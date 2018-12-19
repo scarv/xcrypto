@@ -106,7 +106,7 @@ wire bw_ins  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_INS ;
 wire bw_ext  = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_EXT ;
 wire bw_ld_liu = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_LIU;
 wire bw_ld_hiu = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LD_HIU;
-wire bw_sbox_4 = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_SBOX_4;
+wire bw_lut   = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LUT;
 
 // Result computation for the BOP.cr instruction
 wire [31:0] bop_result;
@@ -137,17 +137,17 @@ wire [31:0] mix_t0   =
 wire [31:0] mix_result =
     (palu_rs2 & mix_t0) | (~palu_rs2 & palu_rs3);
 
-// Result computation for the SBOX instruction.
+// Result computation for the LUT instruction.
 
-wire [63:0] sbox_concat = {64{bw_sbox_4}} & {palu_rs3, palu_rs2};
-wire [ 3:0] sbox_lut [15:0];
-wire [31:0] sbox_result;
+wire [63:0] lut_concat = {64{bw_lut}} & {palu_rs3, palu_rs2};
+wire [ 3:0] lut_lut [15:0];
+wire [31:0] lut_result;
 genvar s;
 generate for(s = 0; s < 16; s = s+ 1) begin
     if(s < 8) begin
-        assign sbox_result[4*s+3:4*s] = sbox_lut[palu_rs1[4*s+3 : 4*s]];
+        assign lut_result[4*s+3:4*s] = lut_lut[palu_rs1[4*s+3 : 4*s]];
     end
-    assign sbox_lut[s] = sbox_concat[4*s+3: 4*s];
+    assign lut_lut[s] = lut_concat[4*s+3: 4*s];
 end endgenerate
 
 // AND/ORing the various bitwise results together.
@@ -160,7 +160,7 @@ wire [31:0] result_bitwise =
     {32{bw_ins }} & {ins_result                       } |
     {32{bw_mix_l}} & {mix_result                       } |
     {32{bw_mix_h}} & {mix_result                       } |
-    {32{bw_sbox_4}} & {sbox_result                     } ;
+    {32{bw_lut}} & {lut_result                     } ;
 
 // ----------------------------------------------------------------------
 

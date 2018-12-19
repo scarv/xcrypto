@@ -472,8 +472,8 @@ index f966fb6a50..e3a89a2a02 100644
 +#define MASK_MLTE  0xf000707f
 +#define MATCH_MGTE 0x2000702b
 +#define MASK_MGTE  0xf000707f
-+#define MATCH_SBOX_4 0x8000702b
-+#define MASK_SBOX_4  0xf008787f
++#define MATCH_LUT    0x8000702b
++#define MASK_LUT     0xf008787f
 +#define MATCH_MADD_3 0x3000702b
 +#define MASK_MADD_3  0xf0087c7f
 +#define MATCH_MADD_2 0x4000702b
@@ -820,7 +820,7 @@ index 79e7214835..762230c0ea 100644
 +{"xc.mequ",     "x", "d,s,Xt,XS",          MATCH_MEQU, MASK_MEQU, match_opcode, 0},
 +{"xc.mlte",     "x", "d,s,Xt,XS",          MATCH_MLTE, MASK_MLTE, match_opcode, 0},
 +{"xc.mgte",     "x", "d,s,Xt,XS",          MATCH_MGTE, MASK_MGTE, match_opcode, 0},
-+{"xc.sbox.4",  "x", "XD,Xs,Xt,XS",         MATCH_SBOX_4, MASK_SBOX_4, match_opcode, 0},
++{"xc.lut",     "x", "XD,Xs,Xt,XS",         MATCH_LUT   , MASK_LUT   , match_opcode, 0},
 +{"xc.madd.3",    "x", "(XM),Xs,Xt,XS",        MATCH_MADD_3, MASK_MADD_3, match_opcode, 0},
 +{"xc.madd.2",    "x", "(XM),Xs,Xt",           MATCH_MADD_2, MASK_MADD_2, match_opcode, 0},
 +{"xc.msub.3",    "x", "(XM),Xs,Xt,XS",        MATCH_MSUB_3, MASK_MSUB_3, match_opcode, 0},
