@@ -71,7 +71,8 @@ module scarv_axi_adapter (
 
 	assign mem_ready = mem_axi_bvalid || mem_axi_rvalid;
 	assign mem_axi_bready = mem_valid && |mem_wstrb;
-	assign mem_axi_rready = mem_valid && !mem_wstrb;
+    // Always accept read responses immediately.
+	assign mem_axi_rready = 1'b1;
 	assign mem_rdata = mem_axi_rdata;
 
 	always @(posedge clk) begin

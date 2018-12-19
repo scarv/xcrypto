@@ -227,7 +227,7 @@ def make_c(match,mask):
   print '#define RISCV_ENCODING_H'
   print '// ----- Crypto ISE BEGIN -----'
   for name in namelist:
-    name2 = name.upper().replace('.','_')
+    name2 = name.upper().replace('.','_').replace("XC_","")
     print '#define MATCH_%s %s' % (name2, hex(match[name]))
     print '#define MASK_%s  %s' % (name2, hex(mask[name]))
   print '// ----- Crypto ISE END -------'
