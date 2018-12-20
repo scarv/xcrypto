@@ -38,6 +38,7 @@ input  wire             cpu_insn_req    , // Instruction request
 output                  cop_insn_ack    , // Instruction request acknowledge
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
+input  wire [31:0]      cpu_rs2         , // RS2 source data
 
 output                  cop_wen         , // COP write enable
 output      [ 4:0]      cop_waddr       , // COP destination register address
@@ -66,7 +67,7 @@ input  wire             cop_mem_error     // Error
 // If set, use the faster version of the COP/CPU interface where the
 // COP assumes that:
 // - `cpu_insn_ack` is always set.
-// - `cpu_insn_enc` and `cpu_rs1` are stable until `cop_insn_rsp` is set
+// - `cpu_insn_enc` and `cpu_rs[1|2]` are stable until `cop_insn_rsp` is set
 // - `cop_insn_rsp` and `cop_insn_ack` are equivilent.
 //
 // See implementation guide, section 2.3.2 for more information.
@@ -146,6 +147,11 @@ wire          aes_idone        ; // Instruction complete
 wire [ 3:0]   aes_cpr_rd_ben   ; // Writeback byte enable
 wire [31:0]   aes_cpr_rd_wdata ; // Writeback data
 
+wire          sha3_ivalid       ; // Valid instruction input
+wire          sha3_idone        ; // Instruction complete
+wire [ 3:0]   sha3_cpr_rd_ben   ; // Writeback byte enable
+wire [31:0]   sha3_cpr_rd_wdata ; // Writeback data
+
 //
 // Functional unit dispatch
 //
@@ -162,6 +168,10 @@ assign palu_ivalid =
 assign aes_ivalid =
     insn_valid  && (
     id_class == SCARV_COP_ICLASS_AES          );
+
+assign sha3_ivalid =
+    insn_valid  && (
+    id_class == SCARV_COP_ICLASS_SHA3         );
 
 assign malu_ivalid =
     insn_valid  && (
@@ -214,6 +224,7 @@ assign n_cop_waddr = id_rd;
 assign n_cop_wen   = 
     (id_class     == SCARV_COP_ICLASS_MOVE    &&
      id_subclass  == SCARV_COP_SCLASS_XCR2GPR   )  ||
+    (id_class     == SCARV_COP_ICLASS_SHA3      )  ||
     (id_class     == SCARV_COP_ICLASS_RANDOM  &&
      id_subclass  == SCARV_COP_SCLASS_RTEST     )  ||
     (id_class     == SCARV_COP_ICLASS_MP      &&
@@ -223,6 +234,7 @@ assign n_cop_wen   =
 
 assign n_cop_wdata = 
     id_class == SCARV_COP_ICLASS_MOVE   ? palu_cpr_rd_wdata : 
+    id_class == SCARV_COP_ICLASS_SHA3   ? sha3_cpr_rd_wdata : 
     id_class == SCARV_COP_ICLASS_RANDOM ? rng_cpr_rd_wdata  : 
                                           malu_cpr_rd_wdata ;
 
@@ -240,6 +252,7 @@ assign n_cop_result=
 
 wire [31:0] u_insn_enc;
 wire [31:0] u_rs1;
+wire [31:0] u_rs2;
 
 //
 // Start of generate statements to switch between the "fast" and
@@ -276,9 +289,11 @@ generate if(FAST_COP_CPU_IF == 0) begin
     // Register inputs to the COP
     reg  [31:0] r_insn_enc;
     reg  [31:0] r_rs1;
+    reg  [31:0] r_rs2;
 
     assign u_insn_enc = (insn_accept) ? cpu_insn_enc : r_insn_enc;
     assign u_rs1      = (insn_accept) ? cpu_rs1      : r_rs1     ;
+    assign u_rs2      = (insn_accept) ? cpu_rs2      : r_rs2     ;
 
     always @(posedge g_clk) if(!g_resetn) begin
             r_insn_enc <= 32'b0;
@@ -289,6 +304,11 @@ generate if(FAST_COP_CPU_IF == 0) begin
             r_rs1      <= 32'b0;
         end else if(cpu_insn_req && cop_insn_ack)
             r_rs1      <= cpu_rs1     ;    
+    
+    always @(posedge g_clk) if(!g_resetn) begin
+            r_rs2      <= 32'b0;
+        end else if(cpu_insn_req && cop_insn_ack)
+            r_rs2      <= cpu_rs2     ;    
 
 end else if(FAST_COP_CPU_IF == 1) begin
         
@@ -299,6 +319,7 @@ end else if(FAST_COP_CPU_IF == 1) begin
 
     assign u_insn_enc = cpu_insn_enc;
     assign u_rs1      = cpu_rs1     ;
+    assign u_rs2      = cpu_rs2     ;
 
 end endgenerate
 
@@ -308,7 +329,8 @@ end endgenerate
 generate if(FAST_COP_CPU_IF == 0) begin
 
     assign  fu_done         = 
-        mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
+        mem_idone || palu_idone || malu_idone || 
+        rng_idone || aes_idone  || sha3_idone ||
         (id_exception && insn_accept);
     
     assign  insn_valid      = insn_accept ||
@@ -396,7 +418,8 @@ generate if(FAST_COP_CPU_IF == 0) begin
 end else if(FAST_COP_CPU_IF == 1) begin
 
     assign  fu_done         = 
-        mem_idone || palu_idone || malu_idone || rng_idone || aes_idone ||
+        mem_idone || palu_idone || malu_idone ||
+        rng_idone || aes_idone  || sha3_idone ||
         id_exception;
 
     assign  insn_valid      = cpu_insn_req;
@@ -514,6 +537,25 @@ scarv_cop_aes i_scarv_cop_aes(
 .aes_cpr_rd_wdata (aes_cpr_rd_wdata)  // Writeback data
 );
 
+//
+// instance: scarv_cop_sha3
+//
+//  SHA3 instruction implementations
+//
+//
+scarv_cop_sha3 i_scarv_cop_sha3 (
+.g_clk            (g_clk           ), // Global clock
+.g_resetn         (g_resetn        ), // Synchronous active low reset.
+.sha3_ivalid      (sha3_ivalid     ), // Valid instruction input
+.sha3_idone       (sha3_idone      ), // Instruction complete
+.sha3_rs1         (u_rs1           ), // Source register 1
+.sha3_rs2         (u_rs2           ), // Source register 2
+.id_class         (id_class        ), // Instruction class
+.id_subclass      (id_subclass     ), // Instruction subclass
+.id_imm           (id_imm           ), // Source immedate
+.sha3_cpr_rd_ben  (sha3_cpr_rd_ben  ), // Writeback byte enable
+.sha3_cpr_rd_wdata(sha3_cpr_rd_wdata)  // Writeback data
+);
 
 //
 // instance: scarv_cop_mem
