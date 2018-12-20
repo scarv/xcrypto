@@ -125,6 +125,7 @@ wire        cpu_insn_req  ; // Instruction request
 wire        cop_insn_ack  ; // Instruction request acknowledge
 wire [31:0] cpu_insn_enc  ; // Encoded instruction data
 wire [31:0] cpu_rs1       ; // RS1 source data
+wire [31:0] cpu_rs2       ; // RS2 source data
 
 wire        cop_wen       ; // COP write enable
 wire [ 4:0] cop_waddr     ; // COP destination register address
@@ -204,6 +205,7 @@ scarv_integ_prv_pcpi2cop i_pcpi2cop (
 .cop_insn_ack (cop_insn_ack ), // Instruction request acknowledge
 .cpu_insn_enc (cpu_insn_enc ), // Encoded instruction data
 .cpu_rs1      (cpu_rs1      ), // RS1 source data
+.cpu_rs2      (cpu_rs2      ), // RS2 source data
 .cop_wen      (cop_wen      ), // COP write enable
 .cop_waddr    (cop_waddr    ), // COP destination register address
 .cop_wdata    (cop_wdata    ), // COP write data
@@ -227,6 +229,7 @@ scarv_cop_top #(
 .cop_insn_ack (cop_insn_ack ) , // Instruction request acknowledge
 .cpu_insn_enc (cpu_insn_enc ) , // Encoded instruction data
 .cpu_rs1      (cpu_rs1      ) , // RS1 source data
+.cpu_rs2      (cpu_rs2      ), // RS2 source data
 .cop_wen      (cop_wen      ) , // COP write enable
 .cop_waddr    (cop_waddr    ) , // COP destination register address
 .cop_wdata    (cop_wdata    ) , // COP write data

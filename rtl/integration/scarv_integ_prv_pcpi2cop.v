@@ -32,6 +32,7 @@ output        cpu_insn_req  , // Instruction request
 input         cop_insn_ack  , // Instruction request acknowledge
 output [31:0] cpu_insn_enc  , // Encoded instruction data
 output [31:0] cpu_rs1       , // RS1 source data
+output [31:0] cpu_rs2       , // RS2 source data
 
 input         cop_wen       , // COP write enable
 input  [ 4:0] cop_waddr     , // COP destination register address
@@ -53,6 +54,7 @@ output        cpu_insn_ack    // Instruction finish acknowledge
 assign cpu_insn_req  = pcpi_valid;
 assign cpu_insn_enc  = pcpi_insn;
 assign cpu_rs1       = pcpi_rs1;
+assign cpu_rs2       = pcpi_rs2;
 
 //
 // Constant / un-used signals
