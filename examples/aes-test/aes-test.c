@@ -20,7 +20,9 @@ void test_aes_rand( uint8_t* r, int l_r ) {
 
 void test_aes_dump( char* id, uint8_t* x, int l_x ) {
 //   printf( "%s = binascii.a2b_hex( '", id );
+
   putstr(id);
+
 	putstr(" = binascii.a2b_hex( '");
 	 
   for( int i = 3; i < l_x; i+=4 ) {
@@ -33,7 +35,7 @@ void test_aes_dump( char* id, uint8_t* x, int l_x ) {
 	  puthex(t);
   }
 
-  putstr( "' )\n" );  
+  putstr( "' ) \n" );  
 }
 
 void uint32_dump(char* id, uint32_t n){
@@ -47,7 +49,7 @@ int main() {
  
 	int n = 1; 
 
-	uint32_t random = 32; 
+	uint32_t random = 32;  
 	rngseed(&random);      
  
 	uint32_t key_cyc, cyc, start_t, end_t; 
@@ -63,11 +65,11 @@ int main() {
    	test_aes_rand( k, 16 );   
  		           
     #if defined( CONF_AES_PRECOMP_RK )     
-	   	uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
-			start_t = rdcycle(); start_i = rdinstret();
-	   	aes_enc_exp( rk, k );  
-			end_t   = rdcycle(); end_i   = rdinstret();
-			key_cyc = end_t-start_t; key_ins = end_i-start_i;
+	  uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
+		start_t = rdcycle(); start_i = rdinstret();
+	  aes_enc_exp( rk, k );  
+		end_t   = rdcycle(); end_i   = rdinstret();
+		key_cyc = end_t-start_t; key_ins = end_i-start_i;
    
 			#if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
     	U8_TO_U8_T(   s, m );
@@ -75,7 +77,7 @@ int main() {
     	U8_TO_U8_N(   s, m );
     	#endif
 			
-			start_t = rdcycle(); start_i = rdinstret();
+		start_t = rdcycle(); start_i = rdinstret();
 			#if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
 				#if !defined ( CONF_AES_ENC_XCRYPT )
 				aes_enc( r, s, rk,  AES_ENC_SBOX );
@@ -85,32 +87,35 @@ int main() {
 			#else 
 			aes_enc( r, s, rk );
 			#endif
-			end_t   = rdcycle(); end_i   = rdinstret();
+		end_t   = rdcycle(); end_i   = rdinstret();
 
 	    #if defined( CONF_AES_ENC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
 	    U8_TO_U8_T(   c, r );
 	    #else
 	    U8_TO_U8_N(   c, r );
 	    #endif
-
+ 
    	#else  
-      start_t = rdcycle(); start_i = rdinstret();
-			aes_enc( c, m, rk );
-			end_t   = rdcycle(); end_i   = rdinstret();
+		start_t = rdcycle(); start_i = rdinstret();
+		aes_enc( c, m, rk );
+		end_t   = rdcycle(); end_i   = rdinstret();   
    	#endif  
  		
 		cyc = end_t-start_t; ins = end_i-start_i;
+ 
 		uint32_dump("key_cyc", key_cyc);
 		uint32_dump("key_ins", key_ins);
 		uint32_dump("cyc", cyc);
 		uint32_dump("ins", ins);
-  	putstr( "print 'AES encryption executes %d instructions taking == %d cycles' % (ins, cyc)" "\n" );  	
-		putstr( "print '\t Pre-computed key expansion executes %d instructions taking == %d cycles' % (key_ins, key_cyc)" "\n" );
+
 		test_aes_dump( "m", m, 16 ); 
    	test_aes_dump( "k", k, 16 ); 
-   	test_aes_dump( "c", c, 16 );  
-  
-   	putstr( "t = AES.new( k ).encrypt( m )                  " "\n" );
+   	test_aes_dump( "c", c, 16 ); 
+
+  	putstr( "print 'AES encryption executes %d instructions taking == %d cycles' % (ins, cyc)" "\n" );  	
+		putstr( "print '\t Pre-computed key expansion executes %d instructions taking == %d cycles' % (key_ins, key_cyc)" "\n\n" );
+
+  	putstr( "t = AES.new( k ).encrypt( m )                  " "\n" );
   
    	putstr( "if( c != t ) :                                 " "\n" );
    	putstr( "  print 'failed test_aes: enc'                 " "\n" );
@@ -123,21 +128,40 @@ int main() {
  	  
   #if defined( CONF_AES_ENABLE_DEC )
   for( int i = 0; i < n; i++ ) {
-    uint8_t m[ 16 ], c[ 16 ], k[ 16 ];
+    uint8_t r[16], s[16], m[ 16 ], c[ 16 ], k[ 16 ];
  
     test_aes_rand( c, 16 );
-    test_aes_rand( k, 16 );  
-   
+    test_aes_rand( k, 16 );     
+      
     #if defined( CONF_AES_PRECOMP_RK )    
     uint8_t rk[ ( Nr + 1 ) * ( 4 * Nb ) ];  
 		start_t = rdcycle(); start_i = rdinstret();
     aes_dec_exp( rk, k ); 
 		end_t   = rdcycle(); end_i   = rdinstret();
 		key_cyc = end_t-start_t; key_ins = end_i-start_i;
-
+			
+			#if defined( CONF_AES_DEC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+    	U8_TO_U8_T(   s, c );
+    	#else
+    	U8_TO_U8_N(   s, c );
+    	#endif
 		start_t = rdcycle(); start_i = rdinstret();
-		aes_dec( m, c, rk );
+			#if defined( CONF_AES_DEC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+				#if !defined ( CONF_AES_DEC_XCRYPT )
+				aes_dec( r, s, rk,  AES_DEC_SBOX );
+				#else
+				aes_dec( r, s, rk,  AES_DEC_SBOX,  AES_MULX );
+				#endif
+			#else
+			aes_dec( r, s, rk );
+			#endif
 		end_t   = rdcycle(); end_i   = rdinstret(); 
+
+	    #if defined( CONF_AES_DEC_EXTERN ) && defined( CONF_AES_ROUND_PACK )
+	    U8_TO_U8_T(   m, r );
+	    #else
+	    U8_TO_U8_N(   m, r );
+	    #endif
     #else 
 		start_t = rdcycle(); start_i = rdinstret();
     aes_dec( m, c,  k );
@@ -145,16 +169,20 @@ int main() {
     #endif
 	  cyc = end_t-start_t; ins = end_i-start_i;
 
+    test_aes_dump("k", k, 16 );
+	  test_aes_dump("c", c, 16 );
+    test_aes_dump("m", m, 16 ); 
+
 		uint32_dump("key_cyc", key_cyc);
 		uint32_dump("key_ins", key_ins);
-		uint32_dump("cyc", cyc);
+		uint32_dump("cyc", cyc);  
 		uint32_dump("ins", ins);
+
   	putstr( "print 'AES decryption executes %d instructions taking == %d cycles' % (ins, cyc)" "\n" );  
-		putstr( "print '\t Pre-computed key expansion executes %d instructions taking == %d cycles' % (key_ins, key_cyc)" "\n" );  
-	  test_aes_dump( "c", c, 16 );
-    test_aes_dump( "k", k, 16 );
-    test_aes_dump( "m", m, 16 );
-  
+		putstr( "print '\t Pre-computed key expansion executes %d instructions taking == %d cycles' % (key_ins, key_cyc)" "\n\n" );  
+
+
+
     putstr( "t = AES.new( k ).decrypt( c )                  " "\n" );
   
     putstr( "if( m != t ) :                                 " "\n" );
