@@ -112,6 +112,7 @@ input wire [ 0:0] vtx_reset        , \
 input wire [ 0:0] vtx_valid        , \
 input wire [31:0] vtx_instr_enc    , \
 input wire [31:0] vtx_instr_rs1    , \
+input wire [31:0] vtx_instr_rs2    , \
 input wire [ 2:0] vtx_instr_result , \
 input wire [31:0] vtx_instr_wdata  , \
 input wire [ 4:0] vtx_instr_waddr  , \
@@ -267,6 +268,7 @@ endmodule // NAME
 .vtx_valid       (vtx_valid       ),     \
 .vtx_instr_enc   (vtx_instr_enc[1]),     \
 .vtx_instr_rs1   (vtx_instr_rs1[1]),     \
+.vtx_instr_rs2   (vtx_instr_rs2[1]),     \
 .vtx_instr_result(vtx_instr_result),     \
 .vtx_instr_wdata (vtx_instr_wdata ),     \
 .vtx_instr_waddr (vtx_instr_waddr ),     \

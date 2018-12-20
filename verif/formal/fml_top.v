@@ -39,6 +39,7 @@ input  wire             cpu_insn_req    , // Instruction request
 input  wire             cop_insn_ack    , // Instruction request acknowledge
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
+input  wire [31:0]      cpu_rs2         , // RS1 source data
 
 input  wire             cop_wen         , // COP write enable
 input  wire [ 4:0]      cop_waddr       , // COP destination register address
@@ -108,6 +109,7 @@ always @(posedge g_clk) if(g_resetn) begin
         `VTX_ASSUME($stable(cpu_insn_req));
         `VTX_ASSUME($stable(cpu_insn_enc));
         `VTX_ASSUME($stable(cpu_rs1     ));
+        `VTX_ASSUME($stable(cpu_rs2     ));
 
     end else if($past( cpu_insn_req &&  cop_insn_ack)) begin
 
@@ -131,6 +133,7 @@ reg [ 0:0] vtx_reset                ;
 reg [ 0:0] vtx_valid                ;
 reg [31:0] vtx_instr_enc    [ 1:0]  ;
 reg [31:0] vtx_instr_rs1    [ 1:0]  ;
+reg [31:0] vtx_instr_rs2    [ 1:0]  ;
 reg [ 2:0] vtx_instr_result         ;
 reg [31:0] vtx_instr_wdata          ;
 reg [ 4:0] vtx_instr_waddr          ;
@@ -211,6 +214,7 @@ always @(posedge g_clk) if(!g_resetn) begin
 end else if(g_resetn && cpu_insn_req && cop_insn_ack) begin
     vtx_instr_enc[0]    <= cpu_insn_enc;
     vtx_instr_rs1[0]    <= cpu_rs1;
+    vtx_instr_rs2[0]    <= cpu_rs2;
 end
 
 //
@@ -222,6 +226,7 @@ always @(posedge g_clk) if(
     vtx_valid           <= 1'b1             ;
     vtx_instr_enc[1]    <= vtx_instr_enc[0] ;
     vtx_instr_rs1[1]    <= vtx_instr_rs1[0] ;
+    vtx_instr_rs2[1]    <= vtx_instr_rs2[0] ;
     vtx_instr_result    <= cop_result       ;
     vtx_instr_wdata     <= cop_wdata        ;
     vtx_instr_waddr     <= cop_waddr        ;
