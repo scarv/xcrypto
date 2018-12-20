@@ -42,7 +42,7 @@ void uint32_dump(char* id, uint32_t n){
 	putstr(id);
 	putstr(" = 0x");
 	puthex(n);
-	putstr( "\n" );
+	putstr( "\n" ); 
 }
 
 int main() {   
@@ -124,12 +124,12 @@ int main() {
    	putstr( "  print 'c == %s' % ( binascii.b2a_hex( c ) )" "\n" );
    	putstr( "  print '  != %s' % ( binascii.b2a_hex( t ) )" "\n" );
  	}   
-	#endif             
+	#endif              
  	  
   #if defined( CONF_AES_ENABLE_DEC )
   for( int i = 0; i < n; i++ ) {
     uint8_t r[16], s[16], m[ 16 ], c[ 16 ], k[ 16 ];
- 
+  
     test_aes_rand( c, 16 );
     test_aes_rand( k, 16 );     
       
