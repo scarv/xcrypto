@@ -1289,4 +1289,57 @@ $\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
   }
 }
 
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$3.2$: SHA3}
+\label{sec:spec:instruction:3:2}
+
+All SHA3 instructions include a 2-bit immediate {\tt shamt} value, which can
+be used to align the result to a byte, halfword, word or double word memory
+address boundary. This means the instructions can be used to accelerate all
+FIPS standardised sizes of the Keccak function.
+
+Note these instructions source and sink values in the standard RISC-V
+General Purpose Registers, rather than the \XCID Registers.
+
+\XCINSTR{xc.sha3.xy}{rd, rs1, rs2, shamt}{
+Used to compute indexes into a SHA3 state array.
+}{
+    $ x \ASN \GPR[*][rs1]_{4 \RANGE 0} $ \;
+    $ y \ASN \GPR[*][rs2]_{4 \RANGE 0} $ \;
+    $ \GPR[*][crd] \ASN ((x\%5) + 5*(y\%5)) \LSH shamt $ \;
+}
+
+\XCINSTR{xc.sha3.x1}{rd, rs1, rs2, shamt}{
+Used to compute indexes into a SHA3 state array.
+}{
+    $ x \ASN \GPR[*][rs1]_{4 \RANGE 0} $ \;
+    $ y \ASN \GPR[*][rs2]_{4 \RANGE 0} $ \;
+    $ \GPR[*][crd] \ASN (((x+1)\%5) + 5*(y\%5)) \LSH shamt $ \;
+}
+
+\XCINSTR{xc.sha3.x2}{rd, rs1, rs2, shamt}{
+Used to compute indexes into a SHA3 state array.
+}{
+    $ x \ASN \GPR[*][rs1]_{4 \RANGE 0} $ \;
+    $ y \ASN \GPR[*][rs2]_{4 \RANGE 0} $ \;
+    $ \GPR[*][crd] \ASN (((x+2)\%5) + 5*(y\%5)) \LSH shamt $ \;
+}
+
+\XCINSTR{xc.sha3.x4}{rd, rs1, rs2, shamt}{
+Used to compute indexes into a SHA3 state array.
+}{
+    $ x \ASN \GPR[*][rs1]_{4 \RANGE 0} $ \;
+    $ y \ASN \GPR[*][rs2]_{4 \RANGE 0} $ \;
+    $ \GPR[*][crd] \ASN (((x+4)\%5) + 5*(y\%5)) \LSH shamt $ \;
+}
+
+\XCINSTR{xc.sha3.yx}{rd, rs1, rs2, shamt}{
+Used to compute indexes into a SHA3 state array.
+}{
+    $ x \ASN \GPR[*][rs1]_{4 \RANGE 0} $ \;
+    $ y \ASN \GPR[*][rs2]_{4 \RANGE 0} $ \;
+    $ \GPR[*][crd] \ASN (((y)\%5) + 5*((2*x+3*y)\%5)) \LSH shamt $ \;
+}
+
 % =============================================================================

@@ -122,7 +122,11 @@ wire class_aes          =
     dec_aessub_enc || dec_aessub_encrot || dec_aessub_dec || 
     dec_aessub_decrot || dec_aesmix_enc || dec_aesmix_dec;
 
+wire class_sha3         =
+    dec_sha3_xy || dec_sha3_x1 || dec_sha3_x2 || dec_sha3_x4 || dec_sha3_yx;
+
 assign id_class = 
+    {4{class_sha3        }} & SCARV_COP_ICLASS_SHA3         |
     {4{class_aes         }} & SCARV_COP_ICLASS_AES          |
     {4{class_packed_arith}} & SCARV_COP_ICLASS_PACKED_ARITH |
     {4{class_twiddle     }} & SCARV_COP_ICLASS_TWIDDLE      |
@@ -182,10 +186,13 @@ wire [4:0] subclass_aes =
     {5{dec_aesmix_enc   }} & SCARV_COP_SCLASS_AESMIX_ENC    |
     {5{dec_aesmix_dec   }} & SCARV_COP_SCLASS_AESMIX_DEC    ;
 
+wire [4:0] subclass_sha3 = encoded[29:25];
+
 //
 // Identify individual instructions within a class using the subclass
 // field.
 assign id_subclass = 
+    {5{class_sha3        }} & {subclass_sha3        } |
     {5{class_aes         }} & {subclass_aes         } |
     {5{class_packed_arith}} & {encoded[29:25]       } |
     {5{class_twiddle     }} & {1'b0, encoded[23:21] } |
@@ -200,7 +207,7 @@ assign id_subclass =
 wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
 wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
 wire imm_li     = dec_ld_hiu   || dec_ld_liu;
-wire imm_8      = class_twiddle || dec_ext   || dec_ins;
+wire imm_8      = class_twiddle || dec_ext   || dec_ins || class_sha3;
 wire imm_sh_px  = dec_psll_i   || dec_psrl_i  || dec_prot_i;
 wire imm_sh_mp  = dec_msll_i   || dec_msrl_i;
 wire imm_lut    = dec_bop;

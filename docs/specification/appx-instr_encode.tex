@@ -151,5 +151,21 @@
 \caption{An overview of instruction encoding: class $3.1$, per \REFSEC{sec:spec:instruction:3:1}.}
 \label{fig:instr_encode:3:1}
 \end{figure}                                                                   
+% =============================================================================
 
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCENCODE{xc.sha3.xy}
+\XCENCODE{xc.sha3.x1}
+\XCENCODE{xc.sha3.x2}
+\XCENCODE{xc.sha3.x4}
+\XCENCODE{xc.sha3.yx}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.2$, per \REFSEC{sec:spec:instruction:3:2}.}
+\label{fig:instr_encode:3:2}
+\end{figure}                                                                   
 % =============================================================================

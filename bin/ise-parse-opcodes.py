@@ -58,6 +58,7 @@ acodes['cs'     ] = "Xk"
 acodes['cl'     ] = "XL"
 acodes['rd'     ] = "d"
 acodes['rs1'    ] = "s"
+acodes['rs2'    ] = "t"
 
 arglut = {}
 arglut['imm11'  ] = (31,21)

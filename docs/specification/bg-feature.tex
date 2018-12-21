@@ -18,6 +18,7 @@ Description                                & Class           & Numeric ID & Mnem
                                            & Multi-precision & $2.5$      & MP          \\
 \hline
 \multirow{1}{*}{Optional, special-purpose} & AES             & $3.1$      & AES         \\
+\multirow{1}{*}{Optional, special-purpose} & SHA3            & $3.2$      & SHA3        \\
 \hline
 \end{tabular}
 \end{center}
@@ -346,5 +347,22 @@ a) reduces the latency of executing those round functions,
    while also
 b) eliminating the need for look-up tables and associated memory access
    to them (which is pertinent for some forms of attack vector).
+
+% -----------------------------------------------------------------------------
+
+\subsubsection{Class-$3.2$: SHA3}
+\label{sec:bg:feature:3:2}
+
+These instructions are used to create accelerated, code-dense implementations
+of the Keccak family of sponge functions used in the SHA3 hash function.
+
+While other classes of \XCID instruction can accelerate the computation
+and transformation of the Keccak state array, the SHA3 class of instruction
+is used to accelerate state index address generation.
+
+For implementations where code density is a constraint, and loop-unrolling
+based performance optimisations are not an option, these instructions
+very quickly and compactly compute the indexes into the Keccak state arrays
+based on the loop counter variables.
 
 % =============================================================================

@@ -7,7 +7,7 @@ xc.ld.hiu c1, 0xFEDC
 xc.ld.liu c2, 0x981A
 xc.ld.hiu c2, 0x32D0
 
-xc.sbox.4 c3, c2, c0, c1
+xc.lut c3, c2, c0, c1
 
 
 

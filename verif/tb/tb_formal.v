@@ -29,6 +29,7 @@ input  wire             g_resetn        , // Synchronous active low reset.
 input  wire             cpu_insn_req    , // Instruction request
 input  wire [31:0]      cpu_insn_enc    , // Encoded instruction data
 input  wire [31:0]      cpu_rs1         , // RS1 source data
+input  wire [31:0]      cpu_rs2         , // RS2 source data
 
 input  wire             cpu_insn_ack    , // Instruction finish acknowledge
 
@@ -79,6 +80,7 @@ scarv_cop_top i_dut(
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
 .cpu_insn_enc  (cpu_insn_enc ) , // Encoded instruction data
 .cpu_rs1       (cpu_rs1      ) , // RS1 source data
+.cpu_rs2       (cpu_rs2      ) , // RS1 source data
 .cop_wen       (cop_wen      ) , // COP write enable
 .cop_waddr     (cop_waddr    ) , // COP destination register address
 .cop_wdata     (cop_wdata    ) , // COP write data
@@ -109,6 +111,7 @@ fml_top i_fml_top(
 .cop_insn_ack  (cop_insn_ack ) , // Instruction request acknowledge
 .cpu_insn_enc  (cpu_insn_enc ) , // Encoded instruction data
 .cpu_rs1       (cpu_rs1      ) , // RS1 source data
+.cpu_rs2       (cpu_rs2      ) , // RS1 source data
 .cop_wen       (cop_wen      ) , // COP write enable
 .cop_waddr     (cop_waddr    ) , // COP destination register address
 .cop_wdata     (cop_wdata    ) , // COP write data
