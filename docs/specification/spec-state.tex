@@ -116,7 +116,8 @@ Note that
 & \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 4}$}}
 & \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 2}$}}
 & \bitbox{ 1}{\rotatebox{90}{\tiny $PACK_{ 1}$}}
-& \bitbox{ 2}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\tiny $SHA3     $}}
 & \bitbox{ 1}{\rotatebox{90}{\tiny $AES      $}}
 & \bitbox{ 1}{\rotatebox{90}{\tiny $MP       $}}
 & \bitbox{ 1}{\rotatebox{90}{\tiny $PACK     $}}
@@ -157,6 +158,7 @@ $BIT       $ & $ 2$   & Is BIT  feature class, per \REFSEC{sec:bg:feature},     
 $PACK      $ & $ 3$   & Is PACK feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
 $MP        $ & $ 4$   & Is MP   feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
 $AES       $ & $ 5$   & Is AES  feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
+$SHA3      $ & $ 6$   & Is SHA3 feature class, per \REFSEC{sec:bg:feature},                     supported (set), or not (clear) \\
 $PACK_{ 1} $ & $ 8$   & Are packed operations on $\VERB[RV]{n} =  1$ sub-word  of $w = 32$ bits supported (set), or not (clear) \\
 $PACK_{ 2} $ & $ 9$   & Are packed operations on $\VERB[RV]{n} =  2$ sub-words of $w = 16$ bits supported (set), or not (clear) \\
 $PACK_{ 4} $ & $10$   & Are packed operations on $\VERB[RV]{n} =  4$ sub-words of $w =  8$ bits supported (set), or not (clear) \\
