@@ -597,6 +597,57 @@ achievable.
 The current implementation, as with the rest of the reference implementation,
 is aimed at being simple and easy to understand to an unfamiliar observer.
 
+
+\subsection{SHA3 Block ({\tt scarv\_cop\_sha3})}
+
+This block is responsible for implementing all of the SHA3 accelerator
+instructions.
+It's interface is described in table \ref{tab:sigs-sha3-block}.
+
+\SIGNALS{
+\SIGNALI{1}{sha3\_ivalid}{
+    Indicates that the input instruction data is valid and that the 
+    block should execute the specified instruction.
+}
+\SIGNALO{1}{sha3\_idone}{
+    Indicates that the block has finished executing an instruction
+    and is ready for another on the next cycle.
+}
+\SIGNALI{32}{sha3\_rs1}{RISC-V GPR source register 1}
+\SIGNALI{32}{sha3\_rs2}{RISC-V GPR source register 2}
+\SIGNALI{4}{id\_class}{
+    Identifies which class of instruction the COP is executing.
+}
+\SIGNALI{3}{id\_subclass}{
+    Identifies which instruction is being executed by the packed ALU block.
+}
+\SIGNALI{32}{id\_imm}{
+    Contains the shift amount for each of the SHA3 instructions.
+}
+\SIGNALO{4}{sha3\_cpr\_rd\_ben}{
+    4-bit byte write enable signal for write-back data.
+}
+\SIGNALO{32}{sha3\_cpr\_wdata}{
+    Data to be written to the $\GPR$ register file
+}
+\SIGNALO{32}{sha3\_cpr\_wen}{
+    AES result $\CPR$ write enable.
+}
+}{Interface signals for the sha3 block. All signals are
+synchronous to \SIGREF{g\_clk}.}
+{tab:sigs-sha3-block}
+
+The instructions handled by the sha3block are:
+\begin{itemize}
+\item {\tt xc.sha3.xy}
+\item {\tt xc.sha3.x1}
+\item {\tt xc.sha3.x2}
+\item {\tt xc.sha3.x4}
+\item {\tt xc.sha3.yx}
+\end{itemize}
+
+All of these instructions take 1 cycle to execute.
+
 \subsection{Packed Arithmetic Block ({\tt scarv\_cop\_palu})}
 
 This block is responsible for implementing all of the packed arithmetic,
