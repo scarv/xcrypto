@@ -6,6 +6,16 @@ accompanied by an area-optimised implementation of the ISE, which acts as
 a co-processor. An example integration of the co-processor with the PicoRV32
 CPU core is included.*
 
+**Contents**
+
+- [Getting Started](#Getting-Started)
+  - [Project Organisation](#Project-Organisation)
+  - [Setting Up binutils](#Setting-Up-binutils)
+  - [Running Simulations](#Running-Simulations)
+- [Formal testbench](#Formal-testbench)
+- [Implementation Statistics](#Implementation-Statistics)
+
+
 ## Getting Started
 
 **The best place to start** getting a feel for what XCrypto does is to look
@@ -179,3 +189,39 @@ compute resources you have. One can also run a specfic subset of the
 available formal checks by delimiting the check names with spaces, and using
 a backslash to escape the spaces: `FML_CHECK_NAME=check1\ check2\ check3`.
 
+## Implementation Statistics
+
+This section lists implementation statistics for the reference implementation
+on the 
+[Sakura-X](http://satoh.cs.uec.ac.jp/SAKURA/hardware/SAKURA-X.html)
+(also known as the Sasebo GIII) Side-channel evaluation platform using a 
+Xilinx `xc7k160tfbg676` FPGA.
+Xilinx Vivado 2018.1 was used to produce the following results.
+
+A complete system, integrated with an AXI interconnect, on-chip
+BRAMS, GPIO and UART peripherals can be implemented at 100MHz on said
+FPGA.
+
+The critical path for the system lies in the multi-precision arithmetic
+multiplier.
+This and other paths with little timing slack can be trivially pipelined
+in more high performance implementations of XCrypto.
+
+Our reference implementation is integrated with a PicoRV32 CPU to provide
+a complete subsystem.
+We break down the resource usage between the XCrypto implementation and the
+PicoRV32 for comparison.
+
+Component             | LUTS  | FFs  | BRAMS | DSP Slices
+----------------------|-------|------|-------|----------------------
+PicoRV32 + XCrypto    | 8710  | 1621 |   0   | 8
+PicoRV32              | 5603  | 893  |   0   | 4
+XCrypto               | 3101  | 726  |   0   | 4
+XCrypto Register File | 1504  | 512  |   0   | 0
+
+Clearly, the size of the XCrypto reference implementation is dominated by the
+16x32 register file.
+Overall the XCrypto reference implementation is slightly smaller than the
+PicoRV32, though this must be weighed against the PicoRV32 needing to
+implement instruction fetch logic and other functions which the XCrypto block
+need not.
