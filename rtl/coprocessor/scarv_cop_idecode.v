@@ -77,8 +77,17 @@ assign id_crd2 = {dec_arg_crdm, 1'b1};
 assign id_rd   = dec_arg_rd;
 assign id_pw   = {dec_arg_ca, dec_arg_cb, dec_arg_cc};
 
+wire shift_imm_pack_width =
+        id_pw == 3'b100 &&
+        (dec_psll_i || dec_psrl_i || dec_prot_i);
+
 wire bad_pack_width = 
-    (id_pw[2] && |id_pw[1:0]) &&
+    !shift_imm_pack_width            &&
+    id_pw != SCARV_COP_PW_1          &&
+    id_pw != SCARV_COP_PW_2          &&
+    id_pw != SCARV_COP_PW_4          &&
+    id_pw != SCARV_COP_PW_8          &&
+    id_pw != SCARV_COP_PW_16         &&
     id_class == SCARV_COP_ICLASS_PACKED_ARITH;
 
 assign id_exception = 
@@ -213,12 +222,16 @@ wire imm_sh_mp  = dec_msll_i   || dec_msrl_i;
 wire imm_lut    = dec_bop;
 wire imm_rtamt  = dec_mix_l   || dec_mix_h  || dec_bop;
 
+wire [4:0] shamt_imm =
+    {dec_arg_cb, dec_arg_cc} == 2'b00 ? {dec_arg_ca, dec_arg_cshamt} :
+                                        {1'b0      , dec_arg_cshamt} ;
+
 assign id_imm = 
     {32{imm_ld      }} & {{21{encoded[31]}}, encoded[31:21]               } |
     {32{imm_st      }} & {{21{encoded[31]}}, encoded[31:25],encoded[10:7] } |
     {32{imm_li      }} & {16'b0, encoded[31:21],encoded[19:15]            } |
     {32{imm_8       }} & {24'b0, encoded[31:24]                           } |
-    {32{imm_sh_px   }} & {28'b0, dec_arg_cshamt                           } |
+    {32{imm_sh_px   }} & {27'b0, shamt_imm                                } |
     {32{imm_sh_mp   }} & {26'b0, dec_arg_cmshamt                          } |
     {32{imm_lut     }} & {28'b0, dec_arg_lut4                             } |
     {32{imm_rtamt   }} & {28'b0, dec_arg_rtamt                            } ;

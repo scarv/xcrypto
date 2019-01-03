@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index f60bea15c8..b9d3db80ec 100644
+index f60bea15c8..0184f29cea 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -401,6 +401,7 @@ enum reg_class
@@ -94,7 +94,7 @@ index f60bea15c8..b9d3db80ec 100644
  
  #define DECLARE_CSR(name, num) hash_reg_name (RCLASS_CSR, #name, num);
  #define DECLARE_CSR_ALIAS(name, num) DECLARE_CSR(name, num);
-@@ -1218,11 +1269,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1218,10 +1269,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    struct riscv_opcode *insn;
    char *argsStart;
    unsigned int regno;
@@ -103,13 +103,13 @@ index f60bea15c8..b9d3db80ec 100644
    int argnum;
    const struct percent_op_match *p;
    const char *error = "unrecognized opcode";
- 
-+  int crypto_i;
++  char packwidth = 0xFF;
 +
++  int crypto_i;
+ 
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
-   for (s = str; *s != '\0'; ++s)
-@@ -1267,6 +1321,275 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1267,6 +1322,301 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -133,6 +133,7 @@ index f60bea15c8..b9d3db80ec 100644
 +        }
 +        continue;
 +    case 'p': /* pack width */
++        packwidth = s[0];
 +        if(s[0] == 'w'){ /* Pack word */
 +            INSERT_OPERAND(XCA,*ip, 0);
 +            INSERT_OPERAND(XCB,*ip, 0);
@@ -273,12 +274,37 @@ index f60bea15c8..b9d3db80ec 100644
 +    case 'R': /* cshamt */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number > 15) {
-+          as_bad (_("Crypto ISE Improper shift amount (%lu). Should be 0 <= x <= 15"),
-+          (unsigned long) imm_expr->X_add_number);
-+          break;
++
++        if(packwidth == 'w') {
++            
++            // ca field used to store MSB of pack width when operating
++            // on whole word.
++            if ((unsigned long) imm_expr->X_add_number > 31) {
++              as_bad (_("Crypto ISE Improper shift/rotate amount (%lu). "
++                        "Packwidth = '%c' implies shift/rotate amount "
++                        "0 <= x <= 31"),
++              (unsigned long) imm_expr->X_add_number,
++              packwidth);
++              break;
++            }
++            INSERT_OPERAND(XCSHAMT, *ip, (imm_expr->X_add_number >> 0) & 0xF);
++            INSERT_OPERAND(XCA    , *ip, (imm_expr->X_add_number >> 4) & 0x1);
++
++        } else {
++            
++            // pack width less than one word, so use only 4-bit cshamt field
++            if ((unsigned long) imm_expr->X_add_number > 15) {
++              as_bad (_("Crypto ISE Improper shift/rotate amount (%lu). "
++                        "Packwidth = '%c' implies shift/rotate amount "
++                        "0 <= x <= 15"),
++              (unsigned long) imm_expr->X_add_number,
++              packwidth);
++              break;
++            }
++            INSERT_OPERAND (XCSHAMT, *ip, imm_expr->X_add_number);
++
 +        }
-+        INSERT_OPERAND (XCSHAMT, *ip, imm_expr->X_add_number);
++
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
 +        continue;
@@ -385,7 +411,7 @@ index f60bea15c8..b9d3db80ec 100644
  	    case 'C': /* RVC */
  	      switch (*++args)
  		{
-@@ -1562,6 +1885,7 @@ rvc_lui:
+@@ -1562,6 +1912,7 @@ rvc_lui:
  	    case 't':		/* Target register.  */
  	      if (reg_lookup (&s, RCLASS_GPR, &regno))
  		{
@@ -689,19 +715,20 @@ index b87c719626..69adad5f45 100644
  extern const struct riscv_opcode riscv_opcodes[];
  
 diff --git a/opcodes/riscv-dis.c b/opcodes/riscv-dis.c
-index cc642d4ad3..72274b43b7 100644
+index cc642d4ad3..2c1c79f8d0 100644
 --- a/opcodes/riscv-dis.c
 +++ b/opcodes/riscv-dis.c
-@@ -119,6 +119,8 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+@@ -119,6 +119,9 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
    int rs1 = (l >> OP_SH_RS1) & OP_MASK_RS1;
    int rd = (l >> OP_SH_RD) & OP_MASK_RD;
    fprintf_ftype print = info->fprintf_func;
 +  char c;
 +  int aux;
++  char packwidth = 0xFF;
  
    if (*d != '\0')
      print (info->stream, "\t");
-@@ -127,6 +129,72 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+@@ -127,6 +130,81 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
      {
        switch (*d)
  	{
@@ -717,11 +744,11 @@ index cc642d4ad3..72274b43b7 100644
 +                  (EXTRACT_X_CC(l) << 0) ;
 +            // Extract and print friendly pack width letter.
 +            switch(aux) {
-+                case 0 : print(info->stream,"w"); break;
-+                case 1 : print(info->stream,"h"); break;
-+                case 2 : print(info->stream,"b"); break;
-+                case 3 : print(info->stream,"n"); break;
-+                case 4 : print(info->stream,"c"); break;
++                case 0 : print(info->stream,"w"); packwidth = 'w'; break;
++                case 4 : print(info->stream,"w"); packwidth = 'w'; break;
++                case 1 : print(info->stream,"h"); packwidth = 'h'; break;
++                case 2 : print(info->stream,"b"); packwidth = 'b'; break;
++                case 3 : print(info->stream,"n"); packwidth = 'n'; break;
 +                default:
 +                    print(info->stream,"?"); break;
 +            }
@@ -741,7 +768,16 @@ index cc642d4ad3..72274b43b7 100644
 +         case 't': print(info->stream, "c%d",(int)EXTRACT_X_CRS2(l)); break;
 +         case 'S': print(info->stream, "c%d",(int)EXTRACT_X_CRS3(l)); break;
 +         case 'k': print(info->stream, "%d", ((int)EXTRACT_X_CS(l))*2); break;
-+         case 'R': print(info->stream, "%d", (int)EXTRACT_X_CSHAMT(l));break;
++         case 'R': 
++            if(packwidth == 'w') {
++                int shamt = EXTRACT_X_CSHAMT(l) | (((int)EXTRACT_X_CA(l)) << 4);
++                print(info->stream, "%d", shamt);
++            } else {
++            
++                print(info->stream, "%d", (int)EXTRACT_X_CSHAMT(l));
++
++            }
++            break;
 +         case 'h': print(info->stream, "%d", (int)EXTRACT_X_CC(l));break;
 +         case 'B': print(info->stream, "%d", (int)EXTRACT_X_CD(l));break;
 +         case 'l': print(info->stream, "%d", (int)EXTRACT_X_IMM11(l));break;

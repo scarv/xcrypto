@@ -24,7 +24,7 @@ module scarv_cop_palu_shifter(
 
 `include "scarv_cop_common.vh"
 
-wire   pw_1          = pw == SCARV_COP_PW_1 ; // 1  32-bit word
+wire   pw_1          = {1'b0,pw[1:0]} == SCARV_COP_PW_1 ; // 1  32-bit word
 wire   pw_2          = pw == SCARV_COP_PW_2 ; // 2  16-bit halfwords
 wire   pw_4          = pw == SCARV_COP_PW_4 ; // 4   8-bit bytes
 wire   pw_8          = pw == SCARV_COP_PW_8 ; // 8   4-bit nibbles

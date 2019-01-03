@@ -14,11 +14,17 @@
 `VTX_CHECKER_MODULE_BEGIN(instr_prot_i)
 
 // Pack width of the instruction
-wire [2:0] pw = `VTX_INSTR_PACK_WIDTH;
+wire [2:0] pw = 
+    {dec_arg_cb, dec_arg_cc} == 2'b00 ? SCARV_COP_PW_1          :
+                                        `VTX_INSTR_PACK_WIDTH   ;
+
+wire [4:0] cshamt =
+    pw == SCARV_COP_PW_1 ? {dec_arg_ca, dec_arg_cshamt} :
+                           {1'b0      , dec_arg_cshamt} ;
 
 // Compute expected result into register called "result". See
 // `verif/formal/fml_pack_widths.vh` for macro definition.
-`PACK_WIDTH_ROTATE_RIGHT_OPERATION(dec_arg_cshamt)
+`PACK_WIDTH_ROTATE_RIGHT_OPERATION(cshamt)
 
 //
 // prot_i

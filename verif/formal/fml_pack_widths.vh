@@ -27,11 +27,12 @@
 // which case expect the SUCCESS result. Otherwise expect BAD_INS.
 //
 `define VTX_ASSERT_PACK_WIDTH_CORRECT if ( \
+        (`VTX_INSTR_PACK_WIDTH == 3'b100 && (dec_psll_i || dec_psrl_i || dec_prot_i)) || \
         `VTX_INSTR_PACK_WIDTH == 3'b000 || \
         `VTX_INSTR_PACK_WIDTH == 3'b001 || \
         `VTX_INSTR_PACK_WIDTH == 3'b010 || \
         `VTX_INSTR_PACK_WIDTH == 3'b011 || \
-        `VTX_INSTR_PACK_WIDTH == 3'b100   \
+        `VTX_INSTR_PACK_WIDTH == 3'b101   \
     ) begin \
         `VTX_ASSERT_RESULT_IS(SCARV_COP_INSN_SUCCESS) \
     end else begin \

@@ -505,17 +505,26 @@ $
 As such, said encoding yields the following cases
 \[
 \begin{array}{ccrcc@{\;}c@{\;}rc@{\;}c@{\;}r}
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32 {\bf *} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{000}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{001}{2} &\mapsto& \VERB[RV]{n} &=&  2 & w &=& 16     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{010}{2} &\mapsto& \VERB[RV]{n} &=&  4 & w &=&  8     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{011}{2} &\mapsto& \VERB[RV]{n} &=&  8 & w &=&  4     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=&  2     \\
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{101}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{101}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=&  2     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{110}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{111}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \end{array}
 \]
 where cases marked invalid are reserved.
+
+{\bf *} Note that the \RADIX{100}{2} encoding is valid only for the instructions
+\ASM{xc.psll.i},
+\ASM{xc.psrl.i} and
+\ASM{xc.prot.i}.
+In this case, the \VERB[RV]{ca} bit is used to encode the most significant
+bit of the shift/rotate amount.
+For instructions other than these, a pack width encoding of \RADIX{100}{2}
+is considered invalid.
 
 % -----------------------------------------------------------------------------
 
@@ -670,6 +679,9 @@ where cases marked invalid are reserved.
   $
   \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
+  Valid shift amounts for field width $w=32$ are $0 \le x \le 31$.
+  Valid shift amounts for field widths $w<32$ are $0 \le x \le 15$.
+  When $w=32$, the {\tt ca} field is used to encode the MSB of the shift amount.
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
@@ -718,6 +730,9 @@ where cases marked invalid are reserved.
   $
   \INDEX[w]{\XCR[*][{\VERB[RV]{crd}}]}{i} = 0 .
   $
+  Valid shift amounts for field width $w=32$ are $0 \le x \le 31$.
+  Valid shift amounts for field widths $w<32$ are $0 \le x \le 15$.
+  When $w=32$, the {\tt ca} field is used to encode the MSB of the shift amount.
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
@@ -758,6 +773,9 @@ where cases marked invalid are reserved.
   $
   \VERB[RV]{cshamt} \pmod{w} .
   $
+  Valid shift amounts for field width $w=32$ are $0 \le x \le 31$.
+  Valid shift amounts for field widths $w<32$ are $0 \le x \le 15$.
+  When $w=32$, the {\tt ca} field is used to encode the MSB of the shift amount.
 }{
   $w = 32 / \VERB[RV]{n}$ \;
   \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
