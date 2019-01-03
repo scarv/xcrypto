@@ -12,7 +12,7 @@ xc.pclmul.l ca        cb   cc   14..12=0b000 31..25=0b1110011 6..0=0b0101011 crd
 xc.pclmul.h ca        cb   cc   14..12=0b000 31..25=0b1110100 6..0=0b0101011 crd   crs1  crs2
 xc.psll     ca        cb   cc   14..12=0b000 31..25=0b0000101 6..0=0b0101011 crd   crs1  crs2
 xc.psrl     ca        cb   cc   14..12=0b000 31..25=0b0000110 6..0=0b0101011 crd   crs1  crs2
-xc.prot     ca        cb   cc   14..12=0b000 31..25=0b0000111 6..0=0b0101011 crd   crs1  cshamt
+xc.prot     ca        cb   cc   14..12=0b000 31..25=0b0000111 6..0=0b0101011 crd   crs1  crs2
 xc.psll.i   ca        cb   cc   14..12=0b000 31..25=0b0001000 6..0=0b0101011 crd   crs1  cshamt
 xc.psrl.i   ca        cb   cc   14..12=0b000 31..25=0b0001001 6..0=0b0101011 crd   crs1  cshamt
 xc.prot.i   ca        cb   cc   14..12=0b000 31..25=0b0001010 6..0=0b0101011 crd   crs1  cshamt
