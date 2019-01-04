@@ -14,6 +14,7 @@ CPU core is included.*
   - [Running Simulations](#Running-Simulations)
 - [Formal testbench](#Formal-testbench)
 - [Implementation Statistics](#Implementation-Statistics)
+- [Benchmark Results](#Benchmark-Results)
 
 
 ## Getting Started
@@ -225,3 +226,79 @@ Overall the XCrypto reference implementation is slightly smaller than the
 PicoRV32, though this must be weighed against the PicoRV32 needing to
 implement instruction fetch logic and other functions which the XCrypto block
 need not.
+
+## Benchmark Results
+
+Here we report several software benchmark results. These are Cryptographic
+primitives or algorithms which have been accelerated using the XCrypto
+ISE.
+
+We use the Verilator simulator to obtain our benchmark results, using the
+PicoRV32+XCrypto system described above.
+The Verilator simulation environment is a cycle accurate model of the
+XCrypto reference implementation integrated with the PicoRV32 CPU.
+We simulate a single cycle memory access latency for data and instruction
+accesses.
+
+Note that the PicoRV32 uses the same memory interface for instructions and
+data, while the XCrypto reference implementation adds a dedicted memory
+interface. This means that memory accesses using only XCrypto instructions
+are faster than the same operations running the basic RISC-V load/store
+instructions. While this skews the benchmarks somewhat in favour of
+XCrypto, the results here are still representative, especially for compute
+bound workloads.
+
+We compare C code compiled with `-O2` and/or `-O3` optimisation flags,
+hand-coded RISC-V assembly, and hand-coded RISC-V+XCrypto assembly code.
+
+### Keccak (SHA3)
+
+We include C code compiled with both `-O2` and `-O3`. The principle
+difference being that at `-O3`, GCC will un-roll the entire Keccak
+round function, hence the dramatically larger code sizes.
+
+KeccakP-400   | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+C -O2         | 9280      |  1359                 | 488b
+C -O3         | 3423      |  626                  | 2712b
+RISC-V        | 7289      |  1238                 | 
+XCrypto       | 3729      |  837                  | 300b
+
+KeccakP-1600  | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+C -O2         | 13969     | 2283                  | 768b
+C -O3         | 6152      | 1066                  | 4240b
+RISC-V        | 12717     | 2027                  | 
+XCrypto       | 5838      | 1292                  | 520b
+
+### AES
+
+AES           | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+C -O2         |           |                       |     
+RISC-V        |           |                       | 
+XCrypto       |           |                       |     
+
+### Prince Block Cipher
+
+Prince        | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+RISC-V        | 45353     | 8545                  |
+XCrypto       | 39269     | 9865                  |     
+
+### Multi-precision Integer Arithmetic
+
+Results are for 256 bit unsigned integers.
+
+Add/Sub       | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+RISC-V        | 619       | 124                   |
+XCrypto       | 572       | 124                   | 
+
+For multiply, both XCrypto and the PicoRV32 use single-cycle
+hardware multipliers.
+
+Multiply      | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+RISC-V        | 6600      | 1322                  |
+XCrypto       | 4328      | 890                   | 
