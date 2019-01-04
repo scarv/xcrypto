@@ -271,13 +271,39 @@ C -O3         | 6152      | 1066                  | 4240b
 RISC-V        | 12717     | 2027                  | 
 XCrypto       | 5838      | 1292                  | 520b
 
-### AES
+### AES Block Cipher
 
-AES           | Cycles    | Instructions Executed | Code Size
---------------|-----------|-----------------------|--------------
-C -O2         |           |                       |     
-RISC-V        |           |                       | 
-XCrypto       |           |                       |     
+Several implementation styles of AES are evaluated, along side standard C
+code, RISC-V assembly, RISC-V + XCrypto assembly and RISC-V + XCrypto
+assembly using dedicated lightweight AES accelerator instructions.
+These are one of two classes of algorithm specific instructions in XCrypto,
+the other being used for Keccak.
+
+#### Encryption
+
+AES-128                          | Cycles | Instructions Executed | Code Size
+---------------------------------|--------|-----------------------|--------------
+Split Unpacked C -O2             | 17965  | 3094                  |     
+Split Packed C -O2               | 10993  | 1999                  |     
+Split Packed Assembly            | 8724   | 1800                  | 
+Split Packed Assembly + XCrypto  | 3210   | 620                   | 
+Split Unpacked ASM + XCrypto AES | 2278   | 409                   | 
+Packed   Assembly                | 7969   | 1676                  | 
+Packed   Assembly + XCrypto      | 2014   | 407                   | 
+Unpacked Assembly + XCrypto AES  | 1171   | 216                   | 
+
+#### Decryption
+
+AES-128                          | Cycles | Instructions Executed | Code Size
+---------------------------------|--------|-----------------------|--------------
+Split Unpacked C -O2             | 24715  | 4498                  |     
+Split Packed C -O2               | 12361  | 2341                  |     
+Split Packed Assembly            | 10524  | 2250                  | 
+Split Packed Assembly + XCrypto  | 3822   | 746                   | 
+Split Unpacked ASM + XCrypto AES | 2278   | 409                   | 
+Packed   Assembly                | 9771   | 2127                  | 
+Packed   Assembly + XCrypto      | 2633   | 534                   | 
+Unpacked Assembly + XCrypto AES  | 1175   | 217                   | 
 
 ### Prince Block Cipher
 
@@ -285,6 +311,9 @@ Prince        | Cycles    | Instructions Executed | Code Size
 --------------|-----------|-----------------------|--------------
 RISC-V        | 45353     | 8545                  |
 XCrypto       | 39269     | 9865                  |     
+
+Note that because Prince is an involution function, there is no difference
+between the core encryption and decryption functions.
 
 ### Multi-precision Integer Arithmetic
 
