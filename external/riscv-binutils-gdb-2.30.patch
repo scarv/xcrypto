@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index f60bea15c8..0184f29cea 100644
+index f60bea15c8..f77e74f59c 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -401,6 +401,7 @@ enum reg_class
@@ -27,7 +27,7 @@ index f60bea15c8..0184f29cea 100644
    /* Look for the register.  Advance to next token if one was recognized.  */
    if ((reg = reg_lookup_internal (*s, class)) >= 0)
      *s = e;
-@@ -505,10 +507,58 @@ validate_riscv_insn (const struct riscv_opcode *opc)
+@@ -505,10 +507,59 @@ validate_riscv_insn (const struct riscv_opcode *opc)
        return FALSE;
      }
  
@@ -75,6 +75,7 @@ index f60bea15c8..0184f29cea 100644
 +    case '5': used_bits |= ENCODE_X_IMM11(-1U)       ;/* imm11*/
 +              used_bits |= ENCODE_X_IMM5(-1U) ;break;/* imm5 */
 +    case '4': used_bits |= ENCODE_X_LUT4(-1U) ;break;/* lut4 */
++    case '8': used_bits |= ENCODE_X_LUT8(-1U) ;break;/* lut8 */
 +
 +    default:
 +    as_bad (_("internal: bad RISC-V Crypto opcode (unknown operand type `X%c'): %s %s"),
@@ -86,7 +87,7 @@ index f60bea15c8..0184f29cea 100644
        case 'C': /* RVC */
  	switch (c = *p++)
  	  {
-@@ -641,6 +691,7 @@ md_begin (void)
+@@ -641,6 +692,7 @@ md_begin (void)
    hash_reg_names (RCLASS_GPR, riscv_gpr_names_abi, NGPR);
    hash_reg_names (RCLASS_FPR, riscv_fpr_names_numeric, NFPR);
    hash_reg_names (RCLASS_FPR, riscv_fpr_names_abi, NFPR);
@@ -94,7 +95,7 @@ index f60bea15c8..0184f29cea 100644
  
  #define DECLARE_CSR(name, num) hash_reg_name (RCLASS_CSR, #name, num);
  #define DECLARE_CSR_ALIAS(name, num) DECLARE_CSR(name, num);
-@@ -1218,10 +1269,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1218,10 +1270,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    struct riscv_opcode *insn;
    char *argsStart;
    unsigned int regno;
@@ -109,7 +110,7 @@ index f60bea15c8..0184f29cea 100644
  
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
-@@ -1267,6 +1322,301 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1267,6 +1323,313 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -399,6 +400,18 @@ index f60bea15c8..0184f29cea 100644
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
 +        continue;
++    case '8': /* lut8 */
++        my_getExpression (imm_expr, s);
++        check_absolute_expr (ip, imm_expr);
++        if ((unsigned long) imm_expr->X_add_number > 255) {
++          as_bad (_("Crypto ISE Improper 8-bit immediate (%lu). Should be 0 <= x <= 255"),
++          (unsigned long) imm_expr->X_add_number);
++          break;
++        }
++        INSERT_OPERAND (XLUT8, *ip, imm_expr->X_add_number);
++        imm_expr->X_op = O_absent;
++        s = expr_end;
++        continue;
 +
 +    default:
 +        as_bad (_("bad Crypto ISE field specifier 'X%c'"), *args);
@@ -411,7 +424,7 @@ index f60bea15c8..0184f29cea 100644
  	    case 'C': /* RVC */
  	      switch (*++args)
  		{
-@@ -1562,6 +1912,7 @@ rvc_lui:
+@@ -1562,6 +1925,7 @@ rvc_lui:
  	    case 't':		/* Target register.  */
  	      if (reg_lookup (&s, RCLASS_GPR, &regno))
  		{
@@ -420,7 +433,7 @@ index f60bea15c8..0184f29cea 100644
  		  if (*s == ' ')
  		    ++s;
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index f966fb6a50..02fda35953 100644
+index f966fb6a50..fc47e56468 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -1,6 +1,148 @@
@@ -500,8 +513,8 @@ index f966fb6a50..02fda35953 100644
 +#define MASK_MIX_L  0xe108787f
 +#define MATCH_MIX_H 0xa000002b
 +#define MASK_MIX_H  0xe108787f
-+#define MATCH_BOP 0xc000002b
-+#define MASK_BOP  0xe108787f
++#define MATCH_BOP 0x682b
++#define MASK_BOP  0x8787f
 +#define MATCH_MEQU 0x702b
 +#define MASK_MEQU  0xf000707f
 +#define MATCH_MLTE 0x1000702b
@@ -573,10 +586,10 @@ index f966fb6a50..02fda35953 100644
  #define MASK_SLLI_RV32  0xfe00707f
  #define MATCH_SRLI_RV32 0x5013
 diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
-index b87c719626..69adad5f45 100644
+index b87c719626..e00b5d4719 100644
 --- a/include/opcode/riscv.h
 +++ b/include/opcode/riscv.h
-@@ -191,6 +191,121 @@ static const char * const riscv_pred_succ[16] =
+@@ -191,6 +191,126 @@ static const char * const riscv_pred_succ[16] =
  #define RISCV_BRANCH_ALIGN (1 << RISCV_BRANCH_ALIGN_BITS)
  #define RISCV_BRANCH_REACH (RISCV_IMM_REACH * RISCV_BRANCH_ALIGN)
  
@@ -603,6 +616,7 @@ index b87c719626..69adad5f45 100644
 +#define ENCODE_X_IMM11LO(X)  ((X &  OP_MASK_XIMM11LO) << OP_SH_XIMM11LO)
 +#define ENCODE_X_IMM5(X)  ((X &  OP_MASK_XIMM5) << OP_SH_XIMM5)
 +#define ENCODE_X_LUT4(X)  ((X &  OP_MASK_XLUT4) << OP_SH_XLUT4)
++#define ENCODE_X_LUT8(X)  ((X &  OP_MASK_XLUT8) << OP_SH_XLUT8)
 +#define ENCODE_X_RTAMT(X)  ((X &  OP_MASK_XRTAMT) << OP_SH_XRTAMT)
 +#define EXTRACT_X_B0(X) ((X >> OP_SH_XB0)  & OP_MASK_XB0)
 +#define EXTRACT_X_B1(X) ((X >> OP_SH_XB1)  & OP_MASK_XB1)
@@ -626,6 +640,7 @@ index b87c719626..69adad5f45 100644
 +#define EXTRACT_X_IMM11LO(X) ((X >> OP_SH_XIMM11LO)  & OP_MASK_XIMM11LO)
 +#define EXTRACT_X_IMM5(X) ((X >> OP_SH_XIMM5)  & OP_MASK_XIMM5)
 +#define EXTRACT_X_LUT4(X) ((X >> OP_SH_XLUT4)  & OP_MASK_XLUT4)
++#define EXTRACT_X_LUT8(X) ((X >> OP_SH_XLUT8)  & OP_MASK_XLUT8)
 +#define EXTRACT_X_RTAMT(X) ((X >> OP_SH_XRTAMT)  & OP_MASK_XRTAMT)
 +#define OP_MASK_XB0 0b11
 +#define OP_MASK_XB1 0b11
@@ -649,6 +664,7 @@ index b87c719626..69adad5f45 100644
 +#define OP_MASK_XIMM11LO 0b1111
 +#define OP_MASK_XIMM5 0b11111
 +#define OP_MASK_XLUT4 0b1111
++#define OP_MASK_XLUT8 0b11111111
 +#define OP_SH_XB0 30
 +#define OP_SH_XB1 28
 +#define OP_SH_XB2 26
@@ -671,6 +687,7 @@ index b87c719626..69adad5f45 100644
 +#define OP_SH_XIMM11LO 7
 +#define OP_SH_XIMM5 15
 +#define OP_SH_XLUT4 25
++#define OP_SH_XLUT8 24
 +#define VALIDATE_X_B0(X) ((ENCODE_X_B0(X)) == (EXTRACT_X_B0(X)))
 +#define VALIDATE_X_B1(X) ((ENCODE_X_B1(X)) == (EXTRACT_X_B1(X)))
 +#define VALIDATE_X_B2(X) ((ENCODE_X_B2(X)) == (EXTRACT_X_B2(X)))
@@ -693,12 +710,13 @@ index b87c719626..69adad5f45 100644
 +#define VALIDATE_X_IMM11LO(X) ((ENCODE_X_IMM11LO(X)) == (EXTRACT_X_IMM11LO(X)))
 +#define VALIDATE_X_IMM5(X) ((ENCODE_X_IMM5(X)) == (EXTRACT_X_IMM5(X)))
 +#define VALIDATE_X_LUT4(X) ((ENCODE_X_LUT4(X)) == (EXTRACT_X_LUT4(X)))
++#define VALIDATE_X_LUT8(X) ((ENCODE_X_LUT8(X)) == (EXTRACT_X_LUT8(X)))
 +// ----- Crypto ISE END -------
 +
  /* RV fields.  */
  
  #define OP_MASK_OP		0x7f
-@@ -245,6 +360,7 @@ static const char * const riscv_pred_succ[16] =
+@@ -245,6 +365,7 @@ static const char * const riscv_pred_succ[16] =
  
  #define NGPR 32
  #define NFPR 32
@@ -706,7 +724,7 @@ index b87c719626..69adad5f45 100644
  
  /* Replace bits MASK << SHIFT of STRUCT with the equivalent bits in
     VALUE << SHIFT.  VALUE is evaluated exactly once.  */
-@@ -338,6 +454,7 @@ extern const char * const riscv_gpr_names_numeric[NGPR];
+@@ -338,6 +459,7 @@ extern const char * const riscv_gpr_names_numeric[NGPR];
  extern const char * const riscv_gpr_names_abi[NGPR];
  extern const char * const riscv_fpr_names_numeric[NFPR];
  extern const char * const riscv_fpr_names_abi[NFPR];
@@ -715,20 +733,23 @@ index b87c719626..69adad5f45 100644
  extern const struct riscv_opcode riscv_opcodes[];
  
 diff --git a/opcodes/riscv-dis.c b/opcodes/riscv-dis.c
-index cc642d4ad3..2c1c79f8d0 100644
+index cc642d4ad3..a52789acd6 100644
 --- a/opcodes/riscv-dis.c
 +++ b/opcodes/riscv-dis.c
-@@ -119,6 +119,9 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+@@ -119,6 +119,12 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
    int rs1 = (l >> OP_SH_RS1) & OP_MASK_RS1;
    int rd = (l >> OP_SH_RD) & OP_MASK_RD;
    fprintf_ftype print = info->fprintf_func;
 +  char c;
 +  int aux;
++  int lutval;
++  int lutlen;
++  int i;
 +  char packwidth = 0xFF;
  
    if (*d != '\0')
      print (info->stream, "\t");
-@@ -127,6 +130,81 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
+@@ -127,6 +133,96 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
      {
        switch (*d)
  	{
@@ -790,7 +811,22 @@ index cc642d4ad3..2c1c79f8d0 100644
 +         case '5':       /* imm11 imm5 */
 +            print(info->stream, "<IMM>");
 +            break;
-+         case '4': print(info->stream, "%d", (int)EXTRACT_X_LUT4(l));break;
++         case '4': 
++         case '8': 
++
++            if(*d == '4') {
++                lutval = (int)EXTRACT_X_LUT4(l);
++                lutlen = 4;
++            } else if(*d == '8') {
++                lutval = (int)EXTRACT_X_LUT8(l);
++                lutlen = 8;
++            }
++            
++            print(info -> stream, "0b");
++            for(i = lutlen-1; i >= 0; i --) {
++                print(info->stream, "%d", (lutval >> i) &0x1);
++            }
++            break;
 +	
 +         case ',':
 +	     case '(':
@@ -811,7 +847,7 @@ index cc642d4ad3..2c1c79f8d0 100644
  	  switch (*++d)
  	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index 79e7214835..b90afe5f4e 100644
+index 79e7214835..4615caf7d9 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -56,6 +56,11 @@ const char * const riscv_fpr_names_abi[NFPR] = {
@@ -867,7 +903,7 @@ index 79e7214835..b90afe5f4e 100644
 +{"xc.gather.h",   "x", "XD,Xt,s",            MATCH_GATHER_H, MASK_GATHER_H, match_opcode, 0},
 +{"xc.mix.l",    "x", "XD,Xs,Xt,X4",        MATCH_MIX_L, MASK_MIX_L, match_opcode, 0},
 +{"xc.mix.h",    "x", "XD,Xs,Xt,X4",        MATCH_MIX_H, MASK_MIX_H, match_opcode, 0},
-+{"xc.bop",     "x", "XD,Xs,Xt,X4",        MATCH_BOP, MASK_BOP, match_opcode, 0},
++{"xc.bop",      "x", "XD,Xs,Xt,X8",        MATCH_BOP, MASK_BOP, match_opcode, 0},
 +{"xc.mequ",     "x", "d,s,Xt,XS",          MATCH_MEQU, MASK_MEQU, match_opcode, 0},
 +{"xc.mlte",     "x", "d,s,Xt,XS",          MATCH_MLTE, MASK_MLTE, match_opcode, 0},
 +{"xc.mgte",     "x", "d,s,Xt,XS",          MATCH_MGTE, MASK_MGTE, match_opcode, 0},
