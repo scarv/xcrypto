@@ -262,14 +262,14 @@ KeccakP-400   | Cycles    | Instructions Executed | Code Size
 C -O2         | 9280      |  1359                 | 488b
 C -O3         | 3423      |  626                  | 2712b
 RISC-V        | 7289      |  1238                 | 
-XCrypto       | 3729      |  837                  | 300b
+XCrypto       | 3609      |  807                  | 292b
 
 KeccakP-1600  | Cycles    | Instructions Executed | Code Size
 --------------|-----------|-----------------------|--------------
 C -O2         | 13969     | 2283                  | 768b
 C -O3         | 6152      | 1066                  | 4240b
 RISC-V        | 12717     | 2027                  | 
-XCrypto       | 5838      | 1292                  | 520b
+XCrypto       | 5558      | 1222                  | 496b
 
 ### AES Block Cipher
 
