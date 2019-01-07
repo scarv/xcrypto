@@ -23,6 +23,9 @@ extern int  puts(char * str);
 //! Write a hexadecimal representation of a 32-bit number to stdout.
 extern void puthex(uint32_t tp);
 
+//! Write a hexadecimal representation of a 8-bit number to stdout.
+extern void puthex8(uint8_t tp);
+
 //! Write a hexadecimal representation of a 64-bit number to stdout.
 extern void puthex64(uint64_t tp) {
     uint32_t a = tp & 0xFFFFFFFF;

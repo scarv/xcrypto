@@ -131,6 +131,31 @@ puthex:
 
     ret
 
+
+#
+# Function for printing unsigned decimal numbers as hex to "stdout"
+#
+.global puthex8
+puthex8:             
+    li  t0, 0xFFFFFFFF
+    la  t1, puthex_lut
+
+    srli a1, a0, 4      # Copy integer to write and shift down by 4 
+    
+    andi a0, a0, 0xF    # a0 = LS nibble
+    andi a1, a1, 0xF    # a1 = MS nibble
+    
+    add  a0, a0, t1     # Offset into puthex_lut
+    add  a1, a1, t1     # Offset into puthex_lut
+    
+    lbu  a1, 0(a1)      # Load char from hexlut.
+    lbu  a0, 0(a0)      # Load char from hexlut.
+
+    sb   a1, 0(t0)      # Store to stdout
+    sb   a0, 0(t0)      # Store to stdout
+
+    ret
+
 .data
 puthex_lut:
     .string "0123456789ABCDEFx"
