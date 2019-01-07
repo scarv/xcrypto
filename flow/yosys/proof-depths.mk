@@ -5,6 +5,9 @@
 # in question requires a minimum number of cycles to exercise.
 #
 
+$(SMTDIR)/instr_bop.rpt     : BMC_STEPS=6
+$(SMTDIR)/instr_bop.cov     : BMC_STEPS=6
+
 $(SMTDIR)/instr_pmul_h.rpt     : BMC_STEPS=13
 $(SMTDIR)/instr_pmul_h.cov     : BMC_STEPS=13
 

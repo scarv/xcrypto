@@ -112,7 +112,9 @@ wire bw_lut   = is_bitwise_insn && id_subclass == SCARV_COP_SCLASS_LUT;
 wire [31:0] bop_result;
 genvar br;
 generate for (br = 0; br < 32; br = br + 1)
-    assign bop_result[br] = id_imm[{palu_rs1[br],palu_rs2[br]}];
+    assign bop_result[br] = id_imm[
+        {palu_rs3[br], palu_rs1[br], palu_rs2[br]}
+    ];
 endgenerate
 
 // Result computation for EXT / INST instructions

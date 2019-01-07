@@ -17,7 +17,11 @@ wire [31:0] bop_result;
 
 genvar i;
 generate for(i=0; i < 32; i = i + 1) begin
-    assign bop_result[i] = dec_arg_lut4[{`CRS1[i],`CRS2[i]}];
+    
+    wire [2:0] bop_index = {`CRD[i], `CRS1[i],`CRS2[i]};
+    
+    assign bop_result[i] = dec_arg_lut8[bop_index];
+
 end endgenerate
 
 //

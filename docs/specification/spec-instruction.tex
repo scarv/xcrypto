@@ -320,42 +320,54 @@
 % -----------------------------------------------------------------------------
 
 \XCINSTR{xc.bop}{crd, crs1, crs2, lut4}{
-  Compute each $i$-bit of a $32$-bit result by applying a given $2$-input, 
-  $1$-output Boolean function $f$ to corresponding $i$-th bits of the two 
-  operands.  The function $f$ is specified as a truth-table encoded as the
-  immediate \VERB[RV]{lut4}: given
+  Compute each $i$-bit of a $32$-bit result by applying a given $3$-input, 
+  $1$-output Boolean function $f$ to corresponding $i$-th bits of the three
+  operands.
+  
+  The function $f$ is specified as a truth-table encoded as the
+  immediate \VERB[RV]{lut8}: given
   \[
-  \begin{array}{|cc|c|}
+  \begin{array}{|ccc|c|}
   \hline
-  \multicolumn{3}{|c|}{f}     \\
+  \multicolumn{4}{|c|}{f}     \\
   \hline
-  x_i & y_i & r_i               \\
+  x_i & y_i & z_i & r_i               \\
   \hline
-    0 &   0 & \VERB[RV]{lut4}_0 \\
-    0 &   1 & \VERB[RV]{lut4}_1 \\
-    1 &   0 & \VERB[RV]{lut4}_2 \\
-    1 &   1 & \VERB[RV]{lut4}_3 \\
+    0 & 0 &   0 & \VERB[RV]{lut8}_0 \\
+    0 & 0 &   1 & \VERB[RV]{lut8}_1 \\
+    0 & 1 &   0 & \VERB[RV]{lut8}_2 \\
+    0 & 1 &   1 & \VERB[RV]{lut8}_3 \\
+    1 & 0 &   0 & \VERB[RV]{lut8}_4 \\
+    1 & 0 &   1 & \VERB[RV]{lut8}_5 \\
+    1 & 1 &   0 & \VERB[RV]{lut8}_6 \\
+    1 & 1 &   1 & \VERB[RV]{lut8}_7 \\
   \hline
   \end{array}
   \]
   the instruction essentially computes
   $
-  \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i} ) = \INDEX{\VERB[RV]{lut4}}{x_i \CONS y_i}
+  \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i}, \INDEX{z}{i} ) = 
+     \INDEX{\VERB[RV]{lut4}}{x_i \CONS y_i \CONS z_i}
   $
-  for $x$, $y$, and $r$, all in $\XCR$ registers.  Note that since
-  \[
-  \begin{array}{l@{\;}c@{\;}l c l@{\;}c@{\;}l}
-  \VERB[RV]{lut4} &=& \RADIX{1000}{2} &\Longrightarrow& f &=& \AND \\
-  \VERB[RV]{lut4} &=& \RADIX{1110}{2} &\Longrightarrow& f &=& \IOR \\
-  \VERB[RV]{lut4} &=& \RADIX{0110}{2} &\Longrightarrow& f &=& \XOR \\
-  \end{array}
-  \]
+  for $x$, $y$, $z$ and $r$, all in $\XCR$ registers.
+  Note that
   \VERB[RV]{xc.bop} can be used to synthesise a set of standard Boolean
   instructions (e.g., by analogy, per those in RV32I).
+  Any 1, 2 or 3 input boolean function can be represented by appropriately
+  padding the \VERB[RV]{lut8} immediate.
+  \[
+  \begin{array}{l@{\;}c@{\;}l c l@{\;}c@{\;}l}
+  \VERB[RV]{lut8} &=& \RADIX{10001000}{2} &\Longrightarrow& f &=& x \AND y        \\
+  \VERB[RV]{lut8} &=& \RADIX{11101110}{2} &\Longrightarrow& f &=& x \IOR y        \\
+  \VERB[RV]{lut8} &=& \RADIX{01100110}{2} &\Longrightarrow& f &=& x \XOR y        \\
+  \end{array}
+  \]
+  These examples show how the standard 2-input RISC-V boolean functions
+  can be synthesised.
 }{
   \For{$i = 0$ {\bf upto} $31$} {
-    $index \ASN \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
-    $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\VERB[RV]{lut4}}{index}$ \;
+    $index \ASN \INDEX{\XCR[*][crd]}{i} \CONS \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
+    $\INDEX{\XCR[*][{\VERB[RV]{crd}}]}{i} \ASN \INDEX{\VERB[RV]{lut8}}{index}$ \;
   }
 }
 

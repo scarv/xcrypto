@@ -66,7 +66,8 @@ assign id_crs2 = dec_arg_crs2;
 
 wire   crd_in_crs3 = dec_mix_l || dec_mix_h || dec_ins ||
                      dec_ld_liu  || dec_ld_hiu  || dec_ld_bu ||
-                     dec_ld_hu  || dec_scatter_b || dec_scatter_h;
+                     dec_ld_hu  || dec_scatter_b || dec_scatter_h ||
+                     dec_bop;
 
 assign id_crs3 = crd_in_crs3 ? dec_arg_crd : dec_arg_crs3;
 
@@ -216,11 +217,11 @@ assign id_subclass =
 wire imm_ld     = dec_ld_w     || dec_ld_hu   || dec_ld_bu;
 wire imm_st     = dec_st_w     || dec_st_h    || dec_st_b;
 wire imm_li     = dec_ld_hiu   || dec_ld_liu;
-wire imm_8      = class_twiddle || dec_ext   || dec_ins || class_sha3;
+wire imm_8      = class_twiddle|| dec_ext     || dec_ins || class_sha3 ||
+                  dec_bop;
 wire imm_sh_px  = dec_psll_i   || dec_psrl_i  || dec_prot_i;
 wire imm_sh_mp  = dec_msll_i   || dec_msrl_i;
-wire imm_lut    = dec_bop;
-wire imm_rtamt  = dec_mix_l   || dec_mix_h  || dec_bop;
+wire imm_rtamt  = dec_mix_l   || dec_mix_h;
 
 wire [4:0] shamt_imm =
     {dec_arg_cb, dec_arg_cc} == 2'b00 ? {dec_arg_ca, dec_arg_cshamt} :
@@ -233,7 +234,6 @@ assign id_imm =
     {32{imm_8       }} & {24'b0, encoded[31:24]                           } |
     {32{imm_sh_px   }} & {27'b0, shamt_imm                                } |
     {32{imm_sh_mp   }} & {26'b0, dec_arg_cmshamt                          } |
-    {32{imm_lut     }} & {28'b0, dec_arg_lut4                             } |
     {32{imm_rtamt   }} & {28'b0, dec_arg_rtamt                            } ;
 
 assign id_wb_h = dec_arg_cc ;

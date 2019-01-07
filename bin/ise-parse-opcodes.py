@@ -52,6 +52,7 @@ acodes['crs2'   ] = "Xt"
 acodes['crs3'   ] = "XS"
 acodes['crd'    ] = "XD"
 acodes['crdm'   ] = "XM"
+acodes['lut8'   ] = "X8"
 acodes['lut4'   ] = "X4" # These two share the same field coding as they are
 acodes['rtamt'  ] = "X4" # identical in all but name.
 acodes['cs'     ] = "Xk"
