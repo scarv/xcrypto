@@ -251,6 +251,11 @@ bound workloads.
 We compare C code compiled with `-O2` and/or `-O3` optimisation flags,
 hand-coded RISC-V assembly, and hand-coded RISC-V+XCrypto assembly code.
 
+For fairness, when hand-writing assembly code, we mimic the loop
+unrolling policy of the compiler. This means we may only write un-rolled
+assembly if that is what the compiler generates for the corresponding
+C code.
+
 ### Keccak (SHA3)
 
 We include C code compiled with both `-O2` and `-O3`. The principle
@@ -270,6 +275,21 @@ C -O2         | 13969     | 2283                  | 768b
 C -O3         | 6152      | 1066                  | 4240b
 RISC-V        | 12717     | 2027                  | 
 XCrypto       | 5558      | 1222                  | 496b
+
+### SHA256
+
+Here we report cycle counts and instructions executed for a SHA256
+hash computation of 32-words of data. Only the core hash computation
+function is modified. Padding and memory management is included in
+the measurements but not accelerated.
+Code size is given for the core `SHA256` hash computation function only,
+not auxiliary functions.
+
+SHA256        | Cycles    | Instructions Executed | Code Size
+--------------|-----------|-----------------------|--------------
+C -O2         | 22106     |  4773                 | 2568b
+C -O3         | 20906     |  4587                 | 3732b
+XCrypto       | 14239     |  3112                 | 1156b
 
 ### AES Block Cipher
 

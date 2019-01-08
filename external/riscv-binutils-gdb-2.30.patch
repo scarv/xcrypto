@@ -348,11 +348,11 @@ index f60bea15c8..f77e74f59c 100644
 +    case 'l': /* imm11 */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number > 1023) {
-+          as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
-+          (unsigned long) imm_expr->X_add_number,1023);
-+          break;
-+        }
++        //if ((unsigned long) imm_expr->X_add_number > 1023) {
++        //  as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
++        //  (unsigned long) imm_expr->X_add_number,1023);
++        //  break;
++        //}
 +        INSERT_OPERAND (XIMM11, *ip, imm_expr->X_add_number);
 +        imm_expr->X_op = O_absent;
 +        s = expr_end;
@@ -360,11 +360,11 @@ index f60bea15c8..f77e74f59c 100644
 +    case 'm': /* imm11hi */
 +        my_getExpression (imm_expr, s);
 +        check_absolute_expr (ip, imm_expr);
-+        if ((unsigned long) imm_expr->X_add_number > 1023) {
-+          as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
-+          (unsigned long) imm_expr->X_add_number,1023);
-+          break;
-+        }
++        //if ((unsigned long) imm_expr->X_add_number > 1023) {
++        //  as_bad (_("Crypto ISE Improper 11 bit immediate offset (%lu). Should be 0 <= x <= (%i)"),
++        //  (unsigned long) imm_expr->X_add_number,1023);
++        //  break;
++        //}
 +        INSERT_OPERAND (XIMM11HI, *ip, imm_expr->X_add_number>>4);
 +        INSERT_OPERAND (XIMM11LO, *ip, imm_expr->X_add_number & 0xF);
 +        imm_expr->X_op = O_absent;
