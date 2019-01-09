@@ -1,25 +1,24 @@
 
 BWORK       = $(XC_HOME)/work/benchmarks
+SREC_DIR    = $(XC_HOME)/work/examples
 
-MPN_OUTPUT  = $(BWORK)/mpn-data-$(LIBSCARV_ARCH).py
-MPN_PROCESS = $(XC_HOME)/flow/benchmarks/mpn_plot_perf.py
+BENCHMARKS  = mpn aes-test prince sha2 keccakp-1600 keccakp-400
 
-all: $(BWORK) mpn_benchmark
+BMARK_SRECS = $(addsuffix .srec,$(addprefix $(SREC_DIR)/,$(BENCHMARKS)))
+BMARK_STDOUT= $(addsuffix .py,$(addprefix $(BWORK)/,$(BENCHMARKS)))
+
+.PHONY: $(BMARK_SRECS)
+
+$(BWORK)/%.py : $(SREC_DIR)/%.srec
+	$(VERILATOR_SIM) +TIMEOUT=4000000 \
+        +PASS_ADDR=0xC000001C +FAIL_ADDR=0xC0000010 \
+        +IMEM=$< \
+        +STDOUT=$@
+
+all: $(BWORK) $(BMARK_STDOUT)
 
 $(BWORK):
 	mkdir -p $(BWORK)
 
 clean:
 	rm -rf $(BWORK)
-
-
-$(MPN_OUTPUT) :
-	$(VERILATOR_SIM) +q +TIMEOUT=4000000 \
-        +PASS_ADDR=0xC000001C +FAIL_ADDR=0xC0000010 \
-        +IMEM=/home/ben/scarv/repos/hw-crypto-cop/work/examples/mpn.srec \
-        > $@
-
-mpn_benchmark : $(MPN_OUTPUT)
-	echo "arch    = '${LIBSCARV_ARCH}'" >  ${BWORK}/build-info
-	echo "out_dir = '${BWORK}'" >> ${BWORK}/build-info
-	cat $(MPN_OUTPUT) ${BWORK}/build-info $(MPN_PROCESS) | python
