@@ -63,6 +63,19 @@ class MPNMulTester(BaseTester):
         lhs, rhs = inputs
         return     [lhs * rhs]
 
+class PrinceTester(BaseTester):
+    """
+    Tester class for the Prince block cipher
+    """
+
+    def golden(self, inputs):
+        msg, k0, k1 = inputs
+        
+        # The PRINCE C code is self checking.
+        key = (k1 << 64) | k0
+
+        return [msg]
+
 
 class ResultsSetRecord(object):
     """
