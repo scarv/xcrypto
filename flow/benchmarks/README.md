@@ -58,25 +58,18 @@ $> make -B benchmarks LIBSCARV_ARCH=<riscv/riscv-xcrypto>
 ```
 
 This will run all of the benchmarks, collect their output, and post process
-it into CSV files under `$XC_HOME/work/benchmarks/`. These CSV files can
+it into results files under `$XC_HOME/work/benchmarks/`. These files can
 later be used for whatever custom analysis one cares to do.
 
 The set of underlying steps are performed by the `Makefile` in
 `$XC_HOME/flow/benchmarks`
 
-Each benchmark program *prints* to the virtual `stdout` the set of
-performance data it wishes to record into a python list called `performance`.
-
 **Note:** what is printed to the virtual `stdout` of the simulator
 is valid Python2 code.
 
 The simulator output is piped to a file called
-`$XC_HOME/work/benchmarks/<name>-<LIBSCARV_ARCH>.py` and can then be
+`$XC_HOME/work/benchmarks/<name>.py` and can then be
 imported by other scripts for further analysis.
-
-In this case, we concatenate the output of the simulator and a simple
-analysis script (`$XC_HOME/flow/benchmarks/mpn_plot_perf.py` in this
-example) which creates CSV files of the performance data.
 
 ## Gottchas
 
@@ -92,7 +85,6 @@ example) which creates CSV files of the performance data.
 Run the entire benchmark flow for the `riscv-xcrypto` architecture:
 
 ```sh
-$> make verilator_build
-$> make -B libscarv examples benchmarks LIBSCARV_ARCH=riscv-xcrypto
+$> make -B benchmarks LIBSCARV_ARCH=riscv-xcrypto
 ```
 
