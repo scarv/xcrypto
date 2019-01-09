@@ -6,8 +6,7 @@ BENCHMARKS  = mpn aes-test prince sha2 keccakp-1600 keccakp-400
 
 BMARK_SRECS = $(addsuffix .srec,$(addprefix $(SREC_DIR)/,$(BENCHMARKS)))
 BMARK_STDOUT= $(addsuffix .py,$(addprefix $(BWORK)/,$(BENCHMARKS)))
-
-.PHONY: $(BMARK_SRECS)
+BMARK_RESULT= $(addsuffix .txt,$(addprefix $(BWORK)/results-,$(BENCHMARKS)))
 
 $(BWORK)/%.py : $(SREC_DIR)/%.srec
 	$(VERILATOR_SIM) +TIMEOUT=4000000 \
@@ -15,7 +14,10 @@ $(BWORK)/%.py : $(SREC_DIR)/%.srec
         +IMEM=$< \
         +STDOUT=$@
 
-all: $(BWORK) $(BMARK_STDOUT)
+$(BWORK)/results-%.txt : $(BWORK)/%.py
+	python $< > $@
+
+all: $(BWORK) $(BMARK_STDOUT) $(BMARK_RESULT)
 
 $(BWORK):
 	mkdir -p $(BWORK)

@@ -15,7 +15,7 @@ uint64_t prince_test_vectors[][4] = {
 
 int main() {
     
-    putstr("\nPrince Test\n");
+    putstr("\n# Prince Test\n");
     
     uint32_t acc_instr_count = 0;
     uint32_t acc_cycle_count = 0;
@@ -33,30 +33,31 @@ int main() {
         acc_instr_count = rdinstret() - acc_instr_count;
         acc_cycle_count = rdcycle()   - acc_cycle_count;
 
+        putchar('#');
         puthex64(plaintext); putstr(", ");
         puthex64(k0       ); putstr(", ");
         puthex64(k1       ); putstr(", ");
         puthex64(cipher   ); putstr("  ");
 
         if(result_enc != cipher) {
-            putstr("\nTest "); puthex(i); putstr(" Encrypt Failed\n");
-            putstr("Expected: "); puthex64(cipher); putstr("\n");
-            putstr("     Got: "); puthex64(result_enc); putstr("\n");
+            putstr("\n#Test "); puthex(i); putstr(" Encrypt Failed\n");
+            putstr("#Expected: "); puthex64(cipher); putstr("\n");
+            putstr("#     Got: "); puthex64(result_enc); putstr("\n");
             __fail();
         }
 
         uint64_t result_dec = prince_dec(cipher   , k0, k1);
 
         if(result_dec != plaintext) {
-            putstr("\nTest "); puthex(i); putstr(" Decrypt Failed\n");
-            putstr("Expected: "); puthex64(plaintext); putstr("\n");
-            putstr("     Got: "); puthex64(result_dec); putstr("\n");
+            putstr("\n#Test "); puthex(i); putstr(" Decrypt Failed\n");
+            putstr("#Expected: "); puthex64(plaintext); putstr("\n");
+            putstr("#     Got: "); puthex64(result_dec); putstr("\n");
             __fail();
         }
 
-        putstr("PASS");
+        putstr("#PASS");
     
-        putstr(" - Cycle Count: ");
+        putstr("# - Cycle Count: ");
         puthex(acc_cycle_count);
         putstr(", Instr Count: ");
         puthex(acc_instr_count);

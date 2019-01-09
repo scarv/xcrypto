@@ -33,7 +33,7 @@ int main() {
     
     uint32_t rounds      = 1;
 
-    putstr("Running KeccakP-400\n");
+    putstr("# Running KeccakP-400\n");
     
     uint32_t acc_instr_start = rdinstret();
     uint32_t acc_cycle_start = rdcycle();
@@ -49,6 +49,7 @@ int main() {
 
     
     for(int i = 0; i < KeccakP400_stateSizeInBytes/2; i ++) {
+        putchar('#');
         puthex(keccak_state1[i]);
         putstr(", ");
         puthex(keccak_state2[i]);
