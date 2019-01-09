@@ -35,6 +35,18 @@ class BaseTester(object):
                 return False
         return True
 
+class KeccakP400Tester(BaseTester):
+    def test(self, inputs, outputs):
+        return True # Checking done live in C code
+
+class KeccakP1600Tester(BaseTester):
+    def test(self, inputs, outputs):
+        return True # Checking done live in C code
+
+class PrinceTester(BaseTester):
+    def test(self, inputs, outputs):
+        return True # Checking done live in C code
+
 class MPNAddTester(BaseTester):
     """
     Tester class for multi-precision add operations
@@ -63,18 +75,6 @@ class MPNMulTester(BaseTester):
         lhs, rhs = inputs
         return     [lhs * rhs]
 
-class PrinceTester(BaseTester):
-    """
-    Tester class for the Prince block cipher
-    """
-
-    def golden(self, inputs):
-        msg, k0, k1 = inputs
-        
-        # The PRINCE C code is self checking.
-        key = (k1 << 64) | k0
-
-        return [msg]
 
     def test(self, inputs, outputs):
         return True ## DUMMY
