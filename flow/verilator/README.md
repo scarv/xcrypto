@@ -44,6 +44,7 @@ $> $XC_HOME/work/verilator/scarv_prv_xcrypt_top --help
 ../../work/verilator/scarv_prv_xcrypt_top [arguments]
     +q                            - Be quiet
 	+IMEM=<srec input file path>  -
+	+STDOUT=<uart dump file path> -
 	+WAVES=<VCD dump file path>   -
 	+TIMEOUT=<timeout after N>    -
 	+PASS_ADDR=<hex number>       -
@@ -56,6 +57,8 @@ Where:
     program itself prints. Must be specified *first*.
 - `+IMEM=` is the path to the srec file which describes the initial
     memory content of the simulation.
+- `+STDOUT=` is the path to a file where all data written to the emulated
+    UART output port is dumped.
 - `+WAVES=` Is a file path where a complete waveform trace of the
     simulation will be dumped. If this argument is omitted, no waves will
     be dumped and the simulation will be noticably faster!
