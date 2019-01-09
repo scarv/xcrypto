@@ -6,6 +6,9 @@ accelerated programs.
 
 import sys
 
+import hashlib
+import binascii
+
 class BaseTester(object):
     """
     Base class for "Testers". These objects are used to verify that
@@ -46,6 +49,17 @@ class KeccakP1600Tester(BaseTester):
 class PrinceTester(BaseTester):
     def test(self, inputs, outputs):
         return True # Checking done live in C code
+
+class SHA256Tester(BaseTester):
+    def golden(self, inputs):
+        din = binascii.a2b_hex(inputs[0])
+        return hashlib.sha256(din).hexdigest().upper()
+
+    def test(self, inputs, outputs):
+        o = outputs[0]
+        g = self.golden(inputs)
+        return o == g
+
 
 class MPNAddTester(BaseTester):
     """

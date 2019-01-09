@@ -1,7 +1,16 @@
 
 #include "common.h"
+#include "benchmark.h"
 
 #include "scarv/sha2_256.h"
+
+void dump_bytes(uint8_t * b, uint32_t len) {
+    putstr("'");
+    for(int j = 0; j < len; j ++) {
+        puthex8(b[j]);
+    }
+    putstr("'");
+}
 
 int main() {
     
@@ -18,45 +27,35 @@ int main() {
     putstr("import hashlib\n");
     putstr("import binascii\n");
     putstr("import sys\n");
+    
+    XC_BENCHMARK_INIT;
+    XC_BENCHMARK_SET(sha256,SHA256Tester)
 
-    for(int i = 0; i < 3; i  ++) {
-        
-        putstr("msg = '");
-        for(int j = 0; j < input_len; j ++) {
-            puthex8(input_bytes[j]);
-        }
-        putstr("'\n");
-        putstr("msg_in = binascii.a2b_hex(msg)\n");
+    for(int i = 0; i < 10; i  ++) {
+    
+        XC_BENCHMARK_RECORD(rec)
+
+        XC_BENCHMARK_RECORD_ADD_INPUT(rec, dump_bytes(input_bytes,input_len));
 
         uint32_t cycles = rdcycle();
         uint32_t iret   = rdinstret();
         sha2_256(hash, 1, input_bytes, input_len);
         cycles = rdcycle() - cycles;
         iret   = rdinstret() - iret;
-
-        putstr("cycles = 0x"); puthex(cycles); putstr("\n");
-        putstr("instrs = 0x"); puthex(iret  ); putstr("\n");
         
-        putstr("hash_out = '");
+        XC_BENCHMARK_RECORD_ADD_OUTPUT(rec,dump_bytes(hash,hash_len));
+        XC_BENCHMARK_RECORD_ADD_METRIC(rec,cycles,putstr("0x");puthex(cycles))
+        XC_BENCHMARK_RECORD_ADD_METRIC(rec,instrs,putstr("0x");puthex(iret))
+        XC_BENCHMARK_SET_ADD(sha256, rec)
+        
         for(int j = 0; j < hash_len; j ++) {
-            puthex8(hash[j]);
-
             input_bytes[j] = hash[j];
         }
-        putstr("'\n");
-
-        putstr("golden = hashlib.sha256(msg_in).hexdigest().upper()\n");
-        putstr("print('cycles   = %d' % cycles  )\n");
-        putstr("print('instrs   = %d' % instrs  )\n");
-        putstr("print('msg      = %s' % msg     )\n");
-        putstr("print('hash_out = %s' % hash_out)\n");
-        putstr("print('golden   = %s' % golden  )\n");
-        putstr("print('')\n");
-        putstr("if(golden != hash_out):\n");
-        putstr("    print('ERROR')\n");
-        putstr("    sys.exit(1)\n");
 
     }
+    
+    XC_BENCHMARK_SET_REPORT(sha256);
+    XC_BENCHMARK_SET_PASS(sha256);
 
     __pass();
 }
