@@ -4,6 +4,7 @@
 #include <map>
 #include <queue>
 #include <string>
+#include <fstream>
 #include <iostream>
 
 #include "srec.hpp"
@@ -24,6 +25,11 @@ vluint64_t    max_time    = 30000000;
 //! Path to dump wave files too
 bool         dump_waves        = false;
 std::string  vcd_wavefile_path;
+
+//! Path to dump uart rx data too.
+bool          dump_uart_rx     = false;
+std::string   uart_dump_path;
+std::ofstream uart_dump_fh;
 
 //! Typedef for the top level module of the design.
 typedef Vscarv_prv_xcrypt_top* top_module_t;
@@ -284,6 +290,10 @@ void emulate_uart_rx (
            q -> front() -> wstrb == 0x8) {
             char tp = (q -> front() -> wdata >> 24) & 0xFF;
             std::cout << tp;
+
+            if(dump_uart_rx) {
+                uart_dump_fh << tp;
+            }
         }
     }
 }
@@ -413,6 +423,19 @@ void process_arguments(int argc, char ** argv) {
             // Extract the file path.
             std::string fpath = s.substr(6);
             load_main_memory(fpath);
+        }
+        else if(s.find("+STDOUT=") != std::string::npos) {
+            // Extract the file path to which we dump emulated
+            // UART output too.
+            std::string fpath = s.substr(8);
+            dump_uart_rx      = true;
+            uart_dump_path    = fpath;
+            uart_dump_fh.open(uart_dump_path);
+
+            if(!quiet) {
+                std::cout << ">> Dumping STDOUT to: " << uart_dump_path
+                          << std::endl;
+            }
         }
         else if(s.find("+WAVES=") != std::string::npos) {
             std::string fpath = s.substr(7);
@@ -568,6 +591,10 @@ int main(int argc, char** argv, char** env) {
 
     if(dump_waves) {
         tfp -> close();
+    }
+
+    if(dump_uart_rx) {
+        uart_dump_fh.close();
     }
 
     if(!quiet) {

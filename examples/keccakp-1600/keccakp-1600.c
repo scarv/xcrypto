@@ -1,6 +1,7 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "benchmark.h"
 
 #include "scarv/KeccakP-1600-SnP.h"
 
@@ -23,6 +24,9 @@ int main() {
 
     rand_init_state(keccak_state1);
 
+    XC_BENCHMARK_INIT;
+    XC_BENCHMARK_SET(keccakp1600_opt,KeccakP1600Tester)
+    XC_BENCHMARK_SET(keccakp1600_ref,KeccakP1600Tester)
     
     for(int i = 0; i < 25; i ++) {
         keccak_state2[i] = keccak_state1[i];
@@ -37,7 +41,7 @@ int main() {
     
     uint32_t rounds      = 1;
 
-    putstr("Running KeccakP-1600\n");
+    putstr("# Running KeccakP-1600\n");
     
     uint32_t acc_instr_start = rdinstret();
     uint32_t acc_cycle_start = rdcycle();
@@ -45,14 +49,32 @@ int main() {
     uint32_t acc_instr_count = rdinstret() - acc_instr_start;
     uint32_t acc_cycle_count = rdcycle()   - acc_cycle_start;
     
+    XC_BENCHMARK_RECORD(opt)
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        opt, cycles, putstr("0x");puthex(acc_cycle_count)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        opt, instrs, putstr("0x");puthex(acc_instr_count)
+    )
+    XC_BENCHMARK_SET_ADD(keccakp1600_opt, opt)
+    
     uint32_t ref_instr_start = rdinstret();
     uint32_t ref_cycle_start = rdcycle();
     KeccakP1600RoundReference(keccak_state2,2);
     uint32_t ref_instr_count = rdinstret() - ref_instr_start;
     uint32_t ref_cycle_count = rdcycle()   - ref_cycle_start;
 
+    XC_BENCHMARK_RECORD(ref)
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        ref, cycles, putstr("0x");puthex(ref_cycle_count)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        ref, instrs, putstr("0x");puthex(ref_instr_count)
+    )
+    XC_BENCHMARK_SET_ADD(keccakp1600_ref, ref)
     
     for(int i = 0; i < 25; i ++) {
+        putchar('#');
         puthex64(keccak_state1[i]);
         putstr(", ");
         puthex64(keccak_state2[i]);
@@ -65,6 +87,8 @@ int main() {
     }
     putstr("\n");
     
+    XC_BENCHMARK_SET_REPORT(keccakp1600_ref);
+    XC_BENCHMARK_SET_REPORT(keccakp1600_opt);
 
     putstr("# Reference\n");
     putstr("#   Cycle Count: ");

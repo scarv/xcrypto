@@ -1,5 +1,6 @@
 
 #include "common.h"
+#include "benchmark.h"
 
 #include "scarv/prince.h"
 
@@ -15,10 +16,13 @@ uint64_t prince_test_vectors[][4] = {
 
 int main() {
     
-    putstr("\nPrince Test\n");
+    putstr("\n# Prince Test\n");
     
-    uint32_t acc_instr_count = 0;
-    uint32_t acc_cycle_count = 0;
+    uint32_t instr = 0;
+    uint32_t cycle = 0;
+
+    XC_BENCHMARK_INIT;
+    XC_BENCHMARK_SET(prince, PrinceTester);
 
     for(int i = 0; i < 5; i ++) {
         
@@ -27,43 +31,59 @@ int main() {
         uint64_t k1        = prince_test_vectors[i][2];
         uint64_t cipher    = prince_test_vectors[i][3];
 
-        acc_instr_count = rdinstret();
-        acc_cycle_count = rdcycle();
+        instr = rdinstret();
+        cycle = rdcycle();
         uint64_t result_enc = prince_enc(plaintext, k0, k1);
-        acc_instr_count = rdinstret() - acc_instr_count;
-        acc_cycle_count = rdcycle()   - acc_cycle_count;
+        instr = rdinstret() - instr;
+        cycle = rdcycle()   - cycle;
 
+        putchar('#');
         puthex64(plaintext); putstr(", ");
         puthex64(k0       ); putstr(", ");
         puthex64(k1       ); putstr(", ");
-        puthex64(cipher   ); putstr("  ");
+        puthex64(cipher   ); putstr("\n");
+
+        XC_BENCHMARK_RECORD(p_rec)
+        XC_BENCHMARK_RECORD_ADD_INPUT(p_rec,putstr("0x");puthex64(plaintext))
+        XC_BENCHMARK_RECORD_ADD_INPUT(p_rec,putstr("0x");puthex64(k0))
+        XC_BENCHMARK_RECORD_ADD_INPUT(p_rec,putstr("0x");puthex64(k1))
+        XC_BENCHMARK_RECORD_ADD_OUTPUT(p_rec,putstr("0x");puthex64(cipher))
+        XC_BENCHMARK_RECORD_ADD_METRIC(p_rec, cycles, putstr("0x");puthex(cycle))
+        XC_BENCHMARK_RECORD_ADD_METRIC(p_rec, instrs, putstr("0x");puthex(instr))
+        XC_BENCHMARK_SET_ADD(prince, p_rec)
 
         if(result_enc != cipher) {
-            putstr("\nTest "); puthex(i); putstr(" Encrypt Failed\n");
-            putstr("Expected: "); puthex64(cipher); putstr("\n");
-            putstr("     Got: "); puthex64(result_enc); putstr("\n");
+            putstr("\n#Test "); puthex(i); putstr(" Encrypt Failed\n");
+            putstr("#Expected: "); puthex64(cipher); putstr("\n");
+            putstr("#     Got: "); puthex64(result_enc); putstr("\n");
             __fail();
         }
 
         uint64_t result_dec = prince_dec(cipher   , k0, k1);
 
         if(result_dec != plaintext) {
-            putstr("\nTest "); puthex(i); putstr(" Decrypt Failed\n");
-            putstr("Expected: "); puthex64(plaintext); putstr("\n");
-            putstr("     Got: "); puthex64(result_dec); putstr("\n");
+            putstr("\n#Test "); puthex(i); putstr(" Decrypt Failed\n");
+            putstr("#Expected: "); puthex64(plaintext); putstr("\n");
+            putstr("#     Got: "); puthex64(result_dec); putstr("\n");
             __fail();
         }
 
-        putstr("PASS");
+        putstr("#PASS");
     
-        putstr(" - Cycle Count: ");
-        puthex(acc_cycle_count);
+        putstr("# - Cycle Count: ");
+        puthex(cycle);
         putstr(", Instr Count: ");
-        puthex(acc_instr_count);
+        puthex(instr);
         putstr("\n");
 
 
     }
+
+    XC_BENCHMARK_SET_REPORT(prince);
+    //
+    // Don't assert correctness for Prince in Python, since the checking
+    // is done here.
+    //XC_BENCHMARK_SET_PASS(prince);
     
     __pass();
 }

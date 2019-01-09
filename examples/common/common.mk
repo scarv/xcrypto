@@ -3,6 +3,8 @@ TGT_DIR  = $(XC_WORK)/examples
 
 EXE      ?= $(TGT_DIR)/$(TEST_NAME).elf
 
+HEADERS  = ../common/common.h ../common/benchmark.h
+
 all: $(EXE) $(EXE:%.elf=%.dis) $(EXE:%.elf=%.hex) $(EXE:%.elf=%.srec)
 
 $(TGT_DIR)/%.o : %.x.S
@@ -25,9 +27,9 @@ $(TGT_DIR)/%.srec : $(TGT_DIR)/%.elf
 	-mkdir -p $(TGT_DIR)
 	$(X_OBJCOPY) -O srec --srec-forceS3 $< $@
 
-$(TGT_DIR)/$(TEST_NAME).o: $(TEST_NAME).c
+$(TGT_DIR)/$(TEST_NAME).o: $(TEST_NAME).c $(HEADERS)
 	-mkdir -p $(TGT_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 
 $(TGT_DIR)/$(TEST_NAME).elf : $(OBJECTS)
 	$(CC)  $(LDFLAGS) $(CFLAGS) -o $@ $^

@@ -49,7 +49,7 @@ libscarv-clean:
 
 
 .PHONY: benchmarks
-benchmarks:
+benchmarks: libscarv examples verilator_build
 	$(MAKE) -C $(XC_HOME)/flow/benchmarks all
 
 .PHONY: benchmarks-clean
