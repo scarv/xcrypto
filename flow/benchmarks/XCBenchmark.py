@@ -76,6 +76,9 @@ class PrinceTester(BaseTester):
 
         return [msg]
 
+    def test(self, inputs, outputs):
+        return True ## DUMMY
+
 
 class ResultsSetRecord(object):
     """
