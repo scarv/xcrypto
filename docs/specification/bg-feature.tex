@@ -226,7 +226,12 @@ b) efficiency
    (e.g., use of hardware-friendly bit-permutations in DES~\cite{SCARV:FIPS:46_3}).
 As a result, numerous proposals for associated ISEs exist; these typically
 act to accelerate in software what would otherwise represent a high (even 
-prohibitive) overhead.  \XCID adopts a similar approach.
+prohibitive) overhead.  \XCID adopts a similar approach, for example, via
+support
+(e.g., \VERB[RV]{xc.bop}; see \REFSEC{sec:spec:instruction:xc.bop})
+for {\em aribitrary} Boolean operations
+(cf. x86 \VERB{vpternlogd}~\cite[5-446--5-468]{SCARV:X86:2:18}, and Amiga blitter~\cite[Chapter 6]{SCARV:Amiga:85})
+vs. common fixed and so limited instances such as NOT, AND, OR, and XOR.
 
 % -----------------------------------------------------------------------------
 

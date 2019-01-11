@@ -25,11 +25,15 @@ fi
 
 mkdir -p $XC_WORK
 
+export TEXMFLOCAL="::${XC_HOME}/external/texmf"
+texhash &> /dev/null
+
 echo "XC_HOME        = $XC_HOME"
 echo "XC_WORK        = $XC_WORK"
 echo "YS_INSTALL     = $YS_INSTALL"
 echo "LIBSCARV       = $LIBSCARV"
 echo "RISCV          = $RISCV"
 echo "VERILATOR_ROOT = $VERILATOR_ROOT"
+echo "TEXMFLOCAL     = $TEXMFLOCAL"
 
 echo "------------------------------[Finished]-------------------------------"

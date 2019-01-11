@@ -319,7 +319,7 @@
 
 % -----------------------------------------------------------------------------
 
-\XCINSTR{xc.bop}{crd, crs1, crs2, lut4}{
+\XCINSTR{xc.bop}{crd, crs1, crs2, lut8}{
   Compute each $i$-bit of a $32$-bit result by applying a given $3$-input, 
   $1$-output Boolean function $f$ to corresponding $i$-th bits of the three
   operands.
@@ -346,24 +346,23 @@
   \]
   the instruction essentially computes
   $
-  \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i}, \INDEX{z}{i} ) = 
-     \INDEX{\VERB[RV]{lut4}}{x_i \CONS y_i \CONS z_i}
+  \INDEX{r}{i} = f( \INDEX{x}{i}, \INDEX{y}{i}, \INDEX{z}{i} ) = \INDEX{\VERB[RV]{lut8}}{x_i \CONS y_i \CONS z_i}
   $
   for $x$, $y$, $z$ and $r$, all in $\XCR$ registers.
   Note that
-  \VERB[RV]{xc.bop} can be used to synthesise a set of standard Boolean
-  instructions (e.g., by analogy, per those in RV32I).
-  Any 1, 2 or 3 input boolean function can be represented by appropriately
-  padding the \VERB[RV]{lut8} immediate.
+  \VERB[RV]{xc.bop}
+  allows synthesis of a wider set of functionality; 
+  for example, it can be used to synthesise a set of standard Boolean
+  instructions (e.g., those in RV32I) by padding 
+  \VERB[RV]{lut8} 
+  appropriately per
   \[
   \begin{array}{l@{\;}c@{\;}l c l@{\;}c@{\;}l}
-  \VERB[RV]{lut8} &=& \RADIX{10001000}{2} &\Longrightarrow& f &=& x \AND y        \\
-  \VERB[RV]{lut8} &=& \RADIX{11101110}{2} &\Longrightarrow& f &=& x \IOR y        \\
-  \VERB[RV]{lut8} &=& \RADIX{01100110}{2} &\Longrightarrow& f &=& x \XOR y        \\
+  \VERB[RV]{lut8} &=& \RADIX{10001000}{2} &\Longrightarrow& f &=& x \AND y \\
+  \VERB[RV]{lut8} &=& \RADIX{11101110}{2} &\Longrightarrow& f &=& x \IOR y \\
+  \VERB[RV]{lut8} &=& \RADIX{01100110}{2} &\Longrightarrow& f &=& x \XOR y \\
   \end{array}
   \]
-  These examples show how the standard 2-input RISC-V boolean functions
-  can be synthesised.
 }{
   \For{$i = 0$ {\bf upto} $31$} {
     $index \ASN \INDEX{\XCR[*][crd]}{i} \CONS \INDEX{\XCR[*][crs1]}{i} \CONS \INDEX{\XCR[*][crs2]}{i}$ \;
@@ -450,39 +449,48 @@
 
 % -----------------------------------------------------------------------------
 
-
 \XCINSTR{xc.lut}{crd, crs1, crs2, crs3}{
-    Apply an arbitrary 4-bit Look-up Table (LUT) to the contents of 
-    $\XCR[*][{\VERB[RV]{crs1}}]$,
-    placing the result in
-    $\XCR[*][{\VERB[RV]{crd}}]$.
-    The S-Box is specified by the concatenation of
-    $\XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}]$
-    where
-    \[
-        lut[i] = \INDEX[4]{{
-            (\XCR[*][{\VERB[RV]{crs3}}] \CONS \XCR[*][{\VERB[RV]{crs2}}])
-        }}{i}
-    \]
-    for each $0 \leq i < 15$.
+  Apply an arbitrary $4$-bit input, $4$-bit output Look-up Table (LUT) 
+  to the contents of 
+  $\XCR[*][{\VERB[RV]{crs1}}]$,
+  placing the result in
+  $\XCR[*][{\VERB[RV]{crd}}]$.
+  The LUT is specified by
+  $
+  \XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}] ,
+  $
+  allowing definition of
+  \[
+  lut[i] = \INDEX[4]{{(\XCR[*][{\VERB[RV]{crs3}}] \CONS \XCR[*][{\VERB[RV]{crs2}}])}}{i}
+  \]
+  for each $0 \leq i < 15$.  For example, if 
+  $
+  \XCR[*][{\VERB[RV]{crs2}}] = \RADIX{ABCD1234}{16}
+  $
+  and
+  $
+  \XCR[*][{\VERB[RV]{crs3}}] = \RADIX{456789EF}{16}
+  $
+  then 
+  $lut[0] = \RADIX{4}{16}$, 
+  $lut[1] = \RADIX{3}{16}$,
+  $lut[7] = \RADIX{A}{16}$ 
+  and 
+  $lut[8] = \RADIX{F}{16}$.
 
-    For example, if 
-    $\XCR[*][{\VERB[RV]{crs2}}] = 0xABCD1234$
-    and
-    $\XCR[*][{\VERB[RV]{crs3}}] = 0x456789EF$
-    then $lut[0] = 4$, $lut[1] = 3,$
-    $lut[7] = A$ and $lut[8] = F$.
-
-    The instruction can be used to create a 2-bit lookup table as well
-    by padding the values of 
-    $\XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}]$
-    appropriately.
+  Note that
+  \VERB[RV]{xc.lut}
+  allows synthesis of a wider set of functionality; 
+  for example, application of a $2$-bit input, $2$-bit output LUT can 
+  be synthesised by padding
+  $
+  \XCR[*][{\VERB[RV]{crs2}}]$ and $\XCR[*][{\VERB[RV]{crs3}}]
+  $
+  appropriately.
 }{
-    \For{$i=0$ {\bf upto} $15$}{
-        \INDEX[4]{\XCR[*][{\VERB[RV]{crd}}]}{i} = lut[
-             \INDEX[4]{\XCR[*][{\VERB[RV]{crs1}}]}{i}        
-            ]
-    }
+  \For{$i=0$ {\bf upto} $15$}{
+    \INDEX[4]{\XCR[*][{\VERB[RV]{crd}}]}{i} = lut[\INDEX[4]{\XCR[*][{\VERB[RV]{crs1}}]}{i}]
+  }
 }
 
 % =============================================================================
@@ -517,25 +525,26 @@ $
 As such, said encoding yields the following cases
 \[
 \begin{array}{ccrcc@{\;}c@{\;}rc@{\;}c@{\;}r}
-\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32 {\bf *} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{000}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{001}{2} &\mapsto& \VERB[RV]{n} &=&  2 & w &=& 16     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{010}{2} &\mapsto& \VERB[RV]{n} &=&  4 & w &=&  8     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{011}{2} &\mapsto& \VERB[RV]{n} &=&  8 & w &=&  4     \\
+\VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{100}{2} &\mapsto& \VERB[RV]{n} &=&  1 & w &=& 32     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{101}{2} &\mapsto& \VERB[RV]{n} &=& 16 & w &=&  2     \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{110}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \VERB[RV]{ca} \CONS \VERB[RV]{cb} \CONS \VERB[RV]{cc} &=& \RADIX{111}{2} &\mapsto& \multicolumn{6}{c}{\mbox{invalid}} \\
 \end{array}
 \]
-where cases marked invalid are reserved.
-
-{\bf *} Note that the \RADIX{100}{2} encoding is valid only for the instructions
-\ASM{xc.psll.i},
-\ASM{xc.psrl.i} and
-\ASM{xc.prot.i}.
+where cases marked invalid are reserved.  Note that the encoding 
+$
+\RADIX{100}{2}
+$
+is valid only for the instructions
+\VERB[RV]{xc.psll.i},
+\VERB[RV]{xc.psrl.i} and
+\VERB[RV]{xc.prot.i}.
 In this case, the \VERB[RV]{ca} bit is used to encode the most significant
-bit of the shift/rotate amount.
-For instructions other than these, a pack width encoding of \RADIX{100}{2}
+bit of the shift/rotate amount; for all other instructions, the encoding
 is considered invalid.
 
 % -----------------------------------------------------------------------------

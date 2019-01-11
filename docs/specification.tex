@@ -1,6 +1,4 @@
-\documentclass{article}
-
-\usepackage{shared} \addbibresource{shared.bib} \import{../work/}{crypto-ise.encodings.tex}
+\documentclass{scarv-report}
 
 \title{{\sc \XCID: a cryptographic ISE for RISC-V} \\ {\sc\large Specification Document}}
 \date{Version $0.11.0$ (\today)}
@@ -14,11 +12,13 @@ Bristol, BS8 1UB, United Kingdom.\\
 \url{{ben.marshall,daniel.page,th.pham}@bristol.ac.uk}
 }
 
+\import{../work/}{crypto-ise.encodings.tex}
+
 \begin{document}
 
-\newpage
-\maketitle \tableofcontents
-\newpage
+% =============================================================================
+
+\MKPROLOGUE
 
 % =============================================================================
 
@@ -45,8 +45,7 @@ Bristol, BS8 1UB, United Kingdom.\\
 
 % =============================================================================
 
-\newpage
-\printbibliography
+\MKEPILOGUE
 
 % =============================================================================
 

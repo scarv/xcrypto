@@ -1,6 +1,4 @@
-\documentclass{article}
-
-\usepackage{shared} \addbibresource{shared.bib}
+\documentclass{scarv-report}
 
 \title{{\sc \XCID: a cryptographic ISE for RISC-V} \\ {\sc\large Reference Implementation Document}}
 \date{Version $0.11.0$ (\today)}
@@ -16,11 +14,69 @@ Bristol, BS8 1UB, United Kingdom.\\
 
 \begin{document}
 
-\maketitle \tableofcontents
+% =============================================================================
+
+\MKPROLOGUE
 
 % =============================================================================
 
 %% Custom Commands %%
+
+% Design choice notes
+\newcommand{\designnote}[1]{\footnote{#1}}
+\newcommandx{\note}[1]{{\bf Note:} #1\\}
+
+\newcommandx{\fixme}[1]{{\bf \color{red}{FIXME}}\footnote{#1} \\}
+
+\newcommand{\encspace}{{\em custom1} }
+\newcommand{\encopcode}{$0101011$}
+
+\newcommandx{\ASM}[1]{{\tt #1}}
+\newcommandx{\instlab}[1]{\label{sec:#1}}
+\newcommandx{\instref}[1]{{\tt \nameref{sec:#1}}}
+\newcommandx{\instdesc}[1]{\subsubsection{#1}\label{sec:#1}}
+\newcommandx{\instdescx}[5]{
+
+\subsubsection{ #1 }
+
+{\ienc{ #2 }}
+
+{\paragraph{Description:} #3}
+
+{\paragraph{Function:} #4}
+
+{ #5 }
+}
+
+% Assembly instruction definition
+\newcommandx{\INST}[2]{
+  \ASM{#1}
+  \\
+  \begin{algorithm}[H]
+  #2
+  \end{algorithm}
+}
+
+\newcommand{\ienc}[1]{
+\begin{figure}[H]
+\centering
+\begin{bytefield}[bitwidth=1.2em,endianness=big]{32}
+\bitheader{0-31}\\
+#1
+\end{bytefield}
+\end{figure}}
+
+% For multi-line autoflowed table cells
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+% ISE name
+\newcommandx{\ISE}{{\sf XCrypto}\xspace}
+% Co-processor name
+\newcommandx{\COP}{\ISE Co-Processor }
+
+% Tool names
+\newcommandx{\yosys}{{\tt yosys}\xspace}
+\newcommandx{\Yosys}{Yosys\xspace}
 
 % Table of interface signals.
 \newcommand{\SIGNALS}[3]{
@@ -1032,8 +1088,7 @@ implementation.
 
 % =============================================================================
 
-\newpage
-\printbibliography
+\MKEPILOGUE
 
 % =============================================================================
 
