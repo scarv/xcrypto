@@ -7,3 +7,6 @@
 [submodule "external/libscarv"]
 	path = external/libscarv
 	url = git@github.com:scarv/libscarv.git
+[submodule "external/texmf"]
+	path = external/texmf
+	url = https://github.com/scarv/texmf.git
