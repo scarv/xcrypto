@@ -97,3 +97,14 @@ an ASCII character and written to STDOUT.
 
 See `$XC_HOME/examples/common/boot.S` and `$XC_HOME/examples/common/common.h`
 for how this is implemented.
+
+## Performance Counters
+
+There are several emulated performance counter registers.
+These can be accessed by loading words from their respective addresses, and
+cleared by writing words too them.
+
+Address     | Register
+------------|------------------------------------------------------
+`0xFFFFFF00`| Memory load counter
+`0xFFFFFF04`| Memory store counter

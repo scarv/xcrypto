@@ -190,3 +190,26 @@ rngtest:
     ret
 
 
+# Read the memory loads performance counter
+.global rdloads
+rdloads:
+    lw  a0, -256(zero)
+    ret
+
+# Read the memory stores performance counter
+.global rdstores
+rdstores:
+    lw  a0, -252(zero)
+    ret
+
+# Clear the memory loads performance counter
+.global clrloads
+clrloads:
+    sw  zero, -256(zero)
+    ret
+
+# Clear the memory stores performance counter
+.global clrstores
+clrstores:
+    sw  zero, -252(zero)
+    ret

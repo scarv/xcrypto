@@ -57,6 +57,18 @@ inline uint32_t rdinstret() {
     return tr;
 }
 
+//! Read the memory loads performance counter
+extern uint32_t rdloads();
+
+//! Read the memory stores performance counter
+extern uint32_t rdstores();
+
+//! Clear the memory loads performance counter
+extern void clrloads();
+
+//! Clear the memory stores performance counter
+extern void clrstores();
+
 //! naieve memset implementation
 void *memset(void *s, int c, size_t n){
     unsigned char * k = s;

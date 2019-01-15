@@ -31,11 +31,25 @@ bool          dump_uart_rx     = false;
 std::string   uart_dump_path;
 std::ofstream uart_dump_fh;
 
+//! Load/store performance counters.
+const uint32_t  REG_LD_COUNT = 0;
+const uint32_t  REG_ST_COUNT = 1;
+const uint32_t  REG_PERF_COUNT_BASE = 0xFFFFFF00;
+const uint32_t  REG_PERF_COUNT_MASK = ~REG_PERF_COUNT_BASE;
+
+uint32_t        performance_counters[64];
+
 //! Typedef for the top level module of the design.
 typedef Vscarv_prv_xcrypt_top* top_module_t;
 
+//! A read request transaction
+typedef struct {
+    vluint32_t  addr;       //!< Request address
+    bool        data_ld;    //!< Data load (true) / instruction load (false)
+} read_request_t;
+
 //! Typedef for read request queues.
-typedef std::queue<vluint32_t> read_req_queue_t;
+typedef std::queue<read_request_t*> read_req_queue_t;
 
 //! Represents a single write request
 typedef struct {
@@ -67,26 +81,42 @@ write_req_queue_t cop_write_requests;
 @brief Read a word of memory at the supplied address.
 @details Un-accessed elements of memory are returned with zero values.
 */
-vluint32_t mem_read_word (vluint32_t addr) {
+vluint32_t mem_read_word (vluint32_t addr, bool data_ld) {
     vluint32_t tr = 0;
 
-    if(main_memory.find(addr+3) != main_memory.end()) {
-        tr |= main_memory[addr+3];
+    // Are we accessing a performance counter register?
+    if((addr & REG_PERF_COUNT_BASE) == REG_PERF_COUNT_BASE) {
+        
+        uint32_t offset = (addr - REG_PERF_COUNT_BASE) >> 2;
+        
+        std::cout<<"# Read performance counter "<<offset<<std::endl;
+        if(offset < 64) {
+            tr  = performance_counters[offset];
+        }
+        
+        return tr;
+
+    } else {
+
+        if(main_memory.find(addr+3) != main_memory.end()) {
+            tr |= main_memory[addr+3];
+        }
+        tr = tr << 8;
+        if(main_memory.find(addr+2) != main_memory.end()) {
+            tr |= main_memory[addr+2];
+        }
+        tr = tr << 8;
+        if(main_memory.find(addr+1) != main_memory.end()) {
+            tr |= main_memory[addr+1];
+        }
+        tr = tr << 8;
+        if(main_memory.find(addr+0) != main_memory.end()) {
+            tr |= main_memory[addr+0];
+        }
+        
+        return tr;
+
     }
-    tr = tr << 8;
-    if(main_memory.find(addr+2) != main_memory.end()) {
-        tr |= main_memory[addr+2];
-    }
-    tr = tr << 8;
-    if(main_memory.find(addr+1) != main_memory.end()) {
-        tr |= main_memory[addr+1];
-    }
-    tr = tr << 8;
-    if(main_memory.find(addr+0) != main_memory.end()) {
-        tr |= main_memory[addr+0];
-    }
-    
-    return tr;
 }
 
 /*
@@ -103,14 +133,18 @@ void axi_read_channel_request(
         // Do nothing
     } else  if(!*axi_arvalid && *axi_arready) {
         // Do nothing
-    } else  if(*axi_arvalid && !*axi_arready) {
-        // Assert ready and add the request to the queue.
-        *axi_arready = 1;
-        q -> push(*axi_araddr);
-    } else  if(*axi_arvalid && *axi_arready) {
+    } else  if(
+        *axi_arvalid && !*axi_arready ||
+        *axi_arvalid && *axi_arready
+    ) {
         // Add the request to the queue.
         *axi_arready = 1;
-        q -> push(*axi_araddr);
+        
+        read_request_t * req = new read_request_t;
+        req -> addr     = *axi_araddr;
+        req -> data_ld  = *axi_arprot == 0x0;
+
+        q -> push(req);
     }
 }
 
@@ -126,9 +160,9 @@ void axi_read_channel_response(
 ){
     if(!q -> empty()) {
         // handle the next response.
-        vluint32_t raddr = q -> front();
-        
-        vluint32_t rdata = mem_read_word(raddr);
+        vluint32_t raddr    = q -> front() -> addr;
+        bool       data_ld  = q -> front() -> data_ld;
+        vluint32_t rdata    = mem_read_word(raddr, data_ld);
 
         if(q == &cop_read_requests) {
             //std::cout << ">> cop ld mem[" << std::hex<<raddr <<"] = " << std::hex<<rdata<<std::endl;
@@ -138,7 +172,13 @@ void axi_read_channel_response(
         *axi_rvalid = 1;
 
         if(*axi_rvalid && *axi_rready) {
+            delete q -> front();
             q -> pop();
+    
+            // Increment load performance counter.
+            if(data_ld) {
+                performance_counters[REG_LD_COUNT] += 1;
+            }
         }
 
     } else {
@@ -270,6 +310,11 @@ void axi_write_channel_response (
         }
 
     }
+    
+    // Increment store performance counter.
+    if(*axi_bvalid && *axi_bready) {
+        performance_counters[REG_ST_COUNT] += 1;
+    }
 }
 
 
@@ -296,6 +341,37 @@ void emulate_uart_rx (
             }
         }
     }
+}
+
+/*!
+@brief Snoops the write request queue and updates writes to the
+    performance counter registers as needed.
+*/
+void handle_ld_st_perf_counter_update(
+    write_req_queue_t * q
+) {
+    
+    if(q -> empty()) {
+        return;
+    }
+
+    if(q -> front() -> complete) {
+        
+        uint32_t base_addr = q -> front() -> waddr & REG_PERF_COUNT_BASE;
+
+        if(base_addr == REG_PERF_COUNT_BASE && 
+           q -> front() -> wstrb == 0xF) {
+            uint32_t offset = (q -> front() -> waddr - REG_PERF_COUNT_BASE);
+            offset = offset >> 2;
+        
+            std::cout<<"# Write performance counter "<<offset<<std::endl;
+            
+            if(offset < 64) {
+                performance_counters[offset] = q -> front() -> wdata;
+            }
+        }
+    }
+
 }
 
 /*
@@ -360,6 +436,10 @@ void posedge_gclk(top_module_t top) {
     // Emulate any UART RX information
     emulate_uart_rx(&cop_write_requests);
     emulate_uart_rx(&prv_write_requests);
+
+    // Handle writes to the performance counter registers
+    handle_ld_st_perf_counter_update(&prv_write_requests);
+    handle_ld_st_perf_counter_update(&cop_write_requests);
 
     // Handle picorv AXI read response channel
     axi_read_channel_response(

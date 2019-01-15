@@ -39,11 +39,15 @@ int main() {
 
     putstr("# Running KeccakP-400\n");
     
+    clrloads();
+    clrstores();
     uint32_t acc_instr_start = rdinstret();
     uint32_t acc_cycle_start = rdcycle();
     KeccakP400Round(keccak_state1,0);
     uint32_t acc_instr_count = rdinstret() - acc_instr_start;
     uint32_t acc_cycle_count = rdcycle()   - acc_cycle_start;
+    uint32_t acc_loads       = rdloads();
+    uint32_t acc_stores      = rdstores();
     
     XC_BENCHMARK_RECORD(opt)
     XC_BENCHMARK_RECORD_ADD_METRIC(
@@ -52,13 +56,23 @@ int main() {
     XC_BENCHMARK_RECORD_ADD_METRIC(
         opt, instrs, putstr("0x");puthex(acc_instr_count)
     )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        opt, loads, putstr("0x");puthex(acc_loads)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        opt, stores, putstr("0x");puthex(acc_stores)
+    )
     XC_BENCHMARK_SET_ADD(keccakp400_opt, opt)
     
+    clrloads();
+    clrstores();
     uint32_t ref_instr_start = rdinstret();
     uint32_t ref_cycle_start = rdcycle();
     KeccakP400RoundReference(keccak_state2,0);
     uint32_t ref_instr_count = rdinstret() - ref_instr_start;
     uint32_t ref_cycle_count = rdcycle()   - ref_cycle_start;
+    uint32_t ref_loads       = rdloads();
+    uint32_t ref_stores      = rdstores();
 
     XC_BENCHMARK_RECORD(ref)
     XC_BENCHMARK_RECORD_ADD_METRIC(
@@ -66,6 +80,12 @@ int main() {
     )
     XC_BENCHMARK_RECORD_ADD_METRIC(
         ref, instrs, putstr("0x");puthex(ref_instr_count)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        ref, loads, putstr("0x");puthex(ref_loads)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        ref, stores, putstr("0x");puthex(ref_stores)
     )
     XC_BENCHMARK_SET_ADD(keccakp400_ref, ref)
 
