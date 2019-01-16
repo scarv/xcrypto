@@ -8,6 +8,7 @@ import sys
 
 import hashlib
 import binascii
+import Crypto.Cipher.AES as AES
 
 class BaseTester(object):
     """
@@ -94,6 +95,38 @@ class MPNMulTester(BaseTester):
         return True ## DUMMY
 
 
+class AESEncTester(BaseTester):
+    """
+    Tester class for AES encryption operations
+    """
+
+    def golden(self,inputs):
+        m = binascii.a2b_hex(inputs[0])
+        k = binascii.a2b_hex(inputs[1])
+        r = AES.new( k ).encrypt( m ) 
+        return  r.hex().upper()
+
+    def test(self, inputs, outputs):
+        c = outputs[0]
+        r = self.golden(inputs)
+        return c==r
+
+class AESDecTester(BaseTester):
+    """
+    Tester class for AES decryption operations
+    """
+
+    def golden(self,inputs):
+        c = binascii.a2b_hex(inputs[0])
+        k = binascii.a2b_hex(inputs[1])
+        r = AES.new( k ).decrypt( c ) 
+        return  r.hex().upper()
+
+    def test(self, inputs, outputs):
+        m = outputs[0]
+        r = self.golden(inputs)
+        return m==r
+
 class ResultsSetRecord(object):
     """
     Stores the inputs, outputs, performance metrics and correctness
@@ -112,6 +145,7 @@ class ResultsSetRecord(object):
     def __repr__(self):
         tr  = "%5s," % self.correct
         tr +=",".join([str(s) for s in self.inputs ])
+        tr +=","
         tr +=",".join([str(s) for s in self.outputs])
         for k in self.metrics:
             tr += ",%s=%s"%(k,self.metrics[k])
