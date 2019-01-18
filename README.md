@@ -229,6 +229,9 @@ need not.
 
 ## Benchmark Results
 
+**Note:** These numbers change frequently and are not always up to
+date. Running the benchmarks yourself is the best way to check.
+
 Here we report several software benchmark results. These are Cryptographic
 primitives or algorithms which have been accelerated using the XCrypto
 ISE.
