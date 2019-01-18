@@ -35,7 +35,14 @@ wire expect_crd_change =
     dec_cmov_f    ||  dec_pperm_b3  ||
     dec_gather_b  ||  dec_ins       ||
     dec_gather_h  ||  dec_ext       ||
-    dec_mix_l     ||  dec_mix_h      ;
+    dec_mix_l     ||  dec_mix_h     ||
+    dec_lut                         ||
+    dec_aessub_enc                  ||
+    dec_aessub_encrot               ||
+    dec_aessub_dec                  ||
+    dec_aessub_decrot               ||
+    dec_aesmix_enc                  ||
+    dec_aesmix_dec                   ;
 
 // When set, no CPR should change in value.
 wire expect_no_register_writes = 
@@ -48,7 +55,12 @@ wire expect_no_register_writes =
     dec_mgte      ||
     dec_st_b      ||
     dec_st_h      ||
-    dec_st_w       ; 
+    dec_st_w      || 
+    dec_sha3_xy   ||
+    dec_sha3_x1   ||
+    dec_sha3_x2   ||
+    dec_sha3_x4   ||
+    dec_sha3_yx   ;
 
 genvar i;
 generate for(i = 0; i < 16; i = i + 1) begin

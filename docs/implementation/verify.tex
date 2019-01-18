@@ -74,6 +74,9 @@ The high-level sequence of actions in the formal flow are shown in figure
 \item The final result is a set of N reports (1 per property context)
     detailing either the failing assertion(s) and corresponding traces,
     or a pass result.
+\item All proofs are run with a 10 hour automatic timeout.
+    Proofs which timeout without finding a counter example are treated
+    as a "qualified pass".
 \end{enumerate}
 
 All checks are run for atleast 10 cycles worth of design operation after
