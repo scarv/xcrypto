@@ -1,5 +1,6 @@
 
 #include "common.h"
+#include "benchmark.h"
 
 #include <scarv/aes_enc.h> 
 #include <scarv/aes_dec.h> 
@@ -7,7 +8,6 @@
 extern void aes_enc_sub_gather( uint8_t* s, uint8_t* sbox	   );
   
 void test_aes_rand( uint8_t* r, int l_r ) {
-//  FILE* fd = fopen( "/dev/urandom", "rb" ); fread( r, sizeof( uint8_t ), l_r, fd ); fclose( fd );
   uint32_t rnd;
   
   for (int i=0;i<l_r;i+=4){ 
@@ -20,8 +20,6 @@ void test_aes_rand( uint8_t* r, int l_r ) {
 }    
 
 void test_aes_dump( char* id, uint8_t* x, int l_x ) {
-//   printf( "%s = binascii.a2b_hex( '", id );
-
   putstr(id);
   putstr(" = binascii.a2b_hex( '");
 	 
@@ -31,7 +29,6 @@ void test_aes_dump( char* id, uint8_t* x, int l_x ) {
     t += x[i-2]; t<<=8;
     t += x[i-1]; t<<=8;		
     t += x[i];
-//	printf( "%02X", x[ i ] ); 
 	puthex(t);
   }
 
@@ -45,6 +42,21 @@ void uint32_dump(char* id, uint32_t n){
   putstr( "\n" ); 
 }
 
+void hexstr( uint8_t* x, int l_x ) {
+
+  putstr("'");
+	 
+  for( int i = 3; i < l_x; i+=4 ) {
+    int t;
+    t  = x[i-3]; t<<=8;
+    t += x[i-2]; t<<=8;
+    t += x[i-1]; t<<=8;		
+    t += x[i];
+	puthex(t);
+  }
+  putstr("'");
+}
+
 int main() {   
  
   int n = 1; 
@@ -54,9 +66,11 @@ int main() {
  
   uint32_t key_cyc, cyc, start_t, end_t; 
   uint32_t key_ins, ins, start_i, end_i;     
-	
-  putstr( "import binascii, Crypto.Cipher.AES as AES\n" );
-
+  
+  XC_BENCHMARK_INIT;
+  XC_BENCHMARK_SET(AESEnc_eval, AESEncTester)
+  XC_BENCHMARK_SET(AESDec_eval, AESDecTester)
+//  putstr( "import binascii, Crypto.Cipher.AES as AES\n" );
   #if defined( CONF_AES_ENABLE_ENC ) 
   for( int i = 0; i < n; i++ ) {
     uint8_t c[ 16 ], m[ 16 ], k[ 16 ];
@@ -79,7 +93,25 @@ int main() {
     end_t   = rdcycle(); end_i   = rdinstret();
  		
     cyc = end_t-start_t; ins = end_i-start_i;
-
+	
+    XC_BENCHMARK_RECORD(enc)
+    XC_BENCHMARK_RECORD_ADD_INPUT(
+        enc, hexstr(m, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_INPUT(
+        enc, hexstr(k, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_OUTPUT(
+        enc, hexstr(c, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        enc, cycles, putstr("0x");puthex(cyc)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        enc, instrs, putstr("0x");puthex(ins)
+    )
+    XC_BENCHMARK_SET_ADD(AESEnc_eval, enc)
+/*    
     uint32_dump("key_cyc", key_cyc);
     uint32_dump("key_ins", key_ins);
     uint32_dump("cyc", cyc);
@@ -100,7 +132,9 @@ int main() {
    	putstr( "  print ('k == %s' % ( binascii.b2a_hex( k ) ))" "\n" );
    	putstr( "  print ('c == %s' % ( binascii.b2a_hex( c ) ))" "\n" );
    	putstr( "  print ('  != %s' % ( binascii.b2a_hex( t ) ))" "\n" );
+*/
  	}   
+
   #endif              
   
   #if defined( CONF_AES_ENABLE_DEC )
@@ -124,6 +158,24 @@ int main() {
 
     cyc = end_t-start_t; ins = end_i-start_i;
 
+    XC_BENCHMARK_RECORD(dec)
+    XC_BENCHMARK_RECORD_ADD_INPUT(
+        dec, hexstr(c, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_INPUT(
+        dec, hexstr(k, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_OUTPUT(
+        dec, hexstr(m, 16)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        dec, cycles, putstr("0x");puthex(cyc)
+    )
+    XC_BENCHMARK_RECORD_ADD_METRIC(
+        dec, instrs, putstr("0x");puthex(ins)
+    )
+    XC_BENCHMARK_SET_ADD(AESDec_eval, dec)
+/*
     test_aes_dump("k", k, 16 );
     test_aes_dump("c", c, 16 );
     test_aes_dump("m", m, 16 ); 
@@ -144,8 +196,11 @@ int main() {
     putstr( "  print ('k == %s' % ( binascii.b2a_hex( k ) ))" "\n" );
     putstr( "  print ('m == %s' % ( binascii.b2a_hex( m ) ))" "\n" );
     putstr( "  print ('  != %s' % ( binascii.b2a_hex( t ) ))" "\n" );
+*/
   }
   #endif
+  XC_BENCHMARK_SET_REPORT(AESEnc_eval);
+  XC_BENCHMARK_SET_REPORT(AESDec_eval);
 
   __pass();
 }
