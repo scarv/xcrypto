@@ -22,7 +22,7 @@ int test_mpn_rand( limb_t* r, int l_min, int l_max ) {
 } 
 
 void test_mpn_dump( char* id, limb_t* x, int l_x ) {
-    putstr( "long( '");
+    putstr( "int( '");
 
     for( int i = l_x - 1; i >= 0; i-- ) {
         puthex( x[ i ] );

@@ -17,7 +17,7 @@ $(BWORK)/%.py : $(SREC_DIR)/%.srec
 
 $(BWORK)/results-%.txt : $(BWORK)/%.py $(BLIB)
 	env PATH=$(PATH):$(XC_HOME)/flow/benchmarks \
-	python $< > $@
+	python3 $< > $@
 
 all: $(BWORK) $(BMARK_STDOUT) $(BMARK_RESULT)
 
