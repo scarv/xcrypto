@@ -37,7 +37,7 @@ SMT2_COVER ?= $(addsuffix .cov ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
 SMT2_TRACE ?= $(addsuffix .vcd ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
 SMT2_VTB   ?= $(addsuffix .v   ,$(addprefix $(SMTDIR)/, $(FML_CHECK_NAME)))
 
-SMT_FLAGS  = -t $(BMC_STEPS) --noprogress -s $(FML_ENGINE)
+SMT_FLAGS  = -t $(BMC_STEPS) --noprogress -s $(FML_ENGINE) -S "--time=36000"
 
 all: $(VLOG_out) formal-checks
 
