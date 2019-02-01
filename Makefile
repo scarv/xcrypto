@@ -75,6 +75,17 @@ $(XC_WORK)/binutils-gen.h: ./bin/ise-parse-opcodes.py ./docs/ise-opcodes.txt
 	cat ./docs/ise-opcodes.txt | ./bin/ise-parse-opcodes.py -c > $@
 
 #
+# Generates code needed for SPIKE instruction declaration.
+#
+spike-gen: $(XC_WORK)/spike-gen.h
+$(XC_WORK)/spike-gen.h: ./bin/ise-parse-opcodes.py ./docs/ise-opcodes.txt
+	cat ./docs/ise-opcodes.txt \
+        $(XC_HOME)/external/riscv-opcodes/opcodes \
+        $(XC_HOME)/external/riscv-opcodes/opcodes-rvc \
+        $(XC_HOME)/external/riscv-opcodes/opcodes-custom \
+    | ./bin/ise-parse-opcodes.py -c > $@
+
+#
 # Generate verilog code for the ISE instruction decoder.
 #
 .PHONY: rtl_decoder
