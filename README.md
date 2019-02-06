@@ -7,7 +7,7 @@ architecture, aimed at accelerating cryptographic workloads.*
 **Contents**
 
 - [What is XCrypto?](#Getting-Started)
-  - [Complimentary Work](#Complimentary Work)
+  - [Complementary Work](#Complementary-Work)
 - [Project Organisation](#Project-Organisation)
 - [Funding Sources](#Funding-Sources)
 
@@ -32,7 +32,7 @@ Further, if one needs to accelerate a family of algorithms (Say, those
 making up the TLS stack) then a single fixed function accelerator is
 not as valuable.
 
-### Complimentary Work
+### Complementary Work
 
 There is an ongoing effort within the RISC-V foundation to develop
 a cryptographic extension.
