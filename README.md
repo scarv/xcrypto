@@ -1,103 +1,124 @@
 # XCrypto: a cryptographic ISE for RISC-V
 
-*This project describes a complete Instruction Set Extension (ISE) for the
-[RISC-V](https://riscv.org) 
-architecture, aimed at accelerating cryptographic workloads.*
+<!--- -------------------------------------------------------------------- --->
 
-**Contents**
+*A component part of the 
+[SCARV](https://github.com/scarv)
+project,
+XCrypto is a general-purpose Instruction Set Extension (ISE) for
+[RISC-V](https://riscv.org)
+that supports software-based cryptographic workloads.*
 
-- [What is XCrypto?](#Getting-Started)
-  - [Complementary Work](#Complementary-Work)
-- [Project Organisation](#Project-Organisation)
-- [Funding Sources](#Funding-Sources)
+<!--- -------------------------------------------------------------------- --->
 
-## What is XCrypto?
+## Overview
 
-**The best place to start** getting a feel for what XCrypto does is to look
-at the specification documents on the specification releases page
-[here](https://github.com/scarv/xcrypto-spec/releases).
-These explain both the ISE itself, the instructions and how to program it.
+Such workloads are commonly expected to satisfy a challenging and
+diverse range of traditional design metrics, 
+including some combination of high-throughput, low-latency, low-footprint, power-efficiency, and high-assurance,
+while executing in what is potentially an adversarial environment.  
+A large design space of options can be drawn from when developing
+a concrete implementation: these options span a spectrum, between 
+those entirely based on hardware (e.g., a dedicated IP core)
+and
+those entirely based on software.
+ISEs can be viewed as representing a hybrid option, in the sense 
+they alter a general-purpose processor core with special-purpose 
+hardware and associated instructions; such targeted alterations 
+then help to improve a software-based implementation wrt. some
+design metric (e.g., latency).
 
-Briefly, XCrypto is an experimental instruction set extension to RISC-V
-which tries to accelerate a very broad range of cryptographic workloads.
-Historically, ISEs aimed at cryptography have been very specifically
-targeted at single algorithms or primitives (think x86 AES instructions).
-This work aims to experiment with types of instructions which apply to
-as many different algorithm and primitive implementations as possible.
+As an ISE, we pitch XCrypto as *a* solution (vs. *the* solution) 
+within the wider design space of options.  For example, it offers
+as an *alternative* to the solution being proposed by the RISC-V 
+cryptography extensions group (see, e.g., their
+[presentation](https://www.youtube.com/watch?v=dcW6a7SO2zE):
+the design extends the RISC-V vector ISE).
+The idea is to leverage extensive existing literature and hence
+experience wrt. cryptographic ISEs (see, e.g., published work at
+the
+[CHES](https://dblp.uni-trier.de/db/conf/ches)
+conference), translating and applying it to RISC-V.  
+Although potentially less performant than alternatives, we expect
+implementations using XCrypto to be more lightweight and flexible; 
+as a result, we view it as representing an attractive solution in
+the context of micro-controller class cores.
 
-The rationale for this being that a general purpose ISE, while not
-always as efficient as a special purpose one, will be much more flexible
-as new cryptographic tools are developed.
-Further, if one needs to accelerate a family of algorithms (Say, those
-making up the TLS stack) then a single fixed function accelerator is
-not as valuable.
+<!--- -------------------------------------------------------------------- --->
 
-### Complementary Work
+## Quickstart
 
-There is an ongoing effort within the RISC-V foundation to develop
-a cryptographic extension.
-Specifically the aim of the "Cryptographic Extensions Task Group"
-is to "propose ISA extensions to the vector extensions for the 
-standardized and secure execution of popular cryptographic algorithms."
+The releases page of each submodule, i.e.,
 
-Please note that this is a research project.
-We intend to contribute our ideas back to the RISC-V community, and
-are not expecting this to become a standard RISC-V extension it its
-own right. 
-There is nothing to stop people using it as a non-standard extension
-however, and we consider XCrypto featureful enough to be used as such.
-Hopefully, some of the ideas we have developed with XCrypto can be fed back
-into the standard cryptographic extension effort.
+- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
+- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
 
-## Project Organisation
+houses pre-built content: acting as a detailed explanation and
+specification of XCrypto, the former is an ideal starting point.
 
-Large RISC-V projects can sometimes be difficult to navigate, especially
-where they are broken over multiple source code repositories.
-Here, we will try and explain how we have organised the XCrypto project.
+<!--- -------------------------------------------------------------------- --->
 
-**Note:** *Historically, all XCrypto development was done in a single
-repository (this one) which is why if you look back in time, you'll
-see this repo used to have many more files in it.
-When the project became too big to manage this way, we split it up to
-mirror how the RISC-V Github organisation partitions things.
-If you are familiar with their method of project organisation,
-hopefully ours will look similar.*
+## Organisation
 
-- [scarv/xcrypto](https://github.com/scarv/xcrypto):
-  This repository, the top level of the XCrypto project.
-- [scarv/xcrypto-spec](https://github.com/scarv/xcrypto-spec):
-  Contains the specification document for the ISE, explaining the
-  new instructions, how they work, and how XCrypto integrates
-  with RISC-V.
-- [scarv/xcrypto-ref](https://github.com/scarv/xcrypto-ref):
-  Our area-optimised hardware reference implementation of XCrypto.
-- [scarv/riscv-tools](https://github.com/scarv/riscv-tools):
-  Our fork of the riscv-tools repository, which we build on to
-  develop XCrypto.
-  - [scarv/riscv-opcodes](https://github.com/scarv/riscv-opcodes):
-    Our fork of the riscv-opcodes repository, containing the
-    instruction encodings for the XCrypto ISE.
-  - [scarv/riscv-gnu-toolchain](https://github.com/scarv/riscv-gnu-toolchain):
-    Our fork of the riscv-gnu-toolchain repository, used to support
-    a toolchain with integrated XCrypto assembly support.
-    So far, we have only implemented assembly code compilation, not
-    generation from C code.
-    - [scarv/riscv-binutils-gdb](https://github.com/scarv/riscv-binutils-gdb):
-      Our fork of riscv-binutils-gdb, which adds (dis)assembly support to the
-      standard RISC-V toolchain for XCrypto.
-  - [scarv/riscv-isa-sim](https://github.com/scarv/riscv-isa-sim):
-    Our fork of the Spike ISA simulator for RISC-V, for which we are adding
-    XCrypto support.
+Originally this repository housed *all* of XCrypto, but, to make
+the content easier to manage, it *now* acts as a container: each
+component is housed in a dedicated submodule.
+Specifically, these include
 
-Our forked version of the `riscv-tools` repository has updated submodule
-pointers to only those submodules we have forked and modified.
-Submodules we have not changed still point to their original `riscv-*`
-repositories.
+- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec)
+  houses the
+  XCrypto specification:
+  this document captures the ISE itself, acting as both
+  a) a design document,
+     and
+  b) a definition of additional architectural 
+     state
+     (e.g., register file and CSRs)
+     and
+     instructions
+     (i.e., their semantics and encoding).
+- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref)
+  houses the
+  a formally verified, area-optimised reference implementation:
+  as well as supporting validation of the ISE, it can be coupled
+  to a RISC-V core such as
+  [`cliffordwolf/picorv32`](https://github.com/cliffordwolf/picorv32)
+  to form a functioning, useful instantiation.
 
-## Funding Sources
+Various other resources support or relate to XCrypto, but are not
+submodules per se.
+Specifically, these include
+
+- [`scarv/libscarv`](https://github.com/scarv/libscarv)
+  is a library of cryptographic reference implementations, which
+  includes support for XCrypto.
+- [`scarv/riscv-tools`](https://github.com/scarv/riscv-tools)
+  is a fork of
+  [`riscv/riscv-tools`](https://github.com/riscv/riscv-tools),
+  including a GCC-based toolchain and ISA simulator; support for
+  XCrypto is added to various components, including
+
+  - [`scarv/riscv-opcodes`](https://github.com/scarv/riscv-opcodes)
+    (e.g., to capture the XCrypto instruction encodings),
+  - [`scarv/riscv-gnu-toolchain`](https://github.com/scarv/riscv-gnu-toolchain)
+    (e.g., to support    assembly of XCrypto instructions),
+  - [`scarv/riscv-binutils-gdb`](https://github.com/scarv/riscv-binutils-gdb)
+    (e.g., to support disassembly of XCrypto instructions),
+  - [`scarv/riscv-isa-sim`](https://github.com/scarv/riscv-isa-sim)
+    (e.g., to support  simulation of XCrypto instructions).
+
+  Note that our fork updates submodules so they refer to
+  [`scarv/riscv-X`]
+  where XCrypto-specific changes are made to `X`, or to
+  [`riscv/riscv-X`]
+  otherwise.
+
+<!--- -------------------------------------------------------------------- --->
+
+## Acknowledgements
 
 This work has been supported in part by EPSRC via grant 
 [EP/R012288/1](https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/R012288/1),
 under the [RISE](http://www.ukrise.org) programme.
 
-
+<!--- -------------------------------------------------------------------- --->
