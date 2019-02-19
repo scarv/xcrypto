@@ -16,7 +16,7 @@ that supports software-based cryptographic workloads.*
 Such workloads are commonly expected to satisfy a challenging and
 diverse range of traditional design metrics, 
 including some combination of high-throughput, low-latency, low-footprint, power-efficiency, and high-assurance,
-while executing in what is potentially an adversarial environment.  
+while executing in what is potentially an adversarial environment.
 A large design space of options can be drawn from when developing
 a concrete implementation: these options span a spectrum, between 
 those entirely based on hardware (e.g., a dedicated IP core)
@@ -38,7 +38,7 @@ The idea is to leverage extensive existing literature and hence
 experience wrt. cryptographic ISEs (see, e.g., published work at
 the
 [CHES](https://dblp.uni-trier.de/db/conf/ches)
-conference), translating and applying it to RISC-V.  
+conference), translating and applying it to RISC-V.
 Although potentially less performant than alternatives, we expect
 implementations using XCrypto to be more lightweight and flexible; 
 as a result, we view it as representing an attractive solution in
