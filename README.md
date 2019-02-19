@@ -108,9 +108,9 @@ Specifically, these include
     (e.g., to support  simulation of XCrypto instructions).
 
   Note that our fork updates submodules so they refer to
-  [`scarv/riscv-X`]
+  `scarv/riscv-X`
   where XCrypto-specific changes are made to `X`, or to
-  [`riscv/riscv-X`]
+  `riscv/riscv-X`
   otherwise.
 
 <!--- -------------------------------------------------------------------- --->
