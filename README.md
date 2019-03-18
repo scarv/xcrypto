@@ -46,18 +46,6 @@ the context of micro-controller class cores.
 
 <!--- -------------------------------------------------------------------- --->
 
-## Quickstart
-
-The releases page of each submodule, i.e.,
-
-- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
-- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
-
-houses pre-built content: acting as a detailed explanation and
-specification of XCrypto, the former is an ideal starting point.
-
-<!--- -------------------------------------------------------------------- --->
-
 ## Organisation
 
 Originally this repository housed *all* components in one place,
@@ -112,6 +100,18 @@ Specifically, these include
   where XCrypto-specific changes are made to `X`, or to
   `riscv/riscv-X`
   otherwise.
+
+<!--- -------------------------------------------------------------------- --->
+
+## Quickstart
+
+The releases page of each submodule, i.e.,
+
+- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
+- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
+
+houses pre-built content: acting as a detailed explanation and
+specification of XCrypto, the former is an ideal starting point.
 
 <!--- -------------------------------------------------------------------- --->
 
