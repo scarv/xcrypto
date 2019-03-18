@@ -2,8 +2,8 @@
 
 <!--- -------------------------------------------------------------------- --->
 
-*A component part of the 
-[SCARV](https://github.com/scarv)
+*Acting as a component part of the 
+[SCARV](https://www.scarv.org)
 project,
 XCrypto is a general-purpose Instruction Set Extension (ISE) for
 [RISC-V](https://riscv.org)
@@ -13,8 +13,8 @@ that supports software-based cryptographic workloads.*
 
 ## Overview
 
-Such workloads are commonly expected to satisfy a challenging and
-diverse range of traditional design metrics, 
+A given cryptographic workload is commonly expected to satisfy a 
+challenging and diverse range of traditional design metrics, 
 including some combination of high-throughput, low-latency, low-footprint, power-efficiency, and high-assurance,
 while executing in what is potentially an adversarial environment.
 A large design space of options can be drawn from when developing
@@ -60,10 +60,10 @@ specification of XCrypto, the former is an ideal starting point.
 
 ## Organisation
 
-Originally this repository housed *all* of XCrypto, but, to make
-the content easier to manage, it *now* acts as a container: each
-component is housed in a dedicated submodule.
-Specifically, these include
+Originally this repository housed *all* components in one place,
+but to make them easier to manage, it *now* acts as a container:
+the components are housed in dedicated submodules.  Specifically,
+these include
 
 - [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec)
   houses the
