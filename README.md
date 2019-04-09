@@ -48,9 +48,9 @@ the context of micro-controller class cores.
 
 ## Organisation
 
-Originally this repository housed *all* components in one place,
-but to make them easier to manage, it *now* acts as a container:
-the components are housed in dedicated submodules.  Specifically,
+Originally this repository housed *all* resources in one place,
+but to make them easier to manage, it *now* acts as a container: 
+the resources are housed in dedicated submodules.  Specifically, 
 these include
 
 - [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec)
