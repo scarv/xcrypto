@@ -44,6 +44,12 @@ implementations using XCrypto to be more lightweight and flexible;
 as a result, we view it as representing an attractive solution in
 the context of micro-controller class cores.
 
+### Presentations:
+
+- XCrypto was presented at the April 2019 
+  [Bristol RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group/).
+  You can see the slides [here](./docs/riscv-meetup-bristol-slides.pdf).
+
 <!--- -------------------------------------------------------------------- --->
 
 ## Organisation
