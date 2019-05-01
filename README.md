@@ -48,7 +48,7 @@ the context of micro-controller class cores.
 
 - XCrypto was presented at the April 2019 
   [Bristol RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group/).
-  You can see the slides [here](./docs/riscv-meetup-bristol-slides.pdf).
+  You can see the slides [here](./doc/riscv-meetup-bristol-slides.pdf).
 
 <!--- -------------------------------------------------------------------- --->
 
