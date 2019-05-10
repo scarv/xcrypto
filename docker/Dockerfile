@@ -13,7 +13,13 @@ LABEL maintainer="SCARV project <info@scarv.org>" date="${DATE}" url="https://gi
 RUN apt-get --assume-yes --quiet update \
  && apt-get --assume-yes --quiet install gosu make git gcc autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev libusb-1.0-0-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev device-tree-compiler pkg-config libexpat-dev
 
-# https://bugzilla.yoctoproject.org/show_bug.cgi?id=7338
+# The build seems to trigger an existing bug, see, e.g., [1], related
+# to the maximum path length supported by the underlying file system: 
+# we end up creating a path that cannot then be removed.  The fix is
+# simple: we just relocate a sub-directory, shortening the path so it 
+# *can* then be removed.
+# 
+# [1] https://github.com/moby/moby/issues/13451
 
 ENV RISCV "/opt/riscv-xcrypto-0.13.0"
 
