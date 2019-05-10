@@ -111,13 +111,63 @@ Specifically, these include
 
 ## Quickstart
 
-The releases page of each submodule, i.e.,
+- The releases page of each submodule, i.e.,
 
-- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
-- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
+  - [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
+  - [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
 
-houses pre-built content: acting as a detailed explanation and
-specification of XCrypto, the former is an ideal starting point.
+  houses pre-built content: acting as a detailed explanation and
+  specification of XCrypto, the former is an ideal starting point.
+
+- [`${REPO_HOME}/docker`](./docker)
+  contains material related to a
+  [Docker](https://www.docker.com/)-based,
+  XCrypto
+  [container](https://cloud.docker.com/u/scarv/repository/docker/scarv/xcrypto).
+  It supports containerised use of `make`, within an environment 
+  where the XCrypto toolchain 
+  (e.g., Xcrypto-enabled `riscv32-unknown-elf-gcc` and `spike`)
+  are pre-installed; doing so offers a way to quickly experiment 
+  with XCrypto in simulation, *without* installing the toolchain.
+
+  - An example of this approach is supplied in 
+    [`${REPO_HOME}/docker/example`](./docker/example),
+    which relates to a simple
+    ["hello world"](https://en.wikipedia.org/wiki/"Hello,_World!"_program)
+    program represented by
+    [`${REPO_HOME}/docker/example/example.c`](./docker/example/example.c),
+    and
+    [`${REPO_HOME}/docker/example/example.h`](./docker/example/example.h);
+    the associated build system is in
+    [`${REPO_HOME}/docker/example/Makefile`](./docker/example/Makefile).
+
+  - The idea is that for any target `X` in the `Makefile`, one
+    can also use `docker-X`.  For example, executing
+
+    ```
+    make docker-all
+    ```
+
+    will
+
+    - mount the current working directory, i.e.,
+      `${REPO_HOME}/docker/example`
+      as 
+      `/mnt/scarv/xcrypto` 
+      within the container,
+      then
+    - execute `make all` in 
+      `/mnt/scarv/xcrypto` 
+      within the container,
+      as a user whose UID and GID match `${USER}`,
+
+    and, as such, do the same as executing
+
+    ```
+    make all
+    ```
+
+    except using the containerised toolchain.
 
 <!--- -------------------------------------------------------------------- --->
 
