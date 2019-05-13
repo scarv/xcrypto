@@ -128,7 +128,8 @@ Specifically, these include
   where the XCrypto toolchain 
   (e.g., Xcrypto-enabled `riscv32-unknown-elf-gcc` and `spike`)
   are pre-installed; doing so offers a way to quickly experiment 
-  with XCrypto in simulation, *without* installing the toolchain.
+  with XCrypto in simulation *without* installing the toolchain,
+  but clearly may not be suitable for use-cases beyond that.
 
   - An example of this approach is supplied in 
     [`${REPO_HOME}/docker/example`](./docker/example),
