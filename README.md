@@ -126,7 +126,7 @@ Specifically, these include
   [container](https://cloud.docker.com/u/scarv/repository/docker/scarv/xcrypto).
   It supports containerised use of `make`, within an environment 
   where the XCrypto toolchain 
-  (e.g., Xcrypto-enabled `riscv32-unknown-elf-gcc` and `spike`)
+  (e.g., XCrypto-enabled `riscv32-unknown-elf-gcc` and `spike`)
   are pre-installed; doing so offers a way to quickly experiment 
   with XCrypto in simulation *without* installing the toolchain,
   but clearly may not be suitable for use-cases beyond that.
