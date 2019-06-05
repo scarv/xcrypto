@@ -134,8 +134,8 @@ Specifically, these include
   - An example of this approach is supplied in 
     [`${REPO_HOME}/docker/example`](./docker/example),
     which relates to a simple
-    ["hello world"](https://en.wikipedia.org/wiki/"Hello,_World!"_program);
-    the associated build system is in
+    ["hello world"](https://en.wikipedia.org/wiki/"Hello,_World!"_program)
+    program; the associated build system is in
     [`${REPO_HOME}/docker/example/Makefile`](./docker/example/Makefile).
 
   - The idea is that for any target `X` in the `Makefile`, one
