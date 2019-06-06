@@ -78,14 +78,16 @@ these include
   to a RISC-V core such as
   [`cliffordwolf/picorv32`](https://github.com/cliffordwolf/picorv32)
   to form a functioning, useful instantiation.
+- [`scarv/xcrypto-rtl`](https://github.com/scarv/xcrypto-rtl)
+  contains re-usable hardware implementations of XCrypto instructions.
+- [`scarv/libscarv`](https://github.com/scarv/libscarv)
+  is a library of cryptographic reference implementations, which
+  includes support for XCrypto.
 
 Various other resources support or relate to XCrypto, but are not
 submodules per se.
 Specifically, these include
 
-- [`scarv/libscarv`](https://github.com/scarv/libscarv)
-  is a library of cryptographic reference implementations, which
-  includes support for XCrypto.
 - [`scarv/riscv-tools`](https://github.com/scarv/riscv-tools)
   is a fork of
   [`riscv/riscv-tools`](https://github.com/riscv/riscv-tools),
