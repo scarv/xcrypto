@@ -4,3 +4,9 @@
 [submodule "xcrypto-spec"]
 	path = xcrypto-spec
 	url = git@github.com:scarv/xcrypto-spec.git
+[submodule "xcrypto-rtl"]
+	path = xcrypto-rtl
+	url = https://github.com/scarv/xcrypto-rtl.git
+[submodule "libscarv"]
+	path = libscarv
+	url = https://github.com/scarv/libscarv.git
