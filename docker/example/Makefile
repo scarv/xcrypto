@@ -16,5 +16,5 @@ all      :          example.elf example.sim
 clean    :
 	@rm --force example.elf example.sim
 
-docker-% :
+%-docker :
 	@docker run --env DOCKER_GID="$(shell id --group)" --env DOCKER_UID="$(shell id --user)" --volume ${PWD}:/mnt/scarv/xcrypto --rm scarv/xcrypto ${*}

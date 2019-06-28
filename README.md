@@ -149,7 +149,7 @@ Specifically, these include
     can also use `docker-X`.  For example, executing
 
     ```
-    make docker-all
+    make all-docker
     ```
 
     will
