@@ -5,13 +5,16 @@
 # as LICENSE.txt within the associated archive or repository).
 
 DOCKER_IMAGE = scarv/xcrypto
-DOCKER_TAGS  = latest 0.13.0
+DOCKER_TAGS  = latest 0.15.0
 
 build :
-	@docker build $(foreach TAG,${DOCKER_TAGS},--tag ${DOCKER_IMAGE}:${TAG}) --build-arg DATE=$(shell date -u +'%d/%m/%Y-%H:%M:%SZ') --file ./Dockerfile .
-clean :
-	@docker images | grep ${DOCKER_IMAGE} | tr -s ' ' | cut -d' ' -f3 | uniq | xargs --no-run-if-empty docker rmi --force
+	@docker build $(foreach TAG,${DOCKER_TAGS},--tag ${DOCKER_IMAGE}:${TAG}) --build-arg DATE="$(shell date -u +'%d/%m/%Y-%H:%M:%SZ')" .
+
+clean : ${CLEAN_PATHS}
+	@docker images | grep ${DOCKER_IMAGE} | tr --squeeze-repeats ' ' | cut --delimiter=' ' --fields=3 | uniq | xargs --no-run-if-empty docker rmi --force
+
 push  :
-	@docker push ${DOCKER_IMAGE}
+	@$(foreach TAG,${DOCKER_TAGS},docker push ${DOCKER_IMAGE}:${TAG} ;)
+
 pull  :
-	@docker pull ${DOCKER_IMAGE}
+	@$(foreach TAG,${DOCKER_TAGS},docker pull ${DOCKER_IMAGE}:${TAG} ;)
