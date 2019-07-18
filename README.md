@@ -44,16 +44,38 @@ implementations using XCrypto to be more lightweight and flexible;
 as a result, we view it as representing an attractive solution in
 the context of micro-controller class cores.
 
-### Presentations:
+### Roadmap
 
-- XCrypto was presented at the April 2019 
-  [Bristol RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group/).
-  You can see the slides [here](./doc/riscv-meetup-bristol-slides.pdf).
-- Our 
-  [poster presentation](doc/zurich-workshop-poster.pdf)
-  featured in the June 2019 
-  [RISC-V Workshop](https://tmt.knect365.com/risc-v-workshop-zurich/)
-  in Zurich.
+XCrypto is a *non-standard* RISC-V extension.  Over time, it has
+evolved along several branches:
+
+- The `0.x.y` branch
+  represents an initial prototype.
+  It can be characterised as being deliberately disjoint from the
+  RISC-V base ISA(s), so, in concept, aligned with a co-processor
+  style design.
+
+- The `1.x.y` branch
+  represents a refinement of `0.x.y`.
+  It can be characterised as taking *functionality* from `0.x.y`, 
+  but presenting it in a way more integrated with the RISC-V base 
+  ISA(s), i.e., as a *genuine* ISA vs. a co-processor.
+
+The long-term goal is to develop the `1.x.y` branch, ultimately
+using it as a basis for a *standard* RISC-V extension proposal.
+
+### Publications and presentations
+
+- Some
+  [slides](./doc/riscv-meetup-bristol-slides.pdf)
+  presented at the
+  [RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group)
+  in Bristol, April 2019.
+- A
+  [poster](doc/zurich-workshop-poster.pdf)
+  presented at the
+  [RISC-V Workshop](https://riscv.org/2019/06/risc-v-workshop-zurich-proceedings)
+  in  Zurich,  June 2019.
 
 <!--- -------------------------------------------------------------------- --->
 
