@@ -5,7 +5,7 @@
 # as LICENSE.txt within the associated archive or repository).
 
 DOCKER_IMAGE = scarv/xcrypto
-DOCKER_TAGS  = latest 0.15.0
+DOCKER_TAGS  = v1.0.0
 
 build :
 	@docker build $(foreach TAG,${DOCKER_TAGS},--tag ${DOCKER_IMAGE}:${TAG}) --build-arg DATE="$(shell date -u +'%d/%m/%Y-%H:%M:%SZ')" .
