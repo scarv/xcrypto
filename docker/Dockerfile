@@ -23,7 +23,7 @@ RUN apt-get --assume-yes --quiet update \
 
 ENV RISCV "/opt/riscv-xcrypto"
 
-RUN git clone https://github.com/scarv/riscv-tools.git \
+RUN git clone --branch scarv/xcrypto/v0.15.1 https://github.com/scarv/riscv-tools.git \
  && cd ./riscv-tools \
  && git submodule update --init --recursive \
  && ./build-rv32imaxc.sh \
