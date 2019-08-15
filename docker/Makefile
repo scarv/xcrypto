@@ -4,17 +4,21 @@
 # can be found at https://opensource.org/licenses/MIT (or should be included 
 # as LICENSE.txt within the associated archive or repository).
 
-DOCKER_IMAGE = scarv/xcrypto
-DOCKER_TAGS  = v1.0.0
+IMAGE_REPO = $(shell git branch | grep '*' | cut --characters=3- | cut --delimiter='/' --fields=1,2)
+IMAGE_TAG  = $(shell git branch | grep '*' | cut --characters=3- | cut --delimiter='/' --fields=3  )
+
+define date
+  $(shell date -u +'%d/%m/%Y-%H:%M:%SZ')
+endef
 
 build :
-	@docker build $(foreach TAG,${DOCKER_TAGS},--tag ${DOCKER_IMAGE}:${TAG}) --build-arg DATE="$(shell date -u +'%d/%m/%Y-%H:%M:%SZ')" .
+	@docker build --tag ${IMAGE_REPO}:${IMAGE_TAG} --build-arg DATE="$(call date)" --build-arg BRANCH="${IMAGE_REPO}/${IMAGE_TAG}" .
 
-clean : ${CLEAN_PATHS}
-	@docker images | grep ${DOCKER_IMAGE} | tr --squeeze-repeats ' ' | cut --delimiter=' ' --fields=3 | uniq | xargs --no-run-if-empty docker rmi --force
+clean : 
+	@docker images | grep ${IMAGE_REPO} | grep ${IMAGE_TAG} | tr --squeeze-repeats ' ' | cut --delimiter=' ' --fields=3 | uniq | xargs --no-run-if-empty docker rmi --force
 
 push  :
-	@$(foreach TAG,${DOCKER_TAGS},docker push ${DOCKER_IMAGE}:${TAG} ;)
+	@docker push ${IMAGE_REPO}:${IMAGE_TAG}
 
 pull  :
-	@$(foreach TAG,${DOCKER_TAGS},docker pull ${DOCKER_IMAGE}:${TAG} ;)
+	@docker pull ${IMAGE_REPO}:${IMAGE_TAG}
