@@ -7,8 +7,9 @@
 FROM ubuntu
 
 ARG DATE
+ARG BRANCH
 
-LABEL maintainer="SCARV project <info@scarv.org>" date="${DATE}" url="https://github.com/scarv/xcrypto"
+LABEL maintainer="SCARV project <info@scarv.org>" url="https://github.com/scarv/xcrypto" date="${DATE}" branch="${BRANCH}"
 
 RUN apt-get --assume-yes --quiet update \
  && apt-get --assume-yes --quiet install apt-utils gosu sudo \
@@ -23,11 +24,11 @@ RUN apt-get --assume-yes --quiet update \
 
 ENV RISCV "/opt/riscv-xcrypto"
 
-RUN git clone --branch scarv/xcrypto/v0.15.1 https://github.com/scarv/riscv-tools.git \
+RUN git clone --branch ${BRANCH} https://github.com/scarv/riscv-tools.git \
  && cd ./riscv-tools \
  && git submodule update --init --recursive \
  && ./build-rv32imaxc.sh \
- && mv ./riscv-gnu-toolchain/build/build-gdb-newlib/gdb/build-gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
+ && mv ./riscv-gnu-toolchain/build/build-gdb-newlib/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
  && cd .. \
  && rm --force --recursive ./riscv-tools
 
