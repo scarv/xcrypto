@@ -4,8 +4,10 @@
 # can be found at https://opensource.org/licenses/MIT (or should be included 
 # as LICENSE.txt within the associated archive or repository).
 
-IMAGE_REPO = $(shell git branch | grep '*' | cut --characters=3- | cut --delimiter='/' --fields=1,2)
-IMAGE_TAG  = $(shell git branch | grep '*' | cut --characters=3- | cut --delimiter='/' --fields=3  )
+BRANCH      = $(shell git branch | grep '*' | cut --characters=3-)
+
+DOCKER_REPO = scarv/xcrypto
+DOCKER_TAG  = $(shell echo ${BRANCH} | cut --delimiter='/' --fields=3)
 
 example.elf : example.c example.h
 	@${RISCV_XCRYPTO}/bin/riscv32-unknown-elf-gcc -o ${@} $(filter %.c, ${?})
@@ -19,4 +21,4 @@ clean    :
 	@rm --force example.elf example.sim
 
 %-docker :
-	@docker run --rm --volume ${PWD}:/mnt/scarv/xcrypto --env DOCKER_GID="$(shell id --group)" --env DOCKER_UID="$(shell id --user)" --env RISCV_XCRYPTO="/opt/riscv-xcrypto" ${IMAGE_REPO}:${IMAGE_TAG} ${*}
+	@docker run --rm --volume ${PWD}:/mnt/scarv/xcrypto --env DOCKER_GID="$(shell id --group)" --env DOCKER_UID="$(shell id --user)" --env RISCV_XCRYPTO="/opt/riscv-xcrypto" ${DOCKER_REPO}:${DOCKER_TAG} ${*}
