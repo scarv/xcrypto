@@ -16,6 +16,6 @@ if [ -z "${DOCKER_GID}"  ] ; then
   DOCKER_GID="1000"
 fi 
 
-groupadd --gid ${DOCKER_GID} ${DOCKER_USER} ; useradd --gid ${DOCKER_GID} --uid ${DOCKER_UID} --no-user-group ${DOCKER_USER}
+groupadd --gid ${DOCKER_GID} ${DOCKER_USER} ; useradd --gid ${DOCKER_GID} --uid ${DOCKER_UID} --no-user-group --create-home ${DOCKER_USER}
 
-exec /usr/sbin/gosu ${DOCKER_USER}:${DOCKER_USER} make --directory /mnt/scarv/xcrypto ${@}
+exec /usr/sbin/gosu ${DOCKER_USER} make --directory /mnt/scarv/xcrypto ${@}
