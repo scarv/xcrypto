@@ -47,22 +47,24 @@ the context of micro-controller class cores.
 ### Roadmap
 
 XCrypto is a *non-standard* RISC-V extension.  Over time, it has
-evolved along several branches:
+evolved along various branches
+(each identified by an associated major version):
 
 - The `0.x.y` branch
   represents an initial prototype.
-  It can be characterised as being deliberately disjoint from the
-  RISC-V base ISA(s), so, in concept, aligned with a co-processor
-  style design.
+  It can be characterised as deliberately disjoint from the RISC-V 
+  base ISA(s), and so, in concept, aligned with implementation as a 
+  separate co-processor.
 
 - The `1.x.y` branch
   represents a refinement of `0.x.y`.
-  It can be characterised as taking *functionality* from `0.x.y`, 
-  but presenting it in a way more integrated with the RISC-V base 
-  ISA(s), i.e., as a *genuine* ISA vs. a co-processor.
+  It can be characterised as taking the functionality from `0.x.y`, 
+  but integrating inline with vs. alongside the RISC-V base ISA(s), 
+  i.e., in the form of a conventional ISA vs. a co-processor.
 
 The long-term goal is to develop the `1.x.y` branch, ultimately
-using it as a basis for a *standard* RISC-V extension proposal.
+using it as a basis for a *standard* (i.e., "official") RISC-V 
+extension proposal.
 
 ### Publications and presentations
 
