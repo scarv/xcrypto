@@ -5,9 +5,8 @@
  * as LICENSE.txt within the associated archive or repository).
  */
 
-#ifndef __EXAMPLE_H
-#define __EXAMPLE_H
+#include "helloworld.h"
 
-#include <stdio.h>
-
-#endif
+int main( int argv, char* argc[] ) {
+  printf( "hello world\n" ); return 0;
+}

@@ -50,13 +50,15 @@ XCrypto is a *non-standard* RISC-V extension.  Over time, it has
 evolved along various branches
 (each identified by an associated major version):
 
-- The `0.x.y` branch
+- The (now abandoned)
+  `0.x.y` branch
   represents an initial prototype.
   It can be characterised as deliberately disjoint from the RISC-V 
   base ISA(s), and so, in concept, aligned with implementation as a 
   separate co-processor.
 
-- The `1.x.y` branch
+- The (current)
+  `1.x.y` branch
   represents a refinement of `0.x.y`.
   It can be characterised as taking the functionality from `0.x.y`, 
   but integrating inline with vs. alongside the RISC-V base ISA(s), 
@@ -150,7 +152,7 @@ Specifically, these include
   houses pre-built content: acting as a detailed explanation and
   specification of XCrypto, the former is an ideal starting point.
 
-- [`${REPO_HOME}/docker`](./docker)
+- [`${REPO_HOME}/src/docker`](./src/docker)
   contains material related to a
   [Docker](https://www.docker.com/)-based,
   XCrypto
@@ -163,14 +165,14 @@ Specifically, these include
   but clearly may not be suitable for use-cases beyond that.
 
   - An example of this approach is supplied in 
-    [`${REPO_HOME}/docker/example`](./docker/example),
+    [`${REPO_HOME}/src/helloworld`](./src/helloworld),
     which relates to a simple
     ["hello world"](https://en.wikipedia.org/wiki/"Hello,_World!"_program)
     program; the associated build system is in
-    [`${REPO_HOME}/docker/example/Makefile`](./docker/example/Makefile).
+    [`${REPO_HOME}/src/helloworld/Makefile`](./src/helloworld/Makefile).
 
   - The idea is that for any target `X` in the `Makefile`, one
-    can also use `docker-X`.  For example, executing
+    can also use `X-docker`.  For example, executing
 
     ```
     make all-docker
@@ -179,7 +181,7 @@ Specifically, these include
     will
 
     - mount the current working directory, i.e.,
-      `${REPO_HOME}/docker/example`
+      `${REPO_HOME}/src/helloworld`
       as 
       `/mnt/scarv/xcrypto` 
       within the container,
