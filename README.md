@@ -85,10 +85,11 @@ extension proposal.
 
 ## Organisation
 
-Originally this repository housed *all* resources in one place,
-but to make them easier to manage, it *now* acts as a container: 
-the resources are housed in dedicated submodules.  Specifically, 
-these include
+*Originally* this was a 
+[monorepo](https://en.wikipedia.org/wiki/Monorepo)
+that housed *all* resources in one place, but, to make them easier to 
+manage, it *now* acts as a container where each resource is housed in 
+dedicated submodule.  Specifically, these include:
 
 - [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec)
   houses the
