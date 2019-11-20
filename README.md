@@ -2,7 +2,7 @@
 
 <!--- -------------------------------------------------------------------- --->
 
-*Acting as a component part of the 
+*Acting as a component part of the wider
 [SCARV](https://www.scarv.org)
 project,
 XCrypto is a general-purpose Instruction Set Extension (ISE) for
