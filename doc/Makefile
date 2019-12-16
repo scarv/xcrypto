@@ -1,5 +1,7 @@
 BUILD = ${REPO_HOME}/build/spec
 
+REPO_DIRTY =$(shell git diff)
+
 include ${REPO_HOME}/extern/texmf/make/image.mk
 
 ${BUILD}/spec.version :
@@ -10,9 +12,9 @@ ${BUILD}/spec.commit:
 	@git rev-parse --abbrev-ref HEAD > ${@}
 	@echo "@" >> ${@}
 	@git log --pretty=format:'%H' -n 1 >> ${@}
-	$(if $(call equals,0,$(shell git diff-index --quiet HEAD; echo $$?)),, \
-	    @echo "{\\\color{red}\\\bf -dirty}" >> ${@} \
-	)
+ifneq ("$(REPO_DIRTY)","")
+	@echo "{\\\color{red}\\\bf -dirty}" >> ${@} ;
+endif
 
 ${BUILD}/spec.ise     : ${REPO_HOME}/extern/riscv-opcodes/opcodes-xcrypto
 	@cat ${^} | python3 ${REPO_HOME}/extern/riscv-opcodes/parse-opcodes -xcrypto-tex > ${@}
