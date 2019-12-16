@@ -1,0 +1,222 @@
+% =============================================================================
+
+\subsection{General}
+
+\begin{itemize}
+
+\item $x \ASN     y$
+      is used to denote an assignment of the value $y$
+      to the variable $x$.
+\item $x \RAND    Y$
+      is used to denote an assignment of a   value $y$,
+      sampled uniformly at from the set $Y$ st. $y \in Y$,
+      to the variable $x$.
+\item $x \TEST{=} y$
+      is used to denote a  test or comparison,
+      in this case equality,
+      between $x$ and $y$ that yields a Boolean (i.e., \TRUE or \FALSE) result.
+\item $x \RANGE   y$
+      denotes the range of values between $x$ and $y$ inclusive; this implies
+      a need to generate intermediate values, st. the notation is only useful
+      iff. doing so is obvious {\em and} unambiguous.
+
+\item  $\CARD{X}$
+      denotes the cardinality (or size) of some object $X$.
+\item $\INDEX{X}{i}$
+      refers to an indexed (or numbered)
+      element   within some object     $X$, namely the $i$-th such element.
+\item $\FIELD{X}{Y}$
+      refers to a  named (or labelled)
+      field $Y$ within some object     $X$.
+\item $\SCOPE{X}{Y}$
+      refers to a  named (or labelled)
+      field $Y$ within some name-space $X$;
+      this is useful to disambiguate different $Y$ with the same identifier.
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Numbers}
+
+\begin{itemize}
+
+\item $\RADIX{x}{b}$ denotes $x$ is expressed in radix- or base-$b$; where no
+      base is specified, it is safe to assume decimal (i.e., that $b = 10$).
+\item $\CARD{\RADIX{x}{b}}$ denotes the number of digits in $x$, if expressed
+      in base-$b$.
+\item Unless otherwise stated, a little-endian digit ordering is assumed; the
+      least-significant (resp. most-significant) digit is thus $\INDEX{x}{0}$
+      (resp. $\INDEX{x}{n}$).
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Bits}
+
+\begin{itemize}
+
+\item The following terms refer to fixed-length (sub-)sequences of $n$ bits
+      \[
+      \begin{array}{lcc@{\;}c@{\;}r}
+      \mbox      {crumb} &\Longrightarrow& n &=&  2 \\
+      \mbox     {nibble} &\Longrightarrow& n &=&  4 \\
+      \mbox       {byte} &\Longrightarrow& n &=&  8 \\
+      \mbox  {half-word} &\Longrightarrow& n &=& 16 \\
+      \mbox       {word} &\Longrightarrow& n &=& 32 \\
+      \mbox{double-word} &\Longrightarrow& n &=& 64 \\
+      \end{array}
+      \]
+      where perhaps all but the first are fairly standard.
+\item Where appropriate, a sequence $x$ of $n$ bits can be interpreted as an
+      element of the polynomial ring $\B{F}_2[\IND{x}]$
+      (i.e. a binary polynomial);
+      the $i$-bit of $x$ basically represents the $i$-th coefficient, st.
+      $
+      x \mapsto x( \IND{x} )
+      $
+      because
+      $
+      x_i \mapsto x_i \cdot \IND{x}^i .
+      $
+\item The operators $\NOT$, $\AND$, $\IOR$, and $\XOR$ denote Boolean NOT, AND,
+      OR, and XOR respectively, with $\NAND$, $\NIOR$ and $\NXOR$ denoting NAND,
+      NOR, and NXOR; all of these may be overloaded to cater for bit-sequences
+      rather than simply bits.
+\item $\HW( X )$
+      denotes the Hamming weight   of      bit-sequence  $X$,         st.
+      \[
+      \HW( X )    = \sum_{i=0}^{i<n} \INDEX{X}{i}                   .
+      \]
+\item $\HD( X )$
+      denotes the Hamming distance between bit-sequences $X$ and $Y$, st.
+      \[
+      \HD( X, Y ) = \sum_{i=0}^{i<n} \INDEX{X}{i} \XOR \INDEX{Y}{i} .
+      \]
+\item Given a bit-sequence
+      \[
+      X = \LIST{ \INDEX{X}{n-1}, \ldots, \INDEX{X}{1}, \INDEX{X}{0} } 
+      \]
+      and assuming $w$ divides $\CARD{X}$, $\INDEX[w]{X}{i}$ is used to denote 
+      the $i$-th sub-sequence of length $w$ in $X$: for $n = 16$, for example, 
+      we have that
+      \[
+      \begin{array}{lcl}
+      \INDEX[4]{X}{0} &=& \LIST{ \INDEX{X}{ 3}, \INDEX{X}{ 2}, \INDEX{X}{ 1}, \INDEX{X}{ 0}                                                             } \\
+      \INDEX[4]{X}{2} &=& \LIST{ \INDEX{X}{11}, \INDEX{X}{10}, \INDEX{X}{ 9}, \INDEX{X}{ 8}                                                             } \\
+      \INDEX[8]{X}{0} &=& \LIST{ \INDEX{X}{ 7}, \INDEX{X}{ 6}, \INDEX{X}{ 5}, \INDEX{X}{ 4}, \INDEX{X}{ 3}, \INDEX{X}{ 2}, \INDEX{X}{ 1}, \INDEX{X}{ 0} } \\
+      \INDEX[8]{X}{1} &=& \LIST{ \INDEX{X}{15}, \INDEX{X}{14}, \INDEX{X}{13}, \INDEX{X}{12}, \INDEX{X}{11}, \INDEX{X}{10}, \INDEX{X}{ 9}, \INDEX{X}{ 8} } \\
+      \end{array}
+      \]
+      for example.  In essence, this is a short-hand st.
+      \[
+      \INDEX[w]{X}{i} \equiv \LIST{ \INDEX[w]{X}{w \cdot i}, \INDEX[w]{X}{w \cdot i + 1}, \ldots, \INDEX[w]{X}{w \cdot i + w - 1} } .
+      \]
+\item $\LSB[l]{X}$ (resp. $\MSB[l]{X}$) denotes the $l$ least- (resp. most-)
+      significant bits of $X$ (where we assume $l = 1$ if omitted): given a
+      bit-sequence
+      \[
+      X = \LIST{ \INDEX{X}{n-1}, \ldots, \INDEX{X}{1}, \INDEX{X}{0} } ,
+      \]
+      for example, and assuming $l \leq \CARD{X}$, we have that
+      \[
+      \begin{array}{lcl}
+      \LSB[l]{X} &=& \LIST{ \INDEX{X}{l-1},                 \ldots, \INDEX{X}{  1}, \INDEX{X}{  0} } \\
+      \MSB[l]{X} &=& \LIST{ \INDEX{X}{n-1}, \INDEX{X}{n-2}, \ldots                  \INDEX{X}{n-l} } \\
+      \end{array}
+      \]
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Operations}
+
+\begin{itemize}
+
+\item The operators $\LSH$ and $\RSH$ denote left- and right-shift; $\LRT$ and
+      $\RRT$ denote left- and right-rotate (beware of context: $\ll$ and $\gg$
+      are also used to denote ``much less than'' and ``much greater than'').
+\item The operators 
+      $\oplus$
+      and
+      $\otimes$
+      respectively denote addition and multiplication in $\B{F}_2[\IND{x}]$.
+\item For some $x$, 
+      we let
+      $\EXT[w]{0  }( x )$
+      and
+      $\EXT[w]{\pm}( x )$
+      respectively denote
+      zero- or sign-extension to $w$-bits
+      (allowing omission of either specifier where appropriate).
+\item For some operator $\odot$, 
+      we let
+      $\OP[w][s]{\odot}$
+      and 
+      $\OP[w][u]{\odot}$
+      respectively denote 
+      $w$-bit signed and unsigned variants
+      (allowing omission of either specifier where appropriate).
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Cryptography}
+
+\begin{itemize}
+
+\item $\ROUND{x}{k}$ denotes some quantity $x$ relating to the $k$-th 
+      round (e.g., the $k$-th round key).
+\item The AES round functions are denoted using
+      $\SCOPE{\ID{AES}}{\ALG{Key-Addition}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Sub-Bytes}}$,
+      $\SCOPE{\ID{AES}}{\ALG{Shift-Rows}}$,
+      and
+      $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$;
+      note that 
+      a) $\SCOPE{\ID{AES}}{\ALG{Mix-Column}}$ is applied per column of the
+         state matrix to realise $\SCOPE{\ID{AES}}{\ALG{Mix-Columns}}$, so
+         the former is basically a $1$-column version of the latter,
+      b) $\SCOPE{\ID{AES}}{\ALG{S-Box}}$ denotes the AES S-box,
+         and
+      c) $\SCOPE{\ID{AES}}{\ALG{X}}^{-1}$ denotes the inverse of $\ALG{X}$,
+         e.g., $\SCOPE{\ID{AES}}{\ALG{S-Box}}^{-1}$ is the inverse S-box.
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Architecture}
+
+\begin{itemize}
+
+\item $\RNG$
+      denotes the Random Number Generator (RNG) object;
+      we equip this object with three operations, namely
+      \[
+      \begin{array}{c@{\;}c@{\;}ccl}
+      x    &\TEST{\ASN}& \RNG &:& \mbox{test                    the RNG state} \\
+      x    &      \ASN & \RNG &:& \mbox{sample entropy $x$ from the RNG      } \\
+      \RNG &      \ASN & x    &:& \mbox{inject entropy $x$ into the RNG      } \\
+      \end{array}
+      \]
+\item $\MEM$
+      denotes the byte-addressable memory;
+      $\MEM[*][i]$ 
+      denotes the $i$-th,
+            $8$-bit 
+      entry in said memory.
+\item $\GPR$ 
+      denotes the 
+      general-purpose register file;
+      $\GPR[*][i]$ 
+      denotes the $i$-th,
+      $\RVXLEN$-bit
+      entry in said register file.
+
+\end{itemize}
+
+% =============================================================================

@@ -1,0 +1,88 @@
+\documentclass{scarv-report}
+
+\title{{\sc \XCRYPTO: a cryptographic ISE for RISC-V} \\ {\sc\large Specification Document}}
+\date{Version $\import{build/spec}{spec.version}$ (\today)}
+\author{Ben Marshall}
+\author{Daniel Page}
+\author{Thinh Pham}
+\affil{
+Department of Computer Science, University of Bristol,\\
+Merchant Venturers Building, Woodland Road,\\
+Bristol, BS8 1UB, United Kingdom.\\
+\url{{ben.marshall,daniel.page,th.pham}@bristol.ac.uk}
+}
+
+\import{build/spec}{spec.ise}
+
+\begin{document}
+
+% =============================================================================
+
+\MKPROLOGUE
+
+% =============================================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+\import{./tex/}{intro.tex}
+
+\section{Background}
+\label{sec:bg}
+
+\import{./tex/}{bg-concept.tex}
+\import{./tex/}{bg-assumption.tex}
+\import{./tex/}{bg-guarantee.tex}
+\import{./tex/}{bg-compatibility.tex}
+\import{./tex/}{bg-feature.tex}
+
+\section{Specification}
+\label{sec:spec}
+
+\import{./tex/}{spec-state.tex}
+\import{./tex/}{spec-exception.tex}
+\import{./tex/}{spec-instruction.tex}
+\import{./tex/}{spec-shared-bitmanip.tex}
+\import{./tex/}{spec-shared-dsp.tex}
+
+% =============================================================================
+
+\MKEPILOGUE
+
+% =============================================================================
+
+\appendix
+
+\clearpage
+\section{Notation}
+\label{appx:notation}
+
+\import{./tex/}{appx-notation.tex}
+
+\clearpage
+\section{Related work}
+\label{appx:related}
+
+\import{./tex/}{appx-related.tex}
+
+\clearpage
+\section{Design notes (or FAQs)}
+\label{appx:design}
+
+\import{./tex/}{appx-design.tex}
+
+\clearpage
+\section{Instruction syntax   overview}
+\label{appx:instr_syntax}
+
+\import{./tex/}{appx-instr_syntax.tex}
+
+\clearpage
+\section{Instruction encoding overview} 
+\label{appx:instr_encode}
+
+\import{./tex/}{appx-instr_encode.tex}
+
+% =============================================================================
+
+\end{document}

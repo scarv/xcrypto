@@ -1,9 +1,12 @@
-[submodule "xcrypto-spec"]
-	path = xcrypto-spec
-	url = https://github.com:scarv/xcrypto-spec.git
 [submodule "xcrypto-rtl"]
-	path = xcrypto-rtl
+	path = extern/xcrypto-rtl
 	url = https://github.com/scarv/xcrypto-rtl.git
 [submodule "libscarv"]
 	path = extern/libscarv
 	url = https://github.com/scarv/libscarv.git
+[submodule "extern/texmf"]
+	path = extern/texmf
+	url = https://github.com/scarv/texmf.git
+[submodule "extern/riscv-opcodes"]
+	path = extern/riscv-opcodes
+	url = https://github.com/scarv/riscv-opcodes.git

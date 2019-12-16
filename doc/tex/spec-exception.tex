@@ -1,0 +1,43 @@
+\subsection{\XCRYPTO exceptions}
+\label{sec:spec:exceptions}
+
+% =============================================================================
+
+Any instruction-specific exception behaviour is captured by the associated
+semantics in \REFSEC{sec:spec:instruction}, with general cases captured in
+the following:
+
+\begin{itemize}
+\item Any attempt to execute an \XCRYPTO instruction which
+      has a    valid opcode but at least one invalid operand,
+      will raise an 
+      illegal instruction exception.
+\item Any attempt to execute a
+        valid \XCRYPTO instruction
+      from an unsupported feature class (or parameterisation thereof, cf. packed operations, per fields in $\SPR{mxcsr}$)
+      will raise an 
+      illegal instruction exception.
+\item Any instruction that accesses $\GPR$ using a register address $i$ 
+      will raise an
+      illegal instruction exception
+      if $i \geq |\GPR|$; for example
+      RV32I sets $|\GPR| = 32$ so demands $0 \leq i < 32$,
+      whereas
+      RV32E sets $|\GPR| = 16$ so demands $0 \leq i < 16$.
+\item Any access to
+      $\SPR{mxcsr}$
+      from a privilege mode other than machine mode
+      will raise an 
+      illegal instruction exception.
+\item Any instruction that accesses memory mirrors RV32I wrt. exception,
+      synchronisation, and atomicity semantics: for example, if
+      a) the effective address stemming from a memory access instruction
+         is not aligned to the associated data type, 
+         {\em  and}
+      b) the implementation does not support misaligned accesses,
+         {\em then} it 
+      will raise a 
+      load/store address misaligned exception.
+\end{itemize}
+
+% =============================================================================

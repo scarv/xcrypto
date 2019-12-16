@@ -1,0 +1,160 @@
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.ldr.b}
+\XCRYPTOENCODE{xc.ldr.h}
+\XCRYPTOENCODE{xc.ldr.bu}
+\XCRYPTOENCODE{xc.ldr.hu}
+\XCRYPTOENCODE{xc.ldr.w}
+\XCRYPTOENCODE{xc.str.b}
+\XCRYPTOENCODE{xc.str.h}
+\XCRYPTOENCODE{xc.str.w}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $1$,   per \REFSEC{sec:spec:instruction:1}.}
+\label{fig:instr_encode:1}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.rngtest}       
+\XCRYPTOENCODE{xc.rngseed}       
+\XCRYPTOENCODE{xc.rngsamp}       
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.1$, per \REFSEC{sec:spec:instruction:2:1}.}
+\label{fig:instr_encode:2:1}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.scatter.b}     
+\XCRYPTOENCODE{xc.scatter.h}     
+\XCRYPTOENCODE{xc.gather.b}      
+\XCRYPTOENCODE{xc.gather.h}      
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.2$, per \REFSEC{sec:spec:instruction:2:2}.}
+\label{fig:instr_encode:2:2}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center} 
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.bop}
+\XCRYPTOENCODE{xc.lut}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.3$, per \REFSEC{sec:spec:instruction:2:3}.}
+\label{fig:instr_encode:2:3}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}            
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}                                                            
+\\
+\XCRYPTOENCODE{xc.padd}          
+\XCRYPTOENCODE{xc.psub}          
+\XCRYPTOENCODE{xc.pmul.l}        
+\XCRYPTOENCODE{xc.pmul.h}        
+\XCRYPTOENCODE{xc.pclmul.l}      
+\XCRYPTOENCODE{xc.pclmul.h}      
+\XCRYPTOENCODE{xc.psll}          
+\XCRYPTOENCODE{xc.psll.i}        
+\XCRYPTOENCODE{xc.psrl}          
+\XCRYPTOENCODE{xc.psrl.i}        
+\XCRYPTOENCODE{xc.pror}          
+\XCRYPTOENCODE{xc.pror.i}        
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.4$, per \REFSEC{sec:spec:instruction:2:4}.}
+\label{fig:instr_encode:2:4}
+\end{figure}                                                                      
+
+% -----------------------------------------------------------------------------
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.madd.3}        
+\XCRYPTOENCODE{xc.msub.3}        
+\XCRYPTOENCODE{xc.macc.1}        
+\XCRYPTOENCODE{xc.mmul.3}        
+\XCRYPTOENCODE{xc.mror}          
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.5$, per \REFSEC{sec:spec:instruction:2:5}.}
+\label{fig:instr_encode:2:5}
+\end{figure}                                                                   
+
+% -----------------------------------------------------------------------------   
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.aessub}        
+\XCRYPTOENCODE{xc.aesmix}        
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.1$, per \REFSEC{sec:spec:instruction:3:1}.}
+\label{fig:instr_encode:3:1}
+\end{figure}                                                                   
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.sha256.s0}
+\XCRYPTOENCODE{xc.sha256.s1}
+\XCRYPTOENCODE{xc.sha256.s2}
+\XCRYPTOENCODE{xc.sha256.s3}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.2$, per \REFSEC{sec:spec:instruction:3:2}.}
+\label{fig:instr_encode:3:2}
+\end{figure}                                                                   
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.sha3.xy}
+\XCRYPTOENCODE{xc.sha3.x1}
+\XCRYPTOENCODE{xc.sha3.x2}
+\XCRYPTOENCODE{xc.sha3.x4}
+\XCRYPTOENCODE{xc.sha3.yx}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.3$, per \REFSEC{sec:spec:instruction:3:3}.}
+\label{fig:instr_encode:3:3}
+\end{figure}                                                                   
+% =============================================================================

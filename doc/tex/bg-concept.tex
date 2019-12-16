@@ -1,0 +1,120 @@
+% =============================================================================
+
+\subsection{Concept}
+\label{sec:bg:concept}
+
+\begin{itemize}
+
+\item Assuming carte blanche wrt. design and implementation of a processor 
+      core, and the wider system it is coupled to, a large design space of 
+      candidate approaches exists.  One could, for example, realise a given 
+      cryptographic primitive using
+      a) hardware-only,
+      b) mixed (or hybrid),
+         or
+      c) software-only
+      techniques.
+
+      The remit of \XCRYPTO is strictly focused on an approach that supports the
+      latter techniques; one could view said remit as focused on maximising
+      the viability of software-based cryptographic implementations.  It has
+      an implicit focus on constrained, e.g., micro-controller class, cores, 
+      although the concept and utility is broader.
+      Various published work is emerging that motivates and/or evidences such
+      an approach: 
+      see, e.g.,~\cite{SCARV:Stoffelen:19}.
+
+\item The following design criteria rationalise this approach, some of which
+      are related (or even stem directly from one and other):
+
+      \begin{itemize}
+      \item {\bf         Security}.
+            An unfortunate fact is that security will commonly be relegated 
+            to a second-class design metric, and so, by implication, viewed 
+            as being of secondary importance;
+            see, e.g., \cite{SCARV:Lee:03,SCARV:RKLMR:03,SCARV:RRKH:04,SCARV:BurMutTiw:16}.
+            In contrast, \XCRYPTO treats security as a first-class metric, and
+            so {\em at least} as important as more traditional alternatives.
+            For example,
+            within the context of \XCRYPTO we deem it reasonable to trade-off 
+            improved security vs. degradation of instruction throughput.
+      \item {\bf      Consistency}.
+            As far as is reasonable, \XCRYPTO should remain consistent with the
+            RISC-V philosophy, and associated base ISA; doing so will demand 
+            considered compromises vs. a clean-slate design, but, equally,
+            should maximise the resulting utility.
+            For example,
+            we attempt to avoid or minimise 
+            a) deviation from the existing instruction encoding formats,
+               and 
+            b) introduction of additional state.
+      \item {\bf       Generality}.
+            \XCRYPTO should be a general-purpose cryptographic ISE: bar certain
+            controlled (i.e., well motivated) instances, it avoids including 
+            (overly) functionality-specific features.
+      \item {\bf      Flexibility}. 
+            Modulo the status of security as a first-class design metric, a
+            goal of \XCRYPTO remains to avoid, or at least minimise any ``baked 
+            in'' (or hard coded) trade-offs.  Put another way, although the 
+            approach used clearly {\em will} imply trade-offs 
+            (e.g., vs. efficiency typically delivered by hardware-only techniques), 
+            it {\em should} more easily support
+            a) agility wrt. primitive, algorithm, and parameter choices,
+               and
+            b) instrumentation of context-dependent countermeasures.
+      \item {\bf    Composability}.
+            To mitigate a given attack, a layered approach (cf. defence in 
+            depth) is normally preferred: this favours the use of multiple
+            countermeasures, vs. a single, perfect panacea.  The same form
+            of argument applies to efficiency, in the sense that efficiency 
+            requirements may render software-only implementation techniques,
+            even {\em with} support of \XCRYPTO, insufficient.
+            As such, \XCRYPTO
+            a) should be viewed as one option for or layer in a solution,
+               and
+            b) prefers features that can co-exist over those which cannot.
+            For example, 
+            Grabher et al.~\cite{SCARV:GGHJPTW:11} have explored the use of 
+            an embedded FPGA fabric\footnote{
+            See, e.g., \url{http://www.flex-logix.com}
+            } to support cryptographic workloads: \XCRYPTO composes with such 
+            an approach.
+      \item {\bf Implementability}. 
+            To be useful, it should be possible to implement \XCRYPTO with as
+            little
+            a) overhead   (e.g., wrt. additional logic),
+               and
+            b) difficulty (e.g., wrt. outright complexity, or complicating factors such as verification)
+            as possible.  This implies a preference for features that avoid 
+            a {\em requirement} for complex hardware or invasive alteration 
+            to the host core.
+      \item {\bf    Measurability}.
+            Given the remit of extending the base ISA, any feature in \XCRYPTO 
+            should offer reproducible, demonstrable value vs. this baseline.
+            For a given feature, this goal should be supported by provision 
+            of associated reference implementations of cryptographically 
+            interesting benchmark kernels.
+      \end{itemize}
+
+\item Aligning with several cited design criteria, \XCRYPTO can be viewed as a 
+      form of {\em meta}-extension in the sense it captures feature classes 
+      that can be selected from to suit.  \REFSEC{sec:bg:feature} outlines 
+      said feature classes, the presence or absence of which is reflected 
+      in an associated CSR outlined in \REFSEC{sec:spec:state:csr}.
+
+\item All that said, such an approach may naturally be deemed inappropriate 
+      for some use-cases due to the trade-offs implied; we carefully pitch 
+      \XCRYPTO as {\em an} approach, not {\em the} approach.  
+      As such, instances of alternative approaches will naturally exist and
+      be perfectly valid.  For example,
+      a) the RISC-V Cryptographic Extensions Task Group is focused on use 
+         of the vector ISE as a vehicle for cryptographic operations,
+      b) many commercialised SoCs 
+         (e.g., Google Titan) 
+         prefer to couple a dedicated, special-purpose IP core 
+         (e.g., a hardware-based AES accelerator) 
+         to a RISC-V host core.
+
+\end{itemize}
+
+% =============================================================================

@@ -1,0 +1,67 @@
+% =============================================================================
+
+\subsection*{General}
+\cite{SCARV:Gutmann:00}
+\cite{SCARV:WuWeaAus:01}
+\cite{SCARV:MTRGS:99}
+\cite{SCARV:GGHJPTW:11}
+\cite{SCARV:CosLebDev:16}
+
+\subsection*{Cryptography- or security-specific: design and implementation}
+\cite{SCARV:FouMoo:05,SCARV:Fournier:07,SCARV:KocSavGro:08,SCARV:TheSisPne:09,SCARV:TilKirSze:10,SCARV:NREAMM:12,SCARV:YumSav:15,SCARV:RagAmbPar:15,SCARV:AweAus:17,SCARV:YHEF:18,SCARV:WJWDGSN:18,SCARV:ZHCPH:18}
+
+\subsection*{Cryptography- or security-specific: verification}
+\cite{SCARV:KZDN:18}
+
+\subsection*{ISEs: general/codesign/security/scheduling and code generation}
+\cite{SCARV:Fiskiran:05}
+\cite{SCARV:BarGioMar:09}
+\cite{SCARV:RegIen:16}
+\cite{SCARV:FazLopOli:18}
+\cite{SCARV:KLWGSTW:06,SCARV:GIPTV:06}
+\cite{SCARV:RCSBKBLI:09}
+\cite{SCARV:ManGre:10,SCARV:ManMagGre:10,SCARV:Manley:11}
+
+\subsection*{ISEs for arithmetic: $\B{Z}_{N}$ and general multi-precision}
+\cite{SCARV:Gro:02,SCARV:Gro:03,SCARV:GroKam:03:a,SCARV:GAST:05,SCARV:GroTilSze:07}
+\subsection*{ISEs for arithmetic: $\B{F}_{2^m}$ and other fields (e.g., for ECC)}
+\cite{SCARV:GroKam:03:b,SCARV:FisLee:04,SCARV:GroKumPaa:04,SCARV:KumPaa:04,SCARV:BBGM:08}
+\subsection*{ISEs for arithmetic: misc}
+\cite{SCARV:GroKam:03,SCARV:GroSav:04,SCARV:VejPagGro:07}
+
+\subsection*{ISEs for symmetric}
+\cite{SCARV:BurMcDAus:00,SCARV:MelElb:08,SCARV:MelElb:10,SCARV:Saarinen:19}
+
+\subsection*{ISEs for AES: security-focused}
+\cite{SCARV:TilGro:07:a}
+\subsection*{ISEs for AES: efficiency-focused}
+\cite{SCARV:TilGroSze:05,SCARV:TilGro:06,SCARV:APRJ:11}
+\subsection*{ISEs for AES: mixed use (e.g., repurposed)}
+\cite{SCARV:TilGro:05,SCARV:TilGro:07:b,SCARV:BBGR:09,SCARV:BosOzeSta:11}
+
+\subsection*{ISEs for table look-up and memory access}
+\cite{SCARV:FisLee:01,SCARV:FisLee:05:a,SCARV:FisLee:05:b,SCARV:HilYinLee:08}
+\subsection*{ISEs for bit-manipulation (inc. permutation)}
+\cite{SCARV:ShiLee:00,SCARV:YanLee:00,SCARV:McGLee:01,SCARV:LeeShiYan:01,SCARV:ShiLee:02,SCARV:ShiYanLee:03,SCARV:LSYRR:04,SCARV:Shi:04,MASCAB:LeeYanShi:05,SCARV:HilYinLee:08,SCARV:HilLee:08,SCARV:ShiYanLee:08,SCARV:Hilewitz:08}
+\subsection*{ISEs for bit-slicing}
+As introduced by Biham~\cite{SCARV:Biham:97}, bit-slicing is based on
+a) a non-standard {\em representation} of data,
+   and
+b) a non-standard {\em implementation} of functions, which operate on
+   said representations:
+it essentially describes a given cryptographic primitive as a  ``software 
+circuit'' comprising a sequence of bit-wise instructions (e.g., NOT, AND, 
+and OR).  Although not a general-purpose technique, when applicable, use
+of bit-slicing can offer advantages that include constant-time execution 
+and hence immunity from cache-based side-channel attacks
+(see, e.g.,~\cite{SCARV:KasSch:09}).
+In the design of Serpent~\cite[Page 232]{SCARV:BihAndKnu:98}, there is a
+suggestion for accelerating bit-sliced implementations via a ``BITSLICE 
+instruction'' or ISE; the suggestion was later investigated in detail by 
+Grabher et al.~\cite{SCARV:GraGroPag:08}.  In both cases, the idea is to 
+``compress'' a sub-circuit, i.e., the sequence of bit-wise instructions 
+representing an $n$-input Boolean function, into a Look-Up Table (LUT): 
+the LUT is first configured with a truth table for the function, then 
+accessed to apply said function.  
+
+% =============================================================================

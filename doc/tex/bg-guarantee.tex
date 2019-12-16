@@ -1,0 +1,54 @@
+% =============================================================================
+
+\subsection{Guarantees}
+\label{sec:bg:guarantee}
+
+\begin{itemize}
+
+\item A raft of challenges stemming from partially defined behaviour in the
+      C programming language, and associated compilers, is well documented
+      (see, e.g.,~\cite[Section 2.1]{SCARV:SimChiAnd:18}).
+      These are particularly problematic for high-assurance software, where
+      precise control over all aspects of execution behaviour forms a basis
+      for guarantees wrt. security
+      (see, e.g., various counterexamples such as~\cite{SCARV:KPVV:16}).
+      A similar argument can obviously be made in relation to the platform 
+      on which resulting software is executed.
+
+      The specification of \XCRYPTO guarantees to exclude all
+                   undefined 
+      and
+      implementation defined
+      functionality or semantics:
+      this is intended to offer the greatest possible control over and thus
+      transparency wrt. execution behaviour.
+
+\item The assumption of a shared memory interface, plus the lack of control
+      over components beyond that interface 
+      (e.g., lower-level caches) 
+      limits the extent to which general guarantees wrt. execution latency 
+      can be made.  However, an implementation of \XCRYPTO is required to 
+      a) guarantee that all computational 
+         (i.e., {\em excluding} memory access) 
+         instructions will exhibit constant (or data-oblivious) execution 
+         latency,
+         and
+      b) clearly quote said constant in associated documentation.
+
+      A similar concept was mooted for introduction in ARMv8.4-A, using a
+      processor mode to enforce data-independent execution latency for the
+      same class of instructions; the concept is motivated, for example,
+      by the ARM IoT Security Manifesto\footnote{
+      \url{http://pages.arm.com/iot-security-manifesto.html}
+      } (see, e.g., Page $10$ re. ``the rise of side-channels '').
+      However, it seems unclear\footnote{
+      \url{http://twitter.com/Kensan42/status/946681596001902593}
+      } {\em why} the original\footnote{
+      \url{http://web.archive.org/web/20171108010153/http://community.arm.com/processors/b/blog/posts/introducing-2017s-extensions-to-the-arm-architecture}
+      } announcement was later amended to remove this feature\footnote{
+      \url{http://community.arm.com/processors/b/blog/posts/introducing-2017s-extensions-to-the-arm-architecture}
+      }.
+
+\end{itemize}
+
+% =============================================================================

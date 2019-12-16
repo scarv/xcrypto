@@ -1,0 +1,92 @@
+\subsection{\XCRYPTO state}
+\label{sec:spec:state}
+
+TODO
+
+% =============================================================================
+
+
+\subsubsection{Control and Status Registers (CSRs)}
+\label{sec:spec:state:csr}
+
+\XCRYPTO adds a single user level CSR, the $\SPR{uxcrypto}$ register.
+Figure \ref{fig:uxcrypto:bits} shows the bitfield layout of the register,
+while table \ref{tab:uxcrypto:fields} describes the purpose of each field.
+
+$\SPR{uxcrypto}$ provisionally exists at CSR address $0x800$.
+
+\begin{figure}[h]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+  \bitbox{ 8}{\rotatebox{90}{\small$\ID{b[1]}     $}}
+& \bitbox{ 8}{\rotatebox{90}{\small$\ID{b[0]}     $}}
+& \bitbox{ 4}{\rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{BIT }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MEM }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{RNG }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{16}$}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{8} $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{4} $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{2} $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MP  }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA3}     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA2}     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{AES }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{CT  }     $}}
+\end{bytefield}
+\end{center}
+\caption{A diagrammatic description of the $\SPR{uxcrypto}$ register;
+blanked regions are reserved, so yield zero when the register is read.
+Note that we force implementations to yield zero, rather than requiring
+software to simply ignore these bits (as happens in the base RISC-V
+specification) to remove any possibility of implementation specific
+behaviour.}
+\label{fig:uxcrypto:bits}
+\end{figure}
+
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|l|}
+\hline
+Field        & Index  & Access & Description                                                                         \\ 
+\hline
+$\ID{b[1]} $ & $ 31:24$ & R/W & Lookup table field used by \VERB[RV]{xc.bop} (\REFSEC{sec:spec:instruction:xc.bop}) \\
+$\ID{b[0]} $ & $ 23:16$ & R/W & Lookup table field used by \VERB[RV]{xc.bop} (\REFSEC{sec:spec:instruction:xc.bop}) \\
+$\ID{BIT }     $ & $11$ & R & Is the Bitwise class of instructions supported? \\
+$\ID{MEM }     $ & $10$ & R & Is the Memory class of instructions supported? \\
+$\ID{RNG }     $ & $ 9$ & R & Is the Randomness class of instructions supported? \\
+$\ID{PACK}_{16}$ & $ 8$ & R & Is the pack width 16 class of instructions supported? \\
+$\ID{PACK}_{8} $ & $ 7$ & R & Is the pack width 8  class of instructions supported? \\
+$\ID{PACK}_{4} $ & $ 6$ & R & Is the pack width 4  class of instructions supported? \\
+$\ID{PACK}_{2} $ & $ 5$ & R & Is the pack width 2  class of instructions supported? \\
+$\ID{MP  }     $ & $ 4$ & R & Is the Multi-precision class of instructions supported? \\
+$\ID{SHA3}     $ & $ 3$ & R & Is the SHA3 class of instructions supported? \\
+$\ID{SHA2}     $ & $ 2$ & R & Is the SHA2 class of instructions supported? \\
+$\ID{AES }     $ & $ 1$ & R & Is the AES class of instructions supported? \\
+$\ID{CT} $ & $     0$ & R/W & Constant time indicator bit. \\
+\hline
+\end{tabular}
+\end{center}
+\caption{A tabular description of the $\SPR{uxcrypto}$ register.}
+\label{tab:uxcrypto:fields}
+\end{table}
+
+The $\SPR{uxcrypto.CT}$ bit is used to control the timing and execution
+behaviour of certain instructions.
+It should be used to indicate that the currently running code must run
+in constant time, or more accurately, time independent of the data
+inputs.
+Integer arithmetic instructions such as multiply, which might have an
+early-out mechanism are the principle target of the $\SPR{uxcrypto.CT}$ bit.
+\begin{itemize}
+\item Memory accesses are not required to enforce constant time operation,
+      though this is a potential side channel which must be mitigated.
+\item Any integer arithmetic instructions with an early-out mechanism must
+      run in constant time while the $\SPR{uxcrypto.CT}$ bit is set.
+      They may or may not run in constant time when the bit is clear.
+\end{itemize}
+
+% =============================================================================

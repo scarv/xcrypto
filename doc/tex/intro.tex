@@ -1,0 +1,81 @@
+% =============================================================================
+
+Versus a more general case, cryptographic workloads are a challenge in the
+sense they typically
+a) require computationally intensive, somewhat niche functionality,
+   and
+b) form a central target in what is a complex, evolving attack surface.
+The former is a particular issue, because cryptography normally represents
+an enabling technology vs. a feature: put another way, it will represent
+overhead when viewed from the perspective of a user.  Efficiency is hence 
+a goal in and of itself, but {\em also} as an enabler for security.  This 
+is because one cannot (or at least should not) compromise security to meet 
+efficiency requirements, so delivering higher efficiency can be pitched as 
+an enabler for countermeasures against attack (since there will be more 
+margin within which to do so).
+
+This document acts as the specification for a 
+non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
+to any one of the RISC-V base ISAs
+(e.g., RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}, RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}, RV64I~\cite[Section 4]{SCARV:RV:ISA:I:17}, or RV128I~\cite[Section 5]{SCARV:RV:ISA:I:17}),
+which we dub \XCRYPTO; it forms an output from the SCARV\footnote{
+\url{http://www.scarv.org}, \url{http://www.github.com/scarv}
+} project, funded by EPSRC\footnote{
+\url{http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/R012288/1}
+} as part of the UK-based RISE\footnote{
+\url{http://www.ukrise.org}
+} initiative.  
+\XCRYPTO aims to enable
+a) efficient
+   and
+b) secure
+software implementation of cryptographic primitives, within a remit which
+is conceptually analogous to that of the standard floating-point (i.e., F
+and D) extensions.
+Note the document {\em is} a specification for \XCRYPTO, but categorically
+{\em is not} an implementation guide: we provide a separate document for 
+that purpose.  In order to avoid the specification becoming too verbose,
+we defer a detailed description of the notation used, related work, and 
+design notes (presented as a set of FAQs) to
+\REFAPPX{appx:notation},
+\REFAPPX{appx:related},
+and
+\REFAPPX{appx:design}
+respectively.  
+
+% -----------------------------------------------------------------------------
+
+The project as a whole follows a semantic 
+versioning\footnote{
+\url{http://semver.org}
+} (or major/minor/patch) convention, with a changelog\footnote{
+\url{http://keepachangelog.com}
+} maintained within the repository vs. in the document.
+Over time, \XCRYPTO has evolved along various branches 
+(each identified by an associated major version):
+
+\begin{itemize}
+\item The $0.x.y$ branch
+      represents an initial prototype.
+      It can be characterised as deliberately disjoint from the RISC-V 
+      base ISA(s), and so, in concept, aligned with implementation as a 
+      separate co-processor.
+\item The $1.x.y$ branch
+      represents a subsequent refinement.
+      It can be characterised as taking the functionality from $0.x.y$, 
+      but integrating inline with vs. alongside the RISC-V base ISA(s), 
+      i.e., in the form of a conventional ISA vs. a co-processor.
+\end{itemize}
+
+\noindent
+The long-term goal is to develop the $1.x.y$ branch, ultimately using it
+as a basis for a standard (i.e., ``official'') RISC-V extension proposal.
+That said, statements such as 
+``\XCRYPTO is   X'' 
+or
+``\XCRYPTO does Y''
+should be carefully qualified with {\em currently} vs. {\em definitively}.  
+In particular, we expect some degree of iteration and so change to emerge 
+from work in progress wrt. design, implementation, and evaluation.
+
+% =============================================================================

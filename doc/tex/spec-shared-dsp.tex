@@ -1,0 +1,30 @@
+
+\subsection{Shared DSP instructions}
+\label{sec:spec:shared:dsp}
+
+In the DSP extension, there is support for narrower (16-bit)
+data types, which are useful when implementing some classes of
+light-weight block cipher.
+
+Here is listed a set of instructions which are {\em shared} with
+the bitmanip extensions.
+That is, someone implementing either the \XCRYPTO specifcation, or
+the Bitmanip extension can use them.
+The instruction functions and encodings remain identical across extensions.
+
+
+{\bf Note:} From public presentations\footnote{
+\url{https://www.youtube.com/watch?v=tMhnvfbPM3A}
+}
+\footnote{
+\url{https://content.riscv.org/wp-content/uploads/2019/06/17.20-P-ext-RVW-Zurich-20190611.pdf}
+}
+on the proposed DSP
+extension, there are some instructions which have been identified as
+useful for implementing light-weight block ciphers.
+There is no publically available information on their encodings
+or exact functionality however, so this section acts as a placeholder
+until that becomes available.
+In the mean time,
+\REFSEC{sec:spec:instruction:2:4}
+contains WIP specifications for these kinds of instructions.

@@ -1,0 +1,267 @@
+% =============================================================================
+
+%
+% TODO: FAQ items
+%
+% - Why a "general purpose" ISA? What does this mean wrt. "special purpose"?
+%
+%
+
+
+\begin{description}
+
+\item[Is there any logic behind the \XCRYPTO instruction mnemonics?]
+      \XCRYPTO instruction mnemonics follow a (somewhat) consistent scheme; 
+      they all include a domain-separating prefix \VERB[RV]{xc}, and, if
+      need be, a suffix intended to identify specific variants.  These 
+      include
+      \[
+      \begin{array}{lcl}
+      \VERB[RV]{i} &:& \mbox{immediate (vs. register)   }        \\
+      \VERB[RV]{u} &:& \mbox{updating  (vs. overwriting)}        \\
+      \VERB[RV]{h} &:& \mbox{high}                               \\
+      \VERB[RV]{l} &:& \mbox {low}                               \\
+      \VERB[RV]{b} &:& \mbox     {byte oriented}                 \\
+      \VERB[RV]{h} &:& \mbox{half-word oriented}                 \\
+      \VERB[RV]{w} &:& \mbox     {word oriented}                 \\
+      \VERB[RV]{x} &:& \mbox{a size, length, or count parameter} \\
+      \end{array}
+      \]
+
+\item[What restrictions exist wrt. the \XCRYPTO memory interface?]
+      Although they share a memory interface, there is no requirement for
+      the host core and co-processor to share an address space.  Indeed,
+      it is easy to imagine cases where using disjoint address spaces is
+      useful; examples include use of
+      a) an OTP-style memory for key storage, 
+         or
+      b) a (uncached) scratch-pad memory,
+      by the co-processor alone.
+
+
+\item[Why include instruction class $2.1$ (RNG), when alternative X would be better?]
+      Although still further options may be possible, it seems obvious
+      that one {\em could} expose the RNG via
+
+      \begin{itemize}
+      \item a set of instructions,
+      \item one or more CSRs,
+            or
+      \item a memory-mapped peripheral.
+      \end{itemize}
+
+      \noindent
+      Trade-offs wrt. various metrics naturally result.  For example,
+      the first option demands space in the instruction encoding, 
+      whereas
+      the last  option can be accessed using existing memory access instructions but with an impact on latency;
+      at best, it seems unclear there is a single ``best'' option.
+
+% --------------
+    There are numerous other open questions about how to build a
+    randomness interface.
+    Some of which apply more to this instantiation, others more generally:
+
+    \begin{description}
+    \item[How exactly should the random numbers be generated?]
+    This will depend on the exact implementation of the system.  Different
+    primitives are available for FPGAs and ASICs, and different technology
+    processes may favour different TRNG instantiations over others.  We
+    believe that the exact implementation of the T/PRNG should be left to the
+    implementor, so long as they are able to realise random number sources
+    which fulfill the cryptographic appropriateness requirements.
+
+    \item[What does {\em cryptographically appropriate randomnes} mean?]
+    This is short hand for a source of randomness of sufficient quality so as
+    to not introduce any weakness into the cryptographic system.  There are
+    standard sets of tests which are used to validate this property, as well
+    as official guidance from NIST.
+    See \cite{SCARV:NIST:SP:800_90a},
+        \cite{SCARV:NIST:SP:800_90b} and
+        \cite{SCARV:NIST:SP:800_90c}.
+
+    \item[How does one functionally verify such instructions?]
+    A TRNG is impossible to model during event-based functional simulation.
+    It is even more impossible to create a golden reference model for a TRNG
+    against which to compare an implementation.  One strategy for functional
+    verification would be to split the functionality into parts. A
+    verification engineer might replace the TRNG instance with something
+    easily modelled with standard verification flows. This would allow
+    verification of the architectural functionality of the instructions.
+    Likewise, a formal verification flow could black-box the TRNG and check
+    that the interface to it works as expected.  Verification of the
+    randomness quality would then need to be done after the device is
+    implemented.
+
+    \item[How should post-processing of the TRNG output be handled?]
+    Including post-processing and on-line quality checking inside the
+    hardware implementation arguably makes things simpler for the programmer.
+    It is also possible that some programmers would {\em not trust} the TRNG
+    to do post-processing, and want to do it themselves.
+
+    \item[How should access to these instructions be controlled?]
+    Shared hardware state represents a possible attack vector.  The
+    criticality of randomness to key generation means that these instructions
+    deserve special attention in this regard.
+
+    \begin{itemize}
+
+    \item Sharing at a low level might involve storing the state of the PRNG
+    during a context switch. The TRNG is harder to manage in this regard.
+
+    \item At a higher level, if there are applications which do not mutually
+    trust one another running on the system, it is reasonable to assume there
+    is an operating system there to enforce process separation.  Such an
+    operating system could ensure a level of access control to the RNG which
+    stops accesses from different user-level processes being interleaved.
+
+    \item Alternatively, the instructions could be machine-mode only, and
+    access to user-level processes granted via a system call.
+    \end{itemize}
+
+    \item[Should there be a throughput requirement for the generators?]
+    When building a TRNG or PRNG, there is considerable scope for trading
+    latency and throughput of the generators for area and energy consumption.
+    It may be sensible to have a platform level parameter to document how
+    fast new randomness can be generated. E.g. the target can generate a new
+    32-bit random number every $X$us.
+
+    \end{description}
+
+% --------------
+
+\item[What is the {\tt xc.lut} instruction useful for?]
+Light-weight block ciphers often make use of small, 4-bit SBox
+transformations as part of their substitution layer.
+To all intents and purposes, an SBox is just a lookup table.
+Such SBoxes can either be implemented in software as a lookup table, or
+as a set of transforming instructions with compute the new value each time.
+Both of these approaches are relatively slow, and/or energy intensive
+compared to the size of the data being operated on.
+This instruction allows 4-bit sboxes to be computed entirely
+inside the core, in parallel, and allows the operation to be masked against
+side-channel attack as well.
+For \RVXLEN = 32, 8 SBoxes are computed.
+For \RVXLEN = 64, 16 SBox are computed.
+The instruction is not specific to any one algorithm.
+
+% --------------
+
+\item[Multi-precison integer instructions]
+\label{sec:design:mpn}
+
+Here we present alternative instruction sequences between the proposed
+multi-precision instructions and standard RISC-V code.
+
+Note that some of these instructions can have their encodings
+made more compact by either destroying their sources, or
+implicitly reading their destination registers.
+
+    \begin{description}
+
+    \item[xc.mmul.3] \hfill
+
+        \begin{lstlisting}[frame=single,title=XCRYPTOrypto,numbers=left]
+        xc.mmul.3   (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+        \end{lstlisting}
+
+        \begin{lstlisting}[frame=single, title=RISC-V RV32IM / RV64IM,numbers=left]
+        mul   t1 , rs1, rs2
+        mulhu rd2, rs1, rs2 // (rd2, t1) = rs1*rs2
+        add   rd1, t1 , rs3 //      rd1  = low(rs1*rs2)+rs3
+        sltu  t1 , rd1, t1  //      rs2  = rd1 < rs2
+        add   rd2, rd2, rs2 //      rd2 += overflow bit?
+        \end{lstlisting}
+
+    \item[xc.macc.1] \hfill
+
+        \begin{lstlisting}[frame=single,title=XCRYPTOrypto,numbers=left]
+        xc.macc.1 (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+        \end{lstlisting}
+
+        \begin{lstlisting}[frame=single, title=RISC-V RV32IM / RV64IM,numbers=left]
+        add     rd1, rs1, rs3
+        sltu    rs1, rd1, rs1
+        add     rd2, rs2, rs1
+        \end{lstlisting}
+
+    \item[xc.madd.3] \hfill
+
+        \begin{lstlisting}[frame=single,title=XCRYPTOrypto,numbers=left]
+        madd3   (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+        \end{lstlisting}
+
+        \begin{lstlisting}[frame=single, title=RISC-V RV32IM / RV64IM,numbers=left]
+        add     rs3, rs3, rs2
+        add     rd1, rs1, rs3
+        sltu    rd2, rs3, rs2
+        sltu    rs3, rd1, rs3
+        add     rd2, rd2, rs3
+        \end{lstlisting}
+
+    \item[xc.msub3] \hfill
+
+        \begin{lstlisting}[frame=single,title=XCRYPTOrypto,numbers=left]
+        msub3   (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+        \end{lstlisting}
+
+        \begin{lstlisting}[frame=single, title=RISC-V RV32IM / RV64IM,numbers=left]
+        sub     rd2, rs1, rs2
+        mv       t0, rs1
+        sltu     t0,  t0, rd2
+        sub     rd1, rd2, rs3
+        neg      t0,  t0
+        sltu    rd2, rd2, rd1
+        sub     rd2, t0 , rd2
+        \end{lstlisting}
+
+    \end{description}
+
+% --------------
+
+\item[Why include the special purpose SHA instructions?]
+      While \XCRYPTO tries to include only {\em general purpose} instructions and
+      avoid overly specific instructions, in some cases it deviates from this:
+
+      \noindent SHA3, and the underlying Keccak round function:
+      \begin{itemize}
+      \item While the compute elements of Keccak are well supported by other
+            \XCRYPTO instructions (and other proposals in the literature), there
+            is considerable latent complexity in generating indices into
+            the state matrix.
+            This complexity is removed by unrolling the loops and
+            turning addresses into constant offsets. However, this is not
+            always appropriate in memory constrained environments like embedded
+            cores.
+      \item The index computation relies on integer arithmetic modulo 5. This
+            is very slow to implement using the normal RISC-V {\tt mod} instruction.
+            Lookup tables can improve performance at significant energy efficiency cost.
+      \item The cost of index computation remains the same across all SHA3 parameter
+            sets, meaning that for smaller parameters, it can dominate the runtime.
+      \item Code-dense implementations of Keccak which are runtime competitive
+            with unrolled versions can bring considerable energy-efficiency
+            benefits in systems with instruction caches.
+      \item Keccak (particularly the CSHAKE instantiation) is used by many of the
+            candidate algorithms submitted to the NIST post-quantum public-key
+            cryptography competition. This further increases its importance as
+            an optimisation target.
+      \end{itemize}
+
+      \noindent SHA2 round functions:
+      \begin{itemize}
+      \item SHA256 is an extremely popular hash function.
+      \item Light weight accelerator instructions, while not as efficient
+        as {\em full round} instructions found in larger cores, offer
+        a very promising trade off between implementation cost and
+        performance/code-size/energy-efficiency gains.
+      \end{itemize}
+
+      \noindent Both instruction classes:
+      \begin{itemize}
+      \item The overhead in terms of resources (LUTs or logic cells) is very
+            small compared to the benefits the instructions provide.
+      \end{itemize}
+
+\end{description}
+
+% =============================================================================

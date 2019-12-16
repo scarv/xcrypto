@@ -1,0 +1,118 @@
+\subsection{Shared Bitmanip instructions}
+\label{sec:spec:shared:bitmanip}
+
+In the Bitmanip extension, instructions for permutation, field
+insertion/extraction and conditional move operations are very
+useful for various cryptographic workloads.
+
+Here is listed a set of instructions which are {\em shared} with
+the bitmanip extensions.
+That is, someone implementing either the \XCRYPTO specifcation, or
+the Bitmanip extension can use them.
+The instruction functions and encodings remain identical across extensions.
+
+For a full description of the functionality of these instructions, we
+refer readers to the Bitmanip draft standard\footnote{
+\url{https://github.com/riscv/riscv-bitmanip}
+}.
+
+\subsubsection{Conditional Move}
+The conditional move instruction allows a destination register to
+be written with one of two source registers, based on whether a
+third source register is zero.
+Conditional moves are very useful for implementing constant time
+cryptographic code.
+
+Instruction Listing:
+\begin{itemize}
+\item {\tt cmov rd, rs2, rs1, rs3}
+\end{itemize}
+
+\subsubsection{Rotation}
+Rotation is an essential primitive operation in many block ciphers and
+hash functions.
+
+Instruction Listing:
+\begin{itemize}
+\item RV32, RV64:
+\begin{itemize}
+\item {\tt ror  rd, rs1, rs2}
+\item {\tt rol  rd, rs1, rs2}
+\item {\tt rori rd, rs1, imm}
+\end{itemize}
+\item RV64 only:
+\begin{itemize}
+\item {\tt rorw  rd, rs1, rs2}
+\item {\tt rolw  rd, rs1, rs2}
+\item {\tt roriw rd, rs1, imm}
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Funnel Shift}
+Funnel shifts help with implementing $2*\RVXLEN$ rotations.
+This can become very common in RV32I systems executing crypographic code.
+Examples include some blockciphers (Prince) and
+hash functions (SHA3, SHA512, Blake2).
+
+Instruction Listing:
+\begin{itemize}
+\item RV32, RV64:
+\begin{itemize}
+\item {\tt fsl  rd, rs1, rs3, rs2}
+\item {\tt fsr  rd, rs1, rs3, rs2}
+\item {\tt fsri rd, rs1, rs3, imm}
+\end{itemize}
+\item RV64 only:
+\begin{itemize}
+\item {\tt fslw  rd, rs1, rs3, rs2}
+\item {\tt fsrw  rd, rs1, rs3, rs2}
+\item {\tt fsriw rd, rs1, rs3, imm}
+\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Carryless Multiply}
+Carryless multiply is an essential part of Galois/Counter Mode (GCM)
+operation for authenticated encryption using block-ciphers.
+It is also useful for hashing and as a pseudo-random number generator.
+
+Instruction Listing:
+\begin{itemize}
+\item RV32, RV64:
+\begin{itemize}
+\item {\tt clmul  rd, rs1, rs2}
+\item {\tt clmulh rd, rs1, rs2}
+\item {\tt clmulr rd, rs1, rs2}
+\end{itemize}
+\item RV64 only:
+\begin{itemize}
+\item {\tt clmulw  rd, rs1, rs2}
+\item {\tt clmulhw rd, rs1, rs2}
+\item {\tt clmulrw rd, rs1, rs2}
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Bitfield Insert/Extract/Permute}
+Permutation layers are common constructions in block-ciphers.
+Also, RISC-V is a little endian system, and certain block ciphers (SHA2)
+require big endian byte-ordering for their inputs.
+
+Instruction Listing:
+\begin{itemize}
+\item RV32, RV64:
+\begin{itemize}
+\item {\tt bext   rd, rs1, rs2}
+\item {\tt bdep   rd, rs1, rs2}
+\item {\tt grev   rd, rs1, rs2}
+\item {\tt grevi  rd, rs1, rs2}
+\end{itemize}
+\item RV64 only:
+\begin{itemize}
+\item {\tt bextw  rd, rs1, rs2}
+\item {\tt bdepw  rd, rs1, rs2}
+\item {\tt grevw  rd, rs1, rs2}
+\item {\tt greviw rd, rs1, rs2}
+\end{itemize}
+\end{itemize}
+
+

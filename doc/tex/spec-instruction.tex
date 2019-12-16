@@ -1,0 +1,1115 @@
+\subsection{\XCRYPTO instructions}
+\label{sec:spec:instruction}
+
+% =============================================================================
+
+\subsubsection{Class-$1$:   baseline}
+\label{sec:spec:instruction:1}
+
+\XCRYPTOINSTR{xc.ldr.bu}{rd, rs1(rs2)}{
+  Load a      byte from memory
+  into a  $\GPR$ register,
+  zero extending to \RVXLEN bits.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr  \ASN \GPR[*][{\VERB[RV]{rs1}}] + \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(\MEM[*][{addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.b}{rd, rs1(rs2)}{
+  Load a      byte from memory
+  into a  $\GPR$ register,
+  sign extending to \RVXLEN bits.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] +   \GPR[*][{\VERB[RV]{rs2}}]         $ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{\pm}{(\MEM[*][{       addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.hu}{rd, rs1(rs2)}{
+  Load a  halfword from memory
+  into a  $\GPR$ register,
+  zero extending to \RVXLEN bits.
+  If the effective address $addr$ is not half-word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{lh}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 1 )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0  }{(\MEM[*][{addr+1:addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.h}{rd, rs1(rs2)}{
+  Load a  halfword from memory
+  into a  $\GPR$ register,
+  sign extending to \RVXLEN bits.
+  If the effective address $addr$ is not half-word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{lh}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 1 )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{\pm}{(\MEM[*][{addr+1:addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.wu}{rd, rs1(rs2)}{
+  Load a      word from memory 
+  into                         an $\GPR$ register,
+  zero extending to \RVXLEN bits.
+  If the effective address $addr$ is not      word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{lw}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 2 )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0  }{(\MEM[*][{addr+3:addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.w}{rd, rs1(rs2)}{
+  Load a      word from memory 
+  into                         an $\GPR$ register,
+  sign extending to \RVXLEN bits.
+  If the effective address $addr$ is not      word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{lw}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 2 )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{\pm}{(\MEM[*][{addr+3:addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.ldr.d}{rd, rs1(rs2)}{
+  Load a double word from memory 
+  into                         an $\GPR$ register,
+  sign extending to \RVXLEN bits.
+  If the effective address $addr$ is not double word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{ld}~\cite[Section 5.3]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 3 )$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{\pm}{(\MEM[*][{addr+7:addr}])}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.str.b}{rs3, rs1(rs2)}{
+  Store the least significant byte of an $\GPR$ register into memory.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] +   \GPR[*][{\VERB[RV]{rs2}}]         $ \;
+  $\MEM[*][{       addr}] \ASN \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.str.h}{rs3, rs1(rs2)}{
+  Store the least significant half-word of an $\GPR$ register into memory.
+  If the effective address $addr$ is not half-word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{sh}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 1 )$ \;
+  $\MEM[*][{addr+1:addr}] \ASN \INDEX[16]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.str.w}{rs3, rs1(rs2)}{
+  Store the least significant word of an $\GPR$ register into memory.
+  If the effective address $addr$ is not      word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{sw}~\cite[Section 2.6]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV32, RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 2 )$ \;
+  $\MEM[*][{addr+3:addr}] \ASN \INDEX[32]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.str.d}{rs3, rs1(rs2)}{
+  Store the least significant double word of an $\GPR$ register into memory.
+  If the effective address $addr$ is not double word aligned, 
+  the memory access {\em must} raise an exception in the same way
+  as the base ISA 
+  (e.g., per \VERB[RV]{sd}~\cite[Section 5.3]{SCARV:RV:ISA:I:17})
+  would.
+  Instruction exists on RV64 and RV128.
+}{
+  $addr \ASN \GPR[*][{\VERB[RV]{rs1}}] + ( \GPR[*][{\VERB[RV]{rs2}}] \LSH 3 )$ \;
+  $\MEM[*][{addr+7:addr}] \ASN \INDEX[64]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+}
+
+% =============================================================================
+
+\subsubsection{Class-$2.1$: randomness}
+\label{sec:spec:instruction:2:1}
+
+\XCRYPTOINSTR{xc.rngtest}{rd}{
+  Inspect the RNG state, applying a suitable ``health check'' on the level 
+  of entropy available: the status flag is stored in a $\GPR$ register.
+  If, after execution of \VERB[RV]{xc.rngtest},
+         $\GPR[*][{\VERB[RV]{rd1}}] = 1$
+  (resp. $\GPR[*][{\VERB[RV]{rd1}}] = 0$),
+  then the RNG has 
+           sufficient 
+  (resp. insufficient)
+  entropy; the next output sampled via \VERB[RV]{xc.rngsamp} 
+  therefore
+         can
+  (resp. cannot, or at least should not)
+  be used.
+  Note that the instruction must write either $1$ or $0$ to the
+  destination register.
+  Writing {\em non-zero} (resp. $1$) makes verification and co-simulation
+  much harder.
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \TEST{\ASN} \RNG$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.rngseed}{rs1}{
+  Inject (or seed) $\RVXLEN$-bits of entropy into the RNG, reading from a
+  $\GPR$ register.
+}{
+  $\RNG \ASN \GPR[*][{\VERB[RV]{rs1}}]$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.rngsamp}{rd}{
+  Sample           $\RVXLEN$-bits of entropy from the RNG, writing to   a
+  $\GPR$ register.
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \RNG$ \;
+}
+
+% =============================================================================
+
+\subsubsection{Class-$2.2$: memory}
+\label{sec:spec:instruction:2:2}
+
+The semantics of each instruction in this class could be broadly described 
+as involving multiple, potentially non-contiguous memory accesses, i.e., a 
+sequence of loads or stores; each such access relates to an effective
+address, computed as the sum of 
+a) an explicit             base address 
+   plus
+b) an explicit or implicit offset.
+Imagine $n$ memory accesses should be performed by an instruction, using a 
+sequence of effective addresses denoted
+\[
+addr = \LIST{ addr_0, addr_1, \ldots, addr_{n-1} } .
+\]
+To ensure consistency, the instruction must adhere to the following rules 
+(in addition to \REFSEC{sec:spec:exceptions}) wrt. exceptions:
+
+\begin{itemize}
+
+\item {\em All} effective addresses must be checked for misalignment, and
+      an exception raised if necessary, before {\em any} associated memory 
+      accesses are performed: either
+      a) $\exists~i$ for which the effective address $addr_i$ is misaligned, 
+         in which case {\em none} of the memory accesses are performed,
+         or
+      b) $\forall~i$           the effective address $addr_i$ is    aligned, 
+         in which case {\em  all} of the memory accesses are performed.
+      The rationale for this rule is to prevent partial execution of the
+      instruction, and thus partial update of either architectural state
+      or the memory hierarchy.
+
+\item {\em Some} memory accesses have the potential to raise an exception
+      that cannot be predicted, even with a priori knowledge of $addr$;
+      examples include page, protection or bus faults.  In such cases,
+      a) update to 
+         architectural state 
+         {\em is not} permitted,
+         whereas
+      b) update to the 
+         memory hierarchy
+         {\em is}     permitted,
+         but should be avoided or minimised if possible.
+      For example, the partial execution of a load instruction would not
+      lead to the destination register being updated; it could, however,
+      lead to the state of any cache memory being updated.
+      It is imperative that {\em if} micro-architectural state {\em is}
+      updated by a faulting instructions, that mitigations against
+      attacks which exploit this are taken.
+
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.scatter.b}{rs3, rs1(rs2)}{
+  Perform a ``scattered'' store of 
+  four      bytes 
+  from an $\GPR$ register
+  into memory;
+  for the $i$-th store, a base-offset style effective address is formed 
+  from
+                     a  $\GPR$ register (the   base)
+  plus
+  a      byte within an $\GPR$ register (the offset).
+
+  Only the low $32$-bits of source registers 
+  $\VERB[RV]{rs2}$ and $\VERB[RV]{rs3}$
+  are ever read.
+}{
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{1}$ \;
+  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{2}$ \;
+  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{3}$ \;
+  $\MEM[*][addr_0  ]                        \ASN \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+  $\MEM[*][addr_1  ]                        \ASN \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs3}}]}{1}$ \;
+  $\MEM[*][addr_2  ]                        \ASN \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs3}}]}{2}$ \;
+  $\MEM[*][addr_3  ]                        \ASN \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs3}}]}{3}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.scatter.h}{rs3, rs1(rs2)}{
+  Perform a ``scattered'' store of 
+  two  half-words
+  from an $\GPR$ register
+  into memory;
+  for the $i$-th store, a base-offset style effective address is formed 
+  from
+                     a  $\GPR$ register (the   base)
+  plus
+  a half-word within an $\GPR$ register (the offset).
+  Note that the offset amounts from $\VERB[RV]{rs2}$ are automatically
+  halfword aligned by the instruction.
+  
+  Only the low $32$-bits of source registers 
+  $\VERB[RV]{rs2}$ and $\VERB[RV]{rs3}$
+  are ever read.
+}{
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + (\INDEX[16]{\GPR[*][{\VERB[RV]{rs2}}]}{0} \LSH 1)$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + (\INDEX[16]{\GPR[*][{\VERB[RV]{rs2}}]}{1} \LSH 1)$ \;
+  $\MEM[*][addr_0+1:addr_0]                 \ASN \INDEX[16]{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+  $\MEM[*][addr_1+1:addr_1]                 \ASN \INDEX[16]{\GPR[*][{\VERB[RV]{rs3}}]}{1}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.gather.b}{rd, rs1(rs2)}{
+  Perform a  ``gathered''  load of 
+  four      bytes 
+  from memory 
+  into an $\GPR$ register;
+  for the $i$-th  load, a base-offset style effective address is formed 
+  from
+                     a  $\GPR$ register (the   base)
+  plus
+  a      byte within an $\GPR$ register (the offset).
+
+  The {\em high} bits of the destination register from $\RVXLEN$ to $32$
+  are zeroed.
+}{
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{0}$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{1}$ \;
+  $addr_2                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{2}$ \;
+  $addr_3                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + \INDEX[ 8]{\GPR[*][{\VERB[RV]{rs2}}]}{3}$ \;
+  $\INDEX[ 8]{\GPR[*][{\VERB[RV]{rd}}]}{0} \ASN \MEM[*][addr_0  ]$ \;
+  $\INDEX[ 8]{\GPR[*][{\VERB[RV]{rd}}]}{1} \ASN \MEM[*][addr_1  ]$ \;
+  $\INDEX[ 8]{\GPR[*][{\VERB[RV]{rd}}]}{2} \ASN \MEM[*][addr_2  ]$ \;
+  $\INDEX[ 8]{\GPR[*][{\VERB[RV]{rd}}]}{3} \ASN \MEM[*][addr_3  ]$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.gather.h}{rd, rs1(rs1)}{
+  Perform a  ``gathered''  load of 
+  two  half-words
+  from memory 
+  into an $\GPR$ register;
+  for the $i$-th  load, a base-offset style effective address is formed 
+  from
+                     a  $\GPR$ register (the   base)
+  plus
+  a half-word within an $\GPR$ register (the offset).
+  Note that the offset amounts from $\VERB[RV]{rs2}$ are automatically
+  halfword aligned by the instruction.
+
+  The {\em high} bits of the destination register from $\RVXLEN$ to $32$
+  are zeroed.
+}{
+  $addr_0                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + (\INDEX[16]{\GPR[*][{\VERB[RV]{rs2}}]}{0} \LSH 1)$ \;
+  $addr_1                                   \ASN \GPR[*][{\VERB[RV]{rs1}}] + (\INDEX[16]{\GPR[*][{\VERB[RV]{rs2}}]}{1} \LSH 1)$ \;
+  $\INDEX[16]{\GPR[*][{\VERB[RV]{rd}}]}{0} \ASN \MEM[*][addr_0+1:addr_0]$ \;
+  $\INDEX[16]{\GPR[*][{\VERB[RV]{rd}}]}{1} \ASN \MEM[*][addr_1+1:addr_1]$ \;
+}
+
+% =============================================================================
+
+\subsubsection{Class-$2.3$: bit-oriented}
+\label{sec:spec:instruction:2:3}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.bop}{rd, rs1, rs2, l}{
+  Compute each $1$-bit sub-word (i.e.,    bit) of an $\RVXLEN$-bit result
+  via application of a function
+  \[
+  f  : \SET{ 0, 1 }^3 \rightarrow \SET{ 0, 1 }
+  \]
+  encoded as a truth-table via the
+  $\SPR{uxcrypto.b0}$ or $\SPR{uxcrypto.b1}$
+  CSR fields,
+  selected using the $\VERB[RV]{l}$ input
+  \[
+  f( i ) = \INDEX{\SPR{uxcrypto.b[l]}}{i}
+  \]
+  for $0 \leq i <  8$.
+  The  input to said function is read    from (the               $1$-bit sub-words of) three $\GPR$ registers,
+  and 
+  the output                  is written to   (the corresponding $1$-bit sub-word  of) an    $\GPR$ register.
+  For example, if
+  $\SPR{uxcrypto.b[l]} = \RADIX{11110000}{2}$
+  then
+  $f( \RADIX{000}{2} ) = \RADIX{0}{2}$,
+  $f( \RADIX{011}{2} ) = \RADIX{0}{2}$,
+  $f( \RADIX{100}{2} ) = \RADIX{1}{2}$,
+  and
+  $f( \RADIX{111}{2} ) = \RADIX{1}{2}$.
+
+  See \REFSEC{sec:spec:state:csr} for more information on the
+  CSR register containing the
+  $\SPR{uxcrypto.b0}$ and $\SPR{uxcrypto.b1}$
+  CSR fields.
+}{
+  $f = \SPR{uxcrypto.b[l]}$ \;
+  $t \ASN 0$ \;
+  \For{$i = 0$ {\bf upto} $31$} {
+    $\INDEX  {t}{i} \ASN f( \INDEX{\GPR[*][{\VERB[RV]{rd}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs1}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs2}}]}{i} )$ \;
+  }
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
+}
+
+% ----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.lut}{rd, rs1, rs2}{
+  Compute each $4$-bit sub-word (i.e., nibble) of an $\RVXLEN$-bit result
+  via application of a function
+  \[
+  f  : \SET{ 0, 1 }^4 \rightarrow \SET{ 0, 1 }^4
+  \]
+  encoded st.
+  \[
+  f( i ) = \INDEX[4]{(\GPR[*][{\VERB[RV]{rs3}}] \CONS \GPR[*][{\VERB[RV]{rs2}}])}{i}
+  \]
+  for $0 \leq i < 15$;
+  the  input to said function is read    from (a                 $4$-bit sub-word of) an     $\GPR$ register,
+  and 
+  the output                  is written to   (the corresponding $4$-bit sub-word of) an     $\GPR$ register.
+  For example, if
+  $\GPR[*][{\VERB[RV]{rs3}}] \CONS \GPR[*][{\VERB[RV]{rs2}}] = \RADIX{0123456789ABCDEF}{16}$
+  then
+  $f( \RADIX{0000}{2} ) = \RADIX{1111}{2}$,
+  $f( \RADIX{0001}{2} ) = \RADIX{1110}{2}$,
+  $f( \RADIX{1110}{2} ) = \RADIX{0001}{2}$,
+  and
+  $f( \RADIX{1111}{2} ) = \RADIX{0000}{2}$.
+  Note that
+  \VERB[RV]{xc.lut}
+  allows synthesis of a wider set of functionality;
+  for example, it can be used to synthesise 
+  the application of a function
+  \[
+  f' : \SET{ 0, 1 }^2 \rightarrow \SET{ 0, 1 }^2
+  \]
+  by padding
+  $\GPR[*][{\VERB[RV]{rs3}}]$
+  and
+  $\GPR[*][{\VERB[RV]{rs2}}]$
+  appropriately.
+}{
+  $f = \GPR[*][{\VERB[RV]{rs1}}]_{31\RANGE 0} \CONS \GPR[*][{\VERB[RV]{rs2}}]_{31\RANGE 0}$ \;
+  $t \ASN 0$ \;
+  \For{$i = 0$ {\bf upto}  $\RVXLEN/4$}{
+    $\INDEX[4]{t}{i} \ASN f( \GPR[*][{\VERB[RV]{rs1}}] )$ \;
+  }
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
+}
+
+
+% =============================================================================
+
+\subsubsection{Class-$2.4$: packed}
+\label{sec:spec:instruction:2:4}
+
+Each instruction in this class computes a packed operation: for an operator
+$\odot$, register or immediate variants essentially compute
+
+\begin{enumerate}
+\item $\INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w][u]{\odot} \INDEX[w]{y}{i}$,
+      for $r$, $x$, and $y$ in $\GPR$ registers.
+      and
+\item $\INDEX[w]{r}{i} = \INDEX[w]{x}{i} \OP[w][u]{\odot}           y    $,
+      for $r$       and $x$ in $\GPR$ registers, and an immediate $y$,
+\end{enumerate}
+
+\noindent
+and for each 
+$
+0 \leq i < \VERB[RV]{w} ,
+$ 
+where the field bit width
+$
+\VERB[RV]{w} \in \SET{ 2, 4, 8, 16}
+$ 
+is specified in the $\VERB[RV]{pw}$ field of the instruction encoding.
+As such, said encoding yields the following cases:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ccc@{}}
+\toprule
+Assembler Mnemonic & {\tt pw} Value & Bit Field Width \\ \midrule
+{\tt c }           & \RADIX{00}{2}  & $2 $            \\
+{\tt n }           & \RADIX{01}{2}  & $4 $            \\
+{\tt b }           & \RADIX{10}{2}  & $8 $            \\
+{\tt h }           & \RADIX{11}{2}  & $16$            \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\noindent As concrete examples:
+\begin{itemize}
+\item {\tt xc.padd b, c0, c1, c2}
+    will add the four pairs of coresponding bytes in c1 and c2.
+\item {\tt xc.padd h, c0, c1, c2} 
+    will add corresponding halfwords.
+\item {\tt xc.psll b, c0, c1, c2} 
+    will shift all bytes in
+    $\GPR[*][{\VERB[RV]{rs1}}]$
+    by the word value in
+    $\GPR[*][{\VERB[RV]{rs2}}]$
+\item {\tt xc.pror.i n, c0, c1, 3} 
+    will rotate right all nibbles in
+    $\GPR[*][{\VERB[RV]{rs1}}]$
+    by the immediate value.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.padd}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed addition, 
+  implying $\odot = +$.
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{+}      \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.psub}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed subtraction, 
+  implying $\odot = -$.
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{-}      \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pmul.l}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed multiplication,
+  implying $\odot = \times$;
+  this instruction captures the  ``low'' half, or $w$ LSBs of 
+  each computed product
+  (cf. \VERB[RV]{xc.pmul.h},   which captures the ``high'' half, or $w$ MSBs).
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $t \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{ \times} \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN t_{        w - 1 \RANGE 0}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pmul.h}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed multiplication,
+  implying $\odot = \times$;
+  this instruction captures the ``high'' half, or $w$ MSBs of 
+  each computed product
+  (cf. \VERB[RV]{xc.pmul.l},   which captures the  ``low'' half, or $w$ LSBs).
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $t \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{ \times} \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN t_{2 \cdot w - 1 \RANGE w}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pclmul.l}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND{x}]$ (or ``carry-less'' multiplication),
+  implying $\odot = \otimes$;
+  this instruction captures the  ``low'' half, or $w$ LSBs of 
+  each computed product
+  (cf. \VERB[RV]{xc.pclmul.h}, which captures the ``high'' half, or $w$ MSBs).
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $t \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\otimes} \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN t_{        w - 1 \RANGE 0}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pclmul.h}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed multiplication in $\B{F}_2[\IND{x}]$ (or ``carry-less'' multiplication),
+  implying $\odot = \otimes$;
+  this instruction captures the ``high'' half, or $w$ MSBs of 
+  each computed product
+  (cf. \VERB[RV]{xc.pclmul.l}, which captures the  ``low'' half, or $w$ LSBs).
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $t \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\otimes} \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i}$ \;
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN t_{2 \cdot w - 1 \RANGE w}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.psll}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed left-shift,
+  implying $\odot = \LSH$.
+  Keep in mind that
+  any out-of-range distance
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rs2}}]}{i} \geq w
+  $
+  will yield
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} = 0 .
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\LSH}             \GPR[*][{\VERB[RV]{rs2}}]    $ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.psll.i}{pw, rd, rs1, cshamt}{
+  Compute an immediate-based packed left-shift,
+  implying $\odot = \LSH$.
+  Keep in mind that
+  any out-of-range distance
+  $
+  \VERB[RV]{shamt} \geq w
+  $
+  will yield
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} = 0 
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\LSH}   \VERB[RV]{cshamt}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.psrl}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed right-shift,
+  implying $\odot = \RSH$.
+  Keep in mind that
+  any out-of-range distance
+  $
+  \VERB[RV]{shamt} \geq w
+  $
+  will yield
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} = 0 .
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\RSH}             \GPR[*][{\VERB[RV]{rs2}}]    $ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.psrl.i}{pw, rd, rs1, cshamt}{
+  Compute an immediate-based packed left-shift,
+  implying $\odot = \RSH$.
+  Keep in mind that
+  any out-of-range distance
+  $
+  \VERB[RV]{shamt} \geq w
+  $
+  will yield
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} = 0 
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\RSH}   \VERB[RV]{cshamt}$ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pror}{pw, rd, rs1, rs2}{
+  Compute a   register-based packed right-rotate,
+  implying $\odot = \RRT$.
+  Keep in mind that
+  the effective distance will be
+  $
+  \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \pmod{w} .
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\RRT}             \GPR[*][{\VERB[RV]{rs2}}]    $ \;
+  }
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.pror.i}{pw, rd, rs1, cshamt}{
+  Compute an immediate-based packed right-rotate,
+  implying $\odot = \RRT$.
+  Keep in mind that
+  the effective distance will be
+  $
+  \VERB[RV]{rtamt} \pmod{w} 
+  $
+}{
+  $w = 2^{\VERB[RV]{pw+1}}$ \;
+  $n = \RVXLEN / w$\;
+  $\VERB[RV]{rtamt} = \VERB[RV]{cshamt}$\;
+  \For{$i = 0$ {\bf upto} $\VERB[RV]{n} - 1$}{
+    $\INDEX[w]{\GPR[*][{\VERB[RV]{rd}}]}{i} \ASN \INDEX[w]{\GPR[*][{\VERB[RV]{rs1}}]}{i} \OP[w][u]{\RRT}   \VERB[RV]{rtamt}$ \;
+  }
+}
+
+% =============================================================================
+
+\subsubsection{Class-$2.5$: multi-precision}
+\label{sec:spec:instruction:2:5}
+
+Instructions in this class use upto
+$3$ source      $\GPR$ registers
+and
+$2$ destination $\GPR$ registers,
+which demands some compromises wrt. the encoding used.
+In short, a compressed specification of the destination $\GPR$ registers is
+used, whereby a single encoded \VERB[RV]{rdm} field implies (or maps to) a 
+pair 
+$
+\TUPLE{ \VERB[RV]{rd2}, \VERB[RV]{rd1} }
+$
+of register addresses st.
+a) $\VERB[RV]{rd2} = \VERB[RV]{rd1} + 1$
+   (the contiguous'ness rule),
+   and
+b) $\VERB[RV]{rd2} = 1 \pmod{2}$
+   and 
+   $\VERB[RV]{rd1} = 0 \pmod{2}$
+   (the  odd-even'ness rule).
+Concretely then, this means
+\[
+\begin{array}{l@{\;}c@{\;}r c c@{\;}l@{\;}c@{\;}r@{\;}c@{\;}l@{\;}c@{\;}r@{\;}c}
+\VERB[RV]{rdm} &=& \RADIX{0000}{2} &\mapsto& ( & \VERB[RV]{rd2} &=&  1 &,& \VERB[RV]{rd1} &=&  0 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0001}{2} &\mapsto& ( & \VERB[RV]{rd2} &=&  3 &,& \VERB[RV]{rd1} &=&  2 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0010}{2} &\mapsto& ( & \VERB[RV]{rd2} &=&  5 &,& \VERB[RV]{rd1} &=&  4 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0011}{2} &\mapsto& ( & \VERB[RV]{rd2} &=&  7 &,& \VERB[RV]{rd1} &=&  6 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0100}{2} &\mapsto& ( & \VERB[RV]{rd2} &=&  9 &,& \VERB[RV]{rd1} &=&  8 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0101}{2} &\mapsto& ( & \VERB[RV]{rd2} &=& 11 &,& \VERB[RV]{rd1} &=& 10 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0110}{2} &\mapsto& ( & \VERB[RV]{rd2} &=& 13 &,& \VERB[RV]{rd1} &=& 12 & ) \\
+\VERB[RV]{rdm} &=& \RADIX{0111}{2} &\mapsto& ( & \VERB[RV]{rd2} &=& 15 &,& \VERB[RV]{rd1} &=& 14 & ) \\
+... \\
+\VERB[RV]{rdm} &=& \RADIX{1111}{2} &\mapsto& ( & \VERB[RV]{rd2} &=& 31 &,& \VERB[RV]{rd1} &=& 30 & ) \\
+\end{array}
+\]
+i.e.,
+\[
+\VERB[RV]{rdm} = x ~~\mapsto~~ \TUPLE{ \VERB[RV]{rd2} = x \CONS 1 , \VERB[RV]{rd1} = x \CONS 0 } ,
+\]
+noting
+$\TUPLE{ 1, 0 }$ and $\TUPLE{ 3, 2 }$ are deemed valid pairs,
+$\TUPLE{ 3, 0 }$ is invalid because it violates the contiguous'ness rule,
+$\TUPLE{ 2, 3 }$ is invalid because it violates the contiguous'ness rule,
+and
+$\TUPLE{ 2, 1 }$ is invalid because it violates the  odd-even'ness rule.
+
+Equivilent RISC-V code listings for these instructions can be found
+in Appendix \REFSEC{sec:design:mpn}.
+
+% -----------------------------------------------------------------------------
+
+
+\XCRYPTOINSTR{xc.madd.3}{(rd2, rd1), rs1, rs2, rs3}{
+  Compute a   register-based multi-precision (or ``long'') addition:
+  one can interpret
+  $\GPR[*][{\VERB[RV]{rs1}}]$
+  and
+  $\GPR[*][{\VERB[RV]{rs2}}]$ as the addends,
+  $\GPR[*][{\VERB[RV]{rs3}}]$ as the carry-in bit,
+  $\GPR[*][{\VERB[RV]{rd1}}]$ as the sum,
+  and
+  $\GPR[*][{\VERB[RV]{rd2}}]$ as the carry-out,
+  meaning the instruction acts as a word-oriented analogue of a full-adder.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{rdm} \mapsto \TUPLE{ \VERB[RV]{rd2}, \VERB[RV]{rd1} } .
+  $
+}{
+  $t                          \ASN ( \GPR[*][{\VERB[RV]{rs1}}] \OP[][u]{+}        \GPR[*][{\VERB[RV]{rs2}}] ) 
+                                                               \OP[][u]{+} \INDEX{\GPR[*][{\VERB[RV]{rs3}}]}{0}$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN \INDEX{t}{      \RVXLEN-1 \RANGE     0}$ \;
+  $\GPR[*][{\VERB[RV]{rd2}}] \ASN \INDEX{t}{      \RVXLEN               }$ \;
+}
+
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.msub.3}{(rd2, rd1), rs1, rs2, rs3}{
+  Compute a   register-based multi-precision (or ``long'') subtraction:
+  one can interpret
+  $\GPR[*][{\VERB[RV]{rs1}}]$ as the    minuend,
+  $\GPR[*][{\VERB[RV]{rs2}}]$ as the subtrahend,
+  $\GPR[*][{\VERB[RV]{rs3}}]$ as the borrow-in bit,
+  $\GPR[*][{\VERB[RV]{rd1}}]$ as the difference,
+  and
+  $\GPR[*][{\VERB[RV]{rd2}}]$ as the borrow-out,
+  meaning the instruction acts as a word-oriented analogue of a full-subtractor.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{rdm} \mapsto \TUPLE{ \VERB[RV]{rd2}, \VERB[RV]{rd1} } .
+  $
+}{
+  $t                          \ASN ( \GPR[*][{\VERB[RV]{rs1}}] \OP[][u]{-}        \GPR[*][{\VERB[RV]{rs2}}] ) 
+                                                               \OP[][u]{-} \INDEX{\GPR[*][{\VERB[RV]{rs3}}]}{0}  $ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN \INDEX{t}{        \RVXLEN-1 \RANGE       0}$ \;
+  $\GPR[*][{\VERB[RV]{rd2}}] \ASN \INDEX{t}{        \RVXLEN                 }$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.macc.1}{(rd2, rd1), rs1, rs2, rs3}{
+  Compute a   register-based multi-precision (or ``long'') accumulation,
+  with the
+  $\RVXLEN$-bit addend
+  $\GPR[*][{\VERB[RV]{rs1}}]$
+  accumulated into a $( 2 \cdot \RVXLEN )$-bit value formed by concatenating
+  $\GPR[*][{\VERB[RV]{rs1}}]$
+  and
+  $\GPR[*][{\VERB[RV]{rs2}}]$.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{rdm} \mapsto \TUPLE{ \VERB[RV]{rd2}, \VERB[RV]{rd1} } .
+  $
+}{
+  $t                          \ASN ( \GPR[*][{\VERB[RV]{rs1}}] \CONS \GPR[*][{\VERB[RV]{rs2}}] ) \OP[][u]{+} \GPR[*][{\VERB[RV]{rs3}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN \INDEX{t}{        \RVXLEN-1 \RANGE       0}$ \;
+  $\GPR[*][{\VERB[RV]{rd2}}] \ASN \INDEX{t}{2 \cdot \RVXLEN   \RANGE \RVXLEN}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mmul.3}{(rd2, rd1), rs1, rs2, rs3}{
+  Compute a   register-based multi-precision (or ``long'') multiply-accumulate:
+  the $\RVXLEN$-bit multiplicands
+  $\GPR[*][{\VERB[RV]{rs1}}]$
+  and
+  $\GPR[*][{\VERB[RV]{rs2}}]$
+  are first used to form a $( 2 \cdot \RVXLEN )$-bit product captured by
+  $\GPR[*][{\VERB[RV]{rd1}}]$ (the LSBs)
+  and
+  $\GPR[*][{\VERB[RV]{rd2}}]$ (the MSBs),
+  into which the $\RVXLEN$-bit addend
+  $\GPR[*][{\VERB[RV]{rs3}}]$
+  is accumulated.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{rdm} \mapsto \TUPLE{ \VERB[RV]{rd2}, \VERB[RV]{rd1} } .
+  $
+}{
+  $t                          \ASN ( \GPR[*][{\VERB[RV]{rs1}}] \OP[][u]{ \times} \GPR[*][{\VERB[RV]{rs2}}] ) 
+                                                               \OP[][u]{ +}      \GPR[*][{\VERB[RV]{rs3}}]$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN \INDEX{t}{        \RVXLEN-1 \RANGE       0}$ \;
+  $\GPR[*][{\VERB[RV]{rd2}}] \ASN \INDEX{t}{2 \cdot \RVXLEN   \RANGE \RVXLEN}$ \;
+}
+
+\XCRYPTOINSTR{xc.mror}{(rd2, rd1), rs1, rs2, rs3}{
+  Compute a register-based double-width right rotate.
+}{
+  $t \ASN (\GPR[*][{\VERB[RV]{rs1}}] \CONS \GPR[*][{\VERB[RV]{rs2}}]) \RRT \GPR[*][{\VERB[RV]{rs3}}] $\;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN \INDEX{t}{        \RVXLEN-1 \RANGE       0}$ \;
+  $\GPR[*][{\VERB[RV]{rd2}}] \ASN \INDEX{t}{2 \cdot \RVXLEN   \RANGE \RVXLEN}$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+
+\subsubsection{Class-$3.1$: AES}
+\label{sec:spec:instruction:3:1}
+
+\XCRYPTOINSTR{xc.aessub}{.\[enc,dec\]\[rot\] rd, rs1, rs2}{
+  Per~\cite[Figures 5]{SCARV:TilGro:06}, 
+  apply a (carefully structured) form of the AES 
+  {\tt SubBytes}~\cite[Section 5.1.1]{SCARV:FIPS:197}
+  operation:
+  this is applicable to a column-oriented implementation of AES, where
+  state (resp. round key) matrix columns are packed into $32$-bit
+  words.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{mode}
+  $
+  and
+  $
+  \VERB[RV]{rot}
+  $
+  control  which variant is applied: these variants are exposed via
+  dedicated mnemonics st.
+  \[
+  \begin{array}{l c r@{\;}c@{\;}l @{\;}c@{\;} r@{\;}c@{\;}l}
+  \VERB[RV]{xc.aessub.enc}    &\mapsto& \VERB[RV]{mode} &=& 0 &,& \VERB[RV]{rot} &=& 0 \\
+  \VERB[RV]{xc.aessub.encrot} &\mapsto& \VERB[RV]{mode} &=& 0 &,& \VERB[RV]{rot} &=& 1 \\
+  \VERB[RV]{xc.aessub.dec}    &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 0 \\
+  \VERB[RV]{xc.aessub.decrot} &\mapsto& \VERB[RV]{mode} &=& 1 &,& \VERB[RV]{rot} &=& 1 \\
+  \end{array}
+  \]
+}{
+  \eIf{$\VERB[RV]{mode} = 0$}{
+    $t_0 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \GPR[*][{\VERB[RV]{rs1}}]_{ 7 \RANGE  0} )$ \;
+    $t_1 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \GPR[*][{\VERB[RV]{rs2}}]_{15 \RANGE  8} )$ \;
+    $t_2 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \GPR[*][{\VERB[RV]{rs1}}]_{23 \RANGE 16} )$ \;
+    $t_3 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}     ( \GPR[*][{\VERB[RV]{rs2}}]_{31 \RANGE 24} )$ \;
+  }{
+    $t_0 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \GPR[*][{\VERB[RV]{rs1}}]_{ 7 \RANGE  0} )$ \;
+    $t_1 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \GPR[*][{\VERB[RV]{rs2}}]_{15 \RANGE  8} )$ \;
+    $t_2 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \GPR[*][{\VERB[RV]{rs1}}]_{23 \RANGE 16} )$ \;
+    $t_3 \ASN \SCOPE{\ID{AES}}{\ALG{S-box}}^{-1}( \GPR[*][{\VERB[RV]{rs2}}]_{31 \RANGE 24} )$ \;
+  }
+  
+  \eIf{$\VERB[RV]{rot}  = 0$}{
+    $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(t_3 \CONS t_2 \CONS t_1 \CONS t_0)} $ \;
+  }{
+    $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(t_2 \CONS t_1 \CONS t_0 \CONS t_3)} $ \;
+  }
+}
+
+\XCRYPTOINSTR{xc.aesmix}{mode,      rd, rs1, rs2}{
+  Per~\cite[Figures 5]{SCARV:TilGro:06}, 
+  apply a (carefully structured) form of the AES 
+  {\tt ShiftRows}~\cite[Section 5.1.2]{SCARV:FIPS:197} 
+  and
+  {\tt MixColumns}~\cite[Section 5.1.3]{SCARV:FIPS:197}
+  operations:
+  this is applicable to a column-oriented implementation of AES, where
+  state (resp. round key) matrix columns are packed into $32$-bit
+  words.
+  Note that, wrt. the encoding,
+  $
+  \VERB[RV]{mode}
+  $
+  controls which variant is applied: these variants are exposed via
+  dedicated mnemonics st.
+  \[
+  \begin{array}{l c r@{\;}c@{\;}l@{\;}}
+  \VERB[RV]{xc.aesmix.enc}    &\mapsto& \VERB[RV]{mode} &=& 0 \\
+  \VERB[RV]{xc.aesmix.dec}    &\mapsto& \VERB[RV]{mode} &=& 1 \\
+  \end{array}
+  \]
+}{
+    $t_0 \ASN \GPR[*][{\VERB[RV]{rs1}}]_{ 7 \RANGE  0}  $ \;
+    $t_1 \ASN \GPR[*][{\VERB[RV]{rs1}}]_{15 \RANGE  8}  $ \;
+    $t_2 \ASN \GPR[*][{\VERB[RV]{rs2}}]_{23 \RANGE 16}  $ \;
+    $t_3 \ASN \GPR[*][{\VERB[RV]{rs2}}]_{31 \RANGE 24}  $ \;
+
+  \eIf{$\VERB[RV]{mode} = 0$}{
+    $result \ASN \SCOPE{\ID{AES}}{\ALG{Mix-Column}}     ( t_3 \CONS t_2 \CONS t_1 \CONS t_0 )$ \;
+  }{
+    $result \ASN \SCOPE{\ID{AES}}{\ALG{Mix-Column}}^{-1}( t_3 \CONS t_2 \CONS t_1 \CONS t_0 )$ \;
+  }
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(result)}$\;
+}
+
+% -----------------------------------------------------------------------------
+
+
+\subsubsection{Class-$3.2$: SHA2}
+\label{sec:spec:instruction:3:2}
+
+These instructions are designed to accelerate critical parts of the
+SHA2 round functions.
+
+The SHA256 instructions are available on RV32, RV64 and RV128.
+The SHA512 instructions are available on       RV64 and RV128.
+
+The exact part of the round function computed is exposed by dedicated
+mnemonics st.
+  \[
+  \begin{array}{l c r@{\;}c@{\;}l@{\;}}
+  \VERB[RV]{xc.sha256.s0}, \VERB[RV]{xc.sha512.s0} &\mapsto& \VERB[RV]{s} &=& 0 \\
+  \VERB[RV]{xc.sha256.s1}, \VERB[RV]{xc.sha512.s1} &\mapsto& \VERB[RV]{s} &=& 1 \\
+  \VERB[RV]{xc.sha256.s2}, \VERB[RV]{xc.sha512.s2} &\mapsto& \VERB[RV]{s} &=& 2 \\
+  \VERB[RV]{xc.sha256.s3}, \VERB[RV]{xc.sha512.s3} &\mapsto& \VERB[RV]{s} &=& 3 \\
+  \end{array}
+  \]
+
+Some design rationale for these instructions can be found
+in Appendix \REFSEC{sec:design:sha}.
+
+\XCRYPTOINSTR{xc.sha256}{.s\[0,1,2,3\] rd, rs1}{
+Compute parts of the SHA256 round function.
+Each operation works on $32$-bit variables and intermediate values.
+The result is zero-extended to \RVXLEN bits before being written back
+to $\GPR[*][{\VERB[RV]{rd}}]$.
+
+These instructions are available on RV32, RV64 and RV128.
+}{
+    $a \ASN \GPR[*][{\VERB[RV]{rs1}}]_{31 \RANGE 0}$\;
+
+    \uIf{$s = 0$}{
+        $result \ASN (a \RRT  7) \XOR (a \RRT 18) \XOR (a \RSH  3)$ \;
+    }\uElseIf{$s = 1$}{
+        $result \ASN (a \RRT 17) \XOR (a \RRT 19) \XOR (a \RSH 10)$ \;
+    }\uElseIf{$s = 2$}{
+        $result \ASN (a \RRT  2) \XOR (a \RRT 13) \XOR (a \RRT 22)$ \;
+    }\uElseIf{$s = 3$}{
+        $result \ASN (a \RRT  6) \XOR (a \RRT 11) \XOR (a \RRT 25)$ \;
+    }
+
+    $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(result)}$\;
+}
+
+\XCRYPTOINSTR{xc.sha512}{.s\[0,1,2,3\] rd, rs1}{
+Compute parts of the SHA512 round function.
+Each operation works on $64$-bit variables and intermediate values.
+The result is zero-extended to \RVXLEN bits before being written back
+to $\GPR[*][{\VERB[RV]{rd}}]$.
+
+These instructions are available on       RV64 and RV128.
+}{
+    $a \ASN \GPR[*][{\VERB[RV]{rs1}}]_{63 \RANGE 0}$\;
+
+    \uIf{$s = 0$}{
+        $result \ASN (a \RRT  1) \XOR (a \RRT  8) \XOR (a \RSH  7)$ \;
+    }\uElseIf{$s = 1$}{
+        $result \ASN (a \RRT 19) \XOR (a \RRT 61) \XOR (a \RSH  6)$ \;
+    }\uElseIf{$s = 2$}{
+        $result \ASN (a \RRT 28) \XOR (a \RRT 34) \XOR (a \RRT 39)$ \;
+    }\uElseIf{$s = 3$}{
+        $result \ASN (a \RRT 14) \XOR (a \RRT 18) \XOR (a \RRT 41)$ \;
+    }
+
+    $\GPR[*][{\VERB[RV]{rd}}] \ASN \EXT{0}{(result)}$\;
+}
+
+% ----------------------------------------------------------------------------
+
+\subsubsection{Class-$3.3$: SHA3}
+\label{sec:spec:instruction:3:3}
+
+Each instruction in this class computes an index into the SHA3 state array:
+they provide domain-specific support for address generation within the step
+mappings~\cite[Section 3.2]{SCARV:FIPS:202} (i.e., $\Omega$, $\rho$, $\pi$, 
+$\chi$, and $\iota$) that constitute each round.
+
+Note that the $2$-bit immediate \VERB[RV]{shamt} can be used align the index
+to a byte, half-word, word, or double-word boundary (and thereby support all
+SHA3 parameterisations), and
+
+Some design rationale for these instructions can be found
+in Appendix \REFSEC{sec:design:sha}.
+
+\XCRYPTOINSTR{xc.sha3.xy}{rd, rs1, rs2, shamt}{
+  Compute an index into the SHA3 state array.
+}{
+  $x                        \ASN \GPR[*][{\VERB[RV]{rs1}}]_{2 \RANGE 0}$ \;
+  $y                        \ASN \GPR[*][{\VERB[RV]{rs2}}]_{2 \RANGE 0}$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( (   x       \bmod 5 ) + 5 \cdot (                       y   \bmod 5 ) ) \LSH \VERB[RV]{shamt}$ \;
+}
+
+\XCRYPTOINSTR{xc.sha3.x1}{rd, rs1, rs2, shamt}{
+  Compute an index into the SHA3 state array.
+}{
+  $x                        \ASN \GPR[*][{\VERB[RV]{rs1}}]_{2 \RANGE 0}$ \;
+  $y                        \ASN \GPR[*][{\VERB[RV]{rs2}}]_{2 \RANGE 0}$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( ( ( x + 1 ) \bmod 5 ) + 5 \cdot (                       y   \bmod 5 ) ) \LSH \VERB[RV]{shamt}$ \;
+}
+
+\XCRYPTOINSTR{xc.sha3.x2}{rd, rs1, rs2, shamt}{
+  Compute an index into the SHA3 state array.
+}{
+  $x                        \ASN \GPR[*][{\VERB[RV]{rs1}}]_{2 \RANGE 0}$ \;
+  $y                        \ASN \GPR[*][{\VERB[RV]{rs2}}]_{2 \RANGE 0}$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( ( ( x + 2 ) \bmod 5 ) + 5 \cdot (                       y   \bmod 5 ) ) \LSH \VERB[RV]{shamt}$ \;
+}
+
+\XCRYPTOINSTR{xc.sha3.x4}{rd, rs1, rs2, shamt}{
+  Compute an index into the SHA3 state array.
+}{
+  $x                        \ASN \GPR[*][{\VERB[RV]{rs1}}]_{2 \RANGE 0}$ \;
+  $y                        \ASN \GPR[*][{\VERB[RV]{rs2}}]_{2 \RANGE 0}$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( ( ( x + 4 ) \bmod 5 ) + 5 \cdot (                       y   \bmod 5 ) ) \LSH \VERB[RV]{shamt}$ \;
+}
+
+\XCRYPTOINSTR{xc.sha3.yx}{rd, rs1, rs2, shamt}{
+  Compute an index into the SHA3 state array.
+}{
+  $x                        \ASN \GPR[*][{\VERB[RV]{rs1}}]_{2 \RANGE 0}$ \;
+  $y                        \ASN \GPR[*][{\VERB[RV]{rs2}}]_{2 \RANGE 0}$ \;
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN ( (   y       \bmod 5 ) + 5 \cdot ( ( 2 \cdot x + 3 \cdot y ) \bmod 5 ) ) \LSH \VERB[RV]{shamt}$ \;
+}
+
+% =============================================================================
