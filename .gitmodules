@@ -1,6 +1,3 @@
-[submodule "xcrypto-ref"]
-	path = xcrypto-ref
-	url = https://github.com:scarv/xcrypto-ref.git
 [submodule "xcrypto-spec"]
 	path = xcrypto-spec
 	url = https://github.com:scarv/xcrypto-spec.git
