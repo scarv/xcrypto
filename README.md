@@ -71,12 +71,12 @@ extension proposal.
 ### Publications and presentations
 
 - Some
-  [slides](./doc/riscv-meetup-bristol-slides.pdf)
+  [slides](./media/riscv-meetup-bristol-slides.pdf)
   presented at the
   [RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group)
   in Bristol, April 2019.
 - A
-  [poster](doc/zurich-workshop-poster.pdf)
+  [poster](./media/zurich-workshop-poster.pdf)
   presented at the
   [RISC-V Workshop](https://riscv.org/2019/06/risc-v-workshop-zurich-proceedings)
   in  Zurich,  June 2019.
@@ -103,13 +103,6 @@ dedicated submodule.  Specifically, these include:
      and
      instructions
      (i.e., their semantics and encoding).
-- [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref)
-  houses the
-  a formally verified, area-optimised reference implementation:
-  as well as supporting validation of the ISE, it can be coupled
-  to a RISC-V core such as
-  [`cliffordwolf/picorv32`](https://github.com/cliffordwolf/picorv32)
-  to form a functioning, useful instantiation.
 - [`scarv/xcrypto-rtl`](https://github.com/scarv/xcrypto-rtl)
   contains re-usable hardware implementations of XCrypto instructions.
 - [`scarv/libscarv`](https://github.com/scarv/libscarv)
