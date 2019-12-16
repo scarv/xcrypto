@@ -85,15 +85,12 @@ extension proposal.
 
 ## Organisation
 
-*Originally* this was a 
-[monorepo](https://en.wikipedia.org/wiki/Monorepo)
-that housed *all* resources in one place, but, to make them easier to 
-manage, it *now* acts as a container where each resource is housed in 
-dedicated submodule.  Specifically, these include:
+**Note:** Some history of the XCrypto project and it's organisation
+can be found in [doc/history.md](doc/history.md).
 
-- [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec)
-  houses the
-  XCrypto specification:
+The main components of the XCrypto project are:
+
+- The XCrypto specification:
   this document captures the ISE itself, acting as both
   a) a design document,
      and
@@ -103,8 +100,27 @@ dedicated submodule.  Specifically, these include:
      and
      instructions
      (i.e., their semantics and encoding).
+
+  - The sources for the document are contained in the `doc/` directory
+    as LaTeX.
+    Running `make docs` from the root of the repository will place
+    the compiled PDF file in `build/spec/spec.pdf`.
+
+  - Alternatively, pre-built versions accompany each release of
+    XCrypto, found on the
+    [releases page](https://github.com/scarv/xcrypto/releases).
+
 - [`scarv/xcrypto-rtl`](https://github.com/scarv/xcrypto-rtl)
   contains re-usable hardware implementations of XCrypto instructions.
+
+- [`scarv/scarv-cpu`](https://github.com/scarv/scarv-cpu)
+  is a micro-controller style implementation of the RISC-V instruction
+  set with the XCrypto extensions.
+
+- [`scarv/scarv-soc`](https://github.com/scarv/scarv-soc)
+  is an example SoC integration of the `scarv-cpu`, optimised for
+  evaluation on an FPGA.
+
 - [`scarv/libscarv`](https://github.com/scarv/libscarv)
   is a library of cryptographic reference implementations, which
   includes support for XCrypto.
@@ -145,6 +161,16 @@ Specifically, these include
 
   houses pre-built content: acting as a detailed explanation and
   specification of XCrypto, the former is an ideal starting point.
+
+- The specification document for XCrypto is writen in LaTeX, and stored
+  under the [doc](./doc) folder.
+
+  - The PDF document can be built by running
+    ```
+    $> make doc
+    ```
+    from the root of the repository.
+    This will place the built document in `build/spec/spec.pdf`
 
 - [`${REPO_HOME}/src/docker`](./src/docker)
   contains material related to a
