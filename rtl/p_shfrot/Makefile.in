@@ -1,0 +1,6 @@
+
+P_SHFROT_RTL   = p_shfrot/p_shfrot.v
+P_SHFROT_VERIF = p_shfrot/p_shfrot_ftb.v
+
+$(eval $(call add_targets,$(P_SHFROT_RTL),$(P_SHFROT_VERIF),p_shfrot))
+

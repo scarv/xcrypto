@@ -110,8 +110,9 @@ The main components of the XCrypto project are:
     XCrypto, found on the
     [releases page](https://github.com/scarv/xcrypto/releases).
 
-- [`scarv/xcrypto-rtl`](https://github.com/scarv/xcrypto-rtl)
+- The [`rtl`](./rtl) directory
   contains re-usable hardware implementations of XCrypto instructions.
+  The [README](./rtl/README.md) describes this in more detail.
 
 - [`scarv/scarv-cpu`](https://github.com/scarv/scarv-cpu)
   is a micro-controller style implementation of the RISC-V instruction

@@ -1,0 +1,7 @@
+
+
+XC_AESMIX_RTL   = xc_aesmix/xc_aesmix.v
+XC_AESMIX_VERIF = xc_aesmix/xc_aesmix_ftb.v
+
+$(eval $(call add_targets,$(XC_AESMIX_RTL),$(XC_AESMIX_VERIF),xc_aesmix))
+

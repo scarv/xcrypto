@@ -1,0 +1,6 @@
+
+B_BOP_RTL   = $(RTL_SRC)/b_bop/b_bop.v
+B_BOP_VERIF = $(RTL_SRC)/b_bop/b_bop_ftb.v
+
+$(eval $(call add_targets,$(B_BOP_RTL),$(B_BOP_VERIF),b_bop))
+

@@ -1,0 +1,6 @@
+
+P_ADDSUB_RTL   = p_addsub/p_addsub.v
+P_ADDSUB_VERIF = p_addsub/p_addsub_ftb.v
+
+$(eval $(call add_targets,$(P_ADDSUB_RTL),$(P_ADDSUB_VERIF),p_addsub))
+

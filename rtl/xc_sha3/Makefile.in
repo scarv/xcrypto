@@ -1,0 +1,6 @@
+
+XC_SHA3_RTL   = xc_sha3/xc_sha3.v
+XC_SHA3_VERIF = xc_sha3/xc_sha3_ftb.v
+
+$(eval $(call add_targets,$(XC_SHA3_RTL),$(XC_SHA3_VERIF),xc_sha3))
+

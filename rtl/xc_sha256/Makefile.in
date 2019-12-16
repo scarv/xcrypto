@@ -1,0 +1,6 @@
+
+XC_SHA256_RTL   = xc_sha256/xc_sha256.v
+XC_SHA256_VERIF = xc_sha256/xc_sha256_ftb.v
+
+$(eval $(call add_targets,$(XC_SHA256_RTL),$(XC_SHA256_VERIF),xc_sha256))
+

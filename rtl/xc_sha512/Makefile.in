@@ -1,0 +1,6 @@
+
+XC_SHA512_RTL   = xc_sha512/xc_sha512.v
+XC_SHA512_VERIF = xc_sha512/xc_sha512_ftb.v
+
+$(eval $(call add_targets,$(XC_SHA512_RTL),$(XC_SHA512_VERIF),xc_sha512))
+

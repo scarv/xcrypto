@@ -1,0 +1,7 @@
+
+XC_AESSUB_RTL   = xc_aessub/xc_aessub.v \
+                  xc_aessub/xc_aessub_sbox.v
+XC_AESSUB_VERIF = xc_aessub/xc_aessub_ftb.v
+
+$(eval $(call add_targets,$(XC_AESSUB_RTL),$(XC_AESSUB_VERIF),xc_aessub))
+

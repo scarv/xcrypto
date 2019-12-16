@@ -1,0 +1,6 @@
+
+B_LUT_RTL   = $(RTL_SRC)/b_lut/b_lut.v
+B_LUT_VERIF = $(RTL_SRC)/b_lut/b_lut_ftb.v
+
+$(eval $(call add_targets,$(B_LUT_RTL),$(B_LUT_VERIF),b_lut))
+

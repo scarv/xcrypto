@@ -6,7 +6,10 @@
 # can be found at https://opensource.org/licenses/MIT (or should be included
 # as LICENSE.txt within the associated archive or repository).
 
+echo "-------------------------[Setting Up Project]--------------------------"
+
 export REPO_HOME="${PWD}"
+export REPO_BUILD=$REPO_HOME/build
 
 export REPO_VERSION_MAJOR="1"
 export REPO_VERSION_MINOR="0"
@@ -14,4 +17,16 @@ export REPO_VERSION_PATCH="0"
 export REPO_VERSION="${REPO_VERSION_MAJOR}.${REPO_VERSION_MINOR}.${REPO_VERSION_PATCH}"
 
 export TEXMFLOCAL="${TEXMFLOCAL}:${REPO_HOME}/extern/texmf"
+
+if [ -z $YOSYS_ROOT ] ; then
+    # Export a dummy "Yosys Root" path environment variable.
+    export YOSYS_ROOT=
+fi
+
+echo "REPO_HOME      = $REPO_HOME"
+echo "REPO_BUILD     = $REPO_BUILD"
+echo "REPO_VERSION   = $REPO_VERSION"
+echo "YOSYS_ROOT     = $YOSYS_ROOT"
+
+echo "------------------------------[Finished]-------------------------------"
 
