@@ -110,7 +110,7 @@ index 9ecdcab0b6..25c396bc0c 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..d494f4dc92 100644
+index 6c750a33b1..8968f2d0d0 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -739,6 +739,121 @@
@@ -235,6 +235,22 @@ index 6c750a33b1..d494f4dc92 100644
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
  #define MATCH_CUSTOM0_RS1 0x200b
+@@ -798,6 +913,7 @@
+ #define CSR_FFLAGS 0x1
+ #define CSR_FRM 0x2
+ #define CSR_FCSR 0x3
++#define CSR_UXCRYPTO 0x800
+ #define CSR_CYCLE 0xc00
+ #define CSR_TIME 0xc01
+ #define CSR_INSTRET 0xc02
+@@ -1445,6 +1561,7 @@ DECLARE_CSR(uip, CSR_UIP)
+ DECLARE_CSR(fflags, CSR_FFLAGS)
+ DECLARE_CSR(frm, CSR_FRM)
+ DECLARE_CSR(fcsr, CSR_FCSR)
++DECLARE_CSR(uxcrypto, CSR_UXCRYPTO)
+ DECLARE_CSR(cycle, CSR_CYCLE)
+ DECLARE_CSR(time, CSR_TIME)
+ DECLARE_CSR(instret, CSR_INSTRET)
 diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
 index 7e67c7f9a2..47bb85eede 100644
 --- a/include/opcode/riscv.h
