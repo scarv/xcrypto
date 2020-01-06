@@ -155,13 +155,10 @@ Specifically, these include
 
 ## Quickstart
 
-- The releases page of each submodule, i.e.,
-
-  - [`scarv/xcrypto-spec`](https://github.com/scarv/xcrypto-spec/releases)
-  - [`scarv/xcrypto-ref`](https://github.com/scarv/xcrypto-ref/releases)
-
-  houses pre-built content: acting as a detailed explanation and
-  specification of XCrypto, the former is an ideal starting point.
+- See
+  [`tools/README.md`](tools/README.md)
+  for how to build your own version of the XCrypto modified toolchain and ISA
+  simulator.
 
 - The specification document for XCrypto is writen in LaTeX, and stored
   under the [doc](./doc) folder.
