@@ -17,6 +17,8 @@ BRANCH_NAME=scarv/xcrypto/v$REPO_VERSION
 
 INSTALL_DIR=$REPO_BUILD/toolchain/install
 TARGET_ARCH=riscv32-unknown-elf
+ARCH_STRING=rv32imacb
+ABI_STRING=ilp32
 
 #
 # Check that a directory exists and exit if not.

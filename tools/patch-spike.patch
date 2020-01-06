@@ -1,0 +1,1891 @@
+diff --git a/riscv/decode.h b/riscv/decode.h
+index 9e03676..5495d4a 100644
+--- a/riscv/decode.h
++++ b/riscv/decode.h
+@@ -95,6 +95,12 @@ public:
+   uint64_t rs3() { return x(27, 5); }
+   uint64_t rm() { return x(12, 3); }
+   uint64_t csr() { return x(20, 12); }
++  
++  // XCrypto fields.
++  uint32_t xc_pack_width() {return x(30,2);}
++  uint32_t xc_sha3_sh() {return x(30,2);}
++  uint32_t xc_rdm() {return x(8,4);}
++  uint32_t xc_l() {return x(31,1);}
+ 
+   int64_t rvc_imm() { return x(2, 5) + (xs(12, 1) << 5); }
+   int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
+diff --git a/riscv/encoding.h b/riscv/encoding.h
+index 3c4bf1c..031047f 100644
+--- a/riscv/encoding.h
++++ b/riscv/encoding.h
+@@ -40,6 +40,32 @@
+ #define SSTATUS_UXL         0x0000000300000000
+ #define SSTATUS64_SD        0x8000000000000000
+ 
++#define UXCRYPTO_B1         (0xFF << 24)
++#define UXCRYPTO_B0         (0xFF << 16)
++#define UXCRYPTO_MEM        (0x1  << 10)
++#define UXCRYPTO_RNG        (0x1  <<  9)
++#define UXCRYPTO_PACK16     (0x1  <<  8)
++#define UXCRYPTO_PACK8      (0x1  <<  7)
++#define UXCRYPTO_PACK4      (0x1  <<  6)
++#define UXCRYPTO_PACK2      (0x1  <<  5)
++#define UXCRYPTO_MP         (0x1  <<  4)
++#define UXCRYPTO_SHA3       (0x1  <<  3)
++#define UXCRYPTO_SHA2       (0x1  <<  2)
++#define UXCRYPTO_AES        (0x1  <<  1)
++#define UXCRYPTO_CT         (0x1  <<  0)
++
++#define UXCRYPTO_WMASK      (UXCRYPTO_B1     | UXCRYPTO_B0   | UXCRYPTO_CT)
++#define UXCRYPTO_INIT       (UXCRYPTO_MEM    | \
++                             UXCRYPTO_RNG    | \
++                             UXCRYPTO_PACK16 | \
++                             UXCRYPTO_PACK8  | \
++                             UXCRYPTO_PACK4  | \
++                             UXCRYPTO_PACK2  | \
++                             UXCRYPTO_MP     | \
++                             UXCRYPTO_SHA3   | \
++                             UXCRYPTO_SHA2   | \
++                             UXCRYPTO_AES    )
++
+ #define DCSR_XDEBUGVER      (3U<<30)
+ #define DCSR_NDRESET        (1<<29)
+ #define DCSR_FULLRESET      (1<<28)
+@@ -564,6 +590,121 @@
+ #define MASK_PACKUW  0xfe00707f
+ #define MATCH_BFPW 0x4800703b
+ #define MASK_BFPW  0xfe00707f
++
++/* XCrypto Instructions */
++#define MATCH_XC_LDR_B 0x7003
++#define MASK_XC_LDR_B 0xfe00707f
++#define MATCH_XC_LDR_H 0x2007003
++#define MASK_XC_LDR_H 0xfe00707f
++#define MATCH_XC_LDR_W 0x4007003
++#define MASK_XC_LDR_W 0xfe00707f
++#define MATCH_XC_LDR_D 0x6007003
++#define MASK_XC_LDR_D 0xfe00707f
++#define MATCH_XC_LDR_BU 0x8007003
++#define MASK_XC_LDR_BU 0xfe00707f
++#define MATCH_XC_LDR_HU 0xa007003
++#define MASK_XC_LDR_HU 0xfe00707f
++#define MATCH_XC_LDR_WU 0xc007003
++#define MASK_XC_LDR_WU 0xfe00707f
++#define MATCH_XC_STR_B 0x4023
++#define MASK_XC_STR_B 0x6007fff
++#define MATCH_XC_STR_H 0x40a3
++#define MASK_XC_STR_H 0x6007fff
++#define MATCH_XC_STR_W 0x4123
++#define MASK_XC_STR_W 0x6007fff
++#define MATCH_XC_STR_D 0x41a3
++#define MASK_XC_STR_D 0x6007fff
++#define MATCH_XC_MMUL_3 0x4004023
++#define MASK_XC_MMUL_3 0x60070ff
++#define MATCH_XC_MACC_1 0x40040a3
++#define MASK_XC_MACC_1 0x60070ff
++#define MATCH_XC_MADD_3 0x6004023
++#define MASK_XC_MADD_3 0x60070ff
++#define MATCH_XC_MSUB_3 0x60050a3
++#define MASK_XC_MSUB_3 0x60070ff
++#define MATCH_XC_MROR 0x5023
++#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_RNGTEST 0x300073
++#define MASK_XC_RNGTEST 0xfffff07f
++#define MATCH_XC_RNGSAMP 0x500073
++#define MASK_XC_RNGSAMP 0xfffff07f
++#define MATCH_XC_RNGSEED 0x700073
++#define MASK_XC_RNGSEED 0xfff07fff
++#define MATCH_XC_LUT 0x62006033
++#define MASK_XC_LUT 0xfe00707f
++#define MATCH_XC_BOP 0x64006033
++#define MASK_XC_BOP 0x7e00707f
++#define MATCH_XC_PADD 0x2000073
++#define MASK_XC_PADD 0x3e00707f
++#define MATCH_XC_PSUB 0x4000073
++#define MASK_XC_PSUB 0x3e00707f
++#define MATCH_XC_PROR 0x6000073
++#define MASK_XC_PROR 0x3e00707f
++#define MATCH_XC_PSLL 0x8000073
++#define MASK_XC_PSLL 0x3e00707f
++#define MATCH_XC_PSRL 0xa000073
++#define MASK_XC_PSRL 0x3e00707f
++#define MATCH_XC_PROR_I 0x30007003
++#define MASK_XC_PROR_I 0x3c00707f
++#define MATCH_XC_PSLL_I 0x2c007003
++#define MASK_XC_PSLL_I 0x3c00707f
++#define MATCH_XC_PSRL_I 0x28007003
++#define MASK_XC_PSRL_I 0x3c00707f
++#define MATCH_XC_PMUL_L 0xc000073
++#define MASK_XC_PMUL_L 0x3e00707f
++#define MATCH_XC_PMUL_H 0xe000073
++#define MASK_XC_PMUL_H 0x3e00707f
++#define MATCH_XC_PCLMUL_L 0x10000033
++#define MASK_XC_PCLMUL_L 0x3e00707f
++#define MATCH_XC_PCLMUL_H 0x12000033
++#define MASK_XC_PCLMUL_H 0x3e00707f
++#define MATCH_XC_SCATTER_B 0x4223
++#define MASK_XC_SCATTER_B 0x6007fff
++#define MATCH_XC_SCATTER_H 0x42a3
++#define MASK_XC_SCATTER_H 0x6007fff
++#define MATCH_XC_GATHER_B 0x34006013
++#define MASK_XC_GATHER_B 0xfe00707f
++#define MATCH_XC_GATHER_H 0x36006013
++#define MASK_XC_GATHER_H 0xfe00707f
++#define MATCH_XC_AESSUB_ENC 0x1a007003
++#define MASK_XC_AESSUB_ENC 0xfe00707f
++#define MATCH_XC_AESSUB_ENCROT 0x1c007003
++#define MASK_XC_AESSUB_ENCROT 0xfe00707f
++#define MATCH_XC_AESSUB_DEC 0x1e007003
++#define MASK_XC_AESSUB_DEC 0xfe00707f
++#define MATCH_XC_AESSUB_DECROT 0x20007003
++#define MASK_XC_AESSUB_DECROT 0xfe00707f
++#define MATCH_XC_AESMIX_ENC 0x22007003
++#define MASK_XC_AESMIX_ENC 0xfe00707f
++#define MATCH_XC_AESMIX_DEC 0x24007003
++#define MASK_XC_AESMIX_DEC 0xfe00707f
++#define MATCH_XC_SHA3_XY 0x10007003
++#define MASK_XC_SHA3_XY 0x3e00707f
++#define MATCH_XC_SHA3_X1 0x12007003
++#define MASK_XC_SHA3_X1 0x3e00707f
++#define MATCH_XC_SHA3_X2 0x14007003
++#define MASK_XC_SHA3_X2 0x3e00707f
++#define MATCH_XC_SHA3_X4 0x16007003
++#define MASK_XC_SHA3_X4 0x3e00707f
++#define MATCH_XC_SHA3_YX 0x18007003
++#define MASK_XC_SHA3_YX 0x3e00707f
++#define MATCH_XC_SHA256_S0 0xe007003
++#define MASK_XC_SHA256_S0 0xfff0707f
++#define MATCH_XC_SHA256_S1 0xe107003
++#define MASK_XC_SHA256_S1 0xfff0707f
++#define MATCH_XC_SHA256_S2 0xe207003
++#define MASK_XC_SHA256_S2 0xfff0707f
++#define MATCH_XC_SHA256_S3 0xe307003
++#define MASK_XC_SHA256_S3 0xfff0707f
++#define MATCH_XC_SHA512_S0 0xe407003
++#define MASK_XC_SHA512_S0 0xfff0707f
++#define MATCH_XC_SHA512_S1 0xe507003
++#define MASK_XC_SHA512_S1 0xfff0707f
++#define MATCH_XC_SHA512_S2 0xe607003
++#define MASK_XC_SHA512_S2 0xfff0707f
++#define MATCH_XC_SHA512_S3 0xe707003
++#define MASK_XC_SHA512_S3 0xfff0707f
++
+ #define MATCH_AMOADD_W 0x202f
+ #define MASK_AMOADD_W  0xf800707f
+ #define MATCH_AMOXOR_W 0x2000202f
+@@ -1719,6 +1860,7 @@
+ #define CSR_FFLAGS 0x1
+ #define CSR_FRM 0x2
+ #define CSR_FCSR 0x3
++#define CSR_UXCRYPTO 0x800
+ #define CSR_USTATUS 0x0
+ #define CSR_UIE 0x4
+ #define CSR_UTVEC 0x5
+@@ -1986,6 +2128,64 @@
+ #define CAUSE_STORE_PAGE_FAULT 0xf
+ #endif
+ #ifdef DECLARE_INSN
++// XCrypto Instructions
++DECLARE_INSN(xc_ldr_b, MATCH_XC_LDR_B, MASK_XC_LDR_B)
++DECLARE_INSN(xc_ldr_h, MATCH_XC_LDR_H, MASK_XC_LDR_H)
++DECLARE_INSN(xc_ldr_w, MATCH_XC_LDR_W, MASK_XC_LDR_W)
++DECLARE_INSN(xc_ldr_d, MATCH_XC_LDR_D, MASK_XC_LDR_D)
++DECLARE_INSN(xc_ldr_bu, MATCH_XC_LDR_BU, MASK_XC_LDR_BU)
++DECLARE_INSN(xc_ldr_hu, MATCH_XC_LDR_HU, MASK_XC_LDR_HU)
++DECLARE_INSN(xc_ldr_wu, MATCH_XC_LDR_WU, MASK_XC_LDR_WU)
++DECLARE_INSN(xc_str_b, MATCH_XC_STR_B, MASK_XC_STR_B)
++DECLARE_INSN(xc_str_h, MATCH_XC_STR_H, MASK_XC_STR_H)
++DECLARE_INSN(xc_str_w, MATCH_XC_STR_W, MASK_XC_STR_W)
++DECLARE_INSN(xc_str_d, MATCH_XC_STR_D, MASK_XC_STR_D)
++DECLARE_INSN(xc_mmul_3, MATCH_XC_MMUL_3, MASK_XC_MMUL_3)
++DECLARE_INSN(xc_macc_1, MATCH_XC_MACC_1, MASK_XC_MACC_1)
++DECLARE_INSN(xc_madd_3, MATCH_XC_MADD_3, MASK_XC_MADD_3)
++DECLARE_INSN(xc_msub_3, MATCH_XC_MSUB_3, MASK_XC_MSUB_3)
++DECLARE_INSN(xc_mror, MATCH_XC_MROR, MASK_XC_MROR)
++DECLARE_INSN(xc_rngtest, MATCH_XC_RNGTEST, MASK_XC_RNGTEST)
++DECLARE_INSN(xc_rngsamp, MATCH_XC_RNGSAMP, MASK_XC_RNGSAMP)
++DECLARE_INSN(xc_rngseed, MATCH_XC_RNGSEED, MASK_XC_RNGSEED)
++DECLARE_INSN(xc_lut, MATCH_XC_LUT, MASK_XC_LUT)
++DECLARE_INSN(xc_bop, MATCH_XC_BOP, MASK_XC_BOP)
++DECLARE_INSN(xc_padd, MATCH_XC_PADD, MASK_XC_PADD)
++DECLARE_INSN(xc_psub, MATCH_XC_PSUB, MASK_XC_PSUB)
++DECLARE_INSN(xc_pror, MATCH_XC_PROR, MASK_XC_PROR)
++DECLARE_INSN(xc_psll, MATCH_XC_PSLL, MASK_XC_PSLL)
++DECLARE_INSN(xc_psrl, MATCH_XC_PSRL, MASK_XC_PSRL)
++DECLARE_INSN(xc_pror_i, MATCH_XC_PROR_I, MASK_XC_PROR_I)
++DECLARE_INSN(xc_psll_i, MATCH_XC_PSLL_I, MASK_XC_PSLL_I)
++DECLARE_INSN(xc_psrl_i, MATCH_XC_PSRL_I, MASK_XC_PSRL_I)
++DECLARE_INSN(xc_pmul_l, MATCH_XC_PMUL_L, MASK_XC_PMUL_L)
++DECLARE_INSN(xc_pmul_h, MATCH_XC_PMUL_H, MASK_XC_PMUL_H)
++DECLARE_INSN(xc_pclmul_l, MATCH_XC_PCLMUL_L, MASK_XC_PCLMUL_L)
++DECLARE_INSN(xc_pclmul_h, MATCH_XC_PCLMUL_H, MASK_XC_PCLMUL_H)
++DECLARE_INSN(xc_scatter_b, MATCH_XC_SCATTER_B, MASK_XC_SCATTER_B)
++DECLARE_INSN(xc_scatter_h, MATCH_XC_SCATTER_H, MASK_XC_SCATTER_H)
++DECLARE_INSN(xc_gather_b, MATCH_XC_GATHER_B, MASK_XC_GATHER_B)
++DECLARE_INSN(xc_gather_h, MATCH_XC_GATHER_H, MASK_XC_GATHER_H)
++DECLARE_INSN(xc_aessub_enc, MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC)
++DECLARE_INSN(xc_aessub_encrot, MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT)
++DECLARE_INSN(xc_aessub_dec, MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC)
++DECLARE_INSN(xc_aessub_decrot, MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT)
++DECLARE_INSN(xc_aesmix_enc, MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC)
++DECLARE_INSN(xc_aesmix_dec, MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC)
++DECLARE_INSN(xc_sha3_xy, MATCH_XC_SHA3_XY, MASK_XC_SHA3_XY)
++DECLARE_INSN(xc_sha3_x1, MATCH_XC_SHA3_X1, MASK_XC_SHA3_X1)
++DECLARE_INSN(xc_sha3_x2, MATCH_XC_SHA3_X2, MASK_XC_SHA3_X2)
++DECLARE_INSN(xc_sha3_x4, MATCH_XC_SHA3_X4, MASK_XC_SHA3_X4)
++DECLARE_INSN(xc_sha3_yx, MATCH_XC_SHA3_YX, MASK_XC_SHA3_YX)
++DECLARE_INSN(xc_sha256_s0, MATCH_XC_SHA256_S0, MASK_XC_SHA256_S0)
++DECLARE_INSN(xc_sha256_s1, MATCH_XC_SHA256_S1, MASK_XC_SHA256_S1)
++DECLARE_INSN(xc_sha256_s2, MATCH_XC_SHA256_S2, MASK_XC_SHA256_S2)
++DECLARE_INSN(xc_sha256_s3, MATCH_XC_SHA256_S3, MASK_XC_SHA256_S3)
++DECLARE_INSN(xc_sha512_s0, MATCH_XC_SHA512_S0, MASK_XC_SHA512_S0)
++DECLARE_INSN(xc_sha512_s1, MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1)
++DECLARE_INSN(xc_sha512_s2, MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2)
++DECLARE_INSN(xc_sha512_s3, MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3)
++
+ DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
+ DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
+ DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
+@@ -2737,6 +2937,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+ DECLARE_CSR(fflags, CSR_FFLAGS)
+ DECLARE_CSR(frm, CSR_FRM)
+ DECLARE_CSR(fcsr, CSR_FCSR)
++DECLARE_CSR(uxcrypto, CSR_UXCRYPTO)
+ DECLARE_CSR(ustatus, CSR_USTATUS)
+ DECLARE_CSR(uie, CSR_UIE)
+ DECLARE_CSR(utvec, CSR_UTVEC)
+diff --git a/riscv/insns/xc_aes_common.h b/riscv/insns/xc_aes_common.h
+new file mode 100644
+index 0000000..782ef3f
+--- /dev/null
++++ b/riscv/insns/xc_aes_common.h
+@@ -0,0 +1,102 @@
++
++uint8_t AES_ENC_SBOX[]= { 
++  0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5,
++  0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
++  0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0,
++  0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
++  0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC,
++  0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15,
++  0x04, 0xC7, 0x23, 0xC3, 0x18, 0x96, 0x05, 0x9A,
++  0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27, 0xB2, 0x75,
++  0x09, 0x83, 0x2C, 0x1A, 0x1B, 0x6E, 0x5A, 0xA0,
++  0x52, 0x3B, 0xD6, 0xB3, 0x29, 0xE3, 0x2F, 0x84,
++  0x53, 0xD1, 0x00, 0xED, 0x20, 0xFC, 0xB1, 0x5B,
++  0x6A, 0xCB, 0xBE, 0x39, 0x4A, 0x4C, 0x58, 0xCF,
++  0xD0, 0xEF, 0xAA, 0xFB, 0x43, 0x4D, 0x33, 0x85,
++  0x45, 0xF9, 0x02, 0x7F, 0x50, 0x3C, 0x9F, 0xA8,
++  0x51, 0xA3, 0x40, 0x8F, 0x92, 0x9D, 0x38, 0xF5,
++  0xBC, 0xB6, 0xDA, 0x21, 0x10, 0xFF, 0xF3, 0xD2,
++  0xCD, 0x0C, 0x13, 0xEC, 0x5F, 0x97, 0x44, 0x17,
++  0xC4, 0xA7, 0x7E, 0x3D, 0x64, 0x5D, 0x19, 0x73,
++  0x60, 0x81, 0x4F, 0xDC, 0x22, 0x2A, 0x90, 0x88,
++  0x46, 0xEE, 0xB8, 0x14, 0xDE, 0x5E, 0x0B, 0xDB,
++  0xE0, 0x32, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x5C,
++  0xC2, 0xD3, 0xAC, 0x62, 0x91, 0x95, 0xE4, 0x79,
++  0xE7, 0xC8, 0x37, 0x6D, 0x8D, 0xD5, 0x4E, 0xA9,
++  0x6C, 0x56, 0xF4, 0xEA, 0x65, 0x7A, 0xAE, 0x08,
++  0xBA, 0x78, 0x25, 0x2E, 0x1C, 0xA6, 0xB4, 0xC6,
++  0xE8, 0xDD, 0x74, 0x1F, 0x4B, 0xBD, 0x8B, 0x8A,
++  0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E,
++  0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E,
++  0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94,
++  0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
++  0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68,
++  0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16 
++};
++
++uint8_t AES_DEC_SBOX[] = { 
++  0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 
++  0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB,
++  0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 
++  0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
++  0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 
++  0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E,
++  0x08, 0x2E, 0xA1, 0x66, 0x28, 0xD9, 0x24, 0xB2, 
++  0x76, 0x5B, 0xA2, 0x49, 0x6D, 0x8B, 0xD1, 0x25,
++  0x72, 0xF8, 0xF6, 0x64, 0x86, 0x68, 0x98, 0x16, 
++  0xD4, 0xA4, 0x5C, 0xCC, 0x5D, 0x65, 0xB6, 0x92,
++  0x6C, 0x70, 0x48, 0x50, 0xFD, 0xED, 0xB9, 0xDA, 
++  0x5E, 0x15, 0x46, 0x57, 0xA7, 0x8D, 0x9D, 0x84,
++  0x90, 0xD8, 0xAB, 0x00, 0x8C, 0xBC, 0xD3, 0x0A, 
++  0xF7, 0xE4, 0x58, 0x05, 0xB8, 0xB3, 0x45, 0x06,
++  0xD0, 0x2C, 0x1E, 0x8F, 0xCA, 0x3F, 0x0F, 0x02, 
++  0xC1, 0xAF, 0xBD, 0x03, 0x01, 0x13, 0x8A, 0x6B,
++  0x3A, 0x91, 0x11, 0x41, 0x4F, 0x67, 0xDC, 0xEA, 
++  0x97, 0xF2, 0xCF, 0xCE, 0xF0, 0xB4, 0xE6, 0x73,
++  0x96, 0xAC, 0x74, 0x22, 0xE7, 0xAD, 0x35, 0x85, 
++  0xE2, 0xF9, 0x37, 0xE8, 0x1C, 0x75, 0xDF, 0x6E,
++  0x47, 0xF1, 0x1A, 0x71, 0x1D, 0x29, 0xC5, 0x89, 
++  0x6F, 0xB7, 0x62, 0x0E, 0xAA, 0x18, 0xBE, 0x1B,
++  0xFC, 0x56, 0x3E, 0x4B, 0xC6, 0xD2, 0x79, 0x20, 
++  0x9A, 0xDB, 0xC0, 0xFE, 0x78, 0xCD, 0x5A, 0xF4,
++  0x1F, 0xDD, 0xA8, 0x33, 0x88, 0x07, 0xC7, 0x31, 
++  0xB1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xEC, 0x5F,
++  0x60, 0x51, 0x7F, 0xA9, 0x19, 0xB5, 0x4A, 0x0D, 
++  0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF,
++  0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 
++  0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
++  0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 
++  0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
++};
++
++#define AES_UNPACK_BYTES(b0,b1,b2,b3) \
++    uint8_t  b0 = (RS1 >>  0) & 0xFF; \
++    uint8_t  b1 = (RS2 >>  8) & 0xFF; \
++    uint8_t  b2 = (RS1 >> 16) & 0xFF; \
++    uint8_t  b3 = (RS2 >> 24) & 0xFF; \
++
++#define AES_PACK_BYTES(b0,b1,b2,b3) ( \
++    (uint32_t)b0 <<  0  | \
++    (uint32_t)b1 <<  8  | \
++    (uint32_t)b2 << 16  | \
++    (uint32_t)b3 << 24  )
++
++#define AES_SBOX(b0, b1, b2, b3) \
++    b0 = AES_ENC_SBOX[b0]; \
++    b1 = AES_ENC_SBOX[b1]; \
++    b2 = AES_ENC_SBOX[b2]; \
++    b3 = AES_ENC_SBOX[b3]; \
++
++#define AES_RSBOX(b0, b1, b2, b3) \
++    b0 = AES_DEC_SBOX[b0]; \
++    b1 = AES_DEC_SBOX[b1]; \
++    b2 = AES_DEC_SBOX[b2]; \
++    b3 = AES_DEC_SBOX[b3]; \
++
++#define AES_XTIME(a) \
++    ((a << 1) ^ ((a&0x80) ? 0x1b : 0))
++
++#define AES_GFMUL(a,b) ( ( ( (b) & 0x1 ) ?                              (a)   : 0 ) ^ \
++                         ( ( (b) & 0x2 ) ?                     AES_XTIME(a)   : 0 ) ^ \
++                         ( ( (b) & 0x4 ) ?           AES_XTIME(AES_XTIME(a))  : 0 ) ^ \
++                         ( ( (b) & 0x8 ) ? AES_XTIME(AES_XTIME(AES_XTIME(a))) : 0 ) )
+diff --git a/riscv/insns/xc_aesmix_dec.h b/riscv/insns/xc_aesmix_dec.h
+new file mode 100644
+index 0000000..701e90e
+--- /dev/null
++++ b/riscv/insns/xc_aesmix_dec.h
+@@ -0,0 +1,19 @@
++
++#include "xc_aes_common.h"
++
++uint8_t b0 = (RS1 >>  0) & 0xFF;
++uint8_t b1 = (RS1 >>  8) & 0xFF;
++uint8_t b2 = (RS2 >> 16) & 0xFF;
++uint8_t b3 = (RS2 >> 24) & 0xFF;
++
++uint8_t r0, r1, r2, r3;
++
++r0 = AES_GFMUL(b0,14) ^ AES_GFMUL(b1,11) ^ AES_GFMUL(b2,13)^AES_GFMUL(b3, 9);
++r1 = AES_GFMUL(b0, 9) ^ AES_GFMUL(b1,14) ^ AES_GFMUL(b2,11)^AES_GFMUL(b3,13);
++r2 = AES_GFMUL(b0,13) ^ AES_GFMUL(b1, 9) ^ AES_GFMUL(b2,14)^AES_GFMUL(b3,11);
++r3 = AES_GFMUL(b0,11) ^ AES_GFMUL(b1,13) ^ AES_GFMUL(b2, 9)^AES_GFMUL(b3,14);
++
++uint32_t result = AES_PACK_BYTES(r0, r1, r2, r3);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_aesmix_enc.h b/riscv/insns/xc_aesmix_enc.h
+new file mode 100644
+index 0000000..43fa96c
+--- /dev/null
++++ b/riscv/insns/xc_aesmix_enc.h
+@@ -0,0 +1,19 @@
++
++#include "xc_aes_common.h"
++
++uint8_t b0 = (RS1 >>  0) & 0xFF;
++uint8_t b1 = (RS1 >>  8) & 0xFF;
++uint8_t b2 = (RS2 >> 16) & 0xFF;
++uint8_t b3 = (RS2 >> 24) & 0xFF;
++
++uint8_t r0, r1, r2, r3;
++
++r0 = AES_GFMUL(b0,2) ^ AES_GFMUL(b1,3) ^ AES_GFMUL(b2,1) ^ AES_GFMUL(b3,1);
++r1 = AES_GFMUL(b0,1) ^ AES_GFMUL(b1,2) ^ AES_GFMUL(b2,3) ^ AES_GFMUL(b3,1);
++r2 = AES_GFMUL(b0,1) ^ AES_GFMUL(b1,1) ^ AES_GFMUL(b2,2) ^ AES_GFMUL(b3,3);
++r3 = AES_GFMUL(b0,3) ^ AES_GFMUL(b1,1) ^ AES_GFMUL(b2,1) ^ AES_GFMUL(b3,2);
++
++uint32_t result = AES_PACK_BYTES(r0, r1, r2, r3);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_aessub_dec.h b/riscv/insns/xc_aessub_dec.h
+new file mode 100644
+index 0000000..82184c5
+--- /dev/null
++++ b/riscv/insns/xc_aessub_dec.h
+@@ -0,0 +1,13 @@
++
++#include "xc_aes_common.h"
++
++AES_UNPACK_BYTES(b0, b1, b2, b3);
++
++// Reverse SBOX
++AES_RSBOX(b0, b1, b2, b3);
++
++uint32_t result = AES_PACK_BYTES(b0, b1, b2, b3);
++
++WRITE_RD(result);
++
++
+diff --git a/riscv/insns/xc_aessub_decrot.h b/riscv/insns/xc_aessub_decrot.h
+new file mode 100644
+index 0000000..289b139
+--- /dev/null
++++ b/riscv/insns/xc_aessub_decrot.h
+@@ -0,0 +1,14 @@
++
++#include "xc_aes_common.h"
++
++AES_UNPACK_BYTES(b0, b1, b2, b3);
++
++// Reverse SBOX
++AES_RSBOX(b0, b1, b2, b3);
++
++// Rotate output bytes
++uint32_t result = AES_PACK_BYTES(b3, b0, b1, b2);
++
++WRITE_RD(result);
++
++
+diff --git a/riscv/insns/xc_aessub_enc.h b/riscv/insns/xc_aessub_enc.h
+new file mode 100644
+index 0000000..97466b2
+--- /dev/null
++++ b/riscv/insns/xc_aessub_enc.h
+@@ -0,0 +1,13 @@
++
++#include "xc_aes_common.h"
++
++AES_UNPACK_BYTES(b0, b1, b2, b3);
++
++// Forward SBOX
++AES_SBOX(b0, b1, b2, b3);
++
++uint32_t result = AES_PACK_BYTES(b0, b1, b2, b3);
++
++WRITE_RD(result);
++
++
+diff --git a/riscv/insns/xc_aessub_encrot.h b/riscv/insns/xc_aessub_encrot.h
+new file mode 100644
+index 0000000..eb3dc66
+--- /dev/null
++++ b/riscv/insns/xc_aessub_encrot.h
+@@ -0,0 +1,13 @@
++
++#include "xc_aes_common.h"
++
++AES_UNPACK_BYTES(b0, b1, b2, b3);
++
++// Forward SBOX
++AES_SBOX(b0, b1, b2, b3);
++
++// Rotate output bytes
++uint32_t result = AES_PACK_BYTES(b3, b0, b1, b2);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_bop.h b/riscv/insns/xc_bop.h
+new file mode 100644
+index 0000000..d308b36
+--- /dev/null
++++ b/riscv/insns/xc_bop.h
+@@ -0,0 +1,25 @@
++
++uint32_t    uxcrypto_csr = p -> get_csr(CSR_UXCRYPTO);
++
++uint32_t    lut = insn.xc_l() ? (uxcrypto_csr >> 24) & 0xFF :
++                                (uxcrypto_csr >> 16) & 0xFF ;
++
++uint32_t    r2  = RD ;
++uint32_t    r1  = RS1;
++uint32_t    r0  = RS2;
++
++uint32_t    wdata = 0;
++
++for(int i = 0; i < 32; i ++) {
++
++    uint8_t idx = (((r2>>i) & 0x1) << 2) |
++                  (((r1>>i) & 0x1) << 1) |
++                  (((r0>>i) & 0x1) << 0) ;
++
++    uint32_t b  = (lut >> idx) & 0x1;
++
++    wdata |= b << i;
++
++}
++
++WRITE_RD(wdata);
+diff --git a/riscv/insns/xc_gather_b.h b/riscv/insns/xc_gather_b.h
+new file mode 100644
+index 0000000..9c13790
+--- /dev/null
++++ b/riscv/insns/xc_gather_b.h
+@@ -0,0 +1,28 @@
++
++uint32_t ab0     = (RS2 >>  0) & 0xFF;
++uint32_t ab1     = (RS2 >>  8) & 0xFF;
++uint32_t ab2     = (RS2 >> 16) & 0xFF;
++uint32_t ab3     = (RS2 >> 24) & 0xFF;
++
++reg_t   addr_0  = RS1 + ab0;
++reg_t   addr_1  = RS1 + ab1;
++reg_t   addr_2  = RS1 + ab2;
++reg_t   addr_3  = RS1 + ab3;
++
++uint32_t lb0    = MMU.load_uint8(addr_0);
++uint32_t lb1    = MMU.load_uint8(addr_1);
++uint32_t lb2    = MMU.load_uint8(addr_2);
++uint32_t lb3    = MMU.load_uint8(addr_3);
++
++uint64_t wdata  = (lb3 << 24) |
++                  (lb2 << 16) |
++                  (lb1 <<  8) |
++                  (lb0 <<  0) ;
++
++//printf("# xc.gather.b 0x%08X[%d,%d,%d,%d] = 0x%08X\n",
++//    RS1, ab0, ab1, ab2, ab3, wdata);
++//fflush(stdout);
++
++WRITE_RD(wdata);
++
++
+diff --git a/riscv/insns/xc_gather_h.h b/riscv/insns/xc_gather_h.h
+new file mode 100644
+index 0000000..6f44838
+--- /dev/null
++++ b/riscv/insns/xc_gather_h.h
+@@ -0,0 +1,15 @@
++
++uint16_t ab0    = (RS2 >>  0) & 0xFFFF;
++uint16_t ab1    = (RS2 >> 16) & 0xFFFF;
++
++// Automatically halfword align the *offsets*.
++reg_t   addr_0  = RS1 + (ab0<<1);
++reg_t   addr_1  = RS1 + (ab1<<1);
++
++uint32_t ld0    = MMU.load_uint16(addr_0);
++uint32_t ld1    = MMU.load_uint16(addr_1);
++
++uint64_t wdata  = (ld1 << 16) | ld0;
++
++WRITE_RD(wdata);
++
+diff --git a/riscv/insns/xc_ldr_b.h b/riscv/insns/xc_ldr_b.h
+new file mode 100644
+index 0000000..f52500d
+--- /dev/null
++++ b/riscv/insns/xc_ldr_b.h
+@@ -0,0 +1,5 @@
++
++uint64_t address     = RS1 + RS2;
++WRITE_RD(MMU.load_int8(address));
++
++
+diff --git a/riscv/insns/xc_ldr_bu.h b/riscv/insns/xc_ldr_bu.h
+new file mode 100644
+index 0000000..e8b3881
+--- /dev/null
++++ b/riscv/insns/xc_ldr_bu.h
+@@ -0,0 +1,4 @@
++
++uint64_t address     = RS1 + RS2;
++WRITE_RD(MMU.load_uint8(address));
++
+diff --git a/riscv/insns/xc_ldr_d.h b/riscv/insns/xc_ldr_d.h
+new file mode 100644
+index 0000000..50c5721
+--- /dev/null
++++ b/riscv/insns/xc_ldr_d.h
+@@ -0,0 +1,5 @@
++require_rv64;
++
++uint64_t address     = RS1 + (RS2 << 3);
++WRITE_RD(MMU.load_int64(address));
++
+diff --git a/riscv/insns/xc_ldr_h.h b/riscv/insns/xc_ldr_h.h
+new file mode 100644
+index 0000000..9ca1a1a
+--- /dev/null
++++ b/riscv/insns/xc_ldr_h.h
+@@ -0,0 +1,4 @@
++
++uint64_t address     = RS1 + (RS2 << 1);
++WRITE_RD(MMU.load_int16(address));
++
+diff --git a/riscv/insns/xc_ldr_hu.h b/riscv/insns/xc_ldr_hu.h
+new file mode 100644
+index 0000000..fe590b3
+--- /dev/null
++++ b/riscv/insns/xc_ldr_hu.h
+@@ -0,0 +1,4 @@
++
++uint64_t address     = RS1 + (RS2 << 1);
++WRITE_RD(MMU.load_uint16(address));
++
+diff --git a/riscv/insns/xc_ldr_w.h b/riscv/insns/xc_ldr_w.h
+new file mode 100644
+index 0000000..082cad1
+--- /dev/null
++++ b/riscv/insns/xc_ldr_w.h
+@@ -0,0 +1,4 @@
++
++uint64_t address     = RS1 + (RS2 << 2);
++WRITE_RD(MMU.load_int32(address));
++
+diff --git a/riscv/insns/xc_ldr_wu.h b/riscv/insns/xc_ldr_wu.h
+new file mode 100644
+index 0000000..d87dbd1
+--- /dev/null
++++ b/riscv/insns/xc_ldr_wu.h
+@@ -0,0 +1,5 @@
++require_rv64;
++
++uint64_t address     = RS1 + (RS2 << 2);
++WRITE_RD(MMU.load_uint32(address));
++
+diff --git a/riscv/insns/xc_lut.h b/riscv/insns/xc_lut.h
+new file mode 100644
+index 0000000..6770c21
+--- /dev/null
++++ b/riscv/insns/xc_lut.h
+@@ -0,0 +1,22 @@
++
++// Concatenate RS1 || RS2
++uint64_t lut = (((uint64_t)RS1 & 0xFFFFFFFF) << 32) | (RS2&0xFFFFFFFF);
++
++uint32_t wdata = 0;
++
++uint32_t rd = RD;
++
++// For each nibble in rs1
++for(int i = 0; i < 8; i ++) {
++
++    // 0 <= to_sub < 16 - the i'th nibble
++    uint8_t to_sub = (rd >> (4*i)) & 0xF;
++    
++    // Index into the LUT.
++    uint32_t subd  = (lut >> (to_sub*4)) & 0xF;
++
++    wdata |= subd << (4*i);
++}
++
++WRITE_RD(wdata);
++
+diff --git a/riscv/insns/xc_macc_1.h b/riscv/insns/xc_macc_1.h
+new file mode 100644
+index 0000000..6ed9d44
+--- /dev/null
++++ b/riscv/insns/xc_macc_1.h
+@@ -0,0 +1,36 @@
++
++int rd1 = (insn.xc_rdm() << 1)       ;
++int rd2 = (insn.xc_rdm() << 1) | 0x1 ;
++
++if(xlen == 32) {
++
++    uint64_t    lhs         = ((uint64_t)(RS1 & 0xFFFFFFFF)<<32) | 
++                              (uint64_t)(RS2 & 0xFFFFFFFF) ;
++                              
++    uint32_t    rhs         = (uint32_t)(RS3 & 0xFFFFFFFF) ;
++
++    uint64_t    result      = lhs + rhs;
++
++    uint32_t    result_lo   = (uint32_t)(result      );
++    uint32_t    result_hi   = (uint32_t)(result >> 32);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else if(xlen == 64) {
++    
++    uint64_t result_lo;
++    uint64_t result_hi;
++    
++    result_lo = RS2 + RS3;
++    result_hi = RS3 + (result_lo < RS2);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else {
++    // TBD: How do these instructions work on RV128?
++    assert(0);
++}
++
++
+diff --git a/riscv/insns/xc_madd_2.h b/riscv/insns/xc_madd_2.h
+new file mode 100644
+index 0000000..b0d371e
+--- /dev/null
++++ b/riscv/insns/xc_madd_2.h
+@@ -0,0 +1,5 @@
++require_extension('x');
++
++uint64_t result = XCRS1_64 + XCRS2_64;
++
++WRITE_XCRDM(result);
+diff --git a/riscv/insns/xc_madd_3.h b/riscv/insns/xc_madd_3.h
+new file mode 100644
+index 0000000..a3e293e
+--- /dev/null
++++ b/riscv/insns/xc_madd_3.h
+@@ -0,0 +1,33 @@
++
++int rd1 = (insn.xc_rdm() << 1)       ;
++int rd2 = (insn.xc_rdm() << 1) | 0x1 ;
++
++if(xlen == 32) {
++
++    uint64_t    result      = (uint64_t)(RS1 & 0xFFFFFFFF) + 
++                              (uint64_t)(RS2 & 0xFFFFFFFF) + 
++                              (uint64_t)(RS3 & 0x1);
++    uint32_t    result_lo   =       (uint32_t)(result      );
++    uint32_t    result_hi   = 0x1 & (uint32_t)(result >> 32);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else if(xlen == 64) {
++
++    uint128_t   result      = (uint128_t)(RS1 & 0xFFFFFFFFFFFFFFFF) + 
++                              (uint128_t)(RS2 & 0xFFFFFFFFFFFFFFFF) + 
++                              (uint128_t)(RS3 & 0x1);
++    uint64_t    result_lo   =       (uint64_t)(result      );
++    uint64_t    result_hi   = 0x1 & (uint64_t)(result >> 64);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else {
++    // TBD: How do these instructions work on RV128?
++    assert(0);
++}
++
++
++
+diff --git a/riscv/insns/xc_mmul_3.h b/riscv/insns/xc_mmul_3.h
+new file mode 100644
+index 0000000..043a750
+--- /dev/null
++++ b/riscv/insns/xc_mmul_3.h
+@@ -0,0 +1,32 @@
++
++int rd1 = (insn.xc_rdm() << 1)       ;
++int rd2 = (insn.xc_rdm() << 1) | 0x1 ;
++    
++uint64_t result_lo;
++uint64_t result_hi;
++
++if(xlen == 32) {
++
++    uint64_t result = ((RS1&0xFFFFFFFF) *
++                       (RS2&0xFFFFFFFF)) +
++                      (RS3&0xFFFFFFFF);
++    
++    
++    result_lo       = result & 0xFFFFFFFF;
++    result_hi       = result >> xlen     ;
++
++} else if(xlen == 64) {
++
++    int128_t result = ((int128_t)RS1 * RS2) + RS3;
++
++    result_lo = result & 0xFFFFFFFFFFFFFFFF;
++    result_hi = (result >> xlen);
++
++} else {
++    // TBD: How do these instructions work on RV128?
++    assert(0);
++}
++
++WRITE_REG(rd1, result_lo);
++WRITE_REG(rd2, result_hi);
++
+diff --git a/riscv/insns/xc_mror.h b/riscv/insns/xc_mror.h
+new file mode 100644
+index 0000000..8b299e3
+--- /dev/null
++++ b/riscv/insns/xc_mror.h
+@@ -0,0 +1,28 @@
++
++int rd1 = (insn.xc_rdm() << 1)       ;
++int rd2 = (insn.xc_rdm() << 1) | 0x1 ;
++
++int ramt= RS3 & 0x3F;
++    
++uint32_t result_lo;
++uint32_t result_hi;
++
++uint64_t rs1 = RS1 & 0xFFFFFFFF;
++uint64_t rs2 = RS2 & 0xFFFFFFFF;
++
++uint64_t rot_in = (((uint64_t) rs1) << 32) | ((uint64_t) rs2);
++uint64_t result = (rot_in >> ramt) | (rot_in << (64-ramt));
++
++//printf("# RS1 = %08lx, %08lx\n", RS1, rs1);
++//printf("# RS2 = %08lx, %08lx\n", RS2, rs2);
++//printf("#(%d,%d) %016lx >>> %d = %016lx\n",rd2,rd1,rot_in,ramt,result);
++//fflush(stdout);
++
++result_lo       = result & 0xFFFFFFFF;
++result_hi       = result >> xlen     ;
++
++WRITE_REG(rd1, result_lo);
++WRITE_REG(rd2, result_hi);
++
++
++
+diff --git a/riscv/insns/xc_msll.h b/riscv/insns/xc_msll.h
+new file mode 100644
+index 0000000..b3d949f
+--- /dev/null
++++ b/riscv/insns/xc_msll.h
+@@ -0,0 +1,8 @@
++require_extension('x');
++
++uint64_t lhs    = ((uint64_t)XCRS2<<32) | XCRS1;
++uint32_t rhs    = XCRS3;
++
++uint64_t result = lhs << rhs;
++
++WRITE_XCRDM(result)
+diff --git a/riscv/insns/xc_msll_i.h b/riscv/insns/xc_msll_i.h
+new file mode 100644
+index 0000000..42f1c3b
+--- /dev/null
++++ b/riscv/insns/xc_msll_i.h
+@@ -0,0 +1,8 @@
++require_extension('x');
++
++uint64_t lhs    = ((uint64_t)XCRS2<<32) | XCRS1;
++uint32_t rhs    = insn.xc_cmshamt();
++
++uint64_t result = lhs << rhs;
++
++WRITE_XCRDM(result)
+diff --git a/riscv/insns/xc_msrl.h b/riscv/insns/xc_msrl.h
+new file mode 100644
+index 0000000..6f645fb
+--- /dev/null
++++ b/riscv/insns/xc_msrl.h
+@@ -0,0 +1,8 @@
++require_extension('x');
++
++uint64_t lhs    = ((uint64_t)XCRS2<<32) | XCRS1;
++uint32_t rhs    = XCRS3;
++
++uint64_t result = lhs >> rhs;
++
++WRITE_XCRDM(result)
+diff --git a/riscv/insns/xc_msrl_i.h b/riscv/insns/xc_msrl_i.h
+new file mode 100644
+index 0000000..cff871c
+--- /dev/null
++++ b/riscv/insns/xc_msrl_i.h
+@@ -0,0 +1,8 @@
++require_extension('x');
++
++uint64_t lhs    = ((uint64_t)XCRS2<<32) | XCRS1;
++uint32_t rhs    = insn.xc_cmshamt();
++
++uint64_t result = lhs >> rhs;
++
++WRITE_XCRDM(result)
+diff --git a/riscv/insns/xc_msub_3.h b/riscv/insns/xc_msub_3.h
+new file mode 100644
+index 0000000..0b75fa0
+--- /dev/null
++++ b/riscv/insns/xc_msub_3.h
+@@ -0,0 +1,33 @@
++
++int rd1 = (insn.xc_rdm() << 1)       ;
++int rd2 = (insn.xc_rdm() << 1) | 0x1 ;
++
++if(xlen == 32) {
++
++    uint64_t    result      = (uint64_t)(RS1 & 0xFFFFFFFF) - 
++                              (uint64_t)(RS2 & 0xFFFFFFFF) - 
++                              (uint64_t)(RS3 & 0x1);
++    uint32_t    result_lo   =       (uint32_t)(result      );
++    uint32_t    result_hi   = 0x1 & (uint32_t)(result >> 32);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else if(xlen == 64) {
++
++    uint128_t   result      = (uint128_t)(RS1 & 0xFFFFFFFFFFFFFFFF) - 
++                              (uint128_t)(RS2 & 0xFFFFFFFFFFFFFFFF) - 
++                              (uint128_t)(RS3 & 0x1);
++    uint64_t    result_lo   =       (uint64_t)(result      );
++    uint64_t    result_hi   = 0x1 & (uint64_t)(result >> 64);
++
++    WRITE_REG(rd1, result_lo);
++    WRITE_REG(rd2, result_hi);
++
++} else {
++    // TBD: How do these instructions work on RV128?
++    assert(0);
++}
++
++
++
+diff --git a/riscv/insns/xc_packed.h b/riscv/insns/xc_packed.h
+new file mode 100644
+index 0000000..2495c19
+--- /dev/null
++++ b/riscv/insns/xc_packed.h
+@@ -0,0 +1,69 @@
++
++/*
++This file contains various untility macros for the XCrypto extension
++packed operations.
++*/
++
++#ifndef XC_PACKED_H
++#define XC_PACKED_H
++
++#define XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask)  \
++    if(pack_width == 3) { \
++        w = 16; \
++        n =  2 * xlen/32; \
++        mask = 0x0000FFFF; \
++    } else if(pack_width == 2) { \
++        w =  8; \
++        n =  4 * xlen/32; \
++        mask = 0x000000FF; \
++    } else if(pack_width == 1) { \
++        w =  4; \
++        n =  8 * xlen/32; \
++        mask = 0x0000000F; \
++    } else if(pack_width == 0) { \
++        w =  2; \
++        n = 16 * xlen/32; \
++        mask = 0x00000003; \
++    } else { \
++        throw trap_illegal_instruction(0); \
++    }
++
++#define XC_CARRYLESS_MUL_PARTIAL(LHS, RHS, P) \
++   (LHS ^ (((RHS >> P) & 0x1) ? LHS << P : 0))
++
++#define XC_CARRYLESS_MUL(LHS, RHS) ( \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 0) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 1) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 2) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 3) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 4) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 5) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 6) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 7) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 8) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS, 9) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,10) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,11) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,12) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,13) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,14) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,15) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,16) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,17) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,18) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,19) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,20) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,21) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,22) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,23) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,24) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,25) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,26) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,27) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,28) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,29) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,30) | \
++    XC_CARRYLESS_MUL_PARTIAL(LHS,RHS,31) )
++    
++#endif
++
+diff --git a/riscv/insns/xc_padd.h b/riscv/insns/xc_padd.h
+new file mode 100644
+index 0000000..d4ea85f
+--- /dev/null
++++ b/riscv/insns/xc_padd.h
+@@ -0,0 +1,29 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++uint64_t l = RS1;
++uint64_t r = RS2;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = (RS2 >> (i*w)) & mask;
++    uint64_t pr     = (lhs + rhs)    & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
++//printf("# xc.padd (%d,%d) %d, 0x%08X, 0x%08X = 0x%08X\n",
++//    w,pack_width,insn.xcrd(),l,r, result);
++
+diff --git a/riscv/insns/xc_pclmul_h.h b/riscv/insns/xc_pclmul_h.h
+new file mode 100644
+index 0000000..8ac3d76
+--- /dev/null
++++ b/riscv/insns/xc_pclmul_h.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = (RS2 >> (i*w)) & mask;
++    uint64_t pr     = (XC_CARRYLESS_MUL(lhs,rhs) >> w) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_pclmul_l.h b/riscv/insns/xc_pclmul_l.h
+new file mode 100644
+index 0000000..37a4bd3
+--- /dev/null
++++ b/riscv/insns/xc_pclmul_l.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = (RS2 >> (i*w)) & mask;
++    uint64_t pr     = XC_CARRYLESS_MUL(lhs,rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_pmul_h.h b/riscv/insns/xc_pmul_h.h
+new file mode 100644
+index 0000000..f7202a7
+--- /dev/null
++++ b/riscv/insns/xc_pmul_h.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w))     & mask;
++    uint64_t rhs    = (RS2 >> (i*w))     & mask;
++    uint64_t pr     = ((lhs * rhs) >> w) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_pmul_l.h b/riscv/insns/xc_pmul_l.h
+new file mode 100644
+index 0000000..9d88f4b
+--- /dev/null
++++ b/riscv/insns/xc_pmul_l.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = (RS2 >> (i*w)) & mask;
++    uint64_t pr     = (lhs * rhs)      & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_pror.h b/riscv/insns/xc_pror.h
+new file mode 100644
+index 0000000..c783fa4
+--- /dev/null
++++ b/riscv/insns/xc_pror.h
+@@ -0,0 +1,24 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    =  ((RS1 >> (i*w)) & mask)        | 
++                      (((RS1 >> (i*w)) & mask) << w)  ;
++    uint64_t rhs    = RS2;
++    uint64_t pr     = (lhs   >> rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_pror_i.h b/riscv/insns/xc_pror_i.h
+new file mode 100644
+index 0000000..30a5b49
+--- /dev/null
++++ b/riscv/insns/xc_pror_i.h
+@@ -0,0 +1,26 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++uint32_t rtamt      = insn.shamt() & 0x1F;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    =  (((uint64_t)RS1 >> (i*w)) & mask)        | 
++                      ((((uint64_t)RS1 >> (i*w)) & mask) << w)  ;
++    uint64_t rhs    = rtamt;
++    uint64_t pr     = (lhs   >> rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
++
+diff --git a/riscv/insns/xc_psll.h b/riscv/insns/xc_psll.h
+new file mode 100644
+index 0000000..c273cba
+--- /dev/null
++++ b/riscv/insns/xc_psll.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    =  RS2;
++    uint64_t pr     = (lhs   << rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_psll_i.h b/riscv/insns/xc_psll_i.h
+new file mode 100644
+index 0000000..19ceddf
+--- /dev/null
++++ b/riscv/insns/xc_psll_i.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = insn.shamt()   & 0x1f;
++    uint64_t pr     = (lhs   << rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_psrl.h b/riscv/insns/xc_psrl.h
+new file mode 100644
+index 0000000..61665b4
+--- /dev/null
++++ b/riscv/insns/xc_psrl.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    =  RS2;
++    uint64_t pr     = (lhs   >> rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_psrl_i.h b/riscv/insns/xc_psrl_i.h
+new file mode 100644
+index 0000000..b62adb6
+--- /dev/null
++++ b/riscv/insns/xc_psrl_i.h
+@@ -0,0 +1,27 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++uint64_t rhs        = insn.shamt() & 0x1f;
++uint64_t original   = RS1;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t pr     = (lhs >>   rhs) & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
++//printf("# xc.psrl.i (%d,%d) %d, %d, %d = 0x%08X - 0x%08X\n",
++//    w,pack_width,insn.xcrd(),insn.xcrs1(), rhs, result, original);
+diff --git a/riscv/insns/xc_psub.h b/riscv/insns/xc_psub.h
+new file mode 100644
+index 0000000..99a8cea
+--- /dev/null
++++ b/riscv/insns/xc_psub.h
+@@ -0,0 +1,23 @@
++
++#include "xc_packed.h"
++
++uint32_t pack_width = insn.xc_pack_width();
++uint32_t w          = 0;
++int      n          = 0;
++uint32_t mask       = 0;
++
++XC_DECODE_PACK_WIDTHS(pack_width, w, n, mask);
++
++uint64_t result     = 0;
++
++for(int i = 0; i < n; i ++) {
++
++    uint64_t lhs    = (RS1 >> (i*w)) & mask;
++    uint64_t rhs    = (RS2 >> (i*w)) & mask;
++    uint64_t pr     = (lhs - rhs)    & mask;
++    
++    result         |= pr << (i*w);
++}
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_rngsamp.h b/riscv/insns/xc_rngsamp.h
+new file mode 100644
+index 0000000..172bde1
+--- /dev/null
++++ b/riscv/insns/xc_rngsamp.h
+@@ -0,0 +1,20 @@
++
++//
++// We cannot model a proper cryptographic random number generator here
++// inside spike. The aim is to make it possible to develop software.
++//
++// Instead we make rngseed and rngsamp work as an interface to the C
++// standard functions `rand` and `srand`.
++//
++// While *not* cryptographically appropriate, it helps make software
++// development using spike easier and repeatable.
++//
++// Note: because rngtest uses the `rand` function to generate an entropy
++// result, both rngsamp and rngtest will affect the repeatability of
++// the RNG.
++//
++
++uint32_t sample = rand();
++
++WRITE_RD(sample);
++
+diff --git a/riscv/insns/xc_rngseed.h b/riscv/insns/xc_rngseed.h
+new file mode 100644
+index 0000000..75fe1ba
+--- /dev/null
++++ b/riscv/insns/xc_rngseed.h
+@@ -0,0 +1,20 @@
++
++//
++// We cannot model a proper cryptographic random number generator here
++// inside spike. The aim is to make it possible to develop software.
++//
++// Instead we make rngseed and rngsamp work as an interface to the C
++// standard functions `rand` and `srand`.
++//
++// While *not* cryptographically appropriate, it helps make software
++// development using spike easier and repeatable.
++//
++// Note: because rngtest uses the `rand` function to generate an entropy
++// result, both rngsamp and rngtest will affect the repeatability of
++// the RNG.
++//
++
++uint32_t seed = RS1;
++
++srand(seed);
++
+diff --git a/riscv/insns/xc_rngtest.h b/riscv/insns/xc_rngtest.h
+new file mode 100644
+index 0000000..efa91bd
+--- /dev/null
++++ b/riscv/insns/xc_rngtest.h
+@@ -0,0 +1,33 @@
++
++//
++// It is impossible to properly model a TRNG in software only.
++//
++// Given the range of implementation options for an RNG in hardware,
++// this instruction may effectivley return a constant when implemented,
++// though this would not imply good things about the cryptographic
++// appropriateness of the implementation.
++//
++// In order to make software development easier, and to ensure all code paths
++// can be stressed, this instruction will return a pseudo random result.
++//
++// - 70% of the time it will write non-zero to the destination, indicating
++//   sufficient entropy is available.
++// - 30% of the time, it will write zero, indicating not enough entrop is
++//   available.
++//
++// This should be enough to develop software which correctly handles all
++// scenarios relating to the XCrypto RNG.
++//
++
++uint32_t rval       = rand();
++
++// Mask RAND_MAX to be upto 32-bits.
++uint32_t threshold  = ((0xFFFFFFFF&RAND_MAX)/10) * 30;
++
++if(rval < threshold) {
++    // Emulate not enough entropy
++    WRITE_RD(0);
++} else {
++    // Emulate enough entropy
++    WRITE_RD(1);
++}
+diff --git a/riscv/insns/xc_scatter_b.h b/riscv/insns/xc_scatter_b.h
+new file mode 100644
+index 0000000..de55066
+--- /dev/null
++++ b/riscv/insns/xc_scatter_b.h
+@@ -0,0 +1,21 @@
++
++uint8_t ab0     = (RS2 >>  0) & 0xFF;
++uint8_t ab1     = (RS2 >>  8) & 0xFF;
++uint8_t ab2     = (RS2 >> 16) & 0xFF;
++uint8_t ab3     = (RS2 >> 24) & 0xFF;
++
++uint8_t db0     = (RS3 >>  0) & 0xFF;
++uint8_t db1     = (RS3 >>  8) & 0xFF;
++uint8_t db2     = (RS3 >> 16) & 0xFF;
++uint8_t db3     = (RS3 >> 24) & 0xFF;
++
++reg_t   addr_0  = RS1 + ab0;
++reg_t   addr_1  = RS1 + ab1;
++reg_t   addr_2  = RS1 + ab2;
++reg_t   addr_3  = RS1 + ab3;
++
++MMU.store_uint8(addr_0, db0);
++MMU.store_uint8(addr_1, db1);
++MMU.store_uint8(addr_2, db2);
++MMU.store_uint8(addr_3, db3);
++
+diff --git a/riscv/insns/xc_scatter_h.h b/riscv/insns/xc_scatter_h.h
+new file mode 100644
+index 0000000..dfdf915
+--- /dev/null
++++ b/riscv/insns/xc_scatter_h.h
+@@ -0,0 +1,14 @@
++
++uint16_t ab0     = (RS2 >>  0) & 0xFFFF;
++uint16_t ab1     = (RS2 >> 16) & 0xFFFF;
++
++uint16_t db0     = (RS3 >>  0) & 0xFFFF;
++uint16_t db1     = (RS3 >> 16) & 0xFFFF;
++
++// Automatically halfword align the *offsets*.
++reg_t   addr_0  = RS1 + (ab0<<1);
++reg_t   addr_1  = RS1 + (ab1<<1);
++
++MMU.store_uint16(addr_0, db0);
++MMU.store_uint16(addr_1, db1);
++
+diff --git a/riscv/insns/xc_sha256_s0.h b/riscv/insns/xc_sha256_s0.h
+new file mode 100644
+index 0000000..af3d413
+--- /dev/null
++++ b/riscv/insns/xc_sha256_s0.h
+@@ -0,0 +1,11 @@
++
++#define ROR32(a,amt) ((a << (-amt & (32-1))) | (a >> (amt & (32-1))))
++
++uint32_t a = RS1;
++
++WRITE_RD(
++    ROR32(a, 7) ^ ROR32(a,18) ^ (a >> 3)
++);
++
++#undef ROR32
++
+diff --git a/riscv/insns/xc_sha256_s1.h b/riscv/insns/xc_sha256_s1.h
+new file mode 100644
+index 0000000..882a3e0
+--- /dev/null
++++ b/riscv/insns/xc_sha256_s1.h
+@@ -0,0 +1,11 @@
++
++#define ROR32(a,amt) ((a << (-amt & (32-1))) | (a >> (amt & (32-1))))
++
++uint32_t a = RS1;
++
++WRITE_RD(
++    ROR32(a, 17) ^ ROR32(a,19) ^ (a >> 10)
++);
++
++#undef ROR32
++
+diff --git a/riscv/insns/xc_sha256_s2.h b/riscv/insns/xc_sha256_s2.h
+new file mode 100644
+index 0000000..4afbeec
+--- /dev/null
++++ b/riscv/insns/xc_sha256_s2.h
+@@ -0,0 +1,11 @@
++
++#define ROR32(a,amt) ((a << (-amt & (32-1))) | (a >> (amt & (32-1))))
++
++uint32_t a = RS1;
++
++WRITE_RD(
++    ROR32(a, 2) ^ ROR32(a,13) ^ ROR32(a, 22)
++);
++
++#undef ROR32
++
+diff --git a/riscv/insns/xc_sha256_s3.h b/riscv/insns/xc_sha256_s3.h
+new file mode 100644
+index 0000000..b91d3ab
+--- /dev/null
++++ b/riscv/insns/xc_sha256_s3.h
+@@ -0,0 +1,11 @@
++
++#define ROR32(a,amt) ((a << (-amt & (32-1))) | (a >> (amt & (32-1))))
++
++uint32_t a = RS1;
++
++WRITE_RD(
++    ROR32(a, 6) ^ ROR32(a,11) ^ ROR32(a, 25)
++);
++
++#undef ROR32
++
+diff --git a/riscv/insns/xc_sha3_x1.h b/riscv/insns/xc_sha3_x1.h
+new file mode 100644
+index 0000000..7361da2
+--- /dev/null
++++ b/riscv/insns/xc_sha3_x1.h
+@@ -0,0 +1,13 @@
++
++uint32_t x = RS1 & 0x7;
++uint32_t y = RS2 & 0x7;
++
++uint32_t shamt = insn.xc_sha3_sh();
++
++uint32_t result = (((x+1)%5) + 5*((y)%5)) << shamt;
++
++//printf("#sha3.x1 x=%d, y=%d, shamt=%d, result = %d\n",x,y,shamt,result);
++//fflush(stdout);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_sha3_x2.h b/riscv/insns/xc_sha3_x2.h
+new file mode 100644
+index 0000000..0abd26b
+--- /dev/null
++++ b/riscv/insns/xc_sha3_x2.h
+@@ -0,0 +1,13 @@
++
++uint32_t x = RS1 & 0x7;
++uint32_t y = RS2 & 0x7;
++
++uint32_t shamt = insn.xc_sha3_sh();
++
++uint32_t result = (((x+2)%5) + 5*((y)%5)) << shamt;
++
++//printf("#sha3.x2 x=%d, y=%d, shamt=%d, result = %d\n",x,y,shamt,result);
++//fflush(stdout);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_sha3_x4.h b/riscv/insns/xc_sha3_x4.h
+new file mode 100644
+index 0000000..74f54df
+--- /dev/null
++++ b/riscv/insns/xc_sha3_x4.h
+@@ -0,0 +1,10 @@
++
++uint32_t x = RS1 & 0x7;
++uint32_t y = RS2 & 0x7;
++
++uint32_t shamt = insn.xc_sha3_sh();
++
++uint32_t result = (((x+4)%5) + 5*((y)%5)) << shamt;
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_sha3_xy.h b/riscv/insns/xc_sha3_xy.h
+new file mode 100644
+index 0000000..03620c1
+--- /dev/null
++++ b/riscv/insns/xc_sha3_xy.h
+@@ -0,0 +1,14 @@
++
++uint32_t x = RS1 & 0x7;
++uint32_t y = RS2 & 0x7;
++
++uint32_t shamt = insn.xc_sha3_sh();
++
++
++uint32_t result = (((x)%5) + 5*((y)%5)) << shamt;
++
++//printf("#sha3.xy x=%d, y=%d, shamt=%d, result = %d\n",x,y,shamt,result);
++//fflush(stdout);
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_sha3_yx.h b/riscv/insns/xc_sha3_yx.h
+new file mode 100644
+index 0000000..9548dc4
+--- /dev/null
++++ b/riscv/insns/xc_sha3_yx.h
+@@ -0,0 +1,10 @@
++
++uint32_t x = RS1 & 0x7;
++uint32_t y = RS2 & 0x7;
++
++uint32_t shamt = insn.xc_sha3_sh();
++
++uint32_t result = (((y)%5) + 5*((2*x+3*y)%5)) << shamt;
++
++WRITE_RD(result);
++
+diff --git a/riscv/insns/xc_sha512_s0.h b/riscv/insns/xc_sha512_s0.h
+new file mode 100644
+index 0000000..0b490b0
+--- /dev/null
++++ b/riscv/insns/xc_sha512_s0.h
+@@ -0,0 +1,12 @@
++require_rv64;
++
++#define ROR64(a,amt) ((a << (-amt & (64-1))) | (a >> (amt & (64-1))))
++
++uint64_t a = RS1;
++
++WRITE_RD(
++    ROR64(a,  1) ^ ROR64(a, 8) ^ (a >>  7)
++);
++
++#undef ROR64
++
+diff --git a/riscv/insns/xc_sha512_s1.h b/riscv/insns/xc_sha512_s1.h
+new file mode 100644
+index 0000000..ab66c6a
+--- /dev/null
++++ b/riscv/insns/xc_sha512_s1.h
+@@ -0,0 +1,12 @@
++require_rv64;
++
++#define ROR64(a,amt) ((a << (-amt & (64-1))) | (a >> (amt & (64-1))))
++
++uint64_t a = RS1;
++
++WRITE_RD(
++    ROR64(a, 19) ^ ROR64(a,61) ^ (a >>  6)
++);
++
++#undef ROR64
++
+diff --git a/riscv/insns/xc_sha512_s2.h b/riscv/insns/xc_sha512_s2.h
+new file mode 100644
+index 0000000..ad2dc89
+--- /dev/null
++++ b/riscv/insns/xc_sha512_s2.h
+@@ -0,0 +1,12 @@
++require_rv64;
++
++#define ROR64(a,amt) ((a << (-amt & (64-1))) | (a >> (amt & (64-1))))
++
++uint64_t a = RS1;
++
++WRITE_RD(
++    ROR64(a, 28) ^ ROR64(a,34) ^ ROR64(a,39)
++);
++
++#undef ROR64
++
+diff --git a/riscv/insns/xc_sha512_s3.h b/riscv/insns/xc_sha512_s3.h
+new file mode 100644
+index 0000000..a2e555b
+--- /dev/null
++++ b/riscv/insns/xc_sha512_s3.h
+@@ -0,0 +1,12 @@
++require_rv64;
++
++#define ROR64(a,amt) ((a << (-amt & (64-1))) | (a >> (amt & (64-1))))
++
++uint64_t a = RS1;
++
++WRITE_RD(
++    ROR64(a, 14) ^ ROR64(a, 18) ^ ROR64(a, 41)
++);
++
++#undef ROR64
++
+diff --git a/riscv/insns/xc_str_b.h b/riscv/insns/xc_str_b.h
+new file mode 100644
+index 0000000..b31ed78
+--- /dev/null
++++ b/riscv/insns/xc_str_b.h
+@@ -0,0 +1,2 @@
++MMU.store_uint8(RS1 + RS2, RS3);
++
+diff --git a/riscv/insns/xc_str_d.h b/riscv/insns/xc_str_d.h
+new file mode 100644
+index 0000000..5d8651a
+--- /dev/null
++++ b/riscv/insns/xc_str_d.h
+@@ -0,0 +1,2 @@
++MMU.store_uint64(RS1 + (RS2 << 3), RS3);
++
+diff --git a/riscv/insns/xc_str_h.h b/riscv/insns/xc_str_h.h
+new file mode 100644
+index 0000000..aff3490
+--- /dev/null
++++ b/riscv/insns/xc_str_h.h
+@@ -0,0 +1,2 @@
++MMU.store_uint16(RS1 + (RS2 << 1), RS3);
++
+diff --git a/riscv/insns/xc_str_w.h b/riscv/insns/xc_str_w.h
+new file mode 100644
+index 0000000..c5141dc
+--- /dev/null
++++ b/riscv/insns/xc_str_w.h
+@@ -0,0 +1,2 @@
++MMU.store_uint32(RS1 + (RS2 << 2), RS3);
++
+diff --git a/riscv/processor.cc b/riscv/processor.cc
+index 6bbaca1..e2d9b37 100644
+--- a/riscv/processor.cc
++++ b/riscv/processor.cc
+@@ -683,6 +683,11 @@ void processor_t::set_csr(int which, reg_t val)
+     case CSR_VXRM:
+       VU.vxrm = val;
+       break;
++    case CSR_UXCRYPTO:
++      // if(!supports_extension('crypto')) break;
++      state.uxcrypto = (state.uxcrypto & ~UXCRYPTO_WMASK) |
++                       (val            &  UXCRYPTO_WMASK) ;
++      break;
+   }
+ }
+ 
+@@ -877,6 +882,9 @@ reg_t processor_t::get_csr(int which)
+       if (!supports_extension('V'))
+         break;
+       return VU.vtype;
++    case CSR_UXCRYPTO:
++      // if(!supports_extension('crypto')) break;
++      return state.uxcrypto;
+   }
+   throw trap_illegal_instruction(0);
+ }
+diff --git a/riscv/processor.h b/riscv/processor.h
+index 2b5003b..d281c7f 100644
+--- a/riscv/processor.h
++++ b/riscv/processor.h
+@@ -239,6 +239,9 @@ struct state_t
+   reg_t stvec;
+   reg_t satp;
+   reg_t scause;
++  
++  // XCrypto CSR
++  reg_t uxcrypto;
+ 
+   reg_t dpc;
+   reg_t dscratch0, dscratch1;
+diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
+index 4ee64fa..4d36193 100644
+--- a/riscv/riscv.mk.in
++++ b/riscv/riscv.mk.in
+@@ -772,6 +772,63 @@ riscv_insn_priv = \
+ 	sret \
+ 	wfi \
+ 
++riscv_insn_ext_xcrypto = \
++    xc_ldr_b\
++    xc_ldr_h\
++    xc_ldr_w\
++    xc_ldr_d\
++    xc_ldr_bu\
++    xc_ldr_hu\
++    xc_ldr_wu\
++    xc_str_b\
++    xc_str_h\
++    xc_str_w\
++    xc_str_d\
++    xc_mmul_3\
++    xc_macc_1\
++    xc_madd_3\
++    xc_msub_3\
++    xc_mror\
++    xc_rngtest\
++    xc_rngsamp\
++    xc_rngseed\
++    xc_lut\
++    xc_bop\
++    xc_padd\
++    xc_psub\
++    xc_pror\
++    xc_psll\
++    xc_psrl\
++    xc_pror_i\
++    xc_psll_i\
++    xc_psrl_i\
++    xc_pmul_l\
++    xc_pmul_h\
++    xc_pclmul_l\
++    xc_pclmul_h\
++    xc_scatter_b\
++    xc_scatter_h\
++    xc_gather_b\
++    xc_gather_h\
++    xc_aessub_enc\
++    xc_aessub_encrot\
++    xc_aessub_dec\
++    xc_aessub_decrot\
++    xc_aesmix_enc\
++    xc_aesmix_dec\
++    xc_sha3_xy\
++    xc_sha3_x1\
++    xc_sha3_x2\
++    xc_sha3_x4\
++    xc_sha3_yx\
++    xc_sha256_s0\
++    xc_sha256_s1\
++    xc_sha256_s2\
++    xc_sha256_s3\
++    xc_sha512_s0\
++    xc_sha512_s1\
++    xc_sha512_s2\
++    xc_sha512_s3\
+ 
+ riscv_insn_list = \
+ 	$(riscv_insn_ext_a) \
+@@ -784,6 +841,7 @@ riscv_insn_list = \
+ 	$(riscv_insn_ext_b) \
+ 	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
+ 	$(riscv_insn_priv) \
++	$(riscv_insn_ext_xcrypto)
+ 
+ riscv_gen_srcs = \
+ 	$(addsuffix .cc,$(riscv_insn_list))

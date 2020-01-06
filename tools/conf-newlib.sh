@@ -9,18 +9,15 @@ export RISCV=$INSTALL_DIR
 
 mkdir -p $INSTALL_DIR
 
-# ------ Proxy Kernel (PK) -------------------------------------------------
+# ------ Newlib ------------------------------------------------------------
 
-refresh_dir  $DIR_PK_BUILD
-cd           $DIR_PK_BUILD
+refresh_dir  $DIR_NEWLIB_BUILD
+cd           $DIR_NEWLIB_BUILD
 
 export PATH="$RISCV/bin:$PATH"
 
-$DIR_PK/configure \
+$DIR_NEWLIB/configure \
     --prefix=$INSTALL_DIR \
-    --host=$TARGET_ARCH \
+    --target=$TARGET_ARCH \
     --with-arch=$ARCH_STRING --with-abi=$ABI_STRING
-
-make
-make install
 

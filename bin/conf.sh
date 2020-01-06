@@ -16,6 +16,8 @@ export REPO_VERSION_MINOR="0"
 export REPO_VERSION_PATCH="0"
 export REPO_VERSION="${REPO_VERSION_MAJOR}.${REPO_VERSION_MINOR}.${REPO_VERSION_PATCH}"
 
+export RISCV=$REPO_BUILD/toolchain/install
+
 export TEXMFLOCAL="${TEXMFLOCAL}:${REPO_HOME}/extern/texmf"
 
 if [ -z $YOSYS_ROOT ] ; then
@@ -27,6 +29,7 @@ echo "REPO_HOME      = $REPO_HOME"
 echo "REPO_BUILD     = $REPO_BUILD"
 echo "REPO_VERSION   = $REPO_VERSION"
 echo "YOSYS_ROOT     = $YOSYS_ROOT"
+echo "RISCV          = $RISCV"
 
 echo "------------------------------[Finished]-------------------------------"
 

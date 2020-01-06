@@ -11,13 +11,8 @@ mkdir -p $INSTALL_DIR
 
 # ------ GCC ---------------------------------------------------------------
 
-refresh_dir  $DIR_GCC_BUILD
-cd           $DIR_GCC_BUILD
-$DIR_GCC/configure \
-    --prefix=$INSTALL_DIR \
-    --enable-languages=c \
-    --disable-libssp \
-    --target=$TARGET_ARCH
+cd   $DIR_GCC_BUILD
+
 make -j 2
 make install
 

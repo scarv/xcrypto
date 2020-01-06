@@ -10,7 +10,6 @@ echo "DIR_NEWLIB      = $DIR_NEWLIB"
 echo "DIR_PK          = $DIR_PK"
 echo "DIR_SPIKE       = $DIR_SPIKE"
 echo ""
-echo "XCrypto Version = $REPO_VERSION"
 echo "Branch Name     = $BRANCH_NAME"
 echo "---------------------------------------------------"
 

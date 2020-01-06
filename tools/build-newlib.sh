@@ -11,16 +11,10 @@ mkdir -p $INSTALL_DIR
 
 # ------ Newlib ------------------------------------------------------------
 
-refresh_dir  $DIR_NEWLIB_BUILD
 cd           $DIR_NEWLIB_BUILD
 
 export PATH="$RISCV/bin:$PATH"
 
-$DIR_NEWLIB/configure \
-    --prefix=$INSTALL_DIR \
-    --target=$TARGET_ARCH
-
-make -j 2
+make -j$(nproc)
 make install
-
 

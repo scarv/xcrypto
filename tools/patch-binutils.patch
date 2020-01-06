@@ -1,0 +1,340 @@
+diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
+index 9ecdcab0b6..25c396bc0c 100644
+--- a/gas/config/tc-riscv.c
++++ b/gas/config/tc-riscv.c
+@@ -173,6 +173,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
+       return riscv_subset_supports ("b") || riscv_subset_supports ("zbb")
+ 	|| riscv_subset_supports ("zbp");
+ 
++    case INSN_CLASS_XCRYPTO:
++      return riscv_subset_supports ("xcrypto");
++
+     default:
+       as_fatal ("Unreachable");
+       return FALSE;
+@@ -614,6 +617,14 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
+   while (*p)
+     switch (c = *p++)
+       {
++      case 'X': /* XCrypto */
++    switch (c = *p++) {
++      case 'p': USE_BITS (OP_MASK_PW, OP_SH_PW)  ; break;
++      case 's': USE_BITS (OP_MASK_PS, OP_SH_PS)  ; break;
++      case 'M': USE_BITS (OP_MASK_RDM, OP_SH_RDM); break;
++      case 'l': USE_BITS (OP_MASK_L  , OP_SH_L  ); break;
++      }
++      break;
+       case 'C': /* RVC */
+ 	switch (c = *p++)
+ 	  {
+@@ -1559,6 +1570,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+   int argnum;
+   const struct percent_op_match *p;
+   const char *error = "unrecognized opcode";
++  
++  /* Stores first register in pair for XM,XN multi-writeback pairs.
++     Only used for XCrypto. */
++  unsigned int xc_xm = 0;
+ 
+   /* Parse the name of the instruction.  Terminate the string if whitespace
+      is found so that hash_find only sees the name part of the string.  */
+@@ -1612,6 +1627,70 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+ 	      error = NULL;
+ 	      goto out;
+ 
++        case 'X': /* XCrypto */
++          switch (*++args) 
++          {
++            case 'p': /* XCrypto - pack width */
++              if(s[0] == 'h') {   /* Pack width: halfwords */
++                  INSERT_OPERAND(PW, *ip, 3);
++              } else if(s[0] == 'b') {    /* Pack width: bytes */
++                  INSERT_OPERAND(PW, *ip, 2);
++              } else if(s[0] == 'n') {    /* Pack width: nibbles */
++                  INSERT_OPERAND(PW, *ip, 1);
++              } else if(s[0] == 'c') {    /* Pack width: crumbs */
++                  INSERT_OPERAND(PW, *ip, 0);
++              } else {
++                  as_bad(_("XCrypto ISE: Bad pack width specifier. Should be {h,b,n,c}. Got %c\n"),s[0]);
++                  break;
++              }
++              s ++;
++              continue;
++            case 's': /* SHA3 shift amounts 0..3*/
++		      my_getExpression (imm_expr, s);
++              if(imm_expr->X_add_number > 3 || imm_expr->X_add_number < 0) {
++                  as_bad("XCrypto ISE: SHA3 shift amount should be >=0 and <=3. Got %ld.\n", imm_expr->X_add_number);
++                  break;
++              }
++              INSERT_OPERAND(PS, *ip, (imm_expr -> X_add_number & 0x3));
++              imm_expr -> X_op = O_absent;
++              s = expr_end;
++               continue;
++            case 'l': /* xc.bop lut select*/
++		      my_getExpression (imm_expr, s);
++              if(imm_expr->X_add_number > 1 || imm_expr->X_add_number < 0) {
++                  as_bad("XCrypto ISE: xc.bop lut select should be >=0 and <2. Got %ld.\n", imm_expr->X_add_number);
++                  break;
++              }
++              INSERT_OPERAND(L, *ip, (imm_expr -> X_add_number & 0x1));
++              imm_expr -> X_op = O_absent;
++              s = expr_end;
++               continue;
++            case 'M': 
++              /* 2'nd destination register for MP instructions. Appears first in
++                 the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if (!(regno & 0x1)) {
++                  as_bad("XCrypto ISE: RD2 for multi-precision arithemtic must be an 'odd' register number.\n");
++                  break;
++              } else {
++                  xc_xm = regno;
++              }
++              continue;
++            case 'N':
++              /* 1'st destination register for MP instructions. Appears second in
++                 the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if(regno + 1 == xc_xm) {
++                  INSERT_OPERAND(RDM, *ip, regno >> 1);
++              } else {
++                  as_bad("XCrypto ISE: destination registers for multi-precision arithmetic must be contiguous.\n");
++              }
++              continue;
++            default:
++              as_bad(_("XCrypto ISE: Unknown argument specifier: %c\n"),*args);
++              break;
++          } /* END XCrypto */
++          break; /* case 'X': (XCrypto) */
+ 	    case 'C': /* RVC */
+ 	      switch (*++args)
+ 		{
+diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
+index 6c750a33b1..d494f4dc92 100644
+--- a/include/opcode/riscv-opc.h
++++ b/include/opcode/riscv-opc.h
+@@ -739,6 +739,121 @@
+ #define MASK_C_LDSP  0xe003
+ #define MATCH_C_SDSP 0xe002
+ #define MASK_C_SDSP  0xe003
++
++/* XCrypto instruction subset */
++#define MATCH_XC_LDR_B 0x7003
++#define MASK_XC_LDR_B 0xfe00707f
++#define MATCH_XC_LDR_H 0x2007003
++#define MASK_XC_LDR_H 0xfe00707f
++#define MATCH_XC_LDR_W 0x4007003
++#define MASK_XC_LDR_W 0xfe00707f
++#define MATCH_XC_LDR_D 0x6007003
++#define MASK_XC_LDR_D 0xfe00707f
++#define MATCH_XC_LDR_BU 0x8007003
++#define MASK_XC_LDR_BU 0xfe00707f
++#define MATCH_XC_LDR_HU 0xa007003
++#define MASK_XC_LDR_HU 0xfe00707f
++#define MATCH_XC_LDR_WU 0xc007003
++#define MASK_XC_LDR_WU 0xfe00707f
++#define MATCH_XC_STR_B 0x4023
++#define MASK_XC_STR_B 0x6007fff
++#define MATCH_XC_STR_H 0x40a3
++#define MASK_XC_STR_H 0x6007fff
++#define MATCH_XC_STR_W 0x4123
++#define MASK_XC_STR_W 0x6007fff
++#define MATCH_XC_STR_D 0x41a3
++#define MASK_XC_STR_D 0x6007fff
++#define MATCH_XC_MMUL_3 0x4004023
++#define MASK_XC_MMUL_3 0x60070ff
++#define MATCH_XC_MACC_1 0x40040a3
++#define MASK_XC_MACC_1 0x60070ff
++#define MATCH_XC_MADD_3 0x6004023
++#define MASK_XC_MADD_3 0x60070ff
++#define MATCH_XC_MSUB_3 0x60050a3
++#define MASK_XC_MSUB_3 0x60070ff
++#define MATCH_XC_MROR 0x5023
++#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_RNGTEST 0x300073
++#define MASK_XC_RNGTEST 0xfffff07f
++#define MATCH_XC_RNGSAMP 0x500073
++#define MASK_XC_RNGSAMP 0xfffff07f
++#define MATCH_XC_RNGSEED 0x700073
++#define MASK_XC_RNGSEED 0xfff07fff
++#define MATCH_XC_LUT 0x62006033
++#define MASK_XC_LUT 0xfe00707f
++#define MATCH_XC_BOP 0x64006033
++#define MASK_XC_BOP 0x7e00707f
++#define MATCH_XC_PADD 0x2000073
++#define MASK_XC_PADD 0x3e00707f
++#define MATCH_XC_PSUB 0x4000073
++#define MASK_XC_PSUB 0x3e00707f
++#define MATCH_XC_PROR 0x6000073
++#define MASK_XC_PROR 0x3e00707f
++#define MATCH_XC_PSLL 0x8000073
++#define MASK_XC_PSLL 0x3e00707f
++#define MATCH_XC_PSRL 0xa000073
++#define MASK_XC_PSRL 0x3e00707f
++#define MATCH_XC_PROR_I 0x30007003
++#define MASK_XC_PROR_I 0x3c00707f
++#define MATCH_XC_PSLL_I 0x2c007003
++#define MASK_XC_PSLL_I 0x3c00707f
++#define MATCH_XC_PSRL_I 0x28007003
++#define MASK_XC_PSRL_I 0x3c00707f
++#define MATCH_XC_PMUL_L 0xc000073
++#define MASK_XC_PMUL_L 0x3e00707f
++#define MATCH_XC_PMUL_H 0xe000073
++#define MASK_XC_PMUL_H 0x3e00707f
++#define MATCH_XC_PCLMUL_L 0x10000033
++#define MASK_XC_PCLMUL_L 0x3e00707f
++#define MATCH_XC_PCLMUL_H 0x12000033
++#define MASK_XC_PCLMUL_H 0x3e00707f
++#define MATCH_XC_SCATTER_B 0x4223
++#define MASK_XC_SCATTER_B 0x6007fff
++#define MATCH_XC_SCATTER_H 0x42a3
++#define MASK_XC_SCATTER_H 0x6007fff
++#define MATCH_XC_GATHER_B 0x34006013
++#define MASK_XC_GATHER_B 0xfe00707f
++#define MATCH_XC_GATHER_H 0x36006013
++#define MASK_XC_GATHER_H 0xfe00707f
++#define MATCH_XC_AESSUB_ENC 0x1a007003
++#define MASK_XC_AESSUB_ENC 0xfe00707f
++#define MATCH_XC_AESSUB_ENCROT 0x1c007003
++#define MASK_XC_AESSUB_ENCROT 0xfe00707f
++#define MATCH_XC_AESSUB_DEC 0x1e007003
++#define MASK_XC_AESSUB_DEC 0xfe00707f
++#define MATCH_XC_AESSUB_DECROT 0x20007003
++#define MASK_XC_AESSUB_DECROT 0xfe00707f
++#define MATCH_XC_AESMIX_ENC 0x22007003
++#define MASK_XC_AESMIX_ENC 0xfe00707f
++#define MATCH_XC_AESMIX_DEC 0x24007003
++#define MASK_XC_AESMIX_DEC 0xfe00707f
++#define MATCH_XC_SHA3_XY 0x10007003
++#define MASK_XC_SHA3_XY 0x3e00707f
++#define MATCH_XC_SHA3_X1 0x12007003
++#define MASK_XC_SHA3_X1 0x3e00707f
++#define MATCH_XC_SHA3_X2 0x14007003
++#define MASK_XC_SHA3_X2 0x3e00707f
++#define MATCH_XC_SHA3_X4 0x16007003
++#define MASK_XC_SHA3_X4 0x3e00707f
++#define MATCH_XC_SHA3_YX 0x18007003
++#define MASK_XC_SHA3_YX 0x3e00707f
++#define MATCH_XC_SHA256_S0 0xe007003
++#define MASK_XC_SHA256_S0 0xfff0707f
++#define MATCH_XC_SHA256_S1 0xe107003
++#define MASK_XC_SHA256_S1 0xfff0707f
++#define MATCH_XC_SHA256_S2 0xe207003
++#define MASK_XC_SHA256_S2 0xfff0707f
++#define MATCH_XC_SHA256_S3 0xe307003
++#define MASK_XC_SHA256_S3 0xfff0707f
++#define MATCH_XC_SHA512_S0 0xe407003
++#define MASK_XC_SHA512_S0 0xfff0707f
++#define MATCH_XC_SHA512_S1 0xe507003
++#define MASK_XC_SHA512_S1 0xfff0707f
++#define MATCH_XC_SHA512_S2 0xe607003
++#define MASK_XC_SHA512_S2 0xfff0707f
++#define MATCH_XC_SHA512_S3 0xe707003
++#define MASK_XC_SHA512_S3 0xfff0707f
++
+ #define MATCH_CUSTOM0 0xb
+ #define MASK_CUSTOM0  0x707f
+ #define MATCH_CUSTOM0_RS1 0x200b
+diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
+index 7e67c7f9a2..47bb85eede 100644
+--- a/include/opcode/riscv.h
++++ b/include/opcode/riscv.h
+@@ -235,6 +235,17 @@ static const char * const riscv_pred_succ[16] =
+ #define OP_MASK_FUNCT2         0x3
+ #define OP_SH_FUNCT2           25
+ 
++/* XCrypto fields. */
++
++#define OP_MASK_RDM     0xF
++#define OP_SH_RDM       8
++#define OP_MASK_PW      0b11
++#define OP_SH_PW        30
++#define OP_MASK_PS      0b11
++#define OP_SH_PS        30
++#define OP_MASK_L       0b1
++#define OP_SH_L         31
++
+ /* RVC fields.  */
+ 
+ #define OP_MASK_OP2            0x3
+@@ -321,7 +332,9 @@ enum riscv_insn_class
+    INSN_CLASS_B_OR_ZBM,
+    INSN_CLASS_B_OR_ZBP,
+    INSN_CLASS_B_OR_ZBS,
+-   INSN_CLASS_B_OR_ZBB_OR_ZBP
++   INSN_CLASS_B_OR_ZBB_OR_ZBP,
++
++   INSN_CLASS_XCRYPTO
+   };
+ 
+ /* This structure holds information for a particular instruction.  */
+diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
+index e99febc823..73313d9703 100644
+--- a/opcodes/riscv-opc.c
++++ b/opcodes/riscv-opc.c
+@@ -992,6 +992,65 @@ const struct riscv_opcode riscv_opcodes[] =
+ {"sfence.vma", 0, INSN_CLASS_I,   "s,t",  MATCH_SFENCE_VMA, MASK_SFENCE_VMA, match_opcode, 0 },
+ {"wfi",        0, INSN_CLASS_I,   "",     MATCH_WFI, MASK_WFI, match_opcode, 0 },
+ 
++/* XCrypto instruction subset */
++{         "xc.ldr.b", 0, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_B, MASK_XC_LDR_B, match_opcode, 0},
++{         "xc.ldr.h", 0, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_H, MASK_XC_LDR_H, match_opcode, 0},
++{         "xc.ldr.w", 0, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_W, MASK_XC_LDR_W, match_opcode, 0},
++{         "xc.ldr.d",64, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_D, MASK_XC_LDR_D, match_opcode, 0},
++{        "xc.ldr.bu", 0, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_BU, MASK_XC_LDR_BU, match_opcode, 0},
++{        "xc.ldr.hu", 0, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_HU, MASK_XC_LDR_HU, match_opcode, 0},
++{        "xc.ldr.wu",64, INSN_CLASS_XCRYPTO,   "d,s(t)", MATCH_XC_LDR_WU, MASK_XC_LDR_WU, match_opcode, 0},
++{         "xc.str.b", 0, INSN_CLASS_XCRYPTO,   "r,s(t)", MATCH_XC_STR_B, MASK_XC_STR_B, match_opcode, 0},
++{         "xc.str.h", 0, INSN_CLASS_XCRYPTO,   "r,s(t)", MATCH_XC_STR_H, MASK_XC_STR_H, match_opcode, 0},
++{         "xc.str.w", 0, INSN_CLASS_XCRYPTO,   "r,s(t)", MATCH_XC_STR_W, MASK_XC_STR_W, match_opcode, 0},
++{         "xc.str.d",64, INSN_CLASS_XCRYPTO,   "r,s(t)", MATCH_XC_STR_D, MASK_XC_STR_D, match_opcode, 0},
++{        "xc.mmul.3", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MMUL_3, MASK_XC_MMUL_3, match_opcode, 0},
++{        "xc.macc.1", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MACC_1, MASK_XC_MACC_1, match_opcode, 0},
++{        "xc.madd.3", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MADD_3, MASK_XC_MADD_3, match_opcode, 0},
++{        "xc.msub.3", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MSUB_3, MASK_XC_MSUB_3, match_opcode, 0},
++{          "xc.mror", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MROR, MASK_XC_MROR, match_opcode, 0},
++{       "xc.rngtest", 0, INSN_CLASS_XCRYPTO,        "d", MATCH_XC_RNGTEST, MASK_XC_RNGTEST, match_opcode, 0},
++{       "xc.rngsamp", 0, INSN_CLASS_XCRYPTO,        "d", MATCH_XC_RNGSAMP, MASK_XC_RNGSAMP, match_opcode, 0},
++{       "xc.rngseed", 0, INSN_CLASS_XCRYPTO,        "s", MATCH_XC_RNGSEED, MASK_XC_RNGSEED, match_opcode, 0},
++{           "xc.lut", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_LUT, MASK_XC_LUT, match_opcode, 0},
++{           "xc.bop", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xl", MATCH_XC_BOP, MASK_XC_BOP, match_opcode, 0},
++{          "xc.padd", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PADD, MASK_XC_PADD, match_opcode, 0},
++{          "xc.psub", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PSUB, MASK_XC_PSUB, match_opcode, 0},
++{          "xc.pror", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PROR, MASK_XC_PROR, match_opcode, 0},
++{          "xc.psll", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PSLL, MASK_XC_PSLL, match_opcode, 0},
++{          "xc.psrl", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PSRL, MASK_XC_PSRL, match_opcode, 0},
++{        "xc.pror.i", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,>", MATCH_XC_PROR_I, MASK_XC_PROR_I, match_opcode, 0},
++{        "xc.psll.i", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,>", MATCH_XC_PSLL_I, MASK_XC_PSLL_I, match_opcode, 0},
++{        "xc.psrl.i", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,>", MATCH_XC_PSRL_I, MASK_XC_PSRL_I, match_opcode, 0},
++{        "xc.pmul.l", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PMUL_L, MASK_XC_PMUL_L, match_opcode, 0},
++{        "xc.pmul.h", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PMUL_H, MASK_XC_PMUL_H, match_opcode, 0},
++{      "xc.pclmul.l", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PCLMUL_L, MASK_XC_PCLMUL_L, match_opcode, 0},
++{      "xc.pclmul.h", 0, INSN_CLASS_XCRYPTO, "Xp,d,s,t", MATCH_XC_PCLMUL_H, MASK_XC_PCLMUL_H, match_opcode, 0},
++{     "xc.scatter.b", 0, INSN_CLASS_XCRYPTO,    "s,t,r", MATCH_XC_SCATTER_B, MASK_XC_SCATTER_B, match_opcode, 0},
++{     "xc.scatter.h", 0, INSN_CLASS_XCRYPTO,    "s,t,r", MATCH_XC_SCATTER_H, MASK_XC_SCATTER_H, match_opcode, 0},
++{      "xc.gather.b", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_GATHER_B, MASK_XC_GATHER_B, match_opcode, 0},
++{      "xc.gather.h", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_GATHER_H, MASK_XC_GATHER_H, match_opcode, 0},
++{    "xc.aessub.enc", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC, match_opcode, 0},
++{ "xc.aessub.encrot", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT, match_opcode, 0},
++{    "xc.aessub.dec", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC, match_opcode, 0},
++{ "xc.aessub.decrot", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT, match_opcode, 0},
++{    "xc.aesmix.enc", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC, match_opcode, 0},
++{    "xc.aesmix.dec", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC, match_opcode, 0},
++{       "xc.sha3.xy", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_XY, MASK_XC_SHA3_XY, match_opcode, 0},
++{       "xc.sha3.x1", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_X1, MASK_XC_SHA3_X1, match_opcode, 0},
++{       "xc.sha3.x2", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_X2, MASK_XC_SHA3_X2, match_opcode, 0},
++{       "xc.sha3.x4", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_X4, MASK_XC_SHA3_X4, match_opcode, 0},
++{       "xc.sha3.yx", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_YX, MASK_XC_SHA3_YX, match_opcode, 0},
++{     "xc.sha256.s0", 0, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA256_S0, MASK_XC_SHA256_S0, match_opcode, 0},
++{     "xc.sha256.s1", 0, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA256_S1, MASK_XC_SHA256_S1, match_opcode, 0},
++{     "xc.sha256.s2", 0, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA256_S2, MASK_XC_SHA256_S2, match_opcode, 0},
++{     "xc.sha256.s3", 0, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA256_S3, MASK_XC_SHA256_S3, match_opcode, 0},
++{     "xc.sha512.s0",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S0, MASK_XC_SHA512_S0, match_opcode, 0},
++{     "xc.sha512.s1",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1, match_opcode, 0},
++{     "xc.sha512.s2",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2, match_opcode, 0},
++{     "xc.sha512.s3",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3, match_opcode, 0},
++
++
+ /* Terminate the list.  */
+ {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
+ };
