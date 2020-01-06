@@ -89,7 +89,7 @@ toolchain and simulator patches.
 **Note:** This flow is awkward and temporary until dedicated
 development branches can be setup on the relevant repositories.
 
-- Assuming a fresh checkout of the `riscv-crypto` repository,
+- Assuming a fresh checkout of the `xcrypto` repository,
   run the [quickstart](#quickstart) steps described above so that you
   have a working baseline toolchain installation.
 
