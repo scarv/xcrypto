@@ -7,3 +7,9 @@
 [submodule "extern/riscv-opcodes"]
 	path = extern/riscv-opcodes
 	url = https://github.com/scarv/riscv-opcodes.git
+[submodule "extern/scarv-cpu"]
+	path = extern/scarv-cpu
+	url = https://github.com/scarv/scarv-cpu.git
+[submodule "extern/scarv-soc"]
+	path = extern/scarv-soc
+	url = https://github.com/scarv/scarv-soc.git
