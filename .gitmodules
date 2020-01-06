@@ -1,6 +1,3 @@
-[submodule "xcrypto-rtl"]
-	path = extern/xcrypto-rtl
-	url = https://github.com/scarv/xcrypto-rtl.git
 [submodule "libscarv"]
 	path = extern/libscarv
 	url = https://github.com/scarv/libscarv.git
