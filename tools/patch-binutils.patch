@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index 9ecdcab0b6..25c396bc0c 100644
+index 9ecdcab0b6..dcf4c60545 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -173,6 +173,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
@@ -27,23 +27,23 @@ index 9ecdcab0b6..25c396bc0c 100644
        case 'C': /* RVC */
  	switch (c = *p++)
  	  {
-@@ -1559,6 +1570,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
-   int argnum;
+@@ -1560,6 +1571,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    const struct percent_op_match *p;
    const char *error = "unrecognized opcode";
-+  
+ 
 +  /* Stores first register in pair for XM,XN multi-writeback pairs.
 +     Only used for XCrypto. */
 +  unsigned int xc_xm = 0;
- 
++
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
+   for (s = str; *s != '\0'; ++s)
 @@ -1612,6 +1627,70 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
 +        case 'X': /* XCrypto */
-+          switch (*++args) 
++          switch (*++args)
 +          {
 +            case 'p': /* XCrypto - pack width */
 +              if(s[0] == 'h') {   /* Pack width: halfwords */
@@ -80,7 +80,7 @@ index 9ecdcab0b6..25c396bc0c 100644
 +              imm_expr -> X_op = O_absent;
 +              s = expr_end;
 +               continue;
-+            case 'M': 
++            case 'M':
 +              /* 2'nd destination register for MP instructions. Appears first in
 +                 the argument list. */
 +              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;

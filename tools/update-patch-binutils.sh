@@ -7,6 +7,7 @@ set -x
 
 # ------ Binutils ----------------------------------------------------------
 
-cd           $DIR_GCC
-git apply    $REPO_HOME/tools/patch-gcc.patch
+cd           $DIR_BINUTILS
+git diff --cached > $PATCH_BINUTILS
+
 

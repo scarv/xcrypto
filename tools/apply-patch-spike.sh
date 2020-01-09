@@ -8,5 +8,6 @@ set -x
 # ------ Binutils ----------------------------------------------------------
 
 cd           $DIR_SPIKE
-git apply    $REPO_HOME/tools/patch-spike.patch
+git apply    $PATCH_SPIKE
+git add      --all
 

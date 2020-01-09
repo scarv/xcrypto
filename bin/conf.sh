@@ -16,15 +16,22 @@ export REPO_VERSION_MINOR="0"
 export REPO_VERSION_PATCH="0"
 export REPO_VERSION="${REPO_VERSION_MAJOR}.${REPO_VERSION_MINOR}.${REPO_VERSION_PATCH}"
 
-export RISCV=$REPO_BUILD/toolchain/install
+if [ -z $RISCV ] ; then
+    export RISCV=$REPO_BUILD/toolchain/install
+    echo "\$RISCV is empty. Setting to '$RISCV'"
+else
+    echo "\$RISCV is already set to '$RISCV'"
+fi
 
 export TEXMFLOCAL="${TEXMFLOCAL}:${REPO_HOME}/extern/texmf"
 
 if [ -z $YOSYS_ROOT ] ; then
     # Export a dummy "Yosys Root" path environment variable.
-    export YOSYS_ROOT=
+    export YOSYS_ROOT=/usr/bin
+    echo "\$YOSYS_ROOT is empty. Setting to '$YOSYS_ROOT'"
 fi
 
+echo "----"
 echo "REPO_HOME      = $REPO_HOME"
 echo "REPO_BUILD     = $REPO_BUILD"
 echo "REPO_VERSION   = $REPO_VERSION"
