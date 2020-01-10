@@ -71,12 +71,12 @@ extension proposal.
 ### Publications and presentations
 
 - Some
-  [slides](./media/riscv-meetup-bristol-slides.pdf)
+  [slides](./pdf/riscv-meetup-bristol-slides.pdf)
   presented at the
   [RISC-V meetup](https://www.meetup.com/Bristol-RISC-V-Meetup-Group)
   in Bristol, April 2019.
 - A
-  [poster](./media/zurich-workshop-poster.pdf)
+  [poster](./pdf/zurich-workshop-poster.pdf)
   presented at the
   [RISC-V Workshop](https://riscv.org/2019/06/risc-v-workshop-zurich-proceedings)
   in  Zurich,  June 2019.
