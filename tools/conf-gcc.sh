@@ -17,6 +17,7 @@ $DIR_GCC/configure \
     --prefix=$INSTALL_DIR \
     --enable-languages=c \
     --disable-libssp \
+    --disable-float --disable-atomic \
     --target=$TARGET_ARCH \
     --with-arch=$ARCH_STRING --with-abi=$ABI_STRING
 
