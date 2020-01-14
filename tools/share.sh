@@ -28,8 +28,11 @@ COMMIT_SPIKE=5b042d731458eafea538324e2bf4f1d44ce9d2a0
 
 #
 # Patch files
-PATCH_BINUTILS=$REPO_HOME/tools/patch-binutils.patch
-PATCH_SPIKE=$REPO_HOME/tools/patch-spike.patch
+PATCH_BINUTILS=$REPO_HOME/tools/binutils.patch
+PATCH_GCC=$REPO_HOME/tools/gcc.patch
+PATCH_NEWLIB=$REPO_HOME/tools/newlib.patch
+PATCH_SPIKE=$REPO_HOME/tools/spike.patch
+PATCH_PK=$REPO_HOME/tools/pk.patch
 
 #
 # Check that a directory exists and exit if not.
