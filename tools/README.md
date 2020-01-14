@@ -18,7 +18,7 @@ After first checking out the `xcrypto` repository:
 
 - Checkout the relevant repositories:
     ```sh
-    ${REPO_HOME}/tools/clone-repos.sh
+    ${REPO_HOME}/tools/clone.sh
     ```
     This will clone GCC, Binutils, Newlib, the RISC-V Proxy kernel (PK)
     and the RISC-V ISA Simulator (Spike).
@@ -105,14 +105,14 @@ toolchain and simulator patches.
 
 - There are three classes of tool script used to manage the patches:
 
-  - The `tools/apply-patch-*.sh` scripts are used to take the patches
+  - The `tools/*-apply.sh` scripts are used to take the patches
     contained in the XCrypto repository and apply them to the cloned
     upstream repositories.
 
-  - The `tools/revert-patch-*.sh` scripts are used to put the cloned
+  - The `tools/*-revert.sh` scripts are used to put the cloned
     upstream repositories back to their known initial state.
 
-  - The `tools/update-patch-*.sh` scripts take the *staged* modifications
+  - The `tools/*-update.sh` scripts take the *staged* modifications
     to the relevant repository and updates the XCrypto diff.
 
 - To modify a patch:
@@ -124,5 +124,5 @@ toolchain and simulator patches.
     make sure the changes are *staged* for commit.
     *Do Not* commit your changes to the cloned repository.
 
-  - Then, run the appropriate `tools/update-patch-*.sh` script and
+  - Then, run the appropriate `tools/*-update.sh` script and
     commit the change to the patch to the XCrypto repository.
