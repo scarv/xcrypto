@@ -12,13 +12,13 @@ After first checking out the `xcrypto` repository:
 
 - From the root of the project, run:
   ```sh
-  $> source bin/conf.sh
+  source bin/conf.sh
   ```
   to setup the project workspace.
 
 - Checkout the relevant repositories:
     ```sh
-    $> $REPO_HOME/tools/clone-repos.sh
+    ${REPO_HOME}/tools/clone-repos.sh
     ```
     This will clone GCC, Binutils, Newlib, the RISC-V Proxy kernel (PK)
     and the RISC-V ISA Simulator (Spike).
@@ -27,43 +27,67 @@ After first checking out the `xcrypto` repository:
     called `scarv/xcrypto/v$REPO_VERSION`, where `$REPO_VERSION` is set
     by the `xcrypto` environment setup script in `bin/conf.sh`.
 
+- For each component in the tool-chain, execute the associated
+  patch application, 
+  configuration, 
+  and 
+  compilation (plus installation)
+  script in turn:
 
-- Apply the relevant patches to the checked out repositories:
+  - `binutils`:
+
     ```sh
-    $> $REPO_HOME/tools/apply-patch-all.sh
-    ```
-    Or, apply them individually using the `tools/apply-patch-*.sh`
-    scripts.
-
-
-- Configure each repository before building:
-    ```sh
-    $> $REPO_HOME/tools/conf-binutils.sh
-    $> $REPO_HOME/tools/conf-gcc.sh
-    $> $REPO_HOME/tools/conf-newlib.sh
-    $> $REPO_HOME/tools/conf-spike.sh
+    ${REPO_HOME}/tools/binutils-apply.sh
+    ${REPO_HOME}/tools/binutils-conf.sh
+    ${REPO_HOME}/tools/binutils-build.sh
     ```
 
-- Build the repositories:
+  - `gcc`:
+
     ```sh
-    $> $REPO_HOME/tools/build-binutils.sh
-    $> $REPO_HOME/tools/build-gcc.sh
-    $> $REPO_HOME/tools/build-newlib.sh
-    $> $REPO_HOME/tools/build-pk.sh
-    $> $REPO_HOME/tools/build-spike.sh
+    ${REPO_HOME}/tools/gcc-apply.sh
+    ${REPO_HOME}/tools/gcc-conf.sh
+    ${REPO_HOME}/tools/gcc-build.sh
     ```
+
+  - `newlib`:
+
+    ```sh
+    ${REPO_HOME}/tools/newlib-apply.sh
+    ${REPO_HOME}/tools/newlib-conf.sh
+    ${REPO_HOME}/tools/newlib-build.sh
+    ```
+
+  - `pk` (the `spike` proxy kernel):
+
+    ```sh
+    ${REPO_HOME}/tools/pk-apply.sh
+    ${REPO_HOME}/tools/pk-conf.sh
+    ${REPO_HOME}/tools/pk-build.sh
+    ``` 
+
+  - `spike`:
+
+    ```sh
+    ${REPO_HOME}/tools/spike-apply.sh
+    ${REPO_HOME}/tools/spike-conf.sh
+    ${REPO_HOME}/tools/spike-build.sh
+    ``` 
+
+
+
 
    - This will build `binutils`, `gcc`, `newlib`, `pk` and `spike`,
-     and place the compiled results in `$REPO_HOME/build/toolchain/install`.
+     and place the compiled results in `${REPO_HOME}/build/toolchain/install`.
 
    - You can go and make some tea / coffee for this bit, it will take a while.
 
    - The architecture the compiler will target is specified
-     in `$REPO_HOME/tools/common.sh` as
+     in `${REPO_HOME}/tools/share.sh` as
      `TARGET_ARCH, `ARCH_STRING` and `ABI_STRING`.
 
 - To re-build a repository from scratch, first run the relevant
-  `$REPO_HOME/tools/conf-*.sh` script before running the corresponding
+  `${REPO_HOME}/tools/conf-*.sh` script before running the corresponding
   `build` script.
 
 
