@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index 9ecdcab0b6..dcf4c60545 100644
+index 9ecdcab0b6..3aa8930605 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -173,6 +173,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
@@ -12,7 +12,7 @@ index 9ecdcab0b6..dcf4c60545 100644
      default:
        as_fatal ("Unreachable");
        return FALSE;
-@@ -614,6 +617,14 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
+@@ -614,6 +617,16 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
    while (*p)
      switch (c = *p++)
        {
@@ -21,13 +21,15 @@ index 9ecdcab0b6..dcf4c60545 100644
 +      case 'p': USE_BITS (OP_MASK_PW, OP_SH_PW)  ; break;
 +      case 's': USE_BITS (OP_MASK_PS, OP_SH_PS)  ; break;
 +      case 'M': USE_BITS (OP_MASK_RDM, OP_SH_RDM); break;
++      case 'O': USE_BITS (OP_MASK_RSM1, OP_SH_RSM1); break;
++      case 'Q': USE_BITS (OP_MASK_RSM2, OP_SH_RSM2); break;
 +      case 'l': USE_BITS (OP_MASK_L  , OP_SH_L  ); break;
 +      }
 +      break;
        case 'C': /* RVC */
  	switch (c = *p++)
  	  {
-@@ -1560,6 +1571,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1560,6 +1573,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    const struct percent_op_match *p;
    const char *error = "unrecognized opcode";
  
@@ -38,7 +40,7 @@ index 9ecdcab0b6..dcf4c60545 100644
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
    for (s = str; *s != '\0'; ++s)
-@@ -1612,6 +1627,70 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1612,6 +1629,108 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -85,7 +87,7 @@ index 9ecdcab0b6..dcf4c60545 100644
 +                 the argument list. */
 +              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
 +              if (!(regno & 0x1)) {
-+                  as_bad("XCrypto ISE: RD2 for multi-precision arithemtic must be an 'odd' register number.\n");
++                  as_bad("XCrypto ISE: Hi register for multi-destination address must be an 'odd' register number. Got %d.\n",regno);
 +                  break;
 +              } else {
 +                  xc_xm = regno;
@@ -98,7 +100,45 @@ index 9ecdcab0b6..dcf4c60545 100644
 +              if(regno + 1 == xc_xm) {
 +                  INSERT_OPERAND(RDM, *ip, regno >> 1);
 +              } else {
-+                  as_bad("XCrypto ISE: destination registers for multi-precision arithmetic must be contiguous.\n");
++                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
++              }
++              continue;
++            case 'O':
++              /* 2'nd source register for RSM1 instructions. Appears first in the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if (!(regno & 0x1)) {
++                  as_bad("XCrypto ISE: Hi register for multi-source address must be an 'odd' register number. Got %d.\n",regno);
++                  break;
++              } else {
++                  xc_xm = regno;
++              }
++              continue;
++            case 'P':
++              /* 1'st destination register for RSM1 instructions. Appears second in the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if(regno + 1 == xc_xm) {
++                  INSERT_OPERAND(RSM1, *ip, regno >> 1);
++              } else {
++                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
++              }
++              continue;
++            case 'Q':
++              /* 2'nd source register for RSM2 instructions. Appears first in the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if (!(regno & 0x1)) {
++                  as_bad("XCrypto ISE: Hi register for multi-source address must be an 'odd' register number. Got %d.\n",regno);
++                  break;
++              } else {
++                  xc_xm = regno;
++              }
++              continue;
++            case 'R':
++              /* 1'st destination register for RSM2 instructions. Appears second in the argument list. */
++              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
++              if(regno + 1 == xc_xm) {
++                  INSERT_OPERAND(RSM2, *ip, regno >> 1);
++              } else {
++                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
 +              }
 +              continue;
 +            default:
@@ -110,10 +150,10 @@ index 9ecdcab0b6..dcf4c60545 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..8968f2d0d0 100644
+index 6c750a33b1..58374c5556 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
-@@ -739,6 +739,121 @@
+@@ -739,6 +739,152 @@
  #define MASK_C_LDSP  0xe003
  #define MATCH_C_SDSP 0xe002
  #define MASK_C_SDSP  0xe003
@@ -232,10 +272,41 @@ index 6c750a33b1..8968f2d0d0 100644
 +#define MATCH_XC_SHA512_S3 0xe707003
 +#define MASK_XC_SHA512_S3 0xfff0707f
 +
++#define MATCH_MASK_B2A 0x5b
++#define MASK_MASK_B2A  0xfff0f0ff
++#define MATCH_MASK_A2B 0x805b
++#define MASK_MASK_A2B  0xfff0f0ff
++#define MATCH_MASK_B_MASK 0x20005b
++#define MASK_MASK_B_MASK  0xfff070ff
++#define MATCH_MASK_B_UNMASK 0x30005b
++#define MASK_MASK_B_UNMASK  0xfff0f07f
++#define MATCH_MASK_B_REMASK 0x30805b
++#define MASK_MASK_B_REMASK  0xfff0f0ff
++#define MATCH_MASK_A_MASK 0x40005b
++#define MASK_MASK_A_MASK  0xfff070ff
++#define MATCH_MASK_A_UNMASK 0x50005b
++#define MASK_MASK_A_UNMASK  0xfff0f07f
++#define MATCH_MASK_A_REMASK 0x50805b
++#define MASK_MASK_A_REMASK  0xfff0f0ff
++#define MATCH_MASK_B_NOT 0x200205b
++#define MASK_MASK_B_NOT  0xfff0f0ff
++#define MATCH_MASK_B_AND 0x200705b
++#define MASK_MASK_B_AND  0xfe10f0ff
++#define MATCH_MASK_B_NAND 0x200305b
++#define MASK_MASK_B_NAND  0xfe10f0ff
++#define MATCH_MASK_B_IOR 0x200605b
++#define MASK_MASK_B_IOR  0xfe10f0ff
++#define MATCH_MASK_B_XOR 0x200405b
++#define MASK_MASK_B_XOR  0xfe10f0ff
++#define MATCH_MASK_B_ADD 0x200005b
++#define MASK_MASK_B_ADD  0xfe10f0ff
++#define MATCH_MASK_B_SUB 0x200105b
++#define MASK_MASK_B_SUB  0xfe10f0ff
++
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
  #define MATCH_CUSTOM0_RS1 0x200b
-@@ -798,6 +913,7 @@
+@@ -798,6 +944,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -243,7 +314,7 @@ index 6c750a33b1..8968f2d0d0 100644
  #define CSR_CYCLE 0xc00
  #define CSR_TIME 0xc01
  #define CSR_INSTRET 0xc02
-@@ -1445,6 +1561,7 @@ DECLARE_CSR(uip, CSR_UIP)
+@@ -1445,6 +1592,7 @@ DECLARE_CSR(uip, CSR_UIP)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -252,14 +323,22 @@ index 6c750a33b1..8968f2d0d0 100644
  DECLARE_CSR(time, CSR_TIME)
  DECLARE_CSR(instret, CSR_INSTRET)
 diff --git a/include/opcode/riscv.h b/include/opcode/riscv.h
-index 7e67c7f9a2..47bb85eede 100644
+index 7e67c7f9a2..49973065cf 100644
 --- a/include/opcode/riscv.h
 +++ b/include/opcode/riscv.h
-@@ -235,6 +235,17 @@ static const char * const riscv_pred_succ[16] =
+@@ -235,6 +235,25 @@ static const char * const riscv_pred_succ[16] =
  #define OP_MASK_FUNCT2         0x3
  #define OP_SH_FUNCT2           25
  
 +/* XCrypto fields. */
++
++// Pair source register 1
++#define OP_MASK_RSM1    0xF
++#define OP_SH_RSM1      16
++
++// Pair source register 2
++#define OP_MASK_RSM2    0xF
++#define OP_SH_RSM2      21
 +
 +#define OP_MASK_RDM     0xF
 +#define OP_SH_RDM       8
@@ -273,7 +352,7 @@ index 7e67c7f9a2..47bb85eede 100644
  /* RVC fields.  */
  
  #define OP_MASK_OP2            0x3
-@@ -321,7 +332,9 @@ enum riscv_insn_class
+@@ -321,7 +340,9 @@ enum riscv_insn_class
     INSN_CLASS_B_OR_ZBM,
     INSN_CLASS_B_OR_ZBP,
     INSN_CLASS_B_OR_ZBS,
@@ -285,10 +364,10 @@ index 7e67c7f9a2..47bb85eede 100644
  
  /* This structure holds information for a particular instruction.  */
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..73313d9703 100644
+index e99febc823..857c8bd651 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
-@@ -992,6 +992,65 @@ const struct riscv_opcode riscv_opcodes[] =
+@@ -992,6 +992,82 @@ const struct riscv_opcode riscv_opcodes[] =
  {"sfence.vma", 0, INSN_CLASS_I,   "s,t",  MATCH_SFENCE_VMA, MASK_SFENCE_VMA, match_opcode, 0 },
  {"wfi",        0, INSN_CLASS_I,   "",     MATCH_WFI, MASK_WFI, match_opcode, 0 },
  
@@ -349,6 +428,23 @@ index e99febc823..73313d9703 100644
 +{     "xc.sha512.s1",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1, match_opcode, 0},
 +{     "xc.sha512.s2",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2, match_opcode, 0},
 +{     "xc.sha512.s3",64, INSN_CLASS_XCRYPTO,      "d,s", MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3, match_opcode, 0},
++
++/* Masking instructions */
++{         "mask.b2a", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_B2A, MASK_MASK_B2A, match_opcode, 0},
++{         "mask.a2b", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_A2B, MASK_MASK_A2B, match_opcode, 0},
++{      "mask.b.mask", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s", MATCH_MASK_B_MASK, MASK_MASK_B_MASK, match_opcode, 0},
++{    "mask.b.unmask", 0, INSN_CLASS_XCRYPTO, "d,(XO,XP)", MATCH_MASK_B_UNMASK, MASK_MASK_B_UNMASK, match_opcode, 0},
++{    "mask.b.remask", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_B_REMASK, MASK_MASK_B_REMASK, match_opcode, 0},
++{      "mask.a.mask", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s", MATCH_MASK_A_MASK, MASK_MASK_A_MASK, match_opcode, 0},
++{    "mask.a.unmask", 0, INSN_CLASS_XCRYPTO, "d,(XO,XP)", MATCH_MASK_A_UNMASK, MASK_MASK_A_UNMASK, match_opcode, 0},
++{    "mask.a.remask", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_A_REMASK, MASK_MASK_A_REMASK, match_opcode, 0},
++{       "mask.b.not", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_B_NOT, MASK_MASK_B_NOT, match_opcode, 0},
++{       "mask.b.and", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_AND, MASK_MASK_B_AND, match_opcode, 0},
++{      "mask.b.nand", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_NAND, MASK_MASK_B_NAND, match_opcode, 0},
++{       "mask.b.ior", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_IOR, MASK_MASK_B_IOR, match_opcode, 0},
++{       "mask.b.xor", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_XOR, MASK_MASK_B_XOR, match_opcode, 0},
++{       "mask.b.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_ADD, MASK_MASK_B_ADD, match_opcode, 0},
++{       "mask.b.sub", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_SUB, MASK_MASK_B_SUB, match_opcode, 0},
 +
 +
  /* Terminate the list.  */
