@@ -25,4 +25,6 @@ main:
     mask.b.add     (a1,a0), (a3,a2), (a5,a4)
     mask.b.sub     (a1,a0), (a3,a2), (a5,a4)
 
-
+    # These instructions might cause warnings...
+    mask.b.and     (a1,a0), (a1,a0), (a5,a4)
+    mask.b.and     (a1,a0), (a3,a2), (a1,a0)

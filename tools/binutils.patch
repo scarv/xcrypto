@@ -1,5 +1,5 @@
 diff --git a/gas/config/tc-riscv.c b/gas/config/tc-riscv.c
-index 9ecdcab0b6..3aa8930605 100644
+index 9ecdcab0b6..8558dcd965 100644
 --- a/gas/config/tc-riscv.c
 +++ b/gas/config/tc-riscv.c
 @@ -173,6 +173,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
@@ -29,7 +29,7 @@ index 9ecdcab0b6..3aa8930605 100644
        case 'C': /* RVC */
  	switch (c = *p++)
  	  {
-@@ -1560,6 +1573,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1560,6 +1573,14 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
    const struct percent_op_match *p;
    const char *error = "unrecognized opcode";
  
@@ -37,10 +37,14 @@ index 9ecdcab0b6..3aa8930605 100644
 +     Only used for XCrypto. */
 +  unsigned int xc_xm = 0;
 +
++  /* Stores the 4-bit encoded form of the multi-writeback destination
++     register in XCrypto. */
++  unsigned int xc_rdm = 0;
++
    /* Parse the name of the instruction.  Terminate the string if whitespace
       is found so that hash_find only sees the name part of the string.  */
    for (s = str; *s != '\0'; ++s)
-@@ -1612,6 +1629,108 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
+@@ -1612,6 +1633,115 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
  	      error = NULL;
  	      goto out;
  
@@ -99,6 +103,7 @@ index 9ecdcab0b6..3aa8930605 100644
 +              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
 +              if(regno + 1 == xc_xm) {
 +                  INSERT_OPERAND(RDM, *ip, regno >> 1);
++                  xc_rdm = regno >> 1;
 +              } else {
 +                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
 +              }
@@ -118,6 +123,9 @@ index 9ecdcab0b6..3aa8930605 100644
 +              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
 +              if(regno + 1 == xc_xm) {
 +                  INSERT_OPERAND(RSM1, *ip, regno >> 1);
++                  if((regno >> 1) == xc_rdm) {
++                      as_warn("XCrypto ISE: Instruction overwrites destination and source. This may cause leakage.");
++                  }
 +              } else {
 +                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
 +              }
@@ -137,6 +145,9 @@ index 9ecdcab0b6..3aa8930605 100644
 +              if (!reg_lookup (&s, RCLASS_GPR, &regno)) break;
 +              if(regno + 1 == xc_xm) {
 +                  INSERT_OPERAND(RSM2, *ip, regno >> 1);
++                  if((regno >> 1) == xc_rdm) {
++                      as_warn("XCrypto ISE: Instruction overwrites a source register. This may cause leakage.");
++                  }
 +              } else {
 +                  as_bad("XCrypto ISE: destination registers for multi-destination address must be contiguous. Got (%d,%d).\n",xc_xm,regno);
 +              }
