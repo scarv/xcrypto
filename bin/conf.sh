@@ -17,7 +17,7 @@ export REPO_VERSION_PATCH="0"
 export REPO_VERSION="${REPO_VERSION_MAJOR}.${REPO_VERSION_MINOR}.${REPO_VERSION_PATCH}"
 
 if [ -z $RISCV ] ; then
-    export RISCV=$REPO_BUILD/toolchain/install
+    export RISCV=$REPO_BUILD/tools/install
     echo "\$RISCV is empty. Setting to '$RISCV'"
 else
     echo "\$RISCV is already set to '$RISCV'"
