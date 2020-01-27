@@ -31,7 +31,7 @@ RUN apt-get --assume-yes --quiet install make autoconf automake autotools-dev bc
  && cd ./xcrypto \
  && . ./bin/conf.sh \
  && make --directory="./tools" clone build \
- && mv ./build/toolchain/riscv-binutils-build/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
+ && mv ./build/tools/riscv-binutils-build/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
  && cd .. \
  && rm --force --recursive ./xcrypto
 
