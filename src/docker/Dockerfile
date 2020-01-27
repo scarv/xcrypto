@@ -27,21 +27,10 @@ RUN apt-get --assume-yes --quiet update \
 ENV RISCV "/opt/riscv-xcrypto"
 
 RUN apt-get --assume-yes --quiet install make autoconf automake autotools-dev bc bison build-essential curl device-tree-compiler flex gawk gcc git gperf libexpat-dev libgmp-dev libmpc-dev libmpfr-dev libtool libusb-1.0-0-dev patchutils pkg-config texinfo zlib1g-dev \
- && git clone --branch dev/ben/issue-73 https://github.com/scarv/xcrypto.git ./xcrypto \
+ && git clone --branch dev/masking-ise https://github.com/scarv/xcrypto.git ./xcrypto \
  && cd ./xcrypto \
  && . ./bin/conf.sh \
- && ${REPO_HOME}/tools/clone-repos.sh \
- && ${REPO_HOME}/tools/apply-patch-binutils.sh \
- && ${REPO_HOME}/tools/apply-patch-spike.sh \
- && ${REPO_HOME}/tools/conf-binutils.sh \
- && ${REPO_HOME}/tools/build-binutils.sh \
- && ${REPO_HOME}/tools/conf-gcc.sh \
- && ${REPO_HOME}/tools/build-gcc.sh \
- && ${REPO_HOME}/tools/conf-newlib.sh \
- && ${REPO_HOME}/tools/build-newlib.sh \
- && ${REPO_HOME}/tools/conf-spike.sh \
- && ${REPO_HOME}/tools/build-pk.sh \
- && ${REPO_HOME}/tools/build-spike.sh \
+ && make --directory='./tools' clone build \
  && mv ./build/toolchain/riscv-binutils-build/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
  && cd .. \
  && rm --force --recursive ./xcrypto
