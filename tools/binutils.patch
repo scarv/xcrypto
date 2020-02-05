@@ -285,7 +285,7 @@ index 7e67c7f9a2..47bb85eede 100644
  
  /* This structure holds information for a particular instruction.  */
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..73313d9703 100644
+index e99febc823..8bcdac372e 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -992,6 +992,65 @@ const struct riscv_opcode riscv_opcodes[] =
@@ -330,12 +330,12 @@ index e99febc823..73313d9703 100644
 +{     "xc.scatter.h", 0, INSN_CLASS_XCRYPTO,    "s,t,r", MATCH_XC_SCATTER_H, MASK_XC_SCATTER_H, match_opcode, 0},
 +{      "xc.gather.b", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_GATHER_B, MASK_XC_GATHER_B, match_opcode, 0},
 +{      "xc.gather.h", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_GATHER_H, MASK_XC_GATHER_H, match_opcode, 0},
-+{    "xc.aessub.enc", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC, match_opcode, 0},
-+{ "xc.aessub.encrot", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT, match_opcode, 0},
-+{    "xc.aessub.dec", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC, match_opcode, 0},
-+{ "xc.aessub.decrot", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT, match_opcode, 0},
-+{    "xc.aesmix.enc", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC, match_opcode, 0},
-+{    "xc.aesmix.dec", 0, INSN_CLASS_XCRYPTO,    "s,t,d", MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC, match_opcode, 0},
++{    "xc.aessub.enc", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC, match_opcode, 0},
++{ "xc.aessub.encrot", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT, match_opcode, 0},
++{    "xc.aessub.dec", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC, match_opcode, 0},
++{ "xc.aessub.decrot", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT, match_opcode, 0},
++{    "xc.aesmix.enc", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC, match_opcode, 0},
++{    "xc.aesmix.dec", 0, INSN_CLASS_XCRYPTO,    "d,s,t", MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC, match_opcode, 0},
 +{       "xc.sha3.xy", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_XY, MASK_XC_SHA3_XY, match_opcode, 0},
 +{       "xc.sha3.x1", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_X1, MASK_XC_SHA3_X1, match_opcode, 0},
 +{       "xc.sha3.x2", 0, INSN_CLASS_XCRYPTO, "d,s,t,Xs", MATCH_XC_SHA3_X2, MASK_XC_SHA3_X2, match_opcode, 0},
