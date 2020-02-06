@@ -30,19 +30,8 @@ RUN apt-get --assume-yes --quiet install make autoconf automake autotools-dev bc
  && git clone --branch dev/ben/issue-73 https://github.com/scarv/xcrypto.git ./xcrypto \
  && cd ./xcrypto \
  && . ./bin/conf.sh \
- && ${REPO_HOME}/tools/clone-repos.sh \
- && ${REPO_HOME}/tools/apply-patch-binutils.sh \
- && ${REPO_HOME}/tools/apply-patch-spike.sh \
- && ${REPO_HOME}/tools/conf-binutils.sh \
- && ${REPO_HOME}/tools/build-binutils.sh \
- && ${REPO_HOME}/tools/conf-gcc.sh \
- && ${REPO_HOME}/tools/build-gcc.sh \
- && ${REPO_HOME}/tools/conf-newlib.sh \
- && ${REPO_HOME}/tools/build-newlib.sh \
- && ${REPO_HOME}/tools/conf-spike.sh \
- && ${REPO_HOME}/tools/build-pk.sh \
- && ${REPO_HOME}/tools/build-spike.sh \
- && mv ./build/toolchain/riscv-binutils-build/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
+ && make --directory="./tools" clone build \
+ && mv ./build/tools/riscv-binutils-build/gnulib/confdir3/confdir3 ./bugfix && rm --force --recursive ./bugfix \
  && cd .. \
  && rm --force --recursive ./xcrypto
 
