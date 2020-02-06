@@ -27,7 +27,7 @@ RUN apt-get --assume-yes --quiet update \
 ENV RISCV "/opt/riscv-xcrypto"
 
 RUN apt-get --assume-yes --quiet install make autoconf automake autotools-dev bc bison build-essential curl device-tree-compiler flex gawk gcc git gperf libexpat-dev libgmp-dev libmpc-dev libmpfr-dev libtool libusb-1.0-0-dev patchutils pkg-config texinfo zlib1g-dev \
- && git clone --branch dev/ben/issue-73 https://github.com/scarv/xcrypto.git ./xcrypto \
+ && git clone https://github.com/scarv/xcrypto.git ./xcrypto \
  && cd ./xcrypto \
  && . ./bin/conf.sh \
  && make --directory="./tools" clone build \
