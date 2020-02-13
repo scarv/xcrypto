@@ -13,11 +13,14 @@ endif
 
 # =============================================================================
 
-%-doc   :
-	@make --directory="${REPO_HOME}/doc"   ${*}
+%-doc       :
+	@make --directory="${REPO_HOME}/doc"           ${*}
 
-%-tools :
-	@make --directory="${REPO_HOME}/tools" ${*}
+%-docker    :
+	@make --directory="${REPO_HOME}/src/docker"    ${*}
+
+%-toolchain :
+	@make --directory="${REPO_HOME}/src/toolchain" ${*}
 
 # -----------------------------------------------------------------------------
 
