@@ -93,9 +93,8 @@ Note that:
 
 - [`${REPO_HOME}/rtl`](./rtl) 
   houses
-  ...
-  contains re-usable hardware implementations of XCrypto instructions.
-  The [README](./rtl/README.md) describes this in more detail.
+  a library of re-usable hardware components (e.g., for arithmetic
+  operations), which could be used in an implementation of XCrypto.
 
 <!--- -------------------------------------------------------------------- --->
 

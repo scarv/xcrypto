@@ -1,5 +1,5 @@
 
-DIR_BASE=$REPO_BUILD/src/toolchain
+DIR_BASE=$REPO_BUILD/toolchain
 
 DIR_GCC=$DIR_BASE/riscv-gcc
 DIR_BINUTILS=$DIR_BASE/riscv-binutils
