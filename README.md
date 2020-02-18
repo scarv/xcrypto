@@ -135,7 +135,7 @@ Note that:
 - raise an
   [issue](https://github.com/scarv/xcrypto/issues),
 - raise a
-  [pull request]https://github.com/scarv/xcrypto/pulls),
+  [pull request](https://github.com/scarv/xcrypto/pulls),
 - drop us an 
   [email](mailto:info@scarv.org?subject=xcrypto).
 
