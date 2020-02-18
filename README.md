@@ -128,6 +128,19 @@ Note that:
 
 <!--- -------------------------------------------------------------------- --->
 
+## Questions?
+
+- use the
+  [groups.io](https://groups.io)-based [discussion group](https://groups.io/g/scarv-xcrypto),
+- raise an
+  [issue](https://github.com/scarv/xcrypto/issues),
+- raise a
+  [pull request]https://github.com/scarv/xcrypto/pulls),
+- drop us an 
+  [email](mailto:info@scarv.org?subject=xcrypto).
+
+<!--- -------------------------------------------------------------------- --->
+
 ## Publications and presentations
 
 - Some
@@ -145,8 +158,8 @@ Note that:
 
 ## Acknowledgements
 
-This work has been supported in part by EPSRC via grant 
-[EP/R012288/1](https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/R012288/1),
-under the [RISE](http://www.ukrise.org) programme.
+This work has been supported in part
+by EPSRC via grant
+[EP/R012288/1](https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/R012288/1) (under the [RISE](http://www.ukrise.org) programme).
 
 <!--- -------------------------------------------------------------------- --->
