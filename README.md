@@ -56,7 +56,7 @@ the context of micro-controller class cores.
 ```
 ├── bin                    - scripts (e.g., environment configuration)
 ├── build                  - working directory for build
-├── doc                    - documentation, i.e., specification
+├── doc                    - documentation
 ├── extern                 - external resources (e.g., submodules)
 │   ├── libscarv             - submodule: scarv/libscarv
 │   ├── riscv-opcodes        - submodule: scarv/riscv-opcodes
