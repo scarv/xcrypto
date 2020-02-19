@@ -12,7 +12,7 @@ ${BUILD}/spec.commit:
 	@git rev-parse --abbrev-ref HEAD > ${@}
 	@echo "@" >> ${@}
 	@git log --pretty=format:'%H' -n 1 >> ${@}
-ifneq ("$(REPO_DIRTY)","")
+ifneq ("${REPO_DIRTY}","")
 	@echo "{\\\color{red}\\\bf -dirty}" >> ${@} ;
 endif
 
@@ -30,7 +30,7 @@ dir   :
 	@mkdir --parents ${BUILD}
 	@mkdir --parents ${BUILD}/image
 
-all   : dir ${BUILD}/spec.pdf
+build : dir ${BUILD}/spec.pdf
 
 clean :
 	@rm -rf ${BUILD}
