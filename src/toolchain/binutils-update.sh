@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $REPO_HOME/tools/share.sh
+source $REPO_HOME/src/toolchain/share.sh
 
 set -e
 set -x
@@ -8,6 +8,6 @@ set -x
 # ------ Binutils ----------------------------------------------------------
 
 cd           $DIR_BINUTILS
-git apply    $PATCH_BINUTILS
-git add      --all
+git diff --cached > $PATCH_BINUTILS
+
 

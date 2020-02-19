@@ -22,8 +22,3 @@ docs/*.bak
 docs/diagrams/*.eps
 docs/diagrams/*.pdf
 
-build/
-
-work/*
-
-rename.sh

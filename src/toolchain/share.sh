@@ -1,5 +1,5 @@
 
-DIR_BASE=$REPO_BUILD/tools
+DIR_BASE=$REPO_BUILD/toolchain
 
 DIR_GCC=$DIR_BASE/riscv-gcc
 DIR_BINUTILS=$DIR_BASE/riscv-binutils
@@ -28,11 +28,11 @@ COMMIT_SPIKE=5b042d731458eafea538324e2bf4f1d44ce9d2a0
 
 #
 # Patch files
-PATCH_BINUTILS=$REPO_HOME/tools/binutils.patch
-PATCH_GCC=$REPO_HOME/tools/gcc.patch
-PATCH_NEWLIB=$REPO_HOME/tools/newlib.patch
-PATCH_SPIKE=$REPO_HOME/tools/spike.patch
-PATCH_PK=$REPO_HOME/tools/pk.patch
+PATCH_BINUTILS=$REPO_HOME/src/toolchain/binutils.patch
+PATCH_GCC=$REPO_HOME/src/toolchain/gcc.patch
+PATCH_NEWLIB=$REPO_HOME/src/toolchain/newlib.patch
+PATCH_SPIKE=$REPO_HOME/src/toolchain/spike.patch
+PATCH_PK=$REPO_HOME/src/toolchain/pk.patch
 
 #
 # Check that a directory exists and exit if not.
