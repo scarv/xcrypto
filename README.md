@@ -120,7 +120,7 @@ Note that:
 
    | Command                   | Description                                                                          |
    | :------------------------ | :----------------------------------------------------------------------------------- |
-   | `make    build-doc`       | build the [Latex](https://www.latex-project.org)-based documentation                 |
+   | `make    build-doc`       | build the [LaTeX](https://www.latex-project.org)-based documentation                 |
    | `make    clone-toolchain` | clone the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)              |
    | `make    build-toolchain` | build the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)              |
    | `make doxygen`            | build the       [Doxygen](http://www.doxygen.nl)-based documentation                 |
