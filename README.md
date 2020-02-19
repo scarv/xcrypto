@@ -118,12 +118,12 @@ Note that:
 2. Use targets in the top-level `Makefile` to drive a set of
    common tasks, e.g.,
 
-   | Command                   | Description
+   | Command                   | Description                                                                          |
    | :------------------------ | :----------------------------------------------------------------------------------- |
-   | `make    build-doc`       | build    the specification                                                           |
-   | `make    clone-toolchain` | clone    the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)           |
-   | `make    build-toolchain` | build    the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)           |
-   | `make doxygen`            | build the [Doxygen](http://www.doxygen.nl)-based documentation                       |
+   | `make    build-doc`       | build the [Latex](https://www.latex-project.org)-based documentation                 |
+   | `make    clone-toolchain` | clone the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)              |
+   | `make    build-toolchain` | build the [tool-chain](https://github.com/scarv/xcrypto/wiki/Toolchain)              |
+   | `make doxygen`            | build the       [Doxygen](http://www.doxygen.nl)-based documentation                 |
    | `make spotless`           | remove *everything* built in `${REPO_HOME}/build`                                    |
 
 <!--- -------------------------------------------------------------------- --->
