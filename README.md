@@ -60,8 +60,6 @@ the context of micro-controller class cores.
 ├── extern                 - external resources (e.g., submodules)
 │   ├── libscarv             - submodule: scarv/libscarv
 │   ├── riscv-opcodes        - submodule: scarv/riscv-opcodes
-│   ├── scarv-cpu            - submodule: scarv/scarv-cpu
-│   ├── scarv-soc            - submodule: scarv/scarv-soc
 │   ├── texmf                - submodule: scarv/texmf
 │   └── wiki                 - submodule: scarv/xcrypto.wiki
 ├── pdf                    - PDFs, e.g., presentation slides
