@@ -1,5 +1,7 @@
 dist: cosmic
 sudo: required
+services:
+- docker
 before_install:
 - sudo apt-get -qq update 
 install:
