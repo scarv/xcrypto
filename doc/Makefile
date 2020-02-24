@@ -13,7 +13,7 @@ endif
 
 # =============================================================================
 
-BUILD = ${REPO_HOME}/build/spec
+BUILD = ${REPO_HOME}/build/doc
 
 ${BUILD}/spec.version :
 	@echo ${REPO_VERSION} > ${@}
