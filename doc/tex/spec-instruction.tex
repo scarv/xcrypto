@@ -459,6 +459,31 @@ To ensure consistency, the instruction must adhere to the following rules
   $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
 }
 
+% ----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.xsll.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LSH} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xsrl.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RSH} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xrol.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LRT} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xror.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RRT} \VERB[RV]{cshamt} )$ \;
+}
 
 % =============================================================================
 
