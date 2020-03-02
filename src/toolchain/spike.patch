@@ -1,28 +1,28 @@
 diff --git a/riscv/decode.h b/riscv/decode.h
-index 9e03676..5495d4a 100644
+index 9e03676..0159a23 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
-@@ -95,6 +95,12 @@ public:
-   uint64_t rs3() { return x(27, 5); }
+@@ -96,6 +96,12 @@ public:
    uint64_t rm() { return x(12, 3); }
    uint64_t csr() { return x(20, 12); }
-+
+ 
 +  // XCrypto fields.
 +  uint32_t xc_pack_width() {return x(30,2);}
 +  uint32_t xc_sha3_sh() {return x(30,2);}
 +  uint32_t xc_rdm() {return x(8,4);}
 +  uint32_t xc_l() {return x(31,1);}
-
++
    int64_t rvc_imm() { return x(2, 5) + (xs(12, 1) << 5); }
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
+   int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..031047f 100644
+index 3c4bf1c..fb45dd7 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -40,6 +40,32 @@
  #define SSTATUS_UXL         0x0000000300000000
  #define SSTATUS64_SD        0x8000000000000000
-
+ 
 +#define UXCRYPTO_B1         (0xFF << 24)
 +#define UXCRYPTO_B0         (0xFF << 16)
 +#define UXCRYPTO_MEM        (0x1  << 10)
@@ -52,7 +52,7 @@ index 3c4bf1c..031047f 100644
  #define DCSR_XDEBUGVER      (3U<<30)
  #define DCSR_NDRESET        (1<<29)
  #define DCSR_FULLRESET      (1<<28)
-@@ -564,6 +590,121 @@
+@@ -564,6 +590,123 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -90,6 +90,8 @@ index 3c4bf1c..031047f 100644
 +#define MASK_XC_MSUB_3 0x60070ff
 +#define MATCH_XC_MROR 0x5023
 +#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_LKGFENCE 0x308073
++#define MASK_XC_LKGFENCE 0xffffffff
 +#define MATCH_XC_RNGTEST 0x300073
 +#define MASK_XC_RNGTEST 0xfffff07f
 +#define MATCH_XC_RNGSAMP 0x500073
@@ -174,7 +176,7 @@ index 3c4bf1c..031047f 100644
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1719,6 +1860,7 @@
+@@ -1719,6 +1862,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -182,7 +184,7 @@ index 3c4bf1c..031047f 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2128,64 @@
+@@ -1986,6 +2130,64 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -247,7 +249,7 @@ index 3c4bf1c..031047f 100644
  DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
  DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
  DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2937,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+@@ -2737,6 +2939,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -649,9 +651,18 @@ index 0000000..d87dbd1
 +uint64_t address     = RS1 + (RS2 << 2);
 +WRITE_RD(MMU.load_uint32(address));
 +
+diff --git a/riscv/insns/xc_lkgfence.h b/riscv/insns/xc_lkgfence.h
+new file mode 100644
+index 0000000..5dab550
+--- /dev/null
++++ b/riscv/insns/xc_lkgfence.h
+@@ -0,0 +1,3 @@
++
++// Implement as a NOP in spike.
++
 diff --git a/riscv/insns/xc_lut.h b/riscv/insns/xc_lut.h
 new file mode 100644
-index 0000000..6770c21
+index 0000000..9668138
 --- /dev/null
 +++ b/riscv/insns/xc_lut.h
 @@ -0,0 +1,22 @@
@@ -679,7 +690,7 @@ index 0000000..6770c21
 +
 diff --git a/riscv/insns/xc_macc_1.h b/riscv/insns/xc_macc_1.h
 new file mode 100644
-index 0000000..6ed9d44
+index 0000000..42d7e39
 --- /dev/null
 +++ b/riscv/insns/xc_macc_1.h
 @@ -0,0 +1,36 @@
@@ -732,7 +743,7 @@ index 0000000..b0d371e
 +WRITE_XCRDM(result);
 diff --git a/riscv/insns/xc_madd_3.h b/riscv/insns/xc_madd_3.h
 new file mode 100644
-index 0000000..a3e293e
+index 0000000..da3f23e
 --- /dev/null
 +++ b/riscv/insns/xc_madd_3.h
 @@ -0,0 +1,33 @@
@@ -771,7 +782,7 @@ index 0000000..a3e293e
 +
 diff --git a/riscv/insns/xc_mmul_3.h b/riscv/insns/xc_mmul_3.h
 new file mode 100644
-index 0000000..043a750
+index 0000000..6301617
 --- /dev/null
 +++ b/riscv/insns/xc_mmul_3.h
 @@ -0,0 +1,32 @@
@@ -809,7 +820,7 @@ index 0000000..043a750
 +
 diff --git a/riscv/insns/xc_mror.h b/riscv/insns/xc_mror.h
 new file mode 100644
-index 0000000..8b299e3
+index 0000000..59e654d
 --- /dev/null
 +++ b/riscv/insns/xc_mror.h
 @@ -0,0 +1,28 @@
@@ -899,7 +910,7 @@ index 0000000..cff871c
 +WRITE_XCRDM(result)
 diff --git a/riscv/insns/xc_msub_3.h b/riscv/insns/xc_msub_3.h
 new file mode 100644
-index 0000000..0b75fa0
+index 0000000..004a5a6
 --- /dev/null
 +++ b/riscv/insns/xc_msub_3.h
 @@ -0,0 +1,33 @@
@@ -938,7 +949,7 @@ index 0000000..0b75fa0
 +
 diff --git a/riscv/insns/xc_packed.h b/riscv/insns/xc_packed.h
 new file mode 100644
-index 0000000..2495c19
+index 0000000..8cbd463
 --- /dev/null
 +++ b/riscv/insns/xc_packed.h
 @@ -0,0 +1,69 @@
@@ -1013,7 +1024,7 @@ index 0000000..2495c19
 +
 diff --git a/riscv/insns/xc_padd.h b/riscv/insns/xc_padd.h
 new file mode 100644
-index 0000000..d4ea85f
+index 0000000..7cda459
 --- /dev/null
 +++ b/riscv/insns/xc_padd.h
 @@ -0,0 +1,29 @@
@@ -1048,7 +1059,7 @@ index 0000000..d4ea85f
 +
 diff --git a/riscv/insns/xc_pclmul_h.h b/riscv/insns/xc_pclmul_h.h
 new file mode 100644
-index 0000000..8ac3d76
+index 0000000..6528678
 --- /dev/null
 +++ b/riscv/insns/xc_pclmul_h.h
 @@ -0,0 +1,23 @@
@@ -1077,7 +1088,7 @@ index 0000000..8ac3d76
 +
 diff --git a/riscv/insns/xc_pclmul_l.h b/riscv/insns/xc_pclmul_l.h
 new file mode 100644
-index 0000000..37a4bd3
+index 0000000..97e8767
 --- /dev/null
 +++ b/riscv/insns/xc_pclmul_l.h
 @@ -0,0 +1,23 @@
@@ -1106,7 +1117,7 @@ index 0000000..37a4bd3
 +
 diff --git a/riscv/insns/xc_pmul_h.h b/riscv/insns/xc_pmul_h.h
 new file mode 100644
-index 0000000..f7202a7
+index 0000000..9e133fb
 --- /dev/null
 +++ b/riscv/insns/xc_pmul_h.h
 @@ -0,0 +1,23 @@
@@ -1135,7 +1146,7 @@ index 0000000..f7202a7
 +
 diff --git a/riscv/insns/xc_pmul_l.h b/riscv/insns/xc_pmul_l.h
 new file mode 100644
-index 0000000..9d88f4b
+index 0000000..1acbecb
 --- /dev/null
 +++ b/riscv/insns/xc_pmul_l.h
 @@ -0,0 +1,23 @@
@@ -1164,7 +1175,7 @@ index 0000000..9d88f4b
 +
 diff --git a/riscv/insns/xc_pror.h b/riscv/insns/xc_pror.h
 new file mode 100644
-index 0000000..c783fa4
+index 0000000..8602a2f
 --- /dev/null
 +++ b/riscv/insns/xc_pror.h
 @@ -0,0 +1,24 @@
@@ -1194,7 +1205,7 @@ index 0000000..c783fa4
 +
 diff --git a/riscv/insns/xc_pror_i.h b/riscv/insns/xc_pror_i.h
 new file mode 100644
-index 0000000..30a5b49
+index 0000000..f60190b
 --- /dev/null
 +++ b/riscv/insns/xc_pror_i.h
 @@ -0,0 +1,26 @@
@@ -1226,7 +1237,7 @@ index 0000000..30a5b49
 +
 diff --git a/riscv/insns/xc_psll.h b/riscv/insns/xc_psll.h
 new file mode 100644
-index 0000000..c273cba
+index 0000000..48f9e2f
 --- /dev/null
 +++ b/riscv/insns/xc_psll.h
 @@ -0,0 +1,23 @@
@@ -1255,7 +1266,7 @@ index 0000000..c273cba
 +
 diff --git a/riscv/insns/xc_psll_i.h b/riscv/insns/xc_psll_i.h
 new file mode 100644
-index 0000000..19ceddf
+index 0000000..d0320aa
 --- /dev/null
 +++ b/riscv/insns/xc_psll_i.h
 @@ -0,0 +1,23 @@
@@ -1284,7 +1295,7 @@ index 0000000..19ceddf
 +
 diff --git a/riscv/insns/xc_psrl.h b/riscv/insns/xc_psrl.h
 new file mode 100644
-index 0000000..61665b4
+index 0000000..b87b8c2
 --- /dev/null
 +++ b/riscv/insns/xc_psrl.h
 @@ -0,0 +1,23 @@
@@ -1313,7 +1324,7 @@ index 0000000..61665b4
 +
 diff --git a/riscv/insns/xc_psrl_i.h b/riscv/insns/xc_psrl_i.h
 new file mode 100644
-index 0000000..b62adb6
+index 0000000..7fc003b
 --- /dev/null
 +++ b/riscv/insns/xc_psrl_i.h
 @@ -0,0 +1,27 @@
@@ -1346,7 +1357,7 @@ index 0000000..b62adb6
 +//    w,pack_width,insn.xcrd(),insn.xcrs1(), rhs, result, original);
 diff --git a/riscv/insns/xc_psub.h b/riscv/insns/xc_psub.h
 new file mode 100644
-index 0000000..99a8cea
+index 0000000..9f10433
 --- /dev/null
 +++ b/riscv/insns/xc_psub.h
 @@ -0,0 +1,23 @@
@@ -1800,19 +1811,19 @@ index 6bbaca1..e2d9b37 100644
    throw trap_illegal_instruction(0);
  }
 diff --git a/riscv/processor.h b/riscv/processor.h
-index 2b5003b..d281c7f 100644
+index 2b5003b..6f6b418 100644
 --- a/riscv/processor.h
 +++ b/riscv/processor.h
-@@ -239,6 +239,9 @@ struct state_t
-   reg_t stvec;
+@@ -240,6 +240,9 @@ struct state_t
    reg_t satp;
    reg_t scause;
-+
+ 
 +  // XCrypto CSR
 +  reg_t uxcrypto;
- 
++
    reg_t dpc;
    reg_t dscratch0, dscratch1;
+   dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
 index 4ee64fa..4d36193 100644
 --- a/riscv/riscv.mk.in
