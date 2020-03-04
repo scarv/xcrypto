@@ -161,10 +161,17 @@ index 9ecdcab0b6..8558dcd965 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
+<<<<<<< HEAD:tools/binutils.patch
 index 6c750a33b1..58374c5556 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -739,6 +739,152 @@
+=======
+index 6c750a33b1..ee22f1dbce 100644
+--- a/include/opcode/riscv-opc.h
++++ b/include/opcode/riscv-opc.h
+@@ -739,6 +739,123 @@
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/binutils.patch
  #define MASK_C_LDSP  0xe003
  #define MATCH_C_SDSP 0xe002
  #define MASK_C_SDSP  0xe003
@@ -202,6 +209,8 @@ index 6c750a33b1..58374c5556 100644
 +#define MASK_XC_MSUB_3 0x60070ff
 +#define MATCH_XC_MROR 0x5023
 +#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_LKGFENCE 0x308073
++#define MASK_XC_LKGFENCE 0xffffffff
 +#define MATCH_XC_RNGTEST 0x300073
 +#define MASK_XC_RNGTEST 0xfffff07f
 +#define MATCH_XC_RNGSAMP 0x500073
@@ -317,7 +326,11 @@ index 6c750a33b1..58374c5556 100644
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
  #define MATCH_CUSTOM0_RS1 0x200b
+<<<<<<< HEAD:tools/binutils.patch
 @@ -798,6 +944,7 @@
+=======
+@@ -798,6 +915,7 @@
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/binutils.patch
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -325,7 +338,11 @@ index 6c750a33b1..58374c5556 100644
  #define CSR_CYCLE 0xc00
  #define CSR_TIME 0xc01
  #define CSR_INSTRET 0xc02
+<<<<<<< HEAD:tools/binutils.patch
 @@ -1445,6 +1592,7 @@ DECLARE_CSR(uip, CSR_UIP)
+=======
+@@ -1445,6 +1563,7 @@ DECLARE_CSR(uip, CSR_UIP)
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/binutils.patch
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -375,10 +392,17 @@ index 7e67c7f9a2..49973065cf 100644
  
  /* This structure holds information for a particular instruction.  */
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
+<<<<<<< HEAD:tools/binutils.patch
 index e99febc823..80cf6e84c2 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -992,6 +992,82 @@ const struct riscv_opcode riscv_opcodes[] =
+=======
+index e99febc823..9273884e65 100644
+--- a/opcodes/riscv-opc.c
++++ b/opcodes/riscv-opc.c
+@@ -992,6 +992,66 @@ const struct riscv_opcode riscv_opcodes[] =
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/binutils.patch
  {"sfence.vma", 0, INSN_CLASS_I,   "s,t",  MATCH_SFENCE_VMA, MASK_SFENCE_VMA, match_opcode, 0 },
  {"wfi",        0, INSN_CLASS_I,   "",     MATCH_WFI, MASK_WFI, match_opcode, 0 },
  
@@ -399,6 +423,7 @@ index e99febc823..80cf6e84c2 100644
 +{        "xc.madd.3", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MADD_3, MASK_XC_MADD_3, match_opcode, 0},
 +{        "xc.msub.3", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MSUB_3, MASK_XC_MSUB_3, match_opcode, 0},
 +{          "xc.mror", 0, INSN_CLASS_XCRYPTO, "(XM,XN),s,t,r", MATCH_XC_MROR, MASK_XC_MROR, match_opcode, 0},
++{      "xc.lkgfence", 0, INSN_CLASS_XCRYPTO,         "", MATCH_XC_LKGFENCE, MASK_XC_LKGFENCE, match_opcode, 0},
 +{       "xc.rngtest", 0, INSN_CLASS_XCRYPTO,        "d", MATCH_XC_RNGTEST, MASK_XC_RNGTEST, match_opcode, 0},
 +{       "xc.rngsamp", 0, INSN_CLASS_XCRYPTO,        "d", MATCH_XC_RNGSAMP, MASK_XC_RNGSAMP, match_opcode, 0},
 +{       "xc.rngseed", 0, INSN_CLASS_XCRYPTO,        "s", MATCH_XC_RNGSEED, MASK_XC_RNGSEED, match_opcode, 0},

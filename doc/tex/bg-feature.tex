@@ -16,6 +16,7 @@ Description                                & Class           & Numeric ID & Mnem
                                            & Bit-oriented    & $2.3$      & BIT         \\
                                            & Packed          & $2.4$      & PACK        \\
                                            & Multi-precision & $2.5$      & MP          \\
+                                           & Leakage         & $2.6$      & LEAK        \\
 \hline
 \multirow{2}{*}{Optional, special-purpose} & AES             & $3.1$      & AES         \\
                                            & SHA2            & $3.2$      & SHA2        \\
@@ -319,6 +320,13 @@ high overhead) software-based carry and overflow management.
 
 % -----------------------------------------------------------------------------
 
+\subsubsection{Class-$2.6$: leakage}
+\label{sec:bg:feature:2:6}
+
+% TODO: add FENL content
+
+% =============================================================================
+
 \subsubsection{Class-$3.1$: AES}
 \label{sec:bg:feature:3:1}
 
@@ -358,7 +366,7 @@ b) eliminating the need for look-up tables and associated memory access
 \subsubsection{Class-$3.2$: SHA2}
 \label{sec:bg:feature:3:2}
 
-{\bf TODO}
+% TODO: add SHA2 content
 
 % -----------------------------------------------------------------------------
 
@@ -390,14 +398,5 @@ b) various unrolling techniques (cf.~\cite{SCARV:BDPAK:12}) can reduce
 In essence therefore, instructions in this class optimise generation of
 indexes {\em without} unrolling; this yields efficient implementations
 in both time {\em and} space.
-
-%
-% TODO: "While the SHA3 instructions represent the kind of very function
-%       specific features XCRYPTOrypto otherwise tries to avoid, we believe
-%       their inclusion is merited for several reasons, as explained in
-%       Appendix X".
-   
-%   
-%
 
 % =============================================================================

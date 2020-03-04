@@ -182,10 +182,17 @@ index b4370cb..1e3898e 100644
 +
  #endif
 diff --git a/riscv/decode.h b/riscv/decode.h
+<<<<<<< HEAD:tools/spike.patch
 index 9e03676..96fc0ab 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
 @@ -96,6 +96,14 @@ public:
+=======
+index 9e03676..0159a23 100644
+--- a/riscv/decode.h
++++ b/riscv/decode.h
+@@ -96,6 +96,12 @@ public:
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
    uint64_t rm() { return x(12, 3); }
    uint64_t csr() { return x(20, 12); }
  
@@ -194,14 +201,21 @@ index 9e03676..96fc0ab 100644
 +  uint32_t xc_sha3_sh() {return x(30,2);}
 +  uint32_t xc_rdm() {return x(8,4);}
 +  uint32_t xc_l() {return x(31,1);}
+<<<<<<< HEAD:tools/spike.patch
 +  uint32_t xc_rsm1() {return x(16,4);}
 +  uint32_t xc_rsm2() {return x(21,4);}
+=======
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
 +
    int64_t rvc_imm() { return x(2, 5) + (xs(12, 1) << 5); }
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
+<<<<<<< HEAD:tools/spike.patch
 index 3c4bf1c..e755f95 100644
+=======
+index 3c4bf1c..fb45dd7 100644
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -40,6 +40,32 @@
@@ -237,7 +251,11 @@ index 3c4bf1c..e755f95 100644
  #define DCSR_XDEBUGVER      (3U<<30)
  #define DCSR_NDRESET        (1<<29)
  #define DCSR_FULLRESET      (1<<28)
+<<<<<<< HEAD:tools/spike.patch
 @@ -564,6 +590,149 @@
+=======
+@@ -564,6 +590,123 @@
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -275,6 +293,8 @@ index 3c4bf1c..e755f95 100644
 +#define MASK_XC_MSUB_3 0x60070ff
 +#define MATCH_XC_MROR 0x5023
 +#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_LKGFENCE 0x308073
++#define MASK_XC_LKGFENCE 0xffffffff
 +#define MATCH_XC_RNGTEST 0x300073
 +#define MASK_XC_RNGTEST 0xfffff07f
 +#define MATCH_XC_RNGSAMP 0x500073
@@ -387,7 +407,11 @@ index 3c4bf1c..e755f95 100644
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
+<<<<<<< HEAD:tools/spike.patch
 @@ -1719,6 +1888,7 @@
+=======
+@@ -1719,6 +1862,7 @@
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -395,7 +419,11 @@ index 3c4bf1c..e755f95 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
+<<<<<<< HEAD:tools/spike.patch
 @@ -1986,6 +2156,78 @@
+=======
+@@ -1986,6 +2130,64 @@
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -474,7 +502,11 @@ index 3c4bf1c..e755f95 100644
  DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
  DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
  DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
+<<<<<<< HEAD:tools/spike.patch
 @@ -2737,6 +2979,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+=======
+@@ -2737,6 +2939,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+>>>>>>> scarv/xcrypto/v1.1.0:src/toolchain/spike.patch
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -1091,6 +1123,15 @@ index 0000000..d87dbd1
 +
 +uint64_t address     = RS1 + (RS2 << 2);
 +WRITE_RD(MMU.load_uint32(address));
++
+diff --git a/riscv/insns/xc_lkgfence.h b/riscv/insns/xc_lkgfence.h
+new file mode 100644
+index 0000000..5dab550
+--- /dev/null
++++ b/riscv/insns/xc_lkgfence.h
+@@ -0,0 +1,3 @@
++
++// Implement as a NOP in spike.
 +
 diff --git a/riscv/insns/xc_lut.h b/riscv/insns/xc_lut.h
 new file mode 100644

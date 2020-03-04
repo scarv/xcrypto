@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $REPO_HOME/tools/share.sh
+source $REPO_HOME/src/toolchain/share.sh
 
 echo "Setting up toolchain..."
 echo "---------------------------------------------------"

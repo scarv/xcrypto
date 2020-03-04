@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $REPO_HOME/tools/share.sh
+source $REPO_HOME/src/toolchain/share.sh
 
 set -e
 set -x
@@ -11,10 +11,8 @@ mkdir -p $INSTALL_DIR
 
 # ------ Spike -------------------------------------------------------------
 
-refresh_dir  $DIR_SPIKE_BUILD
 cd           $DIR_SPIKE_BUILD
-$DIR_SPIKE/configure \
-    --prefix=$INSTALL_DIR \
-    --target=$TARGET_ARCH
 
+make 
+make install
 

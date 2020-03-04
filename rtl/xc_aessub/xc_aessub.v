@@ -127,7 +127,7 @@ end
 always @(posedge clock) begin
     if(reset || flush) begin
         fsm <= 0;
-    end else if(valid && !ready) begin
+    end else if(valid || ready) begin
         fsm <= n_fsm;
     end
 end

@@ -1,13 +1,10 @@
 \subsection{\XCRYPTO state}
 \label{sec:spec:state}
 
-TODO
-
 % =============================================================================
 
-
-\subsubsection{Control and Status Registers (CSRs)}
-\label{sec:spec:state:csr}
+\subsubsection{Class-$1$:   baseline}
+\label{sec:spec:state:1}
 
 \XCRYPTO adds a single user level CSR, the $\SPR{uxcrypto}$ register.
 Figure \ref{fig:uxcrypto:bits} shows the bitfield layout of the register,
@@ -88,5 +85,12 @@ early-out mechanism are the principle target of the $\SPR{uxcrypto.CT}$ bit.
       run in constant time while the $\SPR{uxcrypto.CT}$ bit is set.
       They may or may not run in constant time when the bit is clear.
 \end{itemize}
+
+% =============================================================================
+
+\subsubsection{Class-$2.6$: leakage}
+\label{sec:spec:state:2:6}
+
+% TODO: add FENL content
 
 % =============================================================================

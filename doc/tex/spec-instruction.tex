@@ -374,8 +374,6 @@ To ensure consistency, the instruction must adhere to the following rules
 \subsubsection{Class-$2.3$: bit-oriented}
 \label{sec:spec:instruction:2:3}
 
-% -----------------------------------------------------------------------------
-
 \XCRYPTOINSTR{xc.bop}{rd, rs1, rs2, l}{
   Compute each $1$-bit sub-word (i.e.,    bit) of an $\RVXLEN$-bit result
   via application of a function
@@ -461,6 +459,31 @@ To ensure consistency, the instruction must adhere to the following rules
   $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
 }
 
+% ----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.xsll.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LSH} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xsrl.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RSH} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xrol.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LRT} \VERB[RV]{cshamt} )$ \;
+}
+
+\XCRYPTOINSTR{xc.xror.i}{rd, rs1, rs2, cshamt}{
+
+}{
+  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RRT} \VERB[RV]{cshamt} )$ \;
+}
 
 % =============================================================================
 
@@ -793,7 +816,6 @@ in Appendix \REFSEC{sec:design:mpn}.
 
 % -----------------------------------------------------------------------------
 
-
 \XCRYPTOINSTR{xc.madd.3}{(rd2, rd1), rs1, rs2, rs3}{
   Compute a   register-based multi-precision (or ``long'') addition:
   one can interpret
@@ -897,6 +919,12 @@ in Appendix \REFSEC{sec:design:mpn}.
 
 % -----------------------------------------------------------------------------
 
+\subsubsection{Class-$2.6$: leakage}
+\label{sec:spec:instruction:2:6}
+
+% TODO: add FENL content
+
+% =============================================================================
 
 \subsubsection{Class-$3.1$: AES}
 \label{sec:spec:instruction:3:1}
@@ -984,7 +1012,6 @@ in Appendix \REFSEC{sec:design:mpn}.
 }
 
 % -----------------------------------------------------------------------------
-
 
 \subsubsection{Class-$3.2$: SHA2}
 \label{sec:spec:instruction:3:2}

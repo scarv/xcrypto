@@ -1,0 +1,12 @@
+dist: cosmic
+sudo: required
+services:
+- docker
+before_install:
+- sudo apt-get -qq update 
+install:
+- sudo apt-get install -y --no-install-recommends texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texlive-bibtex-extra texlive-fonts-extra texlive-science
+- sudo apt-get install -y --no-install-recommends biber xzdec
+script:
+- . ./bin/conf.sh 
+- make spotless build-doc
