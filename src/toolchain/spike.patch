@@ -16,7 +16,7 @@ index 9e03676..0159a23 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..fb45dd7 100644
+index 3c4bf1c..a54066d 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -40,6 +40,32 @@
@@ -184,7 +184,7 @@ index 3c4bf1c..fb45dd7 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2130,64 @@
+@@ -1986,6 +2130,65 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -205,6 +205,7 @@ index 3c4bf1c..fb45dd7 100644
 +DECLARE_INSN(xc_madd_3, MATCH_XC_MADD_3, MASK_XC_MADD_3)
 +DECLARE_INSN(xc_msub_3, MATCH_XC_MSUB_3, MASK_XC_MSUB_3)
 +DECLARE_INSN(xc_mror, MATCH_XC_MROR, MASK_XC_MROR)
++DECLARE_INSN(xc_lkgfence, MATCH_XC_LKGFENCE, MASK_XC_LKGFENCE)
 +DECLARE_INSN(xc_rngtest, MATCH_XC_RNGTEST, MASK_XC_RNGTEST)
 +DECLARE_INSN(xc_rngsamp, MATCH_XC_RNGSAMP, MASK_XC_RNGSAMP)
 +DECLARE_INSN(xc_rngseed, MATCH_XC_RNGSEED, MASK_XC_RNGSEED)
@@ -249,7 +250,7 @@ index 3c4bf1c..fb45dd7 100644
  DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
  DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
  DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2939,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+@@ -2737,6 +2940,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -1825,10 +1826,10 @@ index 2b5003b..6f6b418 100644
    reg_t dscratch0, dscratch1;
    dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 4ee64fa..4d36193 100644
+index 4ee64fa..0fee1da 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -772,6 +772,63 @@ riscv_insn_priv = \
+@@ -772,6 +772,64 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -1849,6 +1850,7 @@ index 4ee64fa..4d36193 100644
 +    xc_madd_3\
 +    xc_msub_3\
 +    xc_mror\
++    xc_lkgfence\
 +    xc_rngtest\
 +    xc_rngsamp\
 +    xc_rngseed\
@@ -1892,7 +1894,7 @@ index 4ee64fa..4d36193 100644
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -784,6 +841,7 @@ riscv_insn_list = \
+@@ -784,6 +842,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
