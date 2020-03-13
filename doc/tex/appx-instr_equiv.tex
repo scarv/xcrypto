@@ -1,0 +1,115 @@
+% =============================================================================
+
+\subsection{Class-$2.1$: randomness}
+\label{appx:instr_equiv:2:1}
+
+% =============================================================================
+
+\subsection{Class-$2.2$: memory}
+\label{appx:instr_equiv:2:2}
+
+% =============================================================================
+
+\subsection{Class-$2.3$: bit-oriented}
+\label{appx:instr_equiv:2:3}
+
+% =============================================================================
+
+\subsection{Class-$2.4$: packed}
+\label{appx:instr_equiv:2:4}
+
+% =============================================================================
+
+\subsection{Class-$2.5$: multi-precision}
+\label{appx:instr_equiv:2:5}
+
+% -----------------------------------------------------------------------------
+
+\paragraph{\VERB[RV]{xc.madd.3}}
+
+\begin{lstlisting}[frame={single},numbers={left},title={\XCRYPTO}]
+madd.3  (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+\end{lstlisting}
+
+\begin{lstlisting}[frame={single},numbers={left},title={RV32IM/RV64IM}]
+add     rs3, rs3, rs2
+add     rd1, rs1, rs3
+sltu    rd2, rs3, rs2
+sltu    rs3, rd1, rs3
+add     rd2, rd2, rs3
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+
+\paragraph{\VERB[RV]{xc.msub.3}}
+
+\begin{lstlisting}[frame={single},numbers={left},title={\XCRYPTO}]
+msub.3  (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+\end{lstlisting}
+
+\begin{lstlisting}[frame={single},numbers={left},title={RV32IM/RV64IM}]
+sub     rd2, rs1, rs2
+mv       t0, rs1
+sltu     t0,  t0, rd2
+sub     rd1, rd2, rs3
+neg      t0,  t0
+sltu    rd2, rd2, rd1
+sub     rd2, t0 , rd2
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+
+\paragraph{\VERB[RV]{xc.macc.1}}
+
+\begin{lstlisting}[frame={single},numbers={left},title={\XCRYPTO}]
+xc.macc.1 (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+\end{lstlisting}
+
+\begin{lstlisting}[frame={single},numbers={left},title={RV32IM/RV64IM}]
+add     rd1, rs1, rs3
+sltu    rs1, rd1, rs1
+add     rd2, rs2, rs1
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+
+\paragraph{\VERB[RV]{xc.mmul.3}}
+
+\begin{lstlisting}[frame={single},numbers={left},title={\XCRYPTO}]
+xc.mmul.3   (rd2,rd1), rs1, rs2, rs3 // Note, rd2 = rd1 | 0x1
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single, title={RV32IM/RV64IM},numbers=left]
+mul    t1, rs1, rs2
+mulhu rd2, rs1, rs2 // (rd2, t1) = rs1*rs2
+add   rd1,  t1, rs3 //      rd1  = low(rs1*rs2)+rs3
+sltu   t1, rd1,  t1 //      rs2  = rd1 < rs2
+add   rd2, rd2, rs2 //      rd2 += overflow bit?
+\end{lstlisting}
+
+% =============================================================================
+
+\subsection{Class-$2.6$: leakage}
+\label{appx:instr_equiv:2:6}
+
+% =============================================================================
+
+\subsection{Class-$3.1$: AES}
+\label{appx:instr_equiv:3:1}
+
+% =============================================================================
+
+\subsection{Class-$3.2$: SHA2}
+\label{appx:instr_equiv:3:2}
+
+% =============================================================================
+
+\subsection{Class-$3.3$: SHA3}
+\label{appx:instr_equiv:3:3}
+
+% =============================================================================
+
+\subsection{Class-$3.4$: SM4}
+\label{appx:instr_equiv:3:4}
+
+% =============================================================================

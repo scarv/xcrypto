@@ -6,8 +6,8 @@
 \begin{itemize}
 
 \item \XCRYPTO is a 
-      non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17},
-      in the sense it {\em may} conflict with other 
+      non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I}, 
+      and, as a result, {\em may} conflict with other 
       (non-standard {\em or} standard)
       extensions.  In particular, note that
 
@@ -15,7 +15,7 @@
       \item the 
             instruction encodings
             do not have a domain-separating prefix, i.e., \XCRYPTO is a
-            brownfield extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17}
+            brownfield extension~\cite[Section 21.1]{SCARV:RV:ISA:I}
             wrt. the base ISA,
             whereas
       \item the 
@@ -24,22 +24,17 @@
             for example, \VERB[RV]{foo} is captured as \VERB[RV]{xc.foo}.
       \end{itemize}
 
-\item Per the current list\footnote{
-      See, e.g., \url{http://workspace.riscv.org}
-      } of (public) RISC-V working groups, 
-      \XCRYPTO relates to elements of (at least) the following:
-
-      \begin{enumerate}
-      \item Cryptographic Extensions Task Group,
-      \item BitManip                      Group,
-            and
-      \item P             Extension  Task Group (i.e., the embedded DSP-like ISE).
-      \end{enumerate}
-
-      \noindent
+\item \XCRYPTO relates to elements of (at least) the
+      B~\cite[Chapter 17]{SCARV:RV:ISA:II}
+      and
+      P~\cite[Chapter 20]{SCARV:RV:ISA:II}
+      standard extensions.
       In some cases overlap exists, potentially representing an opportunity
-      for unification; in other cases the underlying goal, approach, and/or
-      ethos is distinct and thus incompatible.
+      for unification; we harness this overlap in 
+      \REFSEC{sec:spec:instruction:B}
+      and
+      \REFSEC{sec:spec:instruction:P},
+      ``importing'' selected instructions rather than redefining them.
 
 \end{itemize}
 

@@ -3,94 +3,244 @@
 
 % =============================================================================
 
-\subsubsection{Class-$1$:   baseline}
-\label{sec:spec:state:1}
+\begin{table}[p]
+\begin{center}
+\begin{tabular}{|c|c|c|c|l|l|}
+\hline
+  \multicolumn{3}{|c|}{CSR Address}    & Hex & Use and Accessibility & Section \\
+  \multicolumn{1}{|c }{$11 \RANGE 10$} 
+& \multicolumn{1}{|c }{$ 9 \RANGE  8$}
+& \multicolumn{1}{|c|}{$ 7 \RANGE  4$} &     &                       &         \\
+\hline
+\VERB{10} & \VERB{00} & \VERB{0000} & $\RADIX{800}{16}$ & $\SPR{uxcrypto}$ & \REFSEC{sec:spec:state:1}   \\
+\VERB{10} & \VERB{00} & \VERB{0001} & $\RADIX{801}{16}$ & $\SPR{ubop}    $ & \REFSEC{sec:spec:state:2:3} \\
+\VERB{10} & \VERB{00} & \VERB{0010} & $\RADIX{802}{16}$ & $\SPR{ufenl}   $ & \REFSEC{sec:spec:state:2:6} \\
+\hline
+\end{tabular}
+\end{center}
+\caption{An overview of \XCRYPTO-related CSRs.}
+\label{tab:csr}
+\end{table}
 
-\XCRYPTO adds a single user level CSR, the $\SPR{uxcrypto}$ register.
-Figure \ref{fig:uxcrypto:bits} shows the bitfield layout of the register,
-while table \ref{tab:uxcrypto:fields} describes the purpose of each field.
+% -----------------------------------------------------------------------------
 
-$\SPR{uxcrypto}$ provisionally exists at CSR address $0x800$.
-
-\begin{figure}[h]
+\begin{figure}[p]
 \begin{center}
 \begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
 \bitheader{0-31}               
 \\
-  \bitbox{ 8}{\rotatebox{90}{\small$\ID{b[1]}     $}}
-& \bitbox{ 8}{\rotatebox{90}{\small$\ID{b[0]}     $}}
-& \bitbox{ 4}{\rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{BIT }     $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MEM }     $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{RNG }     $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{16}$}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{8} $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{4} $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{2} $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MP  }     $}}
+  \bitbox{19}{\color{black}    \rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{SM4}      $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA3}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA2}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{AES }     $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{CT  }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{LEAK}     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MP  }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{16}$}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{ 8}$}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{ 4}$}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{ 2}$}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{BIT }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MEM }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{RND }     $}}
 \end{bytefield}
 \end{center}
-\caption{A diagrammatic description of the $\SPR{uxcrypto}$ register;
-blanked regions are reserved, so yield zero when the register is read.
-Note that we force implementations to yield zero, rather than requiring
-software to simply ignore these bits (as happens in the base RISC-V
-specification) to remove any possibility of implementation specific
-behaviour.}
-\label{fig:uxcrypto:bits}
+\caption{A diagrammatic description of the $\SPR{uxcrypto}$ register.}
+\label{fig:csr:uxcrypto}
 \end{figure}
 
+\begin{figure}[p]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+& \bitbox{16}{\color{black}    \rule{\width}{\height}}
+  \bitbox{ 8}{\rotatebox{90}{\small$\ID{BOP}_{ 1} $}}
+& \bitbox{ 8}{\rotatebox{90}{\small$\ID{BOP}_{ 0} $}}
+\end{bytefield}
+\end{center}
+\caption{A diagrammatic description of the $\SPR{ubop}$     register.}
+\label{fig:csr:ubop}
+\end{figure}
 
-\begin{table}[h]
+\begin{figure}[p]
+\begin{center}
+\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\bitheader{0-31}               
+\\
+& \bitbox{32}{\color{lightgray}\rule{\width}{\height}}
+\end{bytefield}
+\end{center}
+\caption{A diagrammatic description of the $\SPR{ufenl}$    register.}
+\label{fig:csr:ufenl}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+
+\begin{table}[p]
 \begin{center}
 \begin{tabular}{|l|c|c|l|}
 \hline
-Field        & Index  & Access & Description                                                                         \\ 
+Field            & Index           & Access & Description                                                            \\ 
 \hline
-$\ID{b[1]} $ & $ 31:24$ & R/W & Lookup table field used by \VERB[RV]{xc.bop} (\REFSEC{sec:spec:instruction:xc.bop}) \\
-$\ID{b[0]} $ & $ 23:16$ & R/W & Lookup table field used by \VERB[RV]{xc.bop} (\REFSEC{sec:spec:instruction:xc.bop}) \\
-$\ID{BIT }     $ & $11$ & R & Is the Bitwise class of instructions supported? \\
-$\ID{MEM }     $ & $10$ & R & Is the Memory class of instructions supported? \\
-$\ID{RNG }     $ & $ 9$ & R & Is the Randomness class of instructions supported? \\
-$\ID{PACK}_{16}$ & $ 8$ & R & Is the pack width 16 class of instructions supported? \\
-$\ID{PACK}_{8} $ & $ 7$ & R & Is the pack width 8  class of instructions supported? \\
-$\ID{PACK}_{4} $ & $ 6$ & R & Is the pack width 4  class of instructions supported? \\
-$\ID{PACK}_{2} $ & $ 5$ & R & Is the pack width 2  class of instructions supported? \\
-$\ID{MP  }     $ & $ 4$ & R & Is the Multi-precision class of instructions supported? \\
-$\ID{SHA3}     $ & $ 3$ & R & Is the SHA3 class of instructions supported? \\
-$\ID{SHA2}     $ & $ 2$ & R & Is the SHA2 class of instructions supported? \\
-$\ID{AES }     $ & $ 1$ & R & Is the AES class of instructions supported? \\
-$\ID{CT} $ & $     0$ & R/W & Constant time indicator bit. \\
+$\ID{SM4}      $ & $           12$ & R      & Is the SM4             class of instructions                supported? \\
+$\ID{SHA3}     $ & $           11$ & R      & Is the SHA3            class of instructions                supported? \\
+$\ID{SHA2}     $ & $           10$ & R      & Is the SHA2            class of instructions                supported? \\
+$\ID{AES }     $ & $            9$ & R      & Is the AES             class of instructions                supported? \\
+$\ID{LEAK}     $ & $            8$ & R      & Is the leakage         class of instructions                supported? \\
+$\ID{MP  }     $ & $            7$ & R      & Is the multi-precision class of instructions                supported? \\
+$\ID{PACK}_{16}$ & $            6$ & R      & Is the packed          class of instructions (for $w = 16$) supported? \\
+$\ID{PACK}_{8} $ & $            5$ & R      & Is the packed          class of instructions (for $w =  8$) supported? \\
+$\ID{PACK}_{4} $ & $            4$ & R      & Is the packed          class of instructions (for $w =  4$) supported? \\
+$\ID{PACK}_{2} $ & $            3$ & R      & Is the packed          class of instructions (for $w =  2$) supported? \\
+$\ID{BIT }     $ & $            2$ & R      & Is the bit-oriented    class of instructions                supported? \\
+$\ID{MEM }     $ & $            1$ & R      & Is the memory          class of instructions                supported? \\
+$\ID{RND }     $ & $            0$ & R      & Is the randomness      class of instructions                supported? \\
 \hline
 \end{tabular}
 \end{center}
-\caption{A tabular description of the $\SPR{uxcrypto}$ register.}
-\label{tab:uxcrypto:fields}
+\caption{A tabular      description of the $\SPR{uxcrypto}$ register.}
+\label{tab:csr:uxcrypto}
 \end{table}
 
-The $\SPR{uxcrypto.CT}$ bit is used to control the timing and execution
-behaviour of certain instructions.
-It should be used to indicate that the currently running code must run
-in constant time, or more accurately, time independent of the data
-inputs.
-Integer arithmetic instructions such as multiply, which might have an
-early-out mechanism are the principle target of the $\SPR{uxcrypto.CT}$ bit.
-\begin{itemize}
-\item Memory accesses are not required to enforce constant time operation,
-      though this is a potential side channel which must be mitigated.
-\item Any integer arithmetic instructions with an early-out mechanism must
-      run in constant time while the $\SPR{uxcrypto.CT}$ bit is set.
-      They may or may not run in constant time when the bit is clear.
-\end{itemize}
+% =============================================================================
+
+With reference to~\cite[Chapter 2]{SCARV:RV:ISA:II},
+\REFTAB{tab:csr}
+outlines a number of Control and Status Registers (CSRs) which form the
+(architectural) state added by \XCRYPTO to the base ISA.  The following 
+\SEC[s] explain the purpose and use of each CSR.
+In each diagrammatic description, note that 
+
+\begin{enumerate}
+\item Regions blocked out in black 
+      (e.g.,~{\color{black}    \rule{3em}{2ex}}~)
+      are deemed 
+      {\em reserved};
+      \XCRYPTO~{\em requires} an implementation to yield zero when the
+      constituent bits of such a region are read 
+      (vs. assume software will ignore them, per the RISC-V specification),
+      in order to prevent any unintentionally implementation-specific 
+      behaviour.
+
+\item Regions blocked out in gray  
+      (e.g.,~{\color{lightgray}\rule{3em}{2ex}}~)
+      are deemed
+      {\em implementation specific};
+      within a general framework that governs the high-level purpose of 
+      such regions, an implementation {\em may} specialise the low-level 
+      semantics of constituent bits.
+\end{enumerate}
+
+% =============================================================================
+
+\subsubsection{Class-$1$:   baseline}
+\label{sec:spec:state:1}
+
+\REFFIG{fig:csr:uxcrypto}
+illustrates the 
+$\SPR{uxcrypto}$
+CSR; additional explanation of the constituent fields is provided in
+\REFTAB{tab:csr:uxcrypto}.
+$\SPR{uxcrypto}$
+is a general-purpose CSR, in the sense it applies 
+across the ISE as a whole 
+vs.
+to a specific feature class within the ISE.
+The purpose of 
+$\SPR{uxcrypto}$
+is to support feature identification.  
+In essence, 
+\[
+\FIELD{\SPR{uxcrypto}}{X} ~=~ \left\{\begin{array}{ll@{\;}r}
+                                     0 & \mbox{feature class $X$ is} & \mbox{not supported} \\
+                                     1 & \mbox{feature class $X$ is} & \mbox{    supported} \\
+                                     \end{array}
+                              \right.
+\]
+meaning that one can use field $X$ to test the presence or absence of
+an associated feature class.
+
+% =============================================================================
+
+\subsubsection{Class-$2.3$: bit-oriented}
+\label{sec:spec:state:2:3}
+
+\REFFIG{fig:csr:ubop}
+illustrates the 
+$\SPR{ubop}$
+CSR.
+$\SPR{ubop}$
+is a special-purpose CSR, in the sense it applies 
+to a specific feature class within the ISE
+vs.
+across the ISE as a whole.
+The purpose of 
+$\SPR{ubop}$
+is to support the
+\VERB[RV]{xc.bop}
+as outlined in 
+\REFSEC{sec:spec:instruction:xc.bop}.
+For $i \in \SET{ 0, 1 }$, the CSR encodes a function
+\[
+f_i : \SET{ 0, 1 }^3 \rightarrow \SET{ 0, 1 }
+\]
+as an $8$-entry truth-table in $\FIELD{ubop}{\ID{LUT}_{i}}$.
+Said functions are used by instances of \VERB[RV]{xc.bop}, allowing the
+application of a configurable $3$-input, $1$-output Boolean function.
+(cf. x86 \VERB{vpternlogd}~\cite[5-446--5-468]{SCARV:X86:2:18}, and Amiga blitter~\cite[Chapter 6]{SCARV:Amiga:85})
+vs. common fixed operations such as NOT, AND, OR, and XOR.
 
 % =============================================================================
 
 \subsubsection{Class-$2.6$: leakage}
 \label{sec:spec:state:2:6}
 
-% TODO: add FENL content
+\REFFIG{fig:csr:ufenl}
+illustrates the 
+$\SPR{ufenl}$
+CSR.
+$\SPR{ufenl}$
+is a special-purpose CSR, in the sense it applies 
+to a specific feature class within the ISE
+vs.
+across the ISE as a whole.
+The purpose of 
+$\SPR{ufenl}$
+is to support an instance of the general FENL concept introduced by 
+Gao et al.~\cite{SCARV:GMPP:20}.
+Let
+$
+\sigma( R_i )
+$
+denotes the execution stage\footnote{%
+A precise definition is inherently dependent on the micro-architecture, but
+it is reasonable to consider either
+cycle          (for a non-pipelined case)
+or
+pipeline stage (for a     pipelined case)
+as representative.
+} some $i$-th micro-architectural resource $R_i$ (or logical group 
+thereof) exists or is applied in.
+$\SPR{ufenl}$
+acts a configuration register, each $i$-th bit in which controls $R_i$: in
+essence, 
+\[
+\INDEX{\SPR{ufenl}}{i} ~=~ \left\{\begin{array}{ll@{\;}r}
+                                  0 & \mbox{$R_i$ is} & \mbox{not flushed in execution stage $\sigma( R_i )$} \\
+                                  1 & \mbox{$R_i$ is} & \mbox{    flushed in execution stage $\sigma( R_i )$} \\
+                                  \end{array}
+                             \right.
+\]
+Note that the mapping of 
+$\INDEX{\SPR{ufenl}}{i}$
+to 
+$R_i$
+is {\em inherently} implementation specific, because it depends on the
+micro-architecture; this exposure of micro-architectural detail in the
+ISA (or ISE in this case) is fundamental to the augmented ISA (or aISA) 
+concept of
+Ge et al.~\cite{SCARV:GeYarHei:18}
+on which FENL is based.
 
 % =============================================================================

@@ -8,26 +8,23 @@
 \item We make {\em no} assumption about the value of $\RVXLEN$ as defined
       by the base ISA.  That is, \XCRYPTO can cater for instances where
       $
-      \RVXLEN \in \SET{ 32, 64, 128 } ,
+      \RVXLEN \in \SET{ 32, 64, 128 } .
       $
-      although, since it has a focus on micro-controller class host cores
-      per \REFSEC{sec:bg:concept},
-      $
-      \RVXLEN = 32
-      $
-      is the norm.
 
-\item \XCRYPTO demands interaction with an RNG, the concrete instantiation of 
-      which is unspecified: we assume the RNG design follows best-practice,
+\item \XCRYPTO demands interaction with an RNG, concrete instantiation of 
+      which is {\em unspecified}.  As such, we assume the RNG design and 
+      implementation follows best-practice,
       e.g., per NIST~\cite{SCARV:NIST:SP:800_90a,SCARV:NIST:SP:800_90b,SCARV:NIST:SP:800_90c},
       and has an interface per \cite[Section 6.4]{SCARV:NIST:SP:800_90c}.
 
-      On one hand, doing so affords flexibility in an implementation; this 
-      is important, in that an RNG selection and implementation will likely 
-      be technology-specific (e.g., differ for a given FPGA, vs. an ASIC).  
-      On the other hand, however, the RNG used is critically important wrt. 
-      security: the (difficult) challenge of selecting and implementing 
-      a robust RNG instance is assumed to be addressed.
+      On one hand, doing so allows flexibility in an implementation; this 
+      is important, in that the RNG design and implementation will likely 
+      be technology-specific 
+      (e.g., differ for a given FPGA, vs. an ASIC).  
+      On the other hand, however, said RNG is {\em critically} important
+      wrt. security.  This implies an assumption that various challenges 
+      related to the RNG design and implementation are carefully and 
+      satisfactorily addressed.
 
 \end{itemize}
 
