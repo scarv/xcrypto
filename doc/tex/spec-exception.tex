@@ -23,12 +23,6 @@ the following:
       RV32I sets $|\GPR| = 32$ so demands $0 \leq i < 32$,
       whereas
       RV32E sets $|\GPR| = 16$ so demands $0 \leq i < 16$.
-% TODO: question whether this is still true?
-\item Any access to
-      $\SPR{uxcrypto}$
-      from a privilege mode other than machine mode
-      will raise an 
-      illegal instruction exception.
 \item Any instruction that accesses memory mirrors RV32I wrt. exception,
       synchronisation, and atomicity semantics: for example, if
       a) the effective address stemming from a memory access instruction
