@@ -488,7 +488,7 @@ prohibitive) overhead.
   \]
   for $0 \leq i <  8$.
   For example, if
-  $f_{\VERB[RV]{l}}     =        \FIELD{\SPR{ubop}}{\ID{BOP}_{\VERB[RV]{l}}} = \RADIX{11110000}{2}$
+  $f_{\VERB[RV]{l}} = \FIELD{\SPR{ubop}}{\ID{BOP}_{\VERB[RV]{l}}} = \RADIX{11110000}{2}$
   then
   $f( \RADIX{000}{2} ) = \RADIX{0}{2}$,
   $f( \RADIX{011}{2} ) = \RADIX{0}{2}$,
@@ -499,10 +499,10 @@ prohibitive) overhead.
   and 
   the output                  is written to   (the corresponding $1$-bit sub-word  of) a     $\GPR$ register.
 }{
-  $f \ASN \FIELD{\SPR{ubop}}{\ID{BOP}_{\VERB[RV]{l}}}$ \;
+  $f_{\VERB[RV]{l}} \ASN \FIELD{\SPR{ubop}}{\ID{BOP}_{\VERB[RV]{l}}}$ \;
   $t \ASN 0$ \;
   \For{$i = 0$ {\bf upto} $\RVXLEN-1$}{
-    $\INDEX{t}{i} \ASN f( \INDEX{\GPR[*][{\VERB[RV]{rd}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs1}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs2}}]}{i} )$ \;
+    $\INDEX{t}{i} \ASN f_{\VERB[RV]{l}}( \INDEX{\GPR[*][{\VERB[RV]{rd}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs1}}]}{i} \CONS \INDEX{\GPR[*][{\VERB[RV]{rs2}}]}{i} )$ \;
   }
   $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
 }
@@ -521,7 +521,7 @@ prohibitive) overhead.
   \]
   for $0 \leq i < 15$.
   For example, if
-  $f     =            \GPR[*][{\VERB[RV]{rs3}}] \CONS \GPR[*][{\VERB[RV]{rs2}}] = \RADIX{0123456789ABCDEF}{16}$
+  $f = \GPR[*][{\VERB[RV]{rs3}}] \CONS \GPR[*][{\VERB[RV]{rs2}}] = \RADIX{0123456789ABCDEF}{16}$
   then
   $f( \RADIX{0000}{2} ) = \RADIX{1111}{2}$,
   $f( \RADIX{0001}{2} ) = \RADIX{1110}{2}$,
