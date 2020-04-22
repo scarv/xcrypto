@@ -1,28 +1,214 @@
+diff --git a/riscv/arith.h b/riscv/arith.h
+index b4370cb..09f2ce3 100644
+--- a/riscv/arith.h
++++ b/riscv/arith.h
+@@ -5,6 +5,7 @@
+ 
+ #include <cstdint>
+ #include <climits>
++#include <cmath>
+ 
+ inline uint64_t mulhu(uint64_t a, uint64_t b)
+ {
+@@ -108,4 +109,171 @@ T sat_subu(T x, T y, bool &sat)
+   return res;
+ }
+ 
++inline void Bool2Arith( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++inline void Arith2Bool( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++
++inline void BoolMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
++inline void BoolUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
++inline void BoolRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++
++inline void BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
++inline void BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++inline void BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++inline void BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++
++inline void BoolLSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++inline void BoolRSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++
++inline void BoolAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++inline void BoolSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++
++inline void ArithMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
++inline void ArithUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
++inline void ArithRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++
++inline void Bool2Arith( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t x;
++
++  BoolUnmask( &x, x_0, x_1 ); ArithMask( r_0, r_1, x );
++}
++
++inline void Arith2Bool( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t x;
++
++  ArithUnmask( &x, x_0, x_1 ); BoolMask( r_0, r_1, x );
++}
++
++inline void  BoolMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x   ^ m   );
++  *r_1 = (       m   );
++}
++
++inline void  BoolUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
++  *r   = ( x_0 ^ x_1 );
++}
++
++inline void  BoolRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 ^ m   );
++  *r_1 = ( x_1 ^ m   );
++}
++
++inline void  BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
++  *r_0 =  ( x_0 );
++  *r_1 = ~( x_1 );
++}
++
++inline void  BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 & y_1 ) ^ ( x_0 | ~y_0 );
++  *r_1 = ( x_1 & y_1 ) ^ ( x_1 | ~y_0 );
++}
++
++inline void  BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 | y_1 ) ^ ( x_0 &  y_0 );
++  *r_1 = ( x_1 & y_1 ) ^ ( x_1 |  y_0 );
++}
++
++inline void  BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 ^ ( x_1 ^ y_0 ) );
++  *r_1 = (       (       y_1 ) );
++}
++
++inline void  BoolLSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 << i ) ^ ( ( x_1 << i ) ^ m );
++  *r_1 =                (                m );
++
++}
++
++inline void  BoolRSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 >> i ) ^ ( ( x_1 >> i ) ^ m );
++  *r_1 =                (                m );
++}
++
++inline void  BoolAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1;
++
++    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
++    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
++
++  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
++
++  for( int i = 1; i <= ( n - 1 ); i++ ) {
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolLSH( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
++    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
++  }
++
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1        );
++    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
++
++  *r_0 = z_0;
++  *r_1 = z_1;
++}
++
++inline void  BoolSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1, m;
++
++    BoolNOT( &y_0, &y_1, y_0, y_1           );
++    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
++    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
++    BoolAND( &u_0, &u_1, p_0, p_1,   1,   0 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
++
++  for( int i = 1; i <= ( n - 1 ); i++ ) {
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolLSH( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
++    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
++  }
++
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++    BoolLSH( &h_0, &h_1, g_0, g_1, 1        );
++    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1,   1,   0 );
++
++  *r_0 = z_0;
++  *r_1 = z_1;
++}
++
++inline void ArithMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x   + m   );
++  *r_1 = (       m   );
++}
++
++inline void ArithUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
++  *r   = ( x_0 - x_1 );
++}
++
++inline void ArithRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 + m   );
++  *r_1 = ( x_1 + m   );
++}
++
++
+ #endif
 diff --git a/riscv/decode.h b/riscv/decode.h
-index 9e03676..5495d4a 100644
+index 9e03676..96fc0ab 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
-@@ -95,6 +95,12 @@ public:
-   uint64_t rs3() { return x(27, 5); }
+@@ -96,6 +96,14 @@ public:
    uint64_t rm() { return x(12, 3); }
    uint64_t csr() { return x(20, 12); }
-+
+ 
 +  // XCrypto fields.
 +  uint32_t xc_pack_width() {return x(30,2);}
 +  uint32_t xc_sha3_sh() {return x(30,2);}
 +  uint32_t xc_rdm() {return x(8,4);}
 +  uint32_t xc_l() {return x(31,1);}
-
++  uint32_t xc_rsm1() {return x(16,4);}
++  uint32_t xc_rsm2() {return x(21,4);}
++
    int64_t rvc_imm() { return x(2, 5) + (xs(12, 1) << 5); }
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
+   int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..031047f 100644
+index 3c4bf1c..a9c92c8 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -40,6 +40,32 @@
  #define SSTATUS_UXL         0x0000000300000000
  #define SSTATUS64_SD        0x8000000000000000
-
+ 
 +#define UXCRYPTO_B1         (0xFF << 24)
 +#define UXCRYPTO_B0         (0xFF << 16)
 +#define UXCRYPTO_MEM        (0x1  << 10)
@@ -52,7 +238,7 @@ index 3c4bf1c..031047f 100644
  #define DCSR_XDEBUGVER      (3U<<30)
  #define DCSR_NDRESET        (1<<29)
  #define DCSR_FULLRESET      (1<<28)
-@@ -564,6 +590,121 @@
+@@ -564,6 +590,151 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -170,11 +356,41 @@ index 3c4bf1c..031047f 100644
 +#define MASK_XC_SHA512_S2 0xfff0707f
 +#define MATCH_XC_SHA512_S3 0xe707003
 +#define MASK_XC_SHA512_S3 0xfff0707f
++#define MATCH_MASK_B2A 0x5b
++#define MASK_MASK_B2A  0xfff0f0ff
++#define MATCH_MASK_A2B 0x805b
++#define MASK_MASK_A2B  0xfff0f0ff
++#define MATCH_MASK_B_MASK 0x20005b
++#define MASK_MASK_B_MASK  0xfff070ff
++#define MATCH_MASK_B_UNMASK 0x30005b
++#define MASK_MASK_B_UNMASK  0xfff0f07f
++#define MATCH_MASK_B_REMASK 0x30805b
++#define MASK_MASK_B_REMASK  0xfff0f0ff
++#define MATCH_MASK_A_MASK 0x40005b
++#define MASK_MASK_A_MASK  0xfff070ff
++#define MATCH_MASK_A_UNMASK 0x50005b
++#define MASK_MASK_A_UNMASK  0xfff0f07f
++#define MATCH_MASK_A_REMASK 0x50805b
++#define MASK_MASK_A_REMASK  0xfff0f0ff
++#define MATCH_MASK_B_NOT 0x200205b
++#define MASK_MASK_B_NOT  0xfff0f0ff
++#define MATCH_MASK_B_AND 0x200705b
++#define MASK_MASK_B_AND  0xfe10f0ff
++#define MATCH_MASK_B_NAND 0x200305b
++#define MASK_MASK_B_NAND  0xfe10f0ff
++#define MATCH_MASK_B_IOR 0x200605b
++#define MASK_MASK_B_IOR  0xfe10f0ff
++#define MATCH_MASK_B_XOR 0x200405b
++#define MASK_MASK_B_XOR  0xfe10f0ff
++#define MATCH_MASK_B_ADD 0x200005b
++#define MASK_MASK_B_ADD  0xfe10f0ff
++#define MATCH_MASK_B_SUB 0x200105b
++#define MASK_MASK_B_SUB  0xfe10f0ff
 +
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1719,6 +1860,7 @@
+@@ -1719,6 +1890,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -182,7 +398,7 @@ index 3c4bf1c..031047f 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2128,64 @@
+@@ -1986,6 +2158,78 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -243,11 +459,25 @@ index 3c4bf1c..031047f 100644
 +DECLARE_INSN(xc_sha512_s1, MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1)
 +DECLARE_INSN(xc_sha512_s2, MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2)
 +DECLARE_INSN(xc_sha512_s3, MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3)
++DECLARE_INSN(mask_b2a, MATCH_MASK_B2A, MASK_MASK_B2A)
++DECLARE_INSN(mask_a2b, MATCH_MASK_A2B, MASK_MASK_A2B)
++DECLARE_INSN(mask_b_mask, MATCH_MASK_B_MASK, MASK_MASK_B_MASK)
++DECLARE_INSN(mask_b_unmask, MATCH_MASK_B_UNMASK, MASK_MASK_B_UNMASK)
++DECLARE_INSN(mask_b_remask, MATCH_MASK_B_REMASK, MASK_MASK_B_REMASK)
++DECLARE_INSN(mask_a_mask, MATCH_MASK_A_MASK, MASK_MASK_A_MASK)
++DECLARE_INSN(mask_a_unmask, MATCH_MASK_A_UNMASK, MASK_MASK_A_UNMASK)
++DECLARE_INSN(mask_a_remask, MATCH_MASK_A_REMASK, MASK_MASK_A_REMASK)
++DECLARE_INSN(mask_b_not, MATCH_MASK_B_NOT, MASK_MASK_B_NOT)
++DECLARE_INSN(mask_b_and, MATCH_MASK_B_AND, MASK_MASK_B_AND)
++DECLARE_INSN(mask_b_ior, MATCH_MASK_B_IOR, MASK_MASK_B_IOR)
++DECLARE_INSN(mask_b_xor, MATCH_MASK_B_XOR, MASK_MASK_B_XOR)
++DECLARE_INSN(mask_b_add, MATCH_MASK_B_ADD, MASK_MASK_B_ADD)
++DECLARE_INSN(mask_b_sub, MATCH_MASK_B_SUB, MASK_MASK_B_SUB)
 +
  DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
  DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
  DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2937,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+@@ -2737,6 +2981,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -255,6 +485,222 @@ index 3c4bf1c..031047f 100644
  DECLARE_CSR(ustatus, CSR_USTATUS)
  DECLARE_CSR(uie, CSR_UIE)
  DECLARE_CSR(utvec, CSR_UTVEC)
+diff --git a/riscv/insns/mask_a2b.h b/riscv/insns/mask_a2b.h
+new file mode 100644
+index 0000000..8919510
+--- /dev/null
++++ b/riscv/insns/mask_a2b.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++Arith2Bool( &r_0, &r_1, x_0, x_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_a_mask.h b/riscv/insns/mask_a_mask.h
+new file mode 100644
+index 0000000..79f0e51
+--- /dev/null
++++ b/riscv/insns/mask_a_mask.h
+@@ -0,0 +1,8 @@
++uint32_t r_0, r_1, x;
++
++x = READ_REG( insn.rs1() );
++
++ArithMask( &r_0, &r_1, x );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_a_remask.h b/riscv/insns/mask_a_remask.h
+new file mode 100644
+index 0000000..3ddb6b0
+--- /dev/null
++++ b/riscv/insns/mask_a_remask.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++ArithRemask( &r_0, &r_1, x_0, x_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_a_unmask.h b/riscv/insns/mask_a_unmask.h
+new file mode 100644
+index 0000000..4d3dd9c
+--- /dev/null
++++ b/riscv/insns/mask_a_unmask.h
+@@ -0,0 +1,8 @@
++uint32_t r, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++ArithUnmask( &r, x_0, x_1 );
++
++WRITE_REG( insn.rd(), r );
+diff --git a/riscv/insns/mask_b2a.h b/riscv/insns/mask_b2a.h
+new file mode 100644
+index 0000000..5c068fb
+--- /dev/null
++++ b/riscv/insns/mask_b2a.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++Bool2Arith( &r_0, &r_1, x_0, x_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_add.h b/riscv/insns/mask_b_add.h
+new file mode 100644
+index 0000000..8300402
+--- /dev/null
++++ b/riscv/insns/mask_b_add.h
+@@ -0,0 +1,11 @@
++uint32_t r_0, r_1, x_0, x_1, y_0, y_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
++y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
++
++BoolAdd( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_and.h b/riscv/insns/mask_b_and.h
+new file mode 100644
+index 0000000..99f828c
+--- /dev/null
++++ b/riscv/insns/mask_b_and.h
+@@ -0,0 +1,11 @@
++uint32_t r_0, r_1, x_0, x_1, y_0, y_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
++y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
++
++BoolAND( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_ior.h b/riscv/insns/mask_b_ior.h
+new file mode 100644
+index 0000000..aba511f
+--- /dev/null
++++ b/riscv/insns/mask_b_ior.h
+@@ -0,0 +1,11 @@
++uint32_t r_0, r_1, x_0, x_1, y_0, y_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
++y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
++
++BoolIOR( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_mask.h b/riscv/insns/mask_b_mask.h
+new file mode 100644
+index 0000000..737cd46
+--- /dev/null
++++ b/riscv/insns/mask_b_mask.h
+@@ -0,0 +1,8 @@
++uint32_t r_0, r_1, x;
++
++x = READ_REG( insn.rs1() );
++
++ BoolMask( &r_0, &r_1, x );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_not.h b/riscv/insns/mask_b_not.h
+new file mode 100644
+index 0000000..53453f6
+--- /dev/null
++++ b/riscv/insns/mask_b_not.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++BoolNOT( &r_0, &r_1, x_0, x_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_remask.h b/riscv/insns/mask_b_remask.h
+new file mode 100644
+index 0000000..51dac2d
+--- /dev/null
++++ b/riscv/insns/mask_b_remask.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++ BoolRemask( &r_0, &r_1, x_0, x_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_sub.h b/riscv/insns/mask_b_sub.h
+new file mode 100644
+index 0000000..88681ea
+--- /dev/null
++++ b/riscv/insns/mask_b_sub.h
+@@ -0,0 +1,11 @@
++uint32_t r_0, r_1, x_0, x_1, y_0, y_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
++y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
++
++BoolSub( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_unmask.h b/riscv/insns/mask_b_unmask.h
+new file mode 100644
+index 0000000..5b59da0
+--- /dev/null
++++ b/riscv/insns/mask_b_unmask.h
+@@ -0,0 +1,8 @@
++uint32_t r, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++ BoolUnmask( &r, x_0, x_1 );
++
++WRITE_REG( insn.rd(), r );
+diff --git a/riscv/insns/mask_b_xor.h b/riscv/insns/mask_b_xor.h
+new file mode 100644
+index 0000000..9eb1907
+--- /dev/null
++++ b/riscv/insns/mask_b_xor.h
+@@ -0,0 +1,11 @@
++uint32_t r_0, r_1, x_0, x_1, y_0, y_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
++y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
++
++BoolXOR( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/xc_aes_common.h b/riscv/insns/xc_aes_common.h
 new file mode 100644
 index 0000000..21cf845
@@ -651,7 +1097,7 @@ index 0000000..d87dbd1
 +
 diff --git a/riscv/insns/xc_lut.h b/riscv/insns/xc_lut.h
 new file mode 100644
-index 0000000..6770c21
+index 0000000..9668138
 --- /dev/null
 +++ b/riscv/insns/xc_lut.h
 @@ -0,0 +1,22 @@
@@ -679,7 +1125,7 @@ index 0000000..6770c21
 +
 diff --git a/riscv/insns/xc_macc_1.h b/riscv/insns/xc_macc_1.h
 new file mode 100644
-index 0000000..6ed9d44
+index 0000000..42d7e39
 --- /dev/null
 +++ b/riscv/insns/xc_macc_1.h
 @@ -0,0 +1,36 @@
@@ -732,7 +1178,7 @@ index 0000000..b0d371e
 +WRITE_XCRDM(result);
 diff --git a/riscv/insns/xc_madd_3.h b/riscv/insns/xc_madd_3.h
 new file mode 100644
-index 0000000..a3e293e
+index 0000000..da3f23e
 --- /dev/null
 +++ b/riscv/insns/xc_madd_3.h
 @@ -0,0 +1,33 @@
@@ -771,7 +1217,7 @@ index 0000000..a3e293e
 +
 diff --git a/riscv/insns/xc_mmul_3.h b/riscv/insns/xc_mmul_3.h
 new file mode 100644
-index 0000000..043a750
+index 0000000..6301617
 --- /dev/null
 +++ b/riscv/insns/xc_mmul_3.h
 @@ -0,0 +1,32 @@
@@ -809,7 +1255,7 @@ index 0000000..043a750
 +
 diff --git a/riscv/insns/xc_mror.h b/riscv/insns/xc_mror.h
 new file mode 100644
-index 0000000..8b299e3
+index 0000000..59e654d
 --- /dev/null
 +++ b/riscv/insns/xc_mror.h
 @@ -0,0 +1,28 @@
@@ -899,7 +1345,7 @@ index 0000000..cff871c
 +WRITE_XCRDM(result)
 diff --git a/riscv/insns/xc_msub_3.h b/riscv/insns/xc_msub_3.h
 new file mode 100644
-index 0000000..0b75fa0
+index 0000000..004a5a6
 --- /dev/null
 +++ b/riscv/insns/xc_msub_3.h
 @@ -0,0 +1,33 @@
@@ -938,7 +1384,7 @@ index 0000000..0b75fa0
 +
 diff --git a/riscv/insns/xc_packed.h b/riscv/insns/xc_packed.h
 new file mode 100644
-index 0000000..2495c19
+index 0000000..8cbd463
 --- /dev/null
 +++ b/riscv/insns/xc_packed.h
 @@ -0,0 +1,69 @@
@@ -1013,7 +1459,7 @@ index 0000000..2495c19
 +
 diff --git a/riscv/insns/xc_padd.h b/riscv/insns/xc_padd.h
 new file mode 100644
-index 0000000..d4ea85f
+index 0000000..7cda459
 --- /dev/null
 +++ b/riscv/insns/xc_padd.h
 @@ -0,0 +1,29 @@
@@ -1048,7 +1494,7 @@ index 0000000..d4ea85f
 +
 diff --git a/riscv/insns/xc_pclmul_h.h b/riscv/insns/xc_pclmul_h.h
 new file mode 100644
-index 0000000..8ac3d76
+index 0000000..6528678
 --- /dev/null
 +++ b/riscv/insns/xc_pclmul_h.h
 @@ -0,0 +1,23 @@
@@ -1077,7 +1523,7 @@ index 0000000..8ac3d76
 +
 diff --git a/riscv/insns/xc_pclmul_l.h b/riscv/insns/xc_pclmul_l.h
 new file mode 100644
-index 0000000..37a4bd3
+index 0000000..97e8767
 --- /dev/null
 +++ b/riscv/insns/xc_pclmul_l.h
 @@ -0,0 +1,23 @@
@@ -1106,7 +1552,7 @@ index 0000000..37a4bd3
 +
 diff --git a/riscv/insns/xc_pmul_h.h b/riscv/insns/xc_pmul_h.h
 new file mode 100644
-index 0000000..f7202a7
+index 0000000..9e133fb
 --- /dev/null
 +++ b/riscv/insns/xc_pmul_h.h
 @@ -0,0 +1,23 @@
@@ -1135,7 +1581,7 @@ index 0000000..f7202a7
 +
 diff --git a/riscv/insns/xc_pmul_l.h b/riscv/insns/xc_pmul_l.h
 new file mode 100644
-index 0000000..9d88f4b
+index 0000000..1acbecb
 --- /dev/null
 +++ b/riscv/insns/xc_pmul_l.h
 @@ -0,0 +1,23 @@
@@ -1164,7 +1610,7 @@ index 0000000..9d88f4b
 +
 diff --git a/riscv/insns/xc_pror.h b/riscv/insns/xc_pror.h
 new file mode 100644
-index 0000000..c783fa4
+index 0000000..8602a2f
 --- /dev/null
 +++ b/riscv/insns/xc_pror.h
 @@ -0,0 +1,24 @@
@@ -1194,7 +1640,7 @@ index 0000000..c783fa4
 +
 diff --git a/riscv/insns/xc_pror_i.h b/riscv/insns/xc_pror_i.h
 new file mode 100644
-index 0000000..30a5b49
+index 0000000..f60190b
 --- /dev/null
 +++ b/riscv/insns/xc_pror_i.h
 @@ -0,0 +1,26 @@
@@ -1226,7 +1672,7 @@ index 0000000..30a5b49
 +
 diff --git a/riscv/insns/xc_psll.h b/riscv/insns/xc_psll.h
 new file mode 100644
-index 0000000..c273cba
+index 0000000..48f9e2f
 --- /dev/null
 +++ b/riscv/insns/xc_psll.h
 @@ -0,0 +1,23 @@
@@ -1255,7 +1701,7 @@ index 0000000..c273cba
 +
 diff --git a/riscv/insns/xc_psll_i.h b/riscv/insns/xc_psll_i.h
 new file mode 100644
-index 0000000..19ceddf
+index 0000000..d0320aa
 --- /dev/null
 +++ b/riscv/insns/xc_psll_i.h
 @@ -0,0 +1,23 @@
@@ -1284,7 +1730,7 @@ index 0000000..19ceddf
 +
 diff --git a/riscv/insns/xc_psrl.h b/riscv/insns/xc_psrl.h
 new file mode 100644
-index 0000000..61665b4
+index 0000000..b87b8c2
 --- /dev/null
 +++ b/riscv/insns/xc_psrl.h
 @@ -0,0 +1,23 @@
@@ -1313,7 +1759,7 @@ index 0000000..61665b4
 +
 diff --git a/riscv/insns/xc_psrl_i.h b/riscv/insns/xc_psrl_i.h
 new file mode 100644
-index 0000000..b62adb6
+index 0000000..7fc003b
 --- /dev/null
 +++ b/riscv/insns/xc_psrl_i.h
 @@ -0,0 +1,27 @@
@@ -1346,7 +1792,7 @@ index 0000000..b62adb6
 +//    w,pack_width,insn.xcrd(),insn.xcrs1(), rhs, result, original);
 diff --git a/riscv/insns/xc_psub.h b/riscv/insns/xc_psub.h
 new file mode 100644
-index 0000000..99a8cea
+index 0000000..9f10433
 --- /dev/null
 +++ b/riscv/insns/xc_psub.h
 @@ -0,0 +1,23 @@
@@ -1800,24 +2246,24 @@ index 6bbaca1..e2d9b37 100644
    throw trap_illegal_instruction(0);
  }
 diff --git a/riscv/processor.h b/riscv/processor.h
-index 2b5003b..d281c7f 100644
+index 2b5003b..6f6b418 100644
 --- a/riscv/processor.h
 +++ b/riscv/processor.h
-@@ -239,6 +239,9 @@ struct state_t
-   reg_t stvec;
+@@ -240,6 +240,9 @@ struct state_t
    reg_t satp;
    reg_t scause;
-+
+ 
 +  // XCrypto CSR
 +  reg_t uxcrypto;
- 
++
    reg_t dpc;
    reg_t dscratch0, dscratch1;
+   dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 4ee64fa..4d36193 100644
+index 4ee64fa..3680abf 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -772,6 +772,63 @@ riscv_insn_priv = \
+@@ -772,6 +772,77 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -1878,10 +2324,24 @@ index 4ee64fa..4d36193 100644
 +    xc_sha512_s1\
 +    xc_sha512_s2\
 +    xc_sha512_s3\
++    mask_b2a \
++    mask_a2b \
++    mask_b_mask \
++    mask_b_unmask \
++    mask_b_remask \
++    mask_a_mask \
++    mask_a_unmask \
++    mask_a_remask \
++    mask_b_not \
++    mask_b_and \
++    mask_b_ior \
++    mask_b_xor \
++    mask_b_add \
++    mask_b_sub
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -784,6 +841,7 @@ riscv_insn_list = \
+@@ -784,6 +855,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
