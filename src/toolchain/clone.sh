@@ -51,7 +51,7 @@ if [ ! -d $DIR_NEWLIB ]; then
 fi
 
 cd $DIR_NEWLIB
-git checkout -B $BRANCH_NAME riscv-newlib-3.1.0
+git checkout -b $BRANCH_NAME
 cd -
 
 # ------ Proxy Kernel (PK) -------------------------------------------------
