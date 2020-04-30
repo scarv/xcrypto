@@ -160,7 +160,7 @@ index 9ecdcab0b6..b54731895f 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..b207da3a52 100644
+index 6c750a33b1..bae512e920 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -739,6 +739,154 @@
@@ -310,10 +310,10 @@ index 6c750a33b1..b207da3a52 100644
 +#define MASK_MASK_B_IOR  0xfe10f0ff
 +#define MATCH_MASK_B_XOR 0x200405b
 +#define MASK_MASK_B_XOR  0xfe10f0ff
-+#define MATCH_MASK_A_ADD 0x200005b
-+#define MASK_MASK_A_ADD  0xfe10f0ff
-+#define MATCH_MASK_A_SUB 0x200105b
-+#define MASK_MASK_A_SUB  0xfe10f0ff
++#define MATCH_MASK_B_ADD 0x200005b
++#define MASK_MASK_B_ADD  0xfe10f0ff
++#define MATCH_MASK_B_SUB 0x200105b
++#define MASK_MASK_B_SUB  0xfe10f0ff
 +
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
@@ -400,7 +400,7 @@ index 19f10c0e55..d231acf0a8 100644
  	  switch (*++d)
  	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..7fae2b4539 100644
+index e99febc823..8fe5cf3562 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -992,6 +992,82 @@ const struct riscv_opcode riscv_opcodes[] =
@@ -480,8 +480,8 @@ index e99febc823..7fae2b4539 100644
 +{      "mask.b.nand", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_NAND, MASK_MASK_B_NAND, match_opcode, 0},
 +{       "mask.b.ior", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_IOR, MASK_MASK_B_IOR, match_opcode, 0},
 +{       "mask.b.xor", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_XOR, MASK_MASK_B_XOR, match_opcode, 0},
-+{       "mask.a.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_A_ADD, MASK_MASK_A_ADD, match_opcode, 0},
-+{       "mask.a.sub", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_A_SUB, MASK_MASK_A_SUB, match_opcode, 0},
++{       "mask.b.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_ADD, MASK_MASK_B_ADD, match_opcode, 0},
++{       "mask.b.sub", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_SUB, MASK_MASK_B_SUB, match_opcode, 0},
 +
  /* Terminate the list.  */
  {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
