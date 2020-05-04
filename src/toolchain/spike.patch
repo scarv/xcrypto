@@ -202,7 +202,7 @@ index 9e03676..96fc0ab 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..a9c92c8 100644
+index 3c4bf1c..ead98a6 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -40,6 +40,32 @@
@@ -238,7 +238,7 @@ index 3c4bf1c..a9c92c8 100644
  #define DCSR_XDEBUGVER      (3U<<30)
  #define DCSR_NDRESET        (1<<29)
  #define DCSR_FULLRESET      (1<<28)
-@@ -564,6 +590,151 @@
+@@ -564,6 +590,157 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -386,11 +386,17 @@ index 3c4bf1c..a9c92c8 100644
 +#define MASK_MASK_B_ADD  0xfe10f0ff
 +#define MATCH_MASK_B_SUB 0x200105b
 +#define MASK_MASK_B_SUB  0xfe10f0ff
++#define MATCH_MASK_B_SLLI 0x800805b
++#define MASK_MASK_B_SLLI  0xfc00f0ff
++#define MATCH_MASK_B_SRLI 0x800905b
++#define MASK_MASK_B_SRLI  0xfc00f0ff
++#define MATCH_MASK_B_RORI 0x800a05b
++#define MASK_MASK_B_RORI  0xfc00f0ff
 +
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1719,6 +1890,7 @@
+@@ -1719,6 +1896,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -398,7 +404,7 @@ index 3c4bf1c..a9c92c8 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2158,78 @@
+@@ -1986,6 +2164,81 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -473,11 +479,14 @@ index 3c4bf1c..a9c92c8 100644
 +DECLARE_INSN(mask_b_xor, MATCH_MASK_B_XOR, MASK_MASK_B_XOR)
 +DECLARE_INSN(mask_b_add, MATCH_MASK_B_ADD, MASK_MASK_B_ADD)
 +DECLARE_INSN(mask_b_sub, MATCH_MASK_B_SUB, MASK_MASK_B_SUB)
++DECLARE_INSN(mask_b_slli, MATCH_MASK_B_SLLI, MASK_MASK_B_SLLI)
++DECLARE_INSN(mask_b_srli, MATCH_MASK_B_SRLI, MASK_MASK_B_SRLI)
++DECLARE_INSN(mask_b_rori, MATCH_MASK_B_RORI, MASK_MASK_B_RORI)
 +
  DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
  DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
  DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2981,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+@@ -2737,6 +2990,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -653,6 +662,68 @@ index 0000000..51dac2d
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_rori.h b/riscv/insns/mask_b_rori.h
+new file mode 100644
+index 0000000..0c2902f
+--- /dev/null
++++ b/riscv/insns/mask_b_rori.h
+@@ -0,0 +1,15 @@
++uint32_t r_0, r_1, x_0, x_1;
++int      sh;
++uint32_t m;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++sh  = insn.shamt();
++m   = rand();
++r_0 = ((x_0 >> sh) | (x_0 << (32-sh))) ^ m;
++r_1 = ((x_1 >> sh) | (x_1 << (32-sh))) ^ m;
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
++
+diff --git a/riscv/insns/mask_b_slli.h b/riscv/insns/mask_b_slli.h
+new file mode 100644
+index 0000000..b3f1560
+--- /dev/null
++++ b/riscv/insns/mask_b_slli.h
+@@ -0,0 +1,14 @@
++uint32_t r_0, r_1, x_0, x_1;
++int      sh;
++uint32_t m;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++sh  = insn.shamt();
++m   = rand();
++r_0 = (x_0 << sh) ^ m;
++r_1 = (x_1 << sh) ^ m;
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_b_srli.h b/riscv/insns/mask_b_srli.h
+new file mode 100644
+index 0000000..d963def
+--- /dev/null
++++ b/riscv/insns/mask_b_srli.h
+@@ -0,0 +1,15 @@
++uint32_t r_0, r_1, x_0, x_1;
++int      sh;
++uint32_t m;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++sh  = insn.shamt();
++m   = rand();
++r_0 = (x_0 >> sh) ^ m;
++r_1 = (x_1 >> sh) ^ m;
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
++
 diff --git a/riscv/insns/mask_b_sub.h b/riscv/insns/mask_b_sub.h
 new file mode 100644
 index 0000000..88681ea
@@ -2260,10 +2331,10 @@ index 2b5003b..6f6b418 100644
    reg_t dscratch0, dscratch1;
    dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 4ee64fa..3680abf 100644
+index 4ee64fa..cccc1f8 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -772,6 +772,77 @@ riscv_insn_priv = \
+@@ -772,6 +772,80 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -2337,11 +2408,14 @@ index 4ee64fa..3680abf 100644
 +    mask_b_ior \
 +    mask_b_xor \
 +    mask_b_add \
-+    mask_b_sub
++    mask_b_sub \
++    mask_b_slli \
++    mask_b_srli \
++    mask_b_rori
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -784,6 +855,7 @@ riscv_insn_list = \
+@@ -784,6 +858,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \

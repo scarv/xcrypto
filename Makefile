@@ -33,10 +33,8 @@ spotless :
 opcodes:
 	cat $(REPO_HOME)/extern/riscv-opcodes/opcodes \
         $(REPO_HOME)/extern/riscv-opcodes/opcodes-xcrypto \
-        $(REPO_HOME)/tools/opcodes-maskingise \
-	| python3 $(REPO_HOME)/bin/parse_opcodes.py -c > build/opcodes-all.h
+	| python3 $(REPO_HOME)/bin/parse_opcodes.py -check
 	cat $(REPO_HOME)/extern/riscv-opcodes/opcodes-xcrypto \
-        $(REPO_HOME)/tools/opcodes-maskingise \
 	| python3 $(REPO_HOME)/bin/parse_opcodes.py -c > build/opcodes-xcrypto.h
 
 # =============================================================================
