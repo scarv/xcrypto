@@ -408,7 +408,7 @@ index 19f10c0e55..d231acf0a8 100644
  	  switch (*++d)
  	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..c9affc0482 100644
+index e99febc823..215627efb3 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -992,6 +992,85 @@ const struct riscv_opcode riscv_opcodes[] =
@@ -490,9 +490,9 @@ index e99febc823..c9affc0482 100644
 +{       "mask.b.xor", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_XOR, MASK_MASK_B_XOR, match_opcode, 0},
 +{       "mask.b.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_ADD, MASK_MASK_B_ADD, match_opcode, 0},
 +{       "mask.b.sub", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_SUB, MASK_MASK_B_SUB, match_opcode, 0},
-+{      "mask.b.slli", 0, INSN_CLASS_XCRYPTO, "(XN,XM),(XO,XP),>", MATCH_MASK_B_SLLI, MASK_MASK_B_SLLI, match_opcode, 0},
-+{      "mask.b.srli", 0, INSN_CLASS_XCRYPTO, "(XN,XM),(XO,XP),>", MATCH_MASK_B_SRLI, MASK_MASK_B_SRLI, match_opcode, 0},
-+{      "mask.b.rori", 0, INSN_CLASS_XCRYPTO, "(XN,XM),(XO,XP),>", MATCH_MASK_B_RORI, MASK_MASK_B_RORI, match_opcode, 0},
++{      "mask.b.slli", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),>", MATCH_MASK_B_SLLI, MASK_MASK_B_SLLI, match_opcode, 0},
++{      "mask.b.srli", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),>", MATCH_MASK_B_SRLI, MASK_MASK_B_SRLI, match_opcode, 0},
++{      "mask.b.rori", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),>", MATCH_MASK_B_RORI, MASK_MASK_B_RORI, match_opcode, 0},
 +
  /* Terminate the list.  */
  {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
