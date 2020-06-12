@@ -214,17 +214,24 @@ $
 \sigma( R_i )
 $
 denotes the execution stage\footnote{%
-A precise definition is inherently dependent on the micro-architecture, but
-it is reasonable to consider either
+A precise definition is inherently dependent on the micro-architecture, 
+but it is reasonable to consider either
 cycle          (for a non-pipelined case)
 or
 pipeline stage (for a     pipelined case)
 as representative.
 } some $i$-th micro-architectural resource $R_i$ (or logical group 
 thereof) exists or is applied in.
+A suitable choice of $R$ allows control of both 
+  fine-grained 
+(e.g., pipeline registers, per~\cite{SCARV:GMPP:20})
+and/or
+coarse-grained
+(e.g., elements of the memory hierarchy, thus subsuming proposals such as that of Wistoff et al.~\cite[Section 2.4]{SCARV:WSGBH:20}).
+
 $\SPR{ufenl}$
-acts a configuration register, each $i$-th bit in which controls $R_i$: in
-essence, 
+acts a configuration register, each $i$-th bit in which controls $R_i$: 
+in essence, 
 \[
 \INDEX{\SPR{ufenl}}{i} ~=~ \left\{\begin{array}{ll@{\;}r}
                                   0 & \mbox{$R_i$ is} & \mbox{not flushed in execution stage $\sigma( R_i )$} \\
