@@ -14,6 +14,8 @@ LABEL maintainer="SCARV project <info@scarv.org>" url="https://github.com/scarv/
 
 # -----------------------------------------------------------------------------
 
+ENV DEBIAN_FRONTEND="noninteractive"
+
 RUN apt-get --assume-yes --quiet update \
  && apt-get --assume-yes --quiet install apt-utils gettext-base gosu sudo
 
