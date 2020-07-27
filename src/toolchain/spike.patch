@@ -1,5 +1,5 @@
 diff --git a/riscv/arith.h b/riscv/arith.h
-index b4370cb..09f2ce3 100644
+index b4370cb..62caf0e 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
 @@ -5,6 +5,7 @@
@@ -10,7 +10,7 @@ index b4370cb..09f2ce3 100644
  
  inline uint64_t mulhu(uint64_t a, uint64_t b)
  {
-@@ -108,4 +109,171 @@ T sat_subu(T x, T y, bool &sat)
+@@ -108,4 +109,172 @@ T sat_subu(T x, T y, bool &sat)
    return res;
  }
  
@@ -181,12 +181,13 @@ index b4370cb..09f2ce3 100644
 +}
 +
 +
++
  #endif
 diff --git a/riscv/decode.h b/riscv/decode.h
-index 9e03676..96fc0ab 100644
+index 425a68e..6dd6b44 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
-@@ -96,6 +96,14 @@ public:
+@@ -92,6 +92,14 @@ public:
    uint64_t rm() { return x(12, 3); }
    uint64_t csr() { return x(20, 12); }
  
@@ -202,10 +203,10 @@ index 9e03676..96fc0ab 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..299f839 100644
+index ec16c0f..c6397eb 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
-@@ -40,6 +40,32 @@
+@@ -41,6 +41,33 @@
  #define SSTATUS_UXL         0x0000000300000000
  #define SSTATUS64_SD        0x8000000000000000
  
@@ -235,10 +236,11 @@ index 3c4bf1c..299f839 100644
 +                             UXCRYPTO_SHA2   | \
 +                             UXCRYPTO_AES    )
 +
- #define DCSR_XDEBUGVER      (3U<<30)
- #define DCSR_NDRESET        (1<<29)
- #define DCSR_FULLRESET      (1<<28)
-@@ -564,6 +590,157 @@
++
+ #define USTATUS_UIE         0x00000001
+ #define USTATUS_UPIE        0x00000010
+ 
+@@ -621,6 +648,157 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -396,7 +398,7 @@ index 3c4bf1c..299f839 100644
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1719,6 +1896,7 @@
+@@ -1880,6 +2058,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -404,7 +406,7 @@ index 3c4bf1c..299f839 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2164,81 @@
+@@ -2165,6 +2344,81 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -483,10 +485,10 @@ index 3c4bf1c..299f839 100644
 +DECLARE_INSN(mask_b_srli, MATCH_MASK_B_SRLI, MASK_MASK_B_SRLI)
 +DECLARE_INSN(mask_b_rori, MATCH_MASK_B_RORI, MASK_MASK_B_RORI)
 +
- DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
- DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
- DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2990,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+ DECLARE_INSN(slli_rv32, MATCH_SLLI_RV32, MASK_SLLI_RV32)
+ DECLARE_INSN(srli_rv32, MATCH_SRLI_RV32, MASK_SRLI_RV32)
+ DECLARE_INSN(srai_rv32, MATCH_SRAI_RV32, MASK_SRAI_RV32)
+@@ -2991,6 +3245,7 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -2291,12 +2293,12 @@ index 0000000..c5141dc
 +MMU.store_uint32(RS1 + (RS2 << 2), RS3);
 +
 diff --git a/riscv/processor.cc b/riscv/processor.cc
-index 6bbaca1..e2d9b37 100644
+index 4f42cc5..da18f4b 100644
 --- a/riscv/processor.cc
 +++ b/riscv/processor.cc
-@@ -683,6 +683,11 @@ void processor_t::set_csr(int which, reg_t val)
-     case CSR_VXRM:
-       VU.vxrm = val;
+@@ -921,6 +921,11 @@ void processor_t::set_csr(int which, reg_t val)
+       dirty_vs_state;
+       VU.vxrm = val & 0x3ul;
        break;
 +    case CSR_UXCRYPTO:
 +      // if(!supports_extension('crypto')) break;
@@ -2306,10 +2308,10 @@ index 6bbaca1..e2d9b37 100644
    }
  }
  
-@@ -877,6 +882,9 @@ reg_t processor_t::get_csr(int which)
+@@ -1145,6 +1150,9 @@ reg_t processor_t::get_csr(int which)
        if (!supports_extension('V'))
          break;
-       return VU.vtype;
+       return VU.vlenb;
 +    case CSR_UXCRYPTO:
 +      // if(!supports_extension('crypto')) break;
 +      return state.uxcrypto;
@@ -2317,10 +2319,10 @@ index 6bbaca1..e2d9b37 100644
    throw trap_illegal_instruction(0);
  }
 diff --git a/riscv/processor.h b/riscv/processor.h
-index 2b5003b..6f6b418 100644
+index 676a52d..cc8e77f 100644
 --- a/riscv/processor.h
 +++ b/riscv/processor.h
-@@ -240,6 +240,9 @@ struct state_t
+@@ -185,6 +185,9 @@ struct state_t
    reg_t satp;
    reg_t scause;
  
@@ -2331,10 +2333,10 @@ index 2b5003b..6f6b418 100644
    reg_t dscratch0, dscratch1;
    dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 4ee64fa..cccc1f8 100644
+index f1fa5b3..06bbb32 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -772,6 +772,80 @@ riscv_insn_priv = \
+@@ -822,6 +822,81 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -2412,10 +2414,11 @@ index 4ee64fa..cccc1f8 100644
 +    mask_b_slli \
 +    mask_b_srli \
 +    mask_b_rori
++
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -784,6 +858,7 @@ riscv_insn_list = \
+@@ -834,6 +909,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
