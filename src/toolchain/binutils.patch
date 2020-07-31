@@ -160,7 +160,7 @@ index 9ecdcab0b6..b54731895f 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..ce992eb011 100644
+index 6c750a33b1..ba0871e6c6 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -739,6 +739,170 @@
@@ -329,7 +329,7 @@ index 6c750a33b1..ce992eb011 100644
 +#define MATCH_MASK_F_MUL 0x600005b
 +#define MASK_MASK_F_MUL  0xfe10f0ff
 +#define MATCH_MASK_F_AFF 0x600205b
-+#define MASK_MASK_F_AFF  0xfff0f0ff
++#define MASK_MASK_F_AFF 0xfe10f0ff
 +
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
@@ -416,7 +416,7 @@ index 19f10c0e55..d231acf0a8 100644
  	  switch (*++d)
  	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..73e71de3c6 100644
+index e99febc823..9feb80b4d2 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
 @@ -992,6 +992,89 @@ const struct riscv_opcode riscv_opcodes[] =
@@ -504,7 +504,7 @@ index e99febc823..73e71de3c6 100644
 +{       "mask.a.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_A_ADD, MASK_MASK_A_ADD, match_opcode, 0},
 +{       "mask.a.sub", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_A_SUB, MASK_MASK_A_SUB, match_opcode, 0},
 +{       "mask.f.mul", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_F_MUL, MASK_MASK_F_MUL, match_opcode, 0},
-+{       "mask.f.aff", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_F_AFF, MASK_MASK_F_AFF, match_opcode, 0},
++{       "mask.f.aff", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_F_AFF, MASK_MASK_F_AFF, match_opcode, 0},
 +
  /* Terminate the list.  */
  {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
