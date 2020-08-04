@@ -17,7 +17,7 @@ ifneq ("${REPO_DIRTY}","")
 endif
 
 ${BUILD}/spec.ise     : ${REPO_HOME}/extern/riscv-opcodes/opcodes-xcrypto
-	@cat ${^} | python3 ${REPO_HOME}/extern/riscv-opcodes/parse-opcodes -xcrypto-tex > ${@}
+	@cat ${^} | python3 ${REPO_HOME}/extern/riscv-opcodes/parse_opcodes -xcrypto-tex > ${@}
 
 ${BUILD}/spec.pdf     : ./spec.tex $(wildcard ./tex/*) ${IMAGE_TARGETS} ${BUILD}/spec.version ${BUILD}/spec.ise ${BUILD}/spec.commit
 	@TEXINPUTS="${TEXINPUTS}:.:${BUILD}" pdflatex  -output-directory $(dir ${@}) $(basename ${<})
