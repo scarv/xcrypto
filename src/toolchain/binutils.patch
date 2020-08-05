@@ -160,10 +160,10 @@ index 9ecdcab0b6..b54731895f 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..ba0871e6c6 100644
+index 6c750a33b1..ab8d07893c 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
-@@ -739,6 +739,170 @@
+@@ -739,6 +739,166 @@
  #define MASK_C_LDSP  0xe003
  #define MATCH_C_SDSP 0xe002
  #define MASK_C_SDSP  0xe003
@@ -285,56 +285,52 @@ index 6c750a33b1..ba0871e6c6 100644
 +#define MASK_XC_SHA512_S3 0xfff0707f
 +
 +#define MATCH_MASK_B2A 0x5b
-+#define MASK_MASK_B2A  0xfff0f0ff
++#define MASK_MASK_B2A 0xfff0f0ff
 +#define MATCH_MASK_A2B 0x805b
-+#define MASK_MASK_A2B  0xfff0f0ff
++#define MASK_MASK_A2B 0xfff0f0ff
 +#define MATCH_MASK_B_MASK 0x20005b
-+#define MASK_MASK_B_MASK  0xfff070ff
++#define MASK_MASK_B_MASK 0xfff070ff
 +#define MATCH_MASK_B_UNMASK 0x30005b
-+#define MASK_MASK_B_UNMASK  0xfff0f07f
++#define MASK_MASK_B_UNMASK 0xfff0f07f
 +#define MATCH_MASK_B_REMASK 0x30805b
-+#define MASK_MASK_B_REMASK  0xfff0f0ff
++#define MASK_MASK_B_REMASK 0xfff0f0ff
 +#define MATCH_MASK_A_MASK 0x40005b
-+#define MASK_MASK_A_MASK  0xfff070ff
++#define MASK_MASK_A_MASK 0xfff070ff
 +#define MATCH_MASK_A_UNMASK 0x50005b
-+#define MASK_MASK_A_UNMASK  0xfff0f07f
++#define MASK_MASK_A_UNMASK 0xfff0f07f
 +#define MATCH_MASK_A_REMASK 0x50805b
-+#define MASK_MASK_A_REMASK  0xfff0f0ff
-+#define MATCH_MASK_B_NOT 0x200205b
-+#define MASK_MASK_B_NOT  0xfff0f0ff
-+#define MATCH_MASK_B_AND 0x200705b
-+#define MASK_MASK_B_AND  0xfe10f0ff
-+#define MATCH_MASK_B_NAND 0x200305b
-+#define MASK_MASK_B_NAND  0xfe10f0ff
-+#define MATCH_MASK_B_IOR 0x200605b
-+#define MASK_MASK_B_IOR  0xfe10f0ff
-+#define MATCH_MASK_B_XOR 0x200405b
-+#define MASK_MASK_B_XOR  0xfe10f0ff
-+#define MATCH_MASK_B_ADD 0x200005b
-+#define MASK_MASK_B_ADD  0xfe10f0ff
-+#define MATCH_MASK_B_SUB 0x200105b
-+#define MASK_MASK_B_SUB  0xfe10f0ff
-+#define MATCH_MASK_B_SUB 0x200105b
-+#define MASK_MASK_B_SUB  0xfe10f0ff
-+#define MATCH_MASK_B_SLLI 0x800005b
-+#define MASK_MASK_B_SLLI  0xfc00f0ff
-+#define MATCH_MASK_B_SRLI 0x800105b
-+#define MASK_MASK_B_SRLI  0xfc00f0ff
-+#define MATCH_MASK_B_RORI 0x800205b
-+#define MASK_MASK_B_RORI  0xfc00f0ff
-+#define MATCH_MASK_A_ADD 0xa00005b
++#define MASK_MASK_A_REMASK 0xfff0f0ff
++#define MATCH_MASK_B_NOT 0x8000205b
++#define MASK_MASK_B_NOT 0xfff0f0ff
++#define MATCH_MASK_B_AND 0x8000705b
++#define MASK_MASK_B_AND 0xfe10f0ff
++#define MATCH_MASK_B_IOR 0x8000605b
++#define MASK_MASK_B_IOR 0xfe10f0ff
++#define MATCH_MASK_B_XOR 0x8000405b
++#define MASK_MASK_B_XOR 0xfe10f0ff
++#define MATCH_MASK_B_ADD 0x8000005b
++#define MASK_MASK_B_ADD 0xfe10f0ff
++#define MATCH_MASK_B_SUB 0x8000105b
++#define MASK_MASK_B_SUB 0xfe10f0ff
++#define MATCH_MASK_B_SLLI 0xc000005b
++#define MASK_MASK_B_SLLI 0xfc00f0ff
++#define MATCH_MASK_B_SRLI 0xc000105b
++#define MASK_MASK_B_SRLI 0xfc00f0ff
++#define MATCH_MASK_B_RORI 0xc000205b
++#define MASK_MASK_B_RORI 0xfc00f0ff
++#define MATCH_MASK_A_ADD 0x4000005b
 +#define MASK_MASK_A_ADD 0xfe10f0ff
-+#define MATCH_MASK_A_SUB 0xa00105b
++#define MATCH_MASK_A_SUB 0x4000105b
 +#define MASK_MASK_A_SUB 0xfe10f0ff
-+#define MATCH_MASK_F_MUL 0x600005b
-+#define MASK_MASK_F_MUL  0xfe10f0ff
-+#define MATCH_MASK_F_AFF 0x600205b
++#define MATCH_MASK_F_MUL 0xe000005b
++#define MASK_MASK_F_MUL 0xfe10f0ff
++#define MATCH_MASK_F_AFF 0xe000205b
 +#define MASK_MASK_F_AFF 0xfe10f0ff
 +
  #define MATCH_CUSTOM0 0xb
  #define MASK_CUSTOM0  0x707f
  #define MATCH_CUSTOM0_RS1 0x200b
-@@ -798,6 +962,7 @@
+@@ -798,6 +958,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -342,7 +338,7 @@ index 6c750a33b1..ba0871e6c6 100644
  #define CSR_CYCLE 0xc00
  #define CSR_TIME 0xc01
  #define CSR_INSTRET 0xc02
-@@ -1445,6 +1610,7 @@ DECLARE_CSR(uip, CSR_UIP)
+@@ -1445,6 +1606,7 @@ DECLARE_CSR(uip, CSR_UIP)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -416,10 +412,10 @@ index 19f10c0e55..d231acf0a8 100644
  	  switch (*++d)
  	    {
 diff --git a/opcodes/riscv-opc.c b/opcodes/riscv-opc.c
-index e99febc823..9feb80b4d2 100644
+index e99febc823..1889f8153c 100644
 --- a/opcodes/riscv-opc.c
 +++ b/opcodes/riscv-opc.c
-@@ -992,6 +992,89 @@ const struct riscv_opcode riscv_opcodes[] =
+@@ -992,6 +992,88 @@ const struct riscv_opcode riscv_opcodes[] =
  {"sfence.vma", 0, INSN_CLASS_I,   "s,t",  MATCH_SFENCE_VMA, MASK_SFENCE_VMA, match_opcode, 0 },
  {"wfi",        0, INSN_CLASS_I,   "",     MATCH_WFI, MASK_WFI, match_opcode, 0 },
  
@@ -493,7 +489,6 @@ index e99febc823..9feb80b4d2 100644
 +{    "mask.a.remask", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_A_REMASK, MASK_MASK_A_REMASK, match_opcode, 0},
 +{       "mask.b.not", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP)", MATCH_MASK_B_NOT, MASK_MASK_B_NOT, match_opcode, 0},
 +{       "mask.b.and", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_AND, MASK_MASK_B_AND, match_opcode, 0},
-+{      "mask.b.nand", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_NAND, MASK_MASK_B_NAND, match_opcode, 0},
 +{       "mask.b.ior", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_IOR, MASK_MASK_B_IOR, match_opcode, 0},
 +{       "mask.b.xor", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_XOR, MASK_MASK_B_XOR, match_opcode, 0},
 +{       "mask.b.add", 0, INSN_CLASS_XCRYPTO, "(XM,XN),(XO,XP),(XQ,XR)", MATCH_MASK_B_ADD, MASK_MASK_B_ADD, match_opcode, 0},
