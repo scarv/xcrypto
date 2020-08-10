@@ -26,14 +26,17 @@
 
 \begin{figure}[p]
 \begin{center}
-\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\begin{bytefield}[bitwidth={1.4em},bitheight={12.0ex},endianness=big]{32}
 \bitheader{0-31}               
 \\
-  \bitbox{19}{\color{black}    \rule{\width}{\height}}
+  \bitbox{16}{\color{black}    \rule{\width}{\height}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{ALZETTE}  $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{CHACHA20} $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SM4}      $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA3}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA2}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{AES }     $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{MASK}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{LEAK}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{MP  }     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{PACK}_{16}$}}
@@ -51,7 +54,7 @@
 
 \begin{figure}[p]
 \begin{center}
-\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\begin{bytefield}[bitwidth={1.4em},bitheight={12.0ex},endianness=big]{32}
 \bitheader{0-31}               
 \\
 & \bitbox{16}{\color{black}    \rule{\width}{\height}}
@@ -65,7 +68,7 @@
 
 \begin{figure}[p]
 \begin{center}
-\begin{bytefield}[bitwidth={1.4em},bitheight={8.0ex},endianness=big]{32}
+\begin{bytefield}[bitwidth={1.4em},bitheight={12.0ex},endianness=big]{32}
 \bitheader{0-31}               
 \\
 & \bitbox{32}{\color{lightgray}\rule{\width}{\height}}
@@ -83,10 +86,13 @@
 \hline
 Field            & Index           & Access & Description                                                            \\ 
 \hline
-$\ID{SM4}      $ & $           12$ & R      & Is the SM4             class of instructions                supported? \\
-$\ID{SHA3}     $ & $           11$ & R      & Is the SHA3            class of instructions                supported? \\
-$\ID{SHA2}     $ & $           10$ & R      & Is the SHA2            class of instructions                supported? \\
-$\ID{AES }     $ & $            9$ & R      & Is the AES             class of instructions                supported? \\
+$\ID{ALZETTE}  $ & $           15$ & R      & Is the Alzette         class of instructions                supported? \\
+$\ID{CHACHA20} $ & $           14$ & R      & Is the ChaCha20        class of instructions                supported? \\
+$\ID{SM4}      $ & $           13$ & R      & Is the SM4             class of instructions                supported? \\
+$\ID{SHA3}     $ & $           12$ & R      & Is the SHA3            class of instructions                supported? \\
+$\ID{SHA2}     $ & $           11$ & R      & Is the SHA2            class of instructions                supported? \\
+$\ID{AES }     $ & $           10$ & R      & Is the AES             class of instructions                supported? \\
+$\ID{MASK}     $ & $            9$ & R      & Is the masking         class of instructions                supported? \\
 $\ID{LEAK}     $ & $            8$ & R      & Is the leakage         class of instructions                supported? \\
 $\ID{MP  }     $ & $            7$ & R      & Is the multi-precision class of instructions                supported? \\
 $\ID{PACK}_{16}$ & $            6$ & R      & Is the packed          class of instructions (for $w = 16$) supported? \\
