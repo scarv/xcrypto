@@ -1,5 +1,5 @@
 diff --git a/riscv/arith.h b/riscv/arith.h
-index b4370cb..4488265 100644
+index b4370cb..9923bb3 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
 @@ -5,6 +5,7 @@
@@ -10,44 +10,250 @@ index b4370cb..4488265 100644
  
  inline uint64_t mulhu(uint64_t a, uint64_t b)
  {
-@@ -108,4 +109,334 @@ T sat_subu(T x, T y, bool &sat)
+@@ -108,4 +109,374 @@ T sat_subu(T x, T y, bool &sat)
    return res;
  }
  
 +// ============================================================================
-+// from model -> ise.h
++// .h from model
 +
-+void Bool2Arith( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
-+void Arith2Bool( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++void BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
++void BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++void BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++void BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++
++void BoolSLL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++void BoolSRL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++void BoolROR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++
++// ----------------------------------------------------------------------------
++
++extern void mask_b2a     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++extern void mask_a2b     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
 +  
-+void  BoolMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
-+void  BoolUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
-+void  BoolRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++extern void mask_b_mask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
++extern void mask_b_unmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
++extern void mask_b_remask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
 +
-+void ArithMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
-+void ArithUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
-+void ArithRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
++extern void mask_a_mask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 );
++extern void mask_a_unmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 );
++extern void mask_a_remask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 );
 +
-+void  BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
-+void  BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void  BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void  BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_b_not   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
++extern void mask_b_and   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_b_ior   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_b_xor   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
-+void  BoolLSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
-+void  BoolRSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
-+void  BoolRRT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void mask_b_sll   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void mask_b_srl   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void mask_b_ror   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
 +
-+void  BoolAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void  BoolSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+  
-+void ArithAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void ArithSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_b_add   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_b_sub   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
-+void FieldMul( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void FieldAff( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_a_add   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_a_sub   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++
++extern void mask_f_mul   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void mask_f_aff   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
 +// ============================================================================
-+// from model -> ise.c
++// .c from model
++
++inline void  BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
++  *r_0 =  ( x_0 );
++  *r_1 = ~( x_1 ); 
++}
++
++inline void  BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 & y_1 ) ^ ( x_0 | ~y_0 );
++  *r_1 = ( x_1 & y_1 ) ^ ( x_1 | ~y_0 );
++}
++
++inline void  BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 | y_1 ) ^ ( x_0 &  y_0 );
++  *r_1 = ( x_1 & y_1 ) ^ ( x_1 |  y_0 );
++}
++
++inline void  BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = ( x_0 ^ ( x_1 ^ y_0 ) );
++  *r_1 = (       (       y_1 ) );
++}
++
++inline void  BoolSLL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 << i ) ^ m;
++  *r_1 = ( x_1 << i ) ^ m;
++}
++
++inline void  BoolSRL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  uint32_t m = rand();
++
++  *r_0 = ( x_0 >> i ) ^ m;
++  *r_1 = ( x_1 >> i ) ^ m;
++}
++
++inline void  BoolROR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  *r_0 = ( ( x_0 >> i ) | ( x_0 << ( ( 8 * sizeof( uint32_t ) ) - i ) ) );
++  *r_1 = ( ( x_1 >> i ) | ( x_1 << ( ( 8 * sizeof( uint32_t ) ) - i ) ) );
++}
++
++// ============================================================================
++
++inline void mask_b2a     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t x; 
++
++  mask_b_unmask( &x, x_0, x_1 ); mask_a_mask( r_0, r_1, x );
++}
++
++inline void mask_a2b     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t x; 
++
++  mask_a_unmask( &x, x_0, x_1 ); mask_b_mask( r_0, r_1, x );
++}
++  
++inline void mask_b_mask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
++  uint32_t m = rand(); 
++
++  *r_0 = ( x   ^ m   ); 
++  *r_1 = (       m   );
++}
++
++inline void mask_b_unmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
++  *r   = ( x_0 ^ x_1 );
++}
++
++inline void mask_b_remask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t m = rand(); 
++
++  *r_0 = ( x_0 ^ m   ); 
++  *r_1 = ( x_1 ^ m   );
++}
++
++inline void mask_a_mask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
++  uint32_t m = rand(); 
++
++  *r_0 = ( x   + m   ); 
++  *r_1 = (       m   );
++}
++
++inline void mask_a_unmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
++  *r   = ( x_0 - x_1 );
++}
++
++inline void mask_a_remask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
++  uint32_t m = rand(); 
++
++  *r_0 = ( x_0 + m   ); 
++  *r_1 = ( x_1 + m   );
++}
++
++// ----------------------------------------------------------------------------
++
++inline void mask_b_not   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
++  BoolNOT( r_0, r_1, x_0, x_1 );
++}
++
++inline void mask_b_and   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  BoolAND( r_0, r_1, x_0, x_1, y_0, y_1 );
++}
++
++inline void mask_b_ior   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  BoolIOR( r_0, r_1, x_0, x_1, y_0, y_1 );
++}
++
++inline void mask_b_xor   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  BoolXOR( r_0, r_1, x_0, x_1, y_0, y_1 );
++}
++
++inline void mask_b_sll   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  BoolSLL( r_0, r_1, x_0, x_1, i );
++}
++
++inline void mask_b_srl   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  BoolSRL( r_0, r_1, x_0, x_1, i );
++}
++
++inline void mask_b_ror   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
++  BoolROR( r_0, r_1, x_0, x_1, i );
++}
++
++inline void mask_b_add   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1;
++
++    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
++    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
++
++  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
++
++  for( int i = 1; i <= ( n - 1 ); i++ ) {
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolSLL( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
++    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
++  }
++
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1        );
++    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
++
++  *r_0 = z_0;
++  *r_1 = z_1;
++}
++
++inline void mask_b_sub   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1;
++
++    BoolNOT( &y_0, &y_1, y_0, y_1           );
++    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
++    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
++    BoolAND( &u_0, &u_1, p_0, p_1,   1,   0 );
++    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
++
++  for( int i = 1; i <= ( n - 1 ); i++ ) {
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolSLL( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
++    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
++  }
++
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
++    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
++    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
++
++    BoolSLL( &h_0, &h_1, g_0, g_1, 1        );
++    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
++    BoolXOR( &z_0, &z_1, z_0, z_1,   1,   0 );
++
++  *r_0 = z_0;
++  *r_1 = z_1;
++}
++
++// ----------------------------------------------------------------------------
++
++inline void mask_a_add   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = x_0 + y_0;
++  *r_1 = x_1 + y_1;
++}
++
++inline void mask_a_sub   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  *r_0 = x_0 - y_0;
++  *r_1 = x_1 - y_1;
++}
++
++// ----------------------------------------------------------------------------
 +
 +inline uint32_t gf256_mul_x4(uint32_t a, uint32_t b)
 +{
@@ -143,190 +349,21 @@ index b4370cb..4488265 100644
 +  return result;
 +}
 +
-+inline uint32_t gf256_atr_x4(uint32_t a, uint32_t b)
++inline uint32_t gf256_atr_x4(uint32_t a, uint64_t m)
 +{
-+  uint32_t word, one = 1, result = 0;
++  uint32_t one = 0x01010101, col;
++  uint32_t res=0;
 +  int i;
 +  
-+  for (i = 7; i >= 0; i--) {
-+    word = 0;
-+    // fill a byte with the value of its i-th bit
-+    word |= (b & (one << (   i))) ? 0x000000FF : 0;
-+    word |= (b & (one << ( 8+i))) ? 0x0000FF00 : 0;
-+    word |= (b & (one << (16+i))) ? 0x00FF0000 : 0;
-+    word |= (b & (one << (24+i))) ? 0xFF000000 : 0;
-+    // printf("a = %08X, word = %08X\n", a, word);
-+    result ^= (word & a);
-+    // left-rotate each byte of operand 'a' by 1 bit
-+    a = ((a & 0x7F7F7F7F) << 1) | ((a & 0x80808080) >> 7);
-+  }
-+  
-+  return result;
-+}
-+
-+// ----------------------------------------------------------------------------
-+
-+inline void Bool2Arith( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t x; 
-+
-+  BoolUnmask( &x, x_0, x_1 ); ArithMask( r_0, r_1, x );
-+}
-+
-+inline void Arith2Bool( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t x; 
-+
-+  ArithUnmask( &x, x_0, x_1 ); BoolMask( r_0, r_1, x );
-+}
-+
-+inline void  BoolMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
-+  uint32_t m = rand(); 
-+
-+  *r_0 = ( x   ^ m   ); 
-+  *r_1 = (       m   );
-+}
-+
-+inline void  BoolUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
-+  *r   = ( x_0 ^ x_1 );
-+}
-+
-+inline void  BoolRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t m = rand(); 
-+
-+  *r_0 = ( x_0 ^ m   ); 
-+  *r_1 = ( x_1 ^ m   );
-+}
-+
-+inline void ArithMask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
-+  uint32_t m = rand(); 
-+
-+  *r_0 = ( x   + m   ); 
-+  *r_1 = (       m   );
-+}
-+
-+inline void ArithUnmask( uint32_t* r,                  uint32_t x_0, uint32_t x_1 ) {
-+  *r   = ( x_0 - x_1 );
-+}
-+
-+inline void ArithRemask( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t m = rand(); 
-+
-+  *r_0 = ( x_0 + m   ); 
-+  *r_1 = ( x_1 + m   );
-+}
-+
-+inline void  BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
-+  *r_0 =  ( x_0 );
-+  *r_1 = ~( x_1 ); 
-+}
-+
-+inline void  BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0 = ( x_0 & y_1 ) ^ ( x_0 | ~y_0 );
-+  *r_1 = ( x_1 & y_1 ) ^ ( x_1 | ~y_0 );
-+}
-+
-+inline void  BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0 = ( x_0 | y_1 ) ^ ( x_0 &  y_0 );
-+  *r_1 = ( x_1 & y_1 ) ^ ( x_1 |  y_0 );
-+}
-+
-+inline void  BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0 = ( x_0 ^ ( x_1 ^ y_0 ) );
-+  *r_1 = (       (       y_1 ) );
-+}
-+
-+inline void  BoolLSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
-+  uint32_t m = rand();
-+
-+  *r_0 = ( x_0 << i ) ^ m;
-+  *r_1 = ( x_1 << i ) ^ m;
-+}
-+
-+inline void  BoolRSH( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
-+  uint32_t m = rand();
-+
-+  *r_0 = ( x_0 >> i ) ^ m;
-+  *r_1 = ( x_1 >> i ) ^ m;
-+}
-+
-+inline void  BoolRRT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i ) {
-+  uint32_t m = rand();
-+
-+  *r_0 = ( ( x_0 >> i ) | ( x_0 << ( ( 8 * sizeof( uint32_t ) ) - i ) ) ) ^ m;
-+  *r_1 = ( ( x_1 >> i ) | ( x_1 << ( ( 8 * sizeof( uint32_t ) ) - i ) ) ) ^ m;
-+}
-+
-+inline void  BoolAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1;
-+
-+    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
-+    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
-+
-+  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
-+
-+  for( int i = 1; i <= ( n - 1 ); i++ ) {
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
-+    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
-+    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
-+
-+    BoolLSH( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
-+    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
++  for (i = 0; i < 8; i++) {
++    col  = ((m>>( 8*i)) & 0xFF);
++    res ^= (((a>>    i ) & one)*col) ;
 +  }
 +
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
-+    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
-+    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
-+
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1        );
-+    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
-+    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
-+
-+  *r_0 = z_0;
-+  *r_1 = z_1;
++  return res;
 +}
 +
-+inline void  BoolSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  uint32_t z_0, z_1, p_0, p_1, g_0, g_1, h_0, h_1, u_0, u_1, m;
-+
-+    BoolNOT( &y_0, &y_1, y_0, y_1           );
-+    BoolXOR( &p_0, &p_1, y_0, y_1, x_0, x_1 );
-+    BoolAND( &g_0, &g_1, x_0, x_1, y_0, y_1 );
-+    BoolAND( &u_0, &u_1, p_0, p_1,   1,   0 );
-+    BoolXOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
-+
-+  int n = ( int )( fmax( 1, ceil( log2( 8 * sizeof( uint32_t ) - 1 ) ) ) );
-+
-+  for( int i = 1; i <= ( n - 1 ); i++ ) {
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( i - 1 ) );
-+    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
-+    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
-+
-+    BoolLSH( &h_0, &h_1, p_0, p_1, 1 << ( i - 1 ) );
-+    BoolAND( &p_0, &p_1, p_0, p_1, h_0, h_1 );
-+  }
-+
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1 << ( n - 1 ) );
-+    BoolAND( &u_0, &u_1, p_0, p_1, h_0, h_1 );
-+    BoolIOR( &g_0, &g_1, g_0, g_1, u_0, u_1 );
-+    BoolLSH( &h_0, &h_1, g_0, g_1, 1        );
-+    BoolXOR( &z_0, &z_1, y_0, y_1, x_0, x_1 );
-+    BoolXOR( &z_0, &z_1, z_0, z_1, h_0, h_1 );
-+    BoolXOR( &z_0, &z_1, z_0, z_1,   1,   0 );
-+
-+  *r_0 = z_0;
-+  *r_1 = z_1;
-+}
-+
-+inline void ArithAdd( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0 = x_0 + y_0;
-+  *r_1 = x_1 + y_1;
-+}
-+
-+inline void ArithSub( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0 = x_0 - y_0;
-+  *r_1 = x_1 - y_1;
-+}
-+
-+inline void FieldMul( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++inline void mask_f_mul   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
 +  uint32_t m = rand();
 +
 +  *r_0  =     gf256_mul_x4( x_0, y_0 ) ;
@@ -337,9 +374,12 @@ index b4370cb..4488265 100644
 +              gf256_mul_x4( x_1, y_0 ) ;
 +}
 +
-+inline void FieldAff( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
-+  *r_0  =     gf256_atr_x4( x_0, y_0 ) ;
-+  *r_1  =     gf256_atr_x4( x_1, y_1 ) ;
++inline void mask_f_aff   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
++  uint64_t m = ( ( uint64_t )( y_0 ) <<  0 ) |
++               ( ( uint64_t )( y_1 ) << 32 ) ;
++
++  *r_0  =     gf256_atr_x4( x_0, m ) ;
++  *r_1  =     gf256_atr_x4( x_1, m ) ;
 +}
 +
 +// ============================================================================
@@ -673,7 +713,7 @@ index ec16c0f..db79e5d 100644
  DECLARE_CSR(utvec, CSR_UTVEC)
 diff --git a/riscv/insns/mask_a2b.h b/riscv/insns/mask_a2b.h
 new file mode 100644
-index 0000000..8919510
+index 0000000..af6b70b
 --- /dev/null
 +++ b/riscv/insns/mask_a2b.h
 @@ -0,0 +1,9 @@
@@ -682,13 +722,13 @@ index 0000000..8919510
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+Arith2Bool( &r_0, &r_1, x_0, x_1 );
++mask_a2b( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_a_add.h b/riscv/insns/mask_a_add.h
 new file mode 100644
-index 0000000..f6fb428
+index 0000000..7bbbd44
 --- /dev/null
 +++ b/riscv/insns/mask_a_add.h
 @@ -0,0 +1,11 @@
@@ -699,13 +739,13 @@ index 0000000..f6fb428
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ArithAdd( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_a_add( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_a_mask.h b/riscv/insns/mask_a_mask.h
 new file mode 100644
-index 0000000..79f0e51
+index 0000000..067781c
 --- /dev/null
 +++ b/riscv/insns/mask_a_mask.h
 @@ -0,0 +1,8 @@
@@ -713,13 +753,13 @@ index 0000000..79f0e51
 +
 +x = READ_REG( insn.rs1() );
 +
-+ArithMask( &r_0, &r_1, x );
++mask_a_mask( &r_0, &r_1, x );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_a_remask.h b/riscv/insns/mask_a_remask.h
 new file mode 100644
-index 0000000..3ddb6b0
+index 0000000..f2c6dbd
 --- /dev/null
 +++ b/riscv/insns/mask_a_remask.h
 @@ -0,0 +1,9 @@
@@ -728,13 +768,13 @@ index 0000000..3ddb6b0
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ArithRemask( &r_0, &r_1, x_0, x_1 );
++mask_a_remask( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_a_sub.h b/riscv/insns/mask_a_sub.h
 new file mode 100644
-index 0000000..d91a7ae
+index 0000000..35b97d2
 --- /dev/null
 +++ b/riscv/insns/mask_a_sub.h
 @@ -0,0 +1,11 @@
@@ -745,13 +785,13 @@ index 0000000..d91a7ae
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ArithSub( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_a_sub( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_a_unmask.h b/riscv/insns/mask_a_unmask.h
 new file mode 100644
-index 0000000..4d3dd9c
+index 0000000..863c464
 --- /dev/null
 +++ b/riscv/insns/mask_a_unmask.h
 @@ -0,0 +1,8 @@
@@ -760,12 +800,12 @@ index 0000000..4d3dd9c
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ArithUnmask( &r, x_0, x_1 );
++mask_a_unmask( &r, x_0, x_1 );
 +
 +WRITE_REG( insn.rd(), r );
 diff --git a/riscv/insns/mask_b2a.h b/riscv/insns/mask_b2a.h
 new file mode 100644
-index 0000000..5c068fb
+index 0000000..ca9c6f9
 --- /dev/null
 +++ b/riscv/insns/mask_b2a.h
 @@ -0,0 +1,9 @@
@@ -774,13 +814,13 @@ index 0000000..5c068fb
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+Bool2Arith( &r_0, &r_1, x_0, x_1 );
++mask_b2a( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_add.h b/riscv/insns/mask_b_add.h
 new file mode 100644
-index 0000000..59349aa
+index 0000000..a39227f
 --- /dev/null
 +++ b/riscv/insns/mask_b_add.h
 @@ -0,0 +1,11 @@
@@ -791,13 +831,13 @@ index 0000000..59349aa
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ BoolAdd( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_b_add( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_and.h b/riscv/insns/mask_b_and.h
 new file mode 100644
-index 0000000..be5a2c2
+index 0000000..85fafa4
 --- /dev/null
 +++ b/riscv/insns/mask_b_and.h
 @@ -0,0 +1,11 @@
@@ -808,13 +848,13 @@ index 0000000..be5a2c2
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ BoolAND( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_b_and( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_ior.h b/riscv/insns/mask_b_ior.h
 new file mode 100644
-index 0000000..bce45c1
+index 0000000..94d3c29
 --- /dev/null
 +++ b/riscv/insns/mask_b_ior.h
 @@ -0,0 +1,11 @@
@@ -825,13 +865,13 @@ index 0000000..bce45c1
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ BoolIOR( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_b_ior( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_mask.h b/riscv/insns/mask_b_mask.h
 new file mode 100644
-index 0000000..737cd46
+index 0000000..ce9bb6f
 --- /dev/null
 +++ b/riscv/insns/mask_b_mask.h
 @@ -0,0 +1,8 @@
@@ -839,13 +879,13 @@ index 0000000..737cd46
 +
 +x = READ_REG( insn.rs1() );
 +
-+ BoolMask( &r_0, &r_1, x );
++mask_b_mask( &r_0, &r_1, x );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_not.h b/riscv/insns/mask_b_not.h
 new file mode 100644
-index 0000000..5adedea
+index 0000000..10ed2ea
 --- /dev/null
 +++ b/riscv/insns/mask_b_not.h
 @@ -0,0 +1,9 @@
@@ -854,13 +894,13 @@ index 0000000..5adedea
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolNOT( &r_0, &r_1, x_0, x_1 );
++mask_b_not( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_remask.h b/riscv/insns/mask_b_remask.h
 new file mode 100644
-index 0000000..51dac2d
+index 0000000..232fd84
 --- /dev/null
 +++ b/riscv/insns/mask_b_remask.h
 @@ -0,0 +1,9 @@
@@ -869,13 +909,13 @@ index 0000000..51dac2d
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolRemask( &r_0, &r_1, x_0, x_1 );
++mask_b_remask( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_rori.h b/riscv/insns/mask_b_rori.h
 new file mode 100644
-index 0000000..e08c8b1
+index 0000000..ad78564
 --- /dev/null
 +++ b/riscv/insns/mask_b_rori.h
 @@ -0,0 +1,10 @@
@@ -885,13 +925,13 @@ index 0000000..e08c8b1
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolRRT( &r_0, &r_1, x_0, x_1, insn.shamt() );
++mask_b_ror( &r_0, &r_1, x_0, x_1, insn.shamt() );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_slli.h b/riscv/insns/mask_b_slli.h
 new file mode 100644
-index 0000000..9625be3
+index 0000000..05bb257
 --- /dev/null
 +++ b/riscv/insns/mask_b_slli.h
 @@ -0,0 +1,10 @@
@@ -901,13 +941,13 @@ index 0000000..9625be3
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolLSH( &r_0, &r_1, x_0, x_1, insn.shamt() );
++mask_b_sll( &r_0, &r_1, x_0, x_1, insn.shamt() );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_srli.h b/riscv/insns/mask_b_srli.h
 new file mode 100644
-index 0000000..fe9d940
+index 0000000..64e1e5d
 --- /dev/null
 +++ b/riscv/insns/mask_b_srli.h
 @@ -0,0 +1,10 @@
@@ -917,13 +957,13 @@ index 0000000..fe9d940
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolRSH( &r_0, &r_1, x_0, x_1, insn.shamt() );
++mask_b_srl( &r_0, &r_1, x_0, x_1, insn.shamt() );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_sub.h b/riscv/insns/mask_b_sub.h
 new file mode 100644
-index 0000000..1041fa0
+index 0000000..f8dd458
 --- /dev/null
 +++ b/riscv/insns/mask_b_sub.h
 @@ -0,0 +1,11 @@
@@ -934,13 +974,13 @@ index 0000000..1041fa0
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ BoolSub( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_b_sub( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_b_unmask.h b/riscv/insns/mask_b_unmask.h
 new file mode 100644
-index 0000000..5b59da0
+index 0000000..7391e2f
 --- /dev/null
 +++ b/riscv/insns/mask_b_unmask.h
 @@ -0,0 +1,8 @@
@@ -949,12 +989,12 @@ index 0000000..5b59da0
 +x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
 +x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
 +
-+ BoolUnmask( &r, x_0, x_1 );
++mask_b_unmask( &r, x_0, x_1 );
 +
 +WRITE_REG( insn.rd(), r );
 diff --git a/riscv/insns/mask_b_xor.h b/riscv/insns/mask_b_xor.h
 new file mode 100644
-index 0000000..a8e6eee
+index 0000000..4391eb2
 --- /dev/null
 +++ b/riscv/insns/mask_b_xor.h
 @@ -0,0 +1,11 @@
@@ -965,13 +1005,13 @@ index 0000000..a8e6eee
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+ BoolXOR( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_b_xor( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_f_aff.h b/riscv/insns/mask_f_aff.h
 new file mode 100644
-index 0000000..c0c95e3
+index 0000000..e337136
 --- /dev/null
 +++ b/riscv/insns/mask_f_aff.h
 @@ -0,0 +1,11 @@
@@ -982,13 +1022,13 @@ index 0000000..c0c95e3
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+FieldAff( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_f_aff( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
 diff --git a/riscv/insns/mask_f_mul.h b/riscv/insns/mask_f_mul.h
 new file mode 100644
-index 0000000..20981b2
+index 0000000..75e2036
 --- /dev/null
 +++ b/riscv/insns/mask_f_mul.h
 @@ -0,0 +1,11 @@
@@ -999,7 +1039,7 @@ index 0000000..20981b2
 +y_0 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x0 );
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
-+FieldMul( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++mask_f_mul( &r_0, &r_1, x_0, x_1, y_0, y_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
