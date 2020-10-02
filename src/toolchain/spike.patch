@@ -1,5 +1,5 @@
 diff --git a/riscv/arith.h b/riscv/arith.h
-index b4370cb..9923bb3 100644
+index b4370cb..44c9046 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
 @@ -5,6 +5,7 @@
@@ -10,7 +10,7 @@ index b4370cb..9923bb3 100644
  
  inline uint64_t mulhu(uint64_t a, uint64_t b)
  {
-@@ -108,4 +109,374 @@ T sat_subu(T x, T y, bool &sat)
+@@ -108,4 +109,382 @@ T sat_subu(T x, T y, bool &sat)
    return res;
  }
  
@@ -54,6 +54,7 @@ index b4370cb..9923bb3 100644
 +extern void mask_a_add   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +extern void mask_a_sub   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
++extern void mask_f_sqr   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
 +extern void mask_f_mul   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +extern void mask_f_aff   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
@@ -363,6 +364,13 @@ index b4370cb..9923bb3 100644
 +  return res;
 +}
 +
++inline void mask_f_sqr   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
++  uint32_t m = rand();
++
++  *r_0  = m ^ gf256_mul_x4( x_0, x_0 ) ;
++  *r_1  = m ^ gf256_mul_x4( x_1, x_1 ) ;
++}
++
 +inline void mask_f_mul   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 ) {
 +  uint32_t m = rand();
 +
@@ -405,7 +413,7 @@ index 425a68e..6dd6b44 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index ec16c0f..db79e5d 100644
+index ec16c0f..0d12ada 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -41,6 +41,33 @@
@@ -442,7 +450,7 @@ index ec16c0f..db79e5d 100644
  #define USTATUS_UIE         0x00000001
  #define USTATUS_UPIE        0x00000010
  
-@@ -621,6 +648,166 @@
+@@ -621,6 +648,168 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -564,52 +572,54 @@ index ec16c0f..db79e5d 100644
 +#define MASK_XC_SHA512_S3 0xfff0707f
 +
 +#define MATCH_MASK_B2A 0x5b
-+#define MASK_MASK_B2A 0xfff0f0ff
++#define MASK_MASK_B2A  0xfff0f0ff
 +#define MATCH_MASK_A2B 0x805b
-+#define MASK_MASK_A2B 0xfff0f0ff
++#define MASK_MASK_A2B  0xfff0f0ff
 +#define MATCH_MASK_B_MASK 0x20005b
-+#define MASK_MASK_B_MASK 0xfff070ff
++#define MASK_MASK_B_MASK  0xfff070ff
 +#define MATCH_MASK_B_UNMASK 0x30005b
-+#define MASK_MASK_B_UNMASK 0xfff0f07f
++#define MASK_MASK_B_UNMASK  0xfff0f07f
 +#define MATCH_MASK_B_REMASK 0x30805b
-+#define MASK_MASK_B_REMASK 0xfff0f0ff
++#define MASK_MASK_B_REMASK  0xfff0f0ff
 +#define MATCH_MASK_A_MASK 0x40005b
-+#define MASK_MASK_A_MASK 0xfff070ff
++#define MASK_MASK_A_MASK  0xfff070ff
 +#define MATCH_MASK_A_UNMASK 0x50005b
-+#define MASK_MASK_A_UNMASK 0xfff0f07f
++#define MASK_MASK_A_UNMASK  0xfff0f07f
 +#define MATCH_MASK_A_REMASK 0x50805b
-+#define MASK_MASK_A_REMASK 0xfff0f0ff
++#define MASK_MASK_A_REMASK  0xfff0f0ff
 +#define MATCH_MASK_B_NOT 0x8000205b
-+#define MASK_MASK_B_NOT 0xfff0f0ff
++#define MASK_MASK_B_NOT  0xfff0f0ff
 +#define MATCH_MASK_B_AND 0x8000705b
-+#define MASK_MASK_B_AND 0xfe10f0ff
++#define MASK_MASK_B_AND  0xfe10f0ff
 +#define MATCH_MASK_B_IOR 0x8000605b
-+#define MASK_MASK_B_IOR 0xfe10f0ff
++#define MASK_MASK_B_IOR  0xfe10f0ff
 +#define MATCH_MASK_B_XOR 0x8000405b
-+#define MASK_MASK_B_XOR 0xfe10f0ff
++#define MASK_MASK_B_XOR  0xfe10f0ff
 +#define MATCH_MASK_B_ADD 0x8000005b
-+#define MASK_MASK_B_ADD 0xfe10f0ff
++#define MASK_MASK_B_ADD  0xfe10f0ff
 +#define MATCH_MASK_B_SUB 0x8000105b
-+#define MASK_MASK_B_SUB 0xfe10f0ff
++#define MASK_MASK_B_SUB  0xfe10f0ff
 +#define MATCH_MASK_B_SLLI 0xc000005b
-+#define MASK_MASK_B_SLLI 0xfc00f0ff
++#define MASK_MASK_B_SLLI  0xfc00f0ff
 +#define MATCH_MASK_B_SRLI 0xc000105b
-+#define MASK_MASK_B_SRLI 0xfc00f0ff
++#define MASK_MASK_B_SRLI  0xfc00f0ff
 +#define MATCH_MASK_B_RORI 0xc000205b
-+#define MASK_MASK_B_RORI 0xfc00f0ff
++#define MASK_MASK_B_RORI  0xfc00f0ff
 +#define MATCH_MASK_A_ADD 0x4000005b
-+#define MASK_MASK_A_ADD 0xfe10f0ff
++#define MASK_MASK_A_ADD  0xfe10f0ff
 +#define MATCH_MASK_A_SUB 0x4000105b
-+#define MASK_MASK_A_SUB 0xfe10f0ff
++#define MASK_MASK_A_SUB  0xfe10f0ff
 +#define MATCH_MASK_F_MUL 0xe000005b
-+#define MASK_MASK_F_MUL 0xfe10f0ff
++#define MASK_MASK_F_MUL  0xfe10f0ff
 +#define MATCH_MASK_F_AFF 0xe000205b
-+#define MASK_MASK_F_AFF 0xfe10f0ff
++#define MASK_MASK_F_AFF  0xfe10f0ff
++#define MATCH_MASK_F_SQR 0x8020205b
++#define MASK_MASK_F_SQR  0xfff0f0ff
 +
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1880,6 +2067,7 @@
+@@ -1880,6 +2069,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -617,7 +627,7 @@ index ec16c0f..db79e5d 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -2165,6 +2353,85 @@
+@@ -2165,6 +2355,86 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -697,13 +707,14 @@ index ec16c0f..db79e5d 100644
 +DECLARE_INSN(mask_b_rori, MATCH_MASK_B_RORI, MASK_MASK_B_RORI)
 +DECLARE_INSN(mask_a_add, MATCH_MASK_A_ADD, MASK_MASK_A_ADD)
 +DECLARE_INSN(mask_a_sub, MATCH_MASK_A_SUB, MASK_MASK_A_SUB)
++DECLARE_INSN(mask_f_sqr, MATCH_MASK_F_SQR, MASK_MASK_F_SQR)
 +DECLARE_INSN(mask_f_mul, MATCH_MASK_F_MUL, MASK_MASK_F_MUL)
 +DECLARE_INSN(mask_f_aff, MATCH_MASK_F_AFF, MASK_MASK_F_AFF)
 +
  DECLARE_INSN(slli_rv32, MATCH_SLLI_RV32, MASK_SLLI_RV32)
  DECLARE_INSN(srli_rv32, MATCH_SRLI_RV32, MASK_SRLI_RV32)
  DECLARE_INSN(srai_rv32, MATCH_SRAI_RV32, MASK_SRAI_RV32)
-@@ -2991,6 +3258,7 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
+@@ -2991,6 +3261,7 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -1040,6 +1051,21 @@ index 0000000..75e2036
 +y_1 = READ_REG( ( insn.xc_rsm2() << 1 ) | 0x1 );
 +
 +mask_f_mul( &r_0, &r_1, x_0, x_1, y_0, y_1 );
++
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
++WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
+diff --git a/riscv/insns/mask_f_sqr.h b/riscv/insns/mask_f_sqr.h
+new file mode 100644
+index 0000000..ec268bc
+--- /dev/null
++++ b/riscv/insns/mask_f_sqr.h
+@@ -0,0 +1,9 @@
++uint32_t r_0, r_1, x_0, x_1;
++
++x_0 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x0 );
++x_1 = READ_REG( ( insn.xc_rsm1() << 1 ) | 0x1 );
++
++mask_f_sqr( &r_0, &r_1, x_0, x_1 );
 +
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x0, r_0 );
 +WRITE_REG( ( insn.xc_rdm() << 1 ) | 0x1, r_1 );
@@ -2602,10 +2628,10 @@ index 676a52d..cc8e77f 100644
    reg_t dscratch0, dscratch1;
    dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index f1fa5b3..ecba9ba 100644
+index f1fa5b3..c7e4a4a 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -822,6 +822,84 @@ riscv_insn_priv = \
+@@ -822,6 +822,85 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -2685,12 +2711,13 @@ index f1fa5b3..ecba9ba 100644
 +    mask_b_rori\
 +    mask_a_add\
 +    mask_a_sub\
++    mask_f_sqr\
 +    mask_f_mul\
 +    mask_f_aff
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -834,6 +912,7 @@ riscv_insn_list = \
+@@ -834,6 +913,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
