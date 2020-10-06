@@ -413,7 +413,7 @@ index 425a68e..6dd6b44 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index ec16c0f..0d12ada 100644
+index ec16c0f..ef55839 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -41,6 +41,33 @@
@@ -613,7 +613,7 @@ index ec16c0f..0d12ada 100644
 +#define MASK_MASK_F_MUL  0xfe10f0ff
 +#define MATCH_MASK_F_AFF 0xe000205b
 +#define MASK_MASK_F_AFF  0xfe10f0ff
-+#define MATCH_MASK_F_SQR 0x8020205b
++#define MATCH_MASK_F_SQR 0xf000205b
 +#define MASK_MASK_F_SQR  0xfff0f0ff
 +
  #define MATCH_AMOADD_W 0x202f

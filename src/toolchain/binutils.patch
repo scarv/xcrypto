@@ -160,7 +160,7 @@ index 9ecdcab0b6..b54731895f 100644
  	      switch (*++args)
  		{
 diff --git a/include/opcode/riscv-opc.h b/include/opcode/riscv-opc.h
-index 6c750a33b1..fe0e1aff29 100644
+index 6c750a33b1..38ae010bee 100644
 --- a/include/opcode/riscv-opc.h
 +++ b/include/opcode/riscv-opc.h
 @@ -739,6 +739,168 @@
@@ -326,7 +326,7 @@ index 6c750a33b1..fe0e1aff29 100644
 +#define MASK_MASK_F_MUL 0xfe10f0ff
 +#define MATCH_MASK_F_AFF 0xe000205b
 +#define MASK_MASK_F_AFF 0xfe10f0ff
-+#define MATCH_MASK_F_SQR 0x8020205b
++#define MATCH_MASK_F_SQR 0xf000205b
 +#define MASK_MASK_F_SQR  0xfff0f0ff
 +
  #define MATCH_CUSTOM0 0xb
