@@ -51,7 +51,7 @@ if [ ! -d $DIR_NEWLIB ]; then
 fi
 
 cd $DIR_NEWLIB
-git checkout -B $BRANCH_NAME riscv-newlib-3.1.0
+git checkout -B $BRANCH_NAME riscv-newlib-3.2.0
 cd -
 
 # ------ Proxy Kernel (PK) -------------------------------------------------
@@ -71,7 +71,7 @@ if [ ! -d $DIR_SPIKE ]; then
 fi
 
 cd $DIR_SPIKE
-git checkout -B $BRANCH_NAME $COMMIT_SPIKE # riscv-bitmanip
+git checkout -B $BRANCH_NAME $COMMIT_SPIKE
 cd -
 
 # --------------------------------------------------------------------------
