@@ -136,8 +136,8 @@ Note that:
 
 ## Questions?
 
-- use the
-  [groups.io](https://groups.io)-based [discussion group](https://scarv.groups.io/g/xcrypto),
+- read the
+  [wiki](https://github.com/scarv/xcrypto/wiki),
 - raise an
   [issue](https://github.com/scarv/xcrypto/issues),
 - raise a
