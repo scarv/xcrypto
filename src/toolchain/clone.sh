@@ -71,7 +71,7 @@ if [ ! -d $DIR_SPIKE ]; then
 fi
 
 cd $DIR_SPIKE
-git checkout -B $BRANCH_NAME $COMMIT_SPIKE # riscv-bitmanip
+git checkout -B $BRANCH_NAME $COMMIT_SPIKE
 cd -
 
 # --------------------------------------------------------------------------

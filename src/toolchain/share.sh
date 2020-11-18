@@ -24,7 +24,7 @@ ABI_STRING=ilp32
 # Known good git commit hashes to apply patches too
 COMMIT_GCC=7aad2f362811fb07d75eea90aaebd16fca714d4c
 COMMIT_BINUTILS=c870418800cd390bb2ae531226efd8a8ce1b741d
-COMMIT_SPIKE=5b042d731458eafea538324e2bf4f1d44ce9d2a0
+COMMIT_SPIKE=372fb7ad7762d2de04abc769c3accec7ef9f64e9
 
 #
 # Patch files

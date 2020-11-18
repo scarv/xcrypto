@@ -1,8 +1,8 @@
 diff --git a/riscv/decode.h b/riscv/decode.h
-index 9e03676..0159a23 100644
+index 425a68e..e5bb27c 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
-@@ -96,6 +96,12 @@ public:
+@@ -92,6 +92,12 @@ public:
    uint64_t rm() { return x(12, 3); }
    uint64_t csr() { return x(20, 12); }
  
@@ -16,10 +16,10 @@ index 9e03676..0159a23 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 3c4bf1c..a54066d 100644
+index ec16c0f..32de23c 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
-@@ -40,6 +40,32 @@
+@@ -41,6 +41,33 @@
  #define SSTATUS_UXL         0x0000000300000000
  #define SSTATUS64_SD        0x8000000000000000
  
@@ -49,13 +49,15 @@ index 3c4bf1c..a54066d 100644
 +                             UXCRYPTO_SHA2   | \
 +                             UXCRYPTO_AES    )
 +
- #define DCSR_XDEBUGVER      (3U<<30)
- #define DCSR_NDRESET        (1<<29)
- #define DCSR_FULLRESET      (1<<28)
-@@ -564,6 +590,123 @@
++
+ #define USTATUS_UIE         0x00000001
+ #define USTATUS_UPIE        0x00000010
+ 
+@@ -621,6 +648,124 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
++
 +
 +/* XCrypto Instructions */
 +#define MATCH_XC_LDR_B 0x7003
@@ -176,7 +178,7 @@ index 3c4bf1c..a54066d 100644
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1719,6 +1862,7 @@
+@@ -1880,6 +2025,7 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
@@ -184,11 +186,10 @@ index 3c4bf1c..a54066d 100644
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -1986,6 +2130,65 @@
+@@ -2165,6 +2311,63 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
-+// XCrypto Instructions
 +DECLARE_INSN(xc_ldr_b, MATCH_XC_LDR_B, MASK_XC_LDR_B)
 +DECLARE_INSN(xc_ldr_h, MATCH_XC_LDR_H, MASK_XC_LDR_H)
 +DECLARE_INSN(xc_ldr_w, MATCH_XC_LDR_W, MASK_XC_LDR_W)
@@ -246,11 +247,10 @@ index 3c4bf1c..a54066d 100644
 +DECLARE_INSN(xc_sha512_s1, MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1)
 +DECLARE_INSN(xc_sha512_s2, MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2)
 +DECLARE_INSN(xc_sha512_s3, MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3)
-+
- DECLARE_INSN(beq, MATCH_BEQ, MASK_BEQ)
- DECLARE_INSN(bne, MATCH_BNE, MASK_BNE)
- DECLARE_INSN(blt, MATCH_BLT, MASK_BLT)
-@@ -2737,6 +2940,7 @@ DECLARE_INSN(vamomaxuq_v, MATCH_VAMOMAXUQ_V, MASK_VAMOMAXUQ_V)
+ DECLARE_INSN(slli_rv32, MATCH_SLLI_RV32, MASK_SLLI_RV32)
+ DECLARE_INSN(srli_rv32, MATCH_SRLI_RV32, MASK_SRLI_RV32)
+ DECLARE_INSN(srai_rv32, MATCH_SRAI_RV32, MASK_SRAI_RV32)
+@@ -2991,6 +3194,7 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
@@ -1786,12 +1786,12 @@ index 0000000..c5141dc
 +MMU.store_uint32(RS1 + (RS2 << 2), RS3);
 +
 diff --git a/riscv/processor.cc b/riscv/processor.cc
-index 6bbaca1..e2d9b37 100644
+index 4f42cc5..da18f4b 100644
 --- a/riscv/processor.cc
 +++ b/riscv/processor.cc
-@@ -683,6 +683,11 @@ void processor_t::set_csr(int which, reg_t val)
-     case CSR_VXRM:
-       VU.vxrm = val;
+@@ -921,6 +921,11 @@ void processor_t::set_csr(int which, reg_t val)
+       dirty_vs_state;
+       VU.vxrm = val & 0x3ul;
        break;
 +    case CSR_UXCRYPTO:
 +      // if(!supports_extension('crypto')) break;
@@ -1801,10 +1801,10 @@ index 6bbaca1..e2d9b37 100644
    }
  }
  
-@@ -877,6 +882,9 @@ reg_t processor_t::get_csr(int which)
+@@ -1145,6 +1150,9 @@ reg_t processor_t::get_csr(int which)
        if (!supports_extension('V'))
          break;
-       return VU.vtype;
+       return VU.vlenb;
 +    case CSR_UXCRYPTO:
 +      // if(!supports_extension('crypto')) break;
 +      return state.uxcrypto;
@@ -1812,24 +1812,24 @@ index 6bbaca1..e2d9b37 100644
    throw trap_illegal_instruction(0);
  }
 diff --git a/riscv/processor.h b/riscv/processor.h
-index 2b5003b..6f6b418 100644
+index 676a52d..07197dd 100644
 --- a/riscv/processor.h
 +++ b/riscv/processor.h
-@@ -240,6 +240,9 @@ struct state_t
+@@ -184,6 +184,9 @@ struct state_t
+   reg_t stvec;
    reg_t satp;
    reg_t scause;
- 
++ 
 +  // XCrypto CSR
 +  reg_t uxcrypto;
-+
+ 
    reg_t dpc;
    reg_t dscratch0, dscratch1;
-   dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 4ee64fa..0fee1da 100644
+index f1fa5b3..d53ef72 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -772,6 +772,64 @@ riscv_insn_priv = \
+@@ -822,6 +822,64 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -1890,15 +1890,15 @@ index 4ee64fa..0fee1da 100644
 +    xc_sha512_s0\
 +    xc_sha512_s1\
 +    xc_sha512_s2\
-+    xc_sha512_s3\
++    xc_sha512_s3
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -784,6 +842,7 @@ riscv_insn_list = \
+@@ -834,6 +892,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
-+	$(riscv_insn_ext_xcrypto)
++    $(riscv_insn_ext_xcrypto)
  
  riscv_gen_srcs = \
  	$(addsuffix .cc,$(riscv_insn_list))
