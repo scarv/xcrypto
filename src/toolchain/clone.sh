@@ -27,47 +27,55 @@ set -x
 
 if [ ! -d $DIR_BINUTILS ]; then
     git clone https://github.com/riscv/riscv-binutils-gdb.git $DIR_BINUTILS
-    cd $DIR_BINUTILS
-    git checkout -B $BRANCH_NAME $COMMIT_BINUTILS # riscv-bitmanip
-    cd -
 fi
+
+cd $DIR_BINUTILS
+git fetch origin $COMMIT_BINUTILS:$BRANCH_NAME
+git checkout $BRANCH_NAME
+cd -
 
 # ------ GCC ---------------------------------------------------------------
 
 if [ ! -d $DIR_GCC ]; then
     git clone https://github.com/riscv/riscv-gcc.git $DIR_GCC
-    cd $DIR_GCC
-    git checkout -B $BRANCH_NAME $COMMIT_GCC # riscv-bitmanip
-    ./contrib/download_prerequisites
-    cd -
 fi
+
+cd $DIR_GCC
+git fetch origin $COMMIT_GCC:$BRANCH_NAME
+git checkout $BRANCH_NAME
+./contrib/download_prerequisites
+cd -
 
 # ------ NewLib ------------------------------------------------------------
 
 if [ ! -d $DIR_NEWLIB ]; then
     git clone https://github.com/riscv/riscv-newlib.git $DIR_NEWLIB
-    cd $DIR_NEWLIB
-    git checkout -b $BRANCH_NAME
-    cd -
 fi
+
+cd $DIR_NEWLIB
+git checkout -B $BRANCH_NAME
+cd -
 
 # ------ Proxy Kernel (PK) -------------------------------------------------
 
 if [ ! -d $DIR_PK ]; then
     git clone https://github.com/riscv/riscv-pk.git $DIR_PK
-    cd $DIR_PK
-    git checkout -B $BRANCH_NAME
-    cd -
 fi
+
+cd $DIR_PK
+git checkout -B $BRANCH_NAME
+cd -
 
 # ------ SPIKE ISA Simulator -----------------------------------------------
 
 if [ ! -d $DIR_SPIKE ]; then
     git clone https://github.com/riscv/riscv-isa-sim.git $DIR_SPIKE
-    cd $DIR_SPIKE
-    git checkout -B $BRANCH_NAME $COMMIT_SPIKE # riscv-bitmanip
-    cd -
 fi
+
+cd $DIR_SPIKE
+git fetch origin $COMMIT_SPIKE:$BRANCH_NAME
+git checkout $BRANCH_NAME
+cd -
 
 # --------------------------------------------------------------------------
 
