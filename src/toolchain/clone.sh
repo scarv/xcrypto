@@ -30,7 +30,8 @@ if [ ! -d $DIR_BINUTILS ]; then
 fi
 
 cd $DIR_BINUTILS
-git checkout -B $BRANCH_NAME $COMMIT_BINUTILS # riscv-bitmanip
+git fetch origin $COMMIT_BINUTILS:$BRANCH_NAME
+git checkout $BRANCH_NAME
 cd -
 
 # ------ GCC ---------------------------------------------------------------
@@ -40,7 +41,8 @@ if [ ! -d $DIR_GCC ]; then
 fi
 
 cd $DIR_GCC
-git checkout -B $BRANCH_NAME $COMMIT_GCC # riscv-bitmanip
+git fetch origin $COMMIT_GCC:$BRANCH_NAME
+git checkout $BRANCH_NAME
 ./contrib/download_prerequisites
 cd -
 
@@ -71,7 +73,8 @@ if [ ! -d $DIR_SPIKE ]; then
 fi
 
 cd $DIR_SPIKE
-git checkout -B $BRANCH_NAME $COMMIT_SPIKE
+git fetch origin $COMMIT_SPIKE:$BRANCH_NAME
+git checkout $BRANCH_NAME
 cd -
 
 # --------------------------------------------------------------------------
