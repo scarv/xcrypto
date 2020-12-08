@@ -30,8 +30,8 @@
 \bitheader{0-31}               
 \\
   \bitbox{16}{\color{black}    \rule{\width}{\height}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{ALZETTE}  $}}
-& \bitbox{ 1}{\rotatebox{90}{\small$\ID{CHACHA20} $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{ALZ}      $}}
+& \bitbox{ 1}{\rotatebox{90}{\small$\ID{CHA}      $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SM4}      $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA3}     $}}
 & \bitbox{ 1}{\rotatebox{90}{\small$\ID{SHA2}     $}}
@@ -191,7 +191,7 @@ For $i \in \SET{ 0, 1 }$, the CSR encodes a function
 \[
 f_i : \SET{ 0, 1 }^3 \rightarrow \SET{ 0, 1 }
 \]
-as an $8$-entry truth-table in $\FIELD{ubop}{\ID{LUT}_{i}}$.
+as an $8$-entry truth-table in $\FIELD{\SPR{ubop}}{\ID{LUT}_{i}}$.
 Said functions are used by instances of \VERB[RV]{xc.bop}, allowing the
 application of a configurable $3$-input, $1$-output Boolean function.
 (cf. x86 \VERB{vpternlogd}~\cite[5-446--5-468]{SCARV:X86:2:18}, and Amiga blitter~\cite[Chapter 6]{SCARV:Amiga:85})
@@ -250,7 +250,7 @@ $\INDEX{\SPR{ufenl}}{i}$
 to 
 $R_i$
 is {\em inherently} implementation specific, because it depends on the
-micro-architecture; this exposure of micro-architectural detail in the
+micro-architecture.  This exposure of micro-architectural detail in the
 ISA (or ISE in this case) is fundamental to the augmented ISA (or aISA) 
 concept of
 Ge et al.~\cite{SCARV:GeYarHei:18}

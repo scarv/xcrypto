@@ -1,0 +1,539 @@
+% =============================================================================
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\AMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \AUNMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$\ALG{Bool2Arith}( \TUPLE{ x_0, x_1 } )$}{
+  $t \RAND \SET{ 0, 1 }^{w}$ \;
+  $\TUPLE{ s_0, s_1 } \ASN \ALG {BoolAdd}( \TUPLE{ x_0, x_1 }, \TUPLE{ t, 0 } )$ \;
+  $r_1 \ASN t$ \;
+  $r_0 \ASN s_0 \XOR s_1$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$\ALG{Bool2Arith}$: convert from Boolean    to arithmetic masking.}
+\label{alg:b:bool2arith}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\AMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$\ALG{Arith2Bool}( \TUPLE{ x_0, x_1 } )$}{
+  $t \RAND \SET{ 0, 1 }^{w}$ \;
+  $x_1 \ASN x_1 \XOR t$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolSub}( \TUPLE{ x_0, 0 }, \TUPLE{ t, x_1 } )$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$\ALG{Arith2Bool}$: convert from arithmetic to Boolean    masking.}
+\label{alg:b:arith2bool}
+\end{algorithm}
+
+
+% ----------------------------------------------------------------------------- 
+
+\begin{algorithm}
+\KwData  {The        value
+          $x$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolMask}( \TUPLE{ x_0, x_1 } )$}{
+  $t   \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN t$ \;
+  $r_0 \ASN x \XOR t$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$ \ALG{BoolMask}$:   apply         mask operation (under Boolean    masking).}
+\label{alg:b:unmask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The        value
+          $r = \BMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolUnmask}( \TUPLE{ x_0, x_1 } )$}{
+  $r \ASN x_0 \XOR x_1$ \;
+  $\KwRet{ r }$ \;
+}
+\caption{$ \ALG{BoolUnmask}$: apply       unmask operation (under Boolean    masking).}
+\label{alg:b:unmask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolRemask}( \TUPLE{ x_0, x_1 } )$}{
+  $t   \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN x_1 \XOR t$ \;
+  $r_0 \ASN x_0 \XOR t$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$ \ALG{BoolRemask}$: apply       remask operation (under Boolean    masking).}
+\label{alg:b:remask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = \NOT x$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolNOT}( \TUPLE{ x_0, x_1 } )$}{
+  $t \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN t \XOR (\NOT x_1)$ \;
+  $r_0 \ASN t \XOR x_0$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolNOT}$:    apply          NOT operation (under Boolean    masking).}
+\label{alg:b:not}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \AND y$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolAND}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $t \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN t \XOR ( x_1 \AND y_1 ) \XOR ( x_1 \IOR \NOT y_0 )$ \;
+  $r_0 \ASN t \XOR ( x_0 \AND y_1 ) \XOR ( x_0 \IOR \NOT y_0 )$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolAND}$:    apply          AND operation (under Boolean    masking).}
+\label{alg:b:and}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \IOR y$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolIOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+%  $r_1 \ASN ( x_1 \AND y_1 ) \XOR ( x_1 \IOR      y_0 )$ \;
+%  $r_0 \ASN ( x_0 \IOR y_1 ) \XOR ( x_0 \AND      y_0 )$ \;
+  $\TUPLE{ s_0, s_1 } \ASN \ALG {BoolAnd}( \TUPLE{ x_0, \NOT x_1 }, \TUPLE{ y_0, \NOT y_1 } )$ \;
+  $r_1 \ASN \NOT s_1$ \;
+  $r_0 \ASN s_0$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolIOR}$:    apply           OR operation (under Boolean    masking).}
+\label{alg:b:ior}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \XOR y$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolXOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $t \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_0 \ASN t \XOR x_0 \XOR y_0$ \;
+  $r_1 \ASN t \XOR x_1 \XOR y_1$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$ \ALG{BoolXOR}$:    apply          XOR operation (under Boolean    masking).}
+\label{alg:b:ior}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The maked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x +    y$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolAdd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $\TUPLE{ a_0, a_1 } \ASN \ALG {BoolXOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\TUPLE{ p_0, p_1 } \ASN \TUPLE{ a_0, a_1 }$ \;
+  $\TUPLE{ g_0, g_1 } \ASN \ALG {BoolAnd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  \For{$i = 1$ {\bf upto} $\log_{2}{w}$} {
+    $\TUPLE{ h_0, h_1 } \ASN \ALG {BoolSLL}( \TUPLE{ g_0, g_1 }, 2^{i-1} )$ \;
+    $\TUPLE{ u_0, u_1 } \ASN \ALG {BoolSLL}( \TUPLE{ p_0, p_1 }, 2^{i-1} )$ \;
+    $\TUPLE{ h_0, h_1 } \ASN \ALG {BoolAnd}( \TUPLE{ p_0, p_1 }, \TUPLE{ h_0, h_1 } )$  \;
+    $\TUPLE{ g_0, g_1 } \ASN \ALG {BoolXOR}( \TUPLE{ g_0, g_1 }, \TUPLE{ h_0, h_1 } )$  \;
+    $\TUPLE{ p_0, p_1 } \ASN \ALG {BoolAnd}( \TUPLE{ p_0, p_1 }, \TUPLE{ u_0, u_1 } )$  \;
+  }
+  $\TUPLE{ h_0, h_1 } \ASN \ALG {BoolSLL}( \TUPLE{ g_0, g_1 }, 1 )$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolXOR}( \TUPLE{ a_0, a_1 }, \TUPLE{ h_0, h_1 } )$  \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$ \ALG{BoolAdd}$:    apply     addition operation (under Boolean    masking).}
+\label{alg:b:add}
+\end{algorithm}
+ 
+\begin{algorithm}
+\KwData  {The maked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x -    y$
+}
+\BlankLine
+\KwFn{$ \ALG{BoolSub}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $\TUPLE{ a_0, a_1 } \ASN \ALG {BoolXOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\TUPLE{ p_0, p_1 } \ASN \TUPLE{ a_0, a_1 }$ \;
+  $\TUPLE{ g_0, g_1 } \ASN \ALG {BoolAnd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+
+  $\TUPLE{ u_0, u_1 } \ASN \ALG {BoolAnd}( \TUPLE{ p_0, p_1 }, \TUPLE{ 0, 1 } )$ \;
+  $\TUPLE{ g_0, g_1 } \ASN \ALG {BoolXOR}( \TUPLE{ g_0, g_1 }, \TUPLE{ u_0, u_1 } )$ \;
+  \For{$i = 1$ {\bf upto} $\log_{2}{w}$} {
+    $\TUPLE{ h_0, h_1 } \ASN \ALG {BoolSLL}( \TUPLE{ g_0, g_1 }, 2^{i-1} )$ \;
+    $\TUPLE{ u_0, u_1 } \ASN \ALG {BoolSLL}( \TUPLE{ p_0, p_1 }, 2^{i-1} )$ \;
+    $\TUPLE{ h_0, h_1 } \ASN \ALG {BoolAnd}( \TUPLE{ p_0, p_1 }, \TUPLE{ h_0, h_1 } )$  \;
+    $\TUPLE{ g_0, g_1 } \ASN \ALG {BoolXOR}( \TUPLE{ g_0, g_1 }, \TUPLE{ h_0, h_1 } )$  \;
+    $\TUPLE{ p_0, p_1 } \ASN \ALG {BoolAnd}( \TUPLE{ p_0, p_1 }, \TUPLE{ u_0, u_1 } )$  \;
+  }
+  $\TUPLE{ h_0, h_1 } \ASN \TUPLE{ ( g_0 \LSH 1 ) \CONS 0, 
+                                   ( g_1 \LSH 1 ) \CONS 1 }$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolXOR}( \TUPLE{ a_0, a_1 }, \TUPLE{ h_0, h_1 } )$  \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;  
+}
+\caption{$ \ALG{BoolSub}$:    apply  subtraction operation (under Boolean    masking).}
+\label{alg:b:sub}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$,
+          and an integer $0 \leq i < w$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \LSH i$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolSLL}( \TUPLE{ x_0, x_1 }, i )$}{
+  $t   \RAND \SET{ 0, 1 }^i$ \;
+  $r_1 \ASN ( x_1 \LSH i ) \CONS t$ \;
+  $r_0 \ASN ( x_0 \LSH i ) \CONS t$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolSLL}$:    apply  left-shift  operation (under Boolean    masking).}
+\label{alg:b:lsh}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$,
+          and an integer $0 \leq i < w$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \RSH i$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolSRL}( \TUPLE{ x_0, x_1 }, i )$}{
+  $t   \RAND \SET{ 0, 1 }^i$ \;
+  $r_1 \ASN t \CONS ( x_1 \RSH i )$ \;
+  $r_0 \ASN t \CONS ( x_0 \RSH i )$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolSRL}$:    apply right-shift  operation (under Boolean    masking).}
+\label{alg:b:lsh}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$,
+          and an integer $0 \leq i < w$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \RRT i$.
+}
+\BlankLine
+\KwFn{$ \ALG{BoolROR}( \TUPLE{ x_0, x_1 }, i )$}{
+  $r_1 \ASN           x_1 \RRT i  $ \;
+  $r_0 \ASN           x_0 \RRT i  $ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$ \ALG{BoolROR}$:    apply right-rotate operation (under Boolean    masking).}
+\label{alg:b:rori}
+\end{algorithm}
+
+% ----------------------------------------------------------------------------- 
+
+\begin{algorithm}
+\KwData  {The        value
+          $x$.
+}
+\KwResult{The masked value
+          $\AMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \AUNMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$\ALG{ArithMask}( \TUPLE{ x_0, x_1 } )$}{
+  $t   \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN t$ \;
+  $r_0 \ASN \AMASK{r_0}{t}$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$\ALG{ArithMask}$:   apply         mask operation (under arithmetic masking).}
+\label{alg:b:unmask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\AMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The        value
+          $r = \AUNMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$\ALG{ArithUnmask}( \TUPLE{ x_0, x_1 } )$}{
+  $r \ASN x_0 - x_1 \pmod {2^w}$ \;
+  $\KwRet{r}$ \;
+}
+\caption{$\ALG{ArithUnmask}$: apply       unmask operation (under arithmetic masking).}
+\label{alg:b:unmask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\AMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\AMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \AUNMASK{r_0}{r_1} = x$.
+}
+\BlankLine
+\KwFn{$\ALG{ArithRemask}( \TUPLE{ x_0, x_1 } )$}{
+  $t   \RAND \SET{ 0, 1 }^{w}$ \;
+  $r_1 \ASN \AMASK{x_1}{t}$ \;
+  $r_0 \ASN \AMASK{x_0}{t}$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$\ALG{ArithRemask}$: apply       remask operation (under arithmetic masking).}
+\label{alg:b:remask}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The maked values
+          $\AMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\AMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\AMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \AUNMASK{r_0}{r_1} = x +    y$.
+}
+\BlankLine
+\KwFn{$\ALG{ArithAdd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $r_1 \ASN \AMASK{x_1}{y_1}$ \;
+  $r_0 \ASN \AMASK{x_0}{y_0}$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\caption{$\ALG{ArithAdd}$:    apply     addition operation (under arithmetic masking).}
+\label{alg:b:add}
+\end{algorithm}
+ 
+\begin{algorithm}
+\KwData  {The masked values
+          $\AMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\AMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\AMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \AUNMASK{r_0}{r_1} = x -    y$.
+}
+\BlankLine
+\KwFn{$\ALG{ArithSub}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $r_1 \ASN \AUNMASK{x_1}{y_1}$ \;
+  $r_0 \ASN \AUNMASK{x_0}{y_0}$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \; 
+}
+\caption{$\ALG{ArithSub}$:    apply  subtraction operation (under arithmetic masking).}
+\label{alg:b:sub}
+\end{algorithm}
+
+
+% ----------------------------------------------------------------------------- 
+
+\begin{algorithm}
+\KwData  {The masked value
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x^2$.
+}
+\BlankLine
+\KwFn{$ \ALG{FieldSqr }( \TUPLE{ x_0, x_1 } )$}{
+  $r_0 \ASN 0$ \;
+  $r_1 \ASN 0$ \;
+  \For{$i \gets 0$ to $\frac{w}{8}-1$} {
+    $xi_0 \ASN  ( x_0 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $xi_1 \ASN  ( x_1 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $ti   \RAND \SET{ 0, 1 }^{8}$ \;
+    $ri_1 \ASN  t   \XOR ( xi_1 \otimes xi_1 )$ \;
+    $ri_0 \ASN  t   \XOR ( xi_0 \otimes xi_0 )$ \;
+    $r_0  \ASN  r_0 \XOR ( ri_0 \LSH 8 \cdot i )$ \;
+    $r_1  \ASN  r_1 \XOR ( ri_1 \LSH 8 \cdot i )$ \;
+  }
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$\ALG{FieldSqr }$: apply packed $\B{F}_{2^8}$ squaring         operation (under Boolean    masking).}
+\label{alg:f:sqr}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          $\BMASKED{y} = \TUPLE{ y_0, y_1 }$.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = x \otimes y$.
+}
+\BlankLine
+\KwFn{$ \ALG{FieldMul }( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$}{
+  $r_0 \ASN 0$ \;
+  $r_1 \ASN 0$ \;
+  \For{$i \gets 0$ to $\frac{w}{8}-1$} {
+    $xi_0 \ASN  ( x_0 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $xi_1 \ASN  ( x_1 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $yi_0 \ASN  ( y_0 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $yi_1 \ASN  ( y_1 \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+    $ti   \RAND \SET{ 0, 1 }^{8}$ \;
+    $ri_1 \ASN  t   \XOR ( xi_1 \otimes yi_1 ) \XOR 
+                         ( xi_1 \otimes yi_0 ) \XOR 
+                         ( xi_0 \otimes yi_1 )$ \;
+    $ri_0 \ASN  t   \XOR ( xi_0 \otimes yi_0 )$ \;
+    $r_0  \ASN  r_0 \XOR ( ri_0 \LSH 8 \cdot i )$ \;
+    $r_1  \ASN  r_1 \XOR ( ri_1 \LSH 8 \cdot i )$ \;
+  }
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$\ALG{FieldMul }$: apply packed $\B{F}_{2^8}$ multiplication   operation (under Boolean    masking).}
+\label{alg:f:mul}
+\end{algorithm}
+
+\begin{algorithm}
+\KwData  {The masked values
+          $\BMASKED{x} = \TUPLE{ x_0, x_1 }$
+          and
+          a pair 
+          $         M  = \TUPLE{ M_0, M_1 }$
+          which combine to specify the $( 8 \times 8 )$-element transformation matrix.
+}
+\KwResult{The masked value
+          $\BMASKED{r} = \TUPLE{ r_0, r_1 }$
+          such that
+          $r = \BMASK{r_0}{r_1} = M x$.
+}
+\BlankLine
+\KwFn{$ \ALG{FieldAff }( \TUPLE{ x_0, x_1 }, \TUPLE{ M_0, M_1 } )$}{
+  $M   \ASN M_1 \CONS M_0$ \;
+  $r_0 \ASN \ALG{FieldAff'}( x_0, M )$ \;
+  $r_1 \ASN \ALG{FieldAff'}( x_1, M )$ \;
+  $\KwRet{\TUPLE{ r_0, r_1 }}$ \;
+}
+\BlankLine
+\caption{$\ALG{FieldAff }$: apply packed $\B{F}_{2^8}$ affine transform operation (under Boolean    masking).}
+\label{alg:f:aff}
+\end{algorithm} 
+
+\begin{algorithm}
+\KwData  {A $32$-bit value  $x$
+          and
+          a $64$-bit matrix $M$.
+}
+\KwResult{A $32$-bit value  $r$.          
+}
+\BlankLine
+\KwFn{$ \ALG{FieldAff'}( x, M )$}{
+  $r \ASN 0$ \;
+  \For{$i = 0$ {\bf upto} $7$} {
+     $c \ASN ( M \RSH 8 \cdot i ) \AND \RADIX{FF}{16}$ \;
+     $c \ASN c \cdot ( ( x \RSH i ) \AND \RADIX{01010101}{16} )$ \;
+     $r \ASN r \XOR c$ \;
+  }
+  $\KwRet{ r }$ \;
+}
+\BlankLine
+\caption{$\ALG{FieldAff'}$: apply packed $\B{F}_{2^8}$ affine transform step.}
+\label{alg:f:aff}
+\end{algorithm} 
+
+% =============================================================================

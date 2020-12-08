@@ -540,46 +540,6 @@ prohibitive) overhead.
   $\GPR[*][{\VERB[RV]{rd}}] \ASN t$ \;
 }
 
-% ----------------------------------------------------------------------------
-
-\XCRYPTOINSTR{xc.xsll.i}{rd, rs1, rs2, cshamt}{}{
-  Compute an XOR, after preparing the second operand via a  left-shift;
-  one could view this as a specific version of operations possible via
-  the so-called ARM ``flexible second operand'' in associated ISAs.
-}{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LSH} \VERB[RV]{cshamt} )$ \;
-}
-
-% ----------------------------------------------------------------------------
-
-\XCRYPTOINSTR{xc.xsrl.i}{rd, rs1, rs2, cshamt}{}{
-  Compute an XOR, after preparing the second operand via a right-shift;
-  one could view this as a specific version of operations possible via
-  the so-called ARM ``flexible second operand'' in associated ISAs.
-}{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RSH} \VERB[RV]{cshamt} )$ \;
-}
-
-% ----------------------------------------------------------------------------
-
-\XCRYPTOINSTR{xc.xrol.i}{rd, rs1, rs2, cshamt}{}{
-  Compute an XOR, after preparing the second operand via a  left-rotate;
-  one could view this as a specific version of operations possible via
-  the so-called ARM ``flexible second operand'' in associated ISAs.
-}{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\LRT} \VERB[RV]{cshamt} )$ \;
-}
-
-% ----------------------------------------------------------------------------
-
-\XCRYPTOINSTR{xc.xror.i}{rd, rs1, rs2, cshamt}{}{
-  Compute an XOR, after preparing the second operand via a right-rotate;
-  one could view this as a specific version of operations possible via
-  the so-called ARM ``flexible second operand'' in associated ISAs.
-}{
-  $\GPR[*][{\VERB[RV]{rd}}] \ASN \GPR[*][{\VERB[RV]{rs1}}] \XOR ( \GPR[*][{\VERB[RV]{rs2}}] \OP[w][u]{\RRT} \VERB[RV]{cshamt} )$ \;
-}
-
 % =============================================================================
 
 \subsubsection{Class-$2.4$: packed}
@@ -1102,6 +1062,252 @@ high overhead) software-based carry and overflow management.
 \label{sec:spec:instruction:2:7}
 
 % -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b2a}{(rd1,rd2), (rs1,rs2)}{RV32, RV64, RV128}{
+  Convert from Boolean    to arithmetic masking.
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{Bool2Arith}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a2b}     {(rd1,rd2), (rs1,rs2)}           {RV32, RV64, RV128}{
+  Convert from arithmetic to Boolean    masking.
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{Arith2Bool}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.mask}  {(rd1,rd2), rs1}                 {RV32, RV64, RV128}{
+  Apply         mask operation 
+  (under Boolean    masking).
+}{
+  $x   \ASN \GPR[*][{\VERB[RV]{rs1}}]                                     $ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolMask}  (         x          )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;    
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.unmask}{rd1, (rs1,rs2)}                 {RV32, RV64, RV128}{
+  Apply       unmask operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $        r          \ASN \ALG {BoolUnmask}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r                                       $ \;    
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.remask}{(rd1,rd2), (rs1,rs2)}           {RV32, RV64, RV128}{
+  Apply       remask operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolRemask}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;  
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.not}   {(rd1,rd2), (rs1,rs2)}           {RV32, RV64, RV128}{
+  Apply          NOT operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolNOT}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.and}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply          AND operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolAND}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.ior}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply           OR operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolIOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.xor}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply          XOR operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolXOR}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.add}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply     addition operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolAdd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.sub}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply  subtraction operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolSub}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.slli}  {(rd1,rd2), (rs1,rs2), imm}      {RV32, RV64, RV128}{
+  Apply  left-shift  operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolSLL}( \TUPLE{ x_0, x_1 }, imm                )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.srli}  {(rd1,rd2), (rs1,rs2), imm}      {RV32, RV64, RV128}{
+  Apply right-shift  operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolSRL}( \TUPLE{ x_0, x_1 }, imm                )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.b.rori}  {(rd1,rd2), (rs1,rs2), imm}      {RV32, RV64, RV128}{
+  Apply right-rotate operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG {BoolROR}( \TUPLE{ x_0, x_1 }, imm                )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a.mask}  {(rd1,rd2), rs1}                 {RV32, RV64, RV128}{
+  Apply         mask operation 
+  (under arithmetic masking).
+}{
+  $x   \ASN \GPR[*][{\VERB[RV]{rs1}}]                                    $ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{ArithMask}  (         x          )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;    
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a.unmask}{rd1, (rs1,rs2)}                 {RV32, RV64, RV128}{
+  Apply       unmask operation 
+  (under arithmetic masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $        r          \ASN \ALG{ArithUnmask}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r                                      $ \;    
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a.remask}{(rd1,rd2), (rs1,rs2)}           {RV32, RV64, RV128}{
+  Apply       remask operation 
+  (under arithmetic masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{ArithRemask}( \TUPLE{ x_0, x_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;  
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a.add}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply     addition operation 
+  (under arithmetic masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{ArithAdd}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.a.sub}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply  subtraction operation 
+  (under arithmetic masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{ArithSub}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.f.sqr}   {(rd1,rd2), (rs1,rs2)           }{RV32, RV64, RV128}{
+  Apply packed $\B{F}_{2^8}$ squaring         operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{FieldSqr}( \TUPLE{ x_0, x_1 }                     )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.f.mul}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply packed $\B{F}_{2^8}$ multiplication   operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $y_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], y_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{FieldMul}( \TUPLE{ x_0, x_1 }, \TUPLE{ y_0, y_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
+
+% -----------------------------------------------------------------------------
+
+\XCRYPTOINSTR{xc.mask.f.aff}   {(rd1,rd2), (rs1,rs2), (rs3,rs4)}{RV32, RV64, RV128}{
+  Apply packed $\B{F}_{2^8}$ affine transform operation 
+  (under Boolean    masking).
+}{
+  $x_0 \ASN \GPR[*][{\VERB[RV]{rs1}}], x_1 \ASN \GPR[*][{\VERB[RV]{rs2}}]$ \;
+  $m_0 \ASN \GPR[*][{\VERB[RV]{rs3}}], m_1 \ASN \GPR[*][{\VERB[RV]{rs4}}]$ \;
+  $\TUPLE{ r_0, r_1 } \ASN \ALG{FieldAff}( \TUPLE{ x_0, x_1 }, \TUPLE{ m_0, m_1 } )$ \;
+  $\GPR[*][{\VERB[RV]{rd1}}] \ASN r_0, \GPR[*][{\VERB[RV]{rd2}}] \ASN r_1$ \;
+}
 
 % =============================================================================
 
