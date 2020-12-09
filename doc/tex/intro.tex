@@ -6,61 +6,66 @@ a) require computationally intensive, somewhat niche functionality,
    and
 b) form a central target in what is a complex, evolving attack surface.
 The former is a particular issue, because cryptography normally represents
-an enabling technology vs. a feature: put another way, it will represent
+an enabling technology vs. a feature; put another way, it will represent
 overhead when viewed from the perspective of a user.  Efficiency is hence 
-a goal in and of itself, but {\em also} as an enabler for security.  This 
-is because one cannot (or at least should not) compromise security to meet 
-efficiency requirements, so delivering higher efficiency can be pitched as 
-an enabler for countermeasures against attack (since there will be more 
-margin within which to do so).
+a goal in and of itself, but {\em also} an enabler for security.  This is
+because one cannot (or at least {\em should} not) compromise security to 
+meet efficiency requirements, so delivering higher efficiency can also be 
+pitched as an enabler for countermeasures against attack (since there will
+be a greater margin within which to do so).
 
 This document acts as the specification for a 
-non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I:17} 
+non-standard extension~\cite[Section 21.1]{SCARV:RV:ISA:I} 
 to any one of the RISC-V base ISAs
-(e.g., RV32I~\cite[Section 2]{SCARV:RV:ISA:I:17}, RV32E~\cite[Section 3]{SCARV:RV:ISA:I:17}, RV64I~\cite[Section 4]{SCARV:RV:ISA:I:17}, or RV128I~\cite[Section 5]{SCARV:RV:ISA:I:17}),
+(e.g., RV32I~\cite[Section 2]{SCARV:RV:ISA:I}, RV32E~\cite[Section 3]{SCARV:RV:ISA:I}, RV64I~\cite[Section 4]{SCARV:RV:ISA:I}, or RV128I~\cite[Section 5]{SCARV:RV:ISA:I}),
 which we dub \XCRYPTO; it forms an output from the SCARV\footnote{
 \url{http://www.scarv.org}, \url{http://www.github.com/scarv}
 } project, funded by EPSRC\footnote{
 \url{http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/R012288/1}
-} as part of the UK-based RISE\footnote{
+} under the RISE\footnote{
 \url{http://www.ukrise.org}
-} initiative.  
+} programme.  
 \XCRYPTO aims to enable
 a) efficient
    and
 b) secure
 software implementation of cryptographic primitives, within a remit which
-is conceptually analogous to that of the standard floating-point (i.e., F
-and D) extensions.
-Note the document {\em is} a specification for \XCRYPTO, but categorically
-{\em is not} an implementation guide: we provide a separate document for 
-that purpose.  In order to avoid the specification becoming too verbose,
-we defer a detailed description of the notation used, related work, and 
-design notes (presented as a set of FAQs) to
-\REFAPPX{appx:notation},
-\REFAPPX{appx:related},
+is conceptually analogous to that of the standard F and D
+(i.e., floating-point) 
+extensions.
+Note that although the document {\em is} a specification for \XCRYPTO, it
+categorically {\em is not} an implementation guide.  In order to avoid the 
+document body becoming too verbose, we use 
+\REFAPPX{appx:notation}
 and
-\REFAPPX{appx:design}
-respectively.  
+\REFAPPX{appx:related}
+to capture a detailed description of the notation used and related work
+respectively; associated content such as
+a) a set of design notes
+   and
+b) a changelog\footnote{
+   \url{http://keepachangelog.com}
+   } 
+is maintained within the repository wiki vs. in the document.
 
 % -----------------------------------------------------------------------------
 
-The project as a whole follows a semantic 
+The \XCRYPTO project as a whole follows a semantic 
 versioning\footnote{
 \url{http://semver.org}
-} (or major/minor/patch) convention, with a changelog\footnote{
-\url{http://keepachangelog.com}
-} maintained within the repository vs. in the document.
+} (or major/minor/patch) convention.
 Over time, \XCRYPTO has evolved along various branches 
 (each identified by an associated major version):
 
 \begin{itemize}
-\item The $0.x.y$ branch
+\item The (now abandoned) 
+      $0.x.y$ branch
       represents an initial prototype.
       It can be characterised as deliberately disjoint from the RISC-V 
       base ISA(s), and so, in concept, aligned with implementation as a 
       separate co-processor.
-\item The $1.x.y$ branch
+\item The (active)
+      $1.x.y$ branch
       represents a subsequent refinement.
       It can be characterised as taking the functionality from $0.x.y$, 
       but integrating inline with vs. alongside the RISC-V base ISA(s), 
@@ -68,8 +73,9 @@ Over time, \XCRYPTO has evolved along various branches
 \end{itemize}
 
 \noindent
-The long-term goal is to develop the $1.x.y$ branch, ultimately using it
-as a basis for a standard (i.e., ``official'') RISC-V extension proposal.
+The long-term goal is to develop the specification, using it as a means 
+for experimentation, and, ultimately, the basis for a standard (i.e., 
+``official'') RISC-V extension proposal.
 That said, statements such as 
 ``\XCRYPTO is   X'' 
 or

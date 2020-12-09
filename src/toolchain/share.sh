@@ -13,8 +13,7 @@ DIR_NEWLIB_BUILD=$DIR_NEWLIB-build
 DIR_PK_BUILD=$DIR_PK-build
 DIR_SPIKE_BUILD=$DIR_SPIKE-build
 
-#BRANCH_NAME=scarv/xcrypto/v$REPO_VERSION
-BRANCH_NAME=scarv/xcrypto/masking-ise
+BRANCH_NAME=scarv/xcrypto/v$REPO_VERSION
 
 INSTALL_DIR=$RISCV
 TARGET_ARCH=riscv32-unknown-elf

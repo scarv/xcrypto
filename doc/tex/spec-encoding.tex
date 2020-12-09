@@ -1,0 +1,117 @@
+\subsection{\XCRYPTO encoding}
+\label{sec:spec:encoding}
+
+% =============================================================================
+
+\subsubsection{Sub-word size}
+\label{sec:spec:encoding:subword}
+
+The instructions in some feature classes
+(see, e.g., \REFSEC{sec:spec:instruction:2:4})
+(semi-)independently operate on $w$-bit sub-words within 
+source      $\GPR$ registers
+and/or
+destination $\GPR$ registers.
+In some  cases 
+$w$ is fixed by the instruction type
+(e.g., \VERB[RV]{xc.ldr.b} per \REFSEC{sec:spec:instruction:xc.ldr.b}, where $w = 8$);
+in other cases
+$w$ is parameterised
+(e.g., \VERB[RV]{xc.padd}  per \REFSEC{sec:spec:instruction:xc.padd}).
+The encoding of instructions in the later case include \VERB[RV]{pw},
+a field which maps to a sub-word size
+$
+w \in \SET{ 2, 4, 8, 16 }
+$ 
+per
+\[
+w ~~=~~ 2^{\VERB[RV]{pw}+1} ~~=~~ 1 \LSH ( \VERB[RV]{pw} + 1 )
+\]
+i.e., 
+\[
+\begin{array}{l c l@{\;}c@{\;}r c l@{\;}c@{\;}r}
+\VERB[RV]{c} &\mapsto& \VERB[RV]{pw} &=& \RADIX{00}{2} &\mapsto& w &=&  2 \\
+\VERB[RV]{n} &\mapsto& \VERB[RV]{pw} &=& \RADIX{01}{2} &\mapsto& w &=&  4 \\
+\VERB[RV]{b} &\mapsto& \VERB[RV]{pw} &=& \RADIX{10}{2} &\mapsto& w &=&  8 \\
+\VERB[RV]{h} &\mapsto& \VERB[RV]{pw} &=& \RADIX{11}{2} &\mapsto& w &=& 16 \\
+\end{array}
+\]
+where a $1$-character mnemonic forms part of the instruction syntax.
+Note that a selection of $w$ via \VERB[RV]{pw} implies that the number 
+of sub-words will be
+$
+\RVXLEN / w .
+$
+
+% =============================================================================
+
+\subsubsection{Register pairs}
+\label{sec:spec:encoding:pair}
+
+The instructions in some feature classes
+(see, e.g., \REFSEC{sec:spec:instruction:2:5})
+use 
+more than $2$ source      $\GPR$ registers
+and/or
+more than $1$ destination $\GPR$ register.
+Although doing so violates the consistency criteria outlined in 
+\REFSEC{sec:bg:concept},
+it aligns with selective demand for 
+Multi-word Operand, Multi-word Result (MOMR) 
+functionality as argued by
+Lee et al.~\cite{SCARV:LeeYanShi:04}.
+The encoding of such an instruction employs a limited instance of the
+Register File Extension for Multi-word and Long-word Operation (RFEMLO)
+proposal of 
+Lee and Choi~\cite{SCARV:LeeCho:08}.
+In short, a single compressed register address $x$ maps to
+\[
+\TUPLE{ ~ x \CONS 1, ~~ x \CONS 0 ~ } ,
+\]
+which we term a 
+decompressed register address pair.  Consider an example, wlog. focused
+on \VERB[RV]{rdm}, a compressed (destination) register address: the set 
+of valid encodings is st.
+\[
+\begin{array}{l@{\;}c@{\;}r c c@{\;}l@{\;}c@{\;}r@{\;}c@{\;}l@{\;}c@{\;}r@{\;}c}
+\VERB[RV]{rdm} &=     & \RADIX{0000}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     &  1 &,& \VERB[RV]{rd1} &=     &  0 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0001}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     &  3 &,& \VERB[RV]{rd1} &=     &  2 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0010}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     &  5 &,& \VERB[RV]{rd1} &=     &  4 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0011}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     &  7 &,& \VERB[RV]{rd1} &=     &  6 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0100}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     &  9 &,& \VERB[RV]{rd1} &=     &  8 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0101}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     & 11 &,& \VERB[RV]{rd1} &=     & 10 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0110}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     & 13 &,& \VERB[RV]{rd1} &=     & 12 & ) \\
+\VERB[RV]{rdm} &=     & \RADIX{0111}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     & 15 &,& \VERB[RV]{rd1} &=     & 14 & ) \\
+               &\vdots&                 &\vdots &   &                &\vdots&    & &                &\vdots&    &   \\
+\VERB[RV]{rdm} &=     & \RADIX{1111}{2} &\mapsto& ( & \VERB[RV]{rd2} &=     & 31 &,& \VERB[RV]{rd1} &=     & 30 & ) \\
+\end{array}
+\]
+The syntax of such instructions demands specification of the 
+decompressed register address pair,
+e.g., 
+\[
+\VERB[RV]{( x1, x0 )} \mapsto \TUPLE{ 1, 0 } ,
+\]
+which {\em must} adhere to the following rules: given a pair
+$
+\TUPLE{ x, y } ,
+$
+it {\em must} be true that
+a) $x = y + 1$
+   (the contiguous'ness rule),
+   and
+b) $x = 1 \pmod{2}$
+   and 
+   $y = 0 \pmod{2}$
+   (the   odd-even'ness rule).
+For example,
+$\TUPLE{ 1, 0 }$ 
+and 
+$\TUPLE{ 3, 2 }$ are   valid,
+$\TUPLE{ 3, 0 }$ is  invalid because it violates the contiguous'ness rule,
+$\TUPLE{ 3, 1 }$ is  invalid because it violates the   odd-even'ness rule,
+and
+$\TUPLE{ 2, 3 }$ is  invalid because it violates the contiguous'ness rule 
+                                       {\em and} the   odd-even'ness rule.
+
+% =============================================================================

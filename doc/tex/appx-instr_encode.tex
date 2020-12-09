@@ -19,7 +19,7 @@
 \label{fig:instr_encode:1}
 \end{figure}
 
-% -----------------------------------------------------------------------------
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center}
@@ -35,7 +35,7 @@
 \label{fig:instr_encode:2:1}
 \end{figure}                                                                      
 
-% -----------------------------------------------------------------------------
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center}
@@ -52,7 +52,7 @@
 \label{fig:instr_encode:2:2}
 \end{figure}                                                                      
 
-% -----------------------------------------------------------------------------
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center} 
@@ -61,13 +61,17 @@
 \\
 \XCRYPTOENCODE{xc.bop}
 \XCRYPTOENCODE{xc.lut}
+\XCRYPTOENCODE{xc.xsll.i}
+\XCRYPTOENCODE{xc.xsrl.i}
+\XCRYPTOENCODE{xc.xrol.i}
+\XCRYPTOENCODE{xc.xror.i}
 \end{bytefield}
 \end{center}
 \caption{An overview of instruction encoding: class $2.3$, per \REFSEC{sec:spec:instruction:2:3}.}
 \label{fig:instr_encode:2:3}
 \end{figure}                                                                      
 
-% -----------------------------------------------------------------------------
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center}            
@@ -92,7 +96,7 @@
 \label{fig:instr_encode:2:4}
 \end{figure}                                                                      
 
-% -----------------------------------------------------------------------------
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center}
@@ -110,7 +114,35 @@
 \label{fig:instr_encode:2:5}
 \end{figure}                                                                   
 
-% -----------------------------------------------------------------------------   
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.fenl}        
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.6$, per \REFSEC{sec:spec:instruction:2:6}.}
+\label{fig:instr_encode:2:6}
+\end{figure}                                                                   
+
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+% TODO
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $2.7$, per \REFSEC{sec:spec:instruction:2:7}.}
+\label{fig:instr_encode:2:7}
+\end{figure}                                                                   
+
+% =============================================================================
 
 \begin{figure}[!ht]
 \begin{center}
@@ -124,6 +156,7 @@
 \caption{An overview of instruction encoding: class $3.1$, per \REFSEC{sec:spec:instruction:3:1}.}
 \label{fig:instr_encode:3:1}
 \end{figure}                                                                   
+
 % =============================================================================
 
 \begin{figure}[!ht]
@@ -140,6 +173,7 @@
 \caption{An overview of instruction encoding: class $3.2$, per \REFSEC{sec:spec:instruction:3:2}.}
 \label{fig:instr_encode:3:2}
 \end{figure}                                                                   
+
 % =============================================================================
 
 \begin{figure}[!ht]
@@ -157,4 +191,47 @@
 \caption{An overview of instruction encoding: class $3.3$, per \REFSEC{sec:spec:instruction:3:3}.}
 \label{fig:instr_encode:3:3}
 \end{figure}                                                                   
+
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+\XCRYPTOENCODE{xc.sm4sub}
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.4$, per \REFSEC{sec:spec:instruction:3:4}.}
+\label{fig:instr_encode:3:4}
+\end{figure}                                                                   
+
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+% TODO
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.5$, per \REFSEC{sec:spec:instruction:3:5}.}
+\label{fig:instr_encode:3:5}
+\end{figure}                                                                   
+
+% =============================================================================
+
+\begin{figure}[!ht]
+\begin{center}
+\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
+\bitheader{0-31}            
+\\
+% TODO
+\end{bytefield}
+\end{center}
+\caption{An overview of instruction encoding: class $3.6$, per \REFSEC{sec:spec:instruction:3:6}.}
+\label{fig:instr_encode:3:6}
+\end{figure}                                                                   
+
 % =============================================================================

@@ -25,7 +25,7 @@ ${BUILD}/spec.commit  :
 	@if [[ $(shell git diff | wc --lines) -ne 0 ]] ; then echo '{\color{red}\bf -dirty}' >> ${@} ; fi
 
 ${BUILD}/spec.ise     : ${REPO_HOME}/extern/riscv-opcodes/opcodes-xcrypto
-	@cat ${^} | python3 ${REPO_HOME}/extern/riscv-opcodes/parse-opcodes -xcrypto-tex > ${@}
+	@cat ${^} | python3 ${REPO_HOME}/extern/riscv-opcodes/parse_opcodes -xcrypto-tex > ${@}
 
 include ${REPO_HOME}/extern/texmf/make/image.mk
 

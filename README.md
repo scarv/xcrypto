@@ -94,6 +94,14 @@ Note that:
   a library of re-usable hardware components (e.g., for arithmetic
   operations), which could be used in an implementation of XCrypto.
 
+- Per the above, the content of this repository is non-specific to
+  an implementation of XCrypto within any given processor core.
+  That said, the associated repository
+  [`scarv/scarv`](https://github.com/scarv/scarv)
+  specifically houses such an implementation: the SCARV processor
+  core (and associated SoC) offer an integrated implementation of
+  components from the *entire* SCARV project, XCrypto included.
+ 
 <!--- -------------------------------------------------------------------- --->
 
 ## Quickstart (with more detail in the [wiki](https://github.com/scarv/xcrypto/wiki))
@@ -128,8 +136,8 @@ Note that:
 
 ## Questions?
 
-- use the
-  [groups.io](https://groups.io)-based [discussion group](https://scarv.groups.io/g/xcrypto),
+- read the
+  [wiki](https://github.com/scarv/xcrypto/wiki),
 - raise an
   [issue](https://github.com/scarv/xcrypto/issues),
 - raise a
