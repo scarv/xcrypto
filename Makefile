@@ -37,6 +37,6 @@ opcodes:
 	cat $(REPO_HOME)/extern/riscv-opcodes/opcodes-xcrypto \
 	| python3 $(REPO_HOME)/bin/parse_opcodes.py -c > build/opcodes-xcrypto.h
 	cat $(REPO_HOME)/extern/riscv-opcodes/opcodes-xcrypto \
-	| python3 $(REPO_HOME)/extern/riscv-opcodes/parse-opcodes -verilog > build/opcodes-xcrypto.v
+	| python3 $(REPO_HOME)/extern/riscv-opcodes/parse_opcodes -verilog > build/opcodes-xcrypto.v
 
 # =============================================================================
