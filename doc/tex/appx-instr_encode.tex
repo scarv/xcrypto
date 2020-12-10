@@ -61,10 +61,6 @@
 \\
 \XCRYPTOENCODE{xc.bop}
 \XCRYPTOENCODE{xc.lut}
-\XCRYPTOENCODE{xc.xsll.i}
-\XCRYPTOENCODE{xc.xsrl.i}
-\XCRYPTOENCODE{xc.xrol.i}
-\XCRYPTOENCODE{xc.xror.i}
 \end{bytefield}
 \end{center}
 \caption{An overview of instruction encoding: class $2.3$, per \REFSEC{sec:spec:instruction:2:3}.}
@@ -135,7 +131,28 @@
 \begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
 \bitheader{0-31}            
 \\
-% TODO
+\XCRYPTOENCODE{xc.mask.b2a}
+\XCRYPTOENCODE{xc.mask.a2b}
+\XCRYPTOENCODE{xc.mask.b.mask}
+\XCRYPTOENCODE{xc.mask.b.unmask}
+\XCRYPTOENCODE{xc.mask.b.remask}
+\XCRYPTOENCODE{xc.mask.b.not}
+\XCRYPTOENCODE{xc.mask.b.and}
+\XCRYPTOENCODE{xc.mask.b.ior}
+\XCRYPTOENCODE{xc.mask.b.xor}
+\XCRYPTOENCODE{xc.mask.b.add}
+\XCRYPTOENCODE{xc.mask.b.sub}
+\XCRYPTOENCODE{xc.mask.b.slli}
+\XCRYPTOENCODE{xc.mask.b.srli}
+\XCRYPTOENCODE{xc.mask.b.rori}
+\XCRYPTOENCODE{xc.mask.a.mask}
+\XCRYPTOENCODE{xc.mask.a.unmask}
+\XCRYPTOENCODE{xc.mask.a.remask}
+\XCRYPTOENCODE{xc.mask.a.add}
+\XCRYPTOENCODE{xc.mask.a.sub}
+\XCRYPTOENCODE{xc.mask.f.sqr}
+\XCRYPTOENCODE{xc.mask.f.mul}
+\XCRYPTOENCODE{xc.mask.f.aff}
 \end{bytefield}
 \end{center}
 \caption{An overview of instruction encoding: class $2.7$, per \REFSEC{sec:spec:instruction:2:7}.}
@@ -190,48 +207,6 @@
 \end{center}
 \caption{An overview of instruction encoding: class $3.3$, per \REFSEC{sec:spec:instruction:3:3}.}
 \label{fig:instr_encode:3:3}
-\end{figure}                                                                   
-
-% =============================================================================
-
-\begin{figure}[!ht]
-\begin{center}
-\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
-\bitheader{0-31}            
-\\
-\XCRYPTOENCODE{xc.sm4sub}
-\end{bytefield}
-\end{center}
-\caption{An overview of instruction encoding: class $3.4$, per \REFSEC{sec:spec:instruction:3:4}.}
-\label{fig:instr_encode:3:4}
-\end{figure}                                                                   
-
-% =============================================================================
-
-\begin{figure}[!ht]
-\begin{center}
-\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
-\bitheader{0-31}            
-\\
-% TODO
-\end{bytefield}
-\end{center}
-\caption{An overview of instruction encoding: class $3.5$, per \REFSEC{sec:spec:instruction:3:5}.}
-\label{fig:instr_encode:3:5}
-\end{figure}                                                                   
-
-% =============================================================================
-
-\begin{figure}[!ht]
-\begin{center}
-\begin{bytefield}[bitwidth={1.2em},endianness={big}]{32}
-\bitheader{0-31}            
-\\
-% TODO
-\end{bytefield}
-\end{center}
-\caption{An overview of instruction encoding: class $3.6$, per \REFSEC{sec:spec:instruction:3:6}.}
-\label{fig:instr_encode:3:6}
 \end{figure}                                                                   
 
 % =============================================================================

@@ -1,5 +1,5 @@
 diff --git a/riscv/arith.h b/riscv/arith.h
-index b4370cb..44c9046 100644
+index b4370cb..344fb46 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
 @@ -5,6 +5,7 @@
@@ -10,21 +10,20 @@ index b4370cb..44c9046 100644
  
  inline uint64_t mulhu(uint64_t a, uint64_t b)
  {
-@@ -108,4 +109,382 @@ T sat_subu(T x, T y, bool &sat)
+@@ -108,4 +109,396 @@ T sat_subu(T x, T y, bool &sat)
    return res;
  }
  
 +// ============================================================================
-+// .h from model
 +
-+void BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
-+void BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
-+void BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             );
++extern void BoolAND( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void BoolIOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
++extern void BoolXOR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
-+void BoolSLL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
-+void BoolSRL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
-+void BoolROR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void BoolSLL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void BoolSRL( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
++extern void BoolROR( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, int i );
 +
 +// ----------------------------------------------------------------------------
 +
@@ -59,7 +58,6 @@ index b4370cb..44c9046 100644
 +extern void mask_f_aff   ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1, uint32_t y_0, uint32_t y_1 );
 +
 +// ============================================================================
-+// .c from model
 +
 +inline void  BoolNOT( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1                             ) {
 +  *r_0 =  ( x_0 );
@@ -103,15 +101,31 @@ index b4370cb..44c9046 100644
 +// ============================================================================
 +
 +inline void mask_b2a     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t x; 
++  uint32_t m   = rand(); 
 +
-+  mask_b_unmask( &x, x_0, x_1 ); mask_a_mask( r_0, r_1, x );
++  uint32_t s_0 = ( x_0     );
++  uint32_t s_1 = ( x_1     );
++  uint32_t t_0 = (       m );
++  uint32_t t_1 = (       0 );
++
++  mask_b_add( &s_0, &s_1, s_0, s_1, t_0, t_1 );
++
++  *r_0 = ( s_0 ^ s_1 );
++  *r_1 = (         m );
 +}
 +
 +inline void mask_a2b     ( uint32_t* r_0, uint32_t* r_1, uint32_t x_0, uint32_t x_1 ) {
-+  uint32_t x; 
++  uint32_t m   = rand(); 
 +
-+  mask_a_unmask( &x, x_0, x_1 ); mask_b_mask( r_0, r_1, x );
++  uint32_t s_0 = ( x_0     );
++  uint32_t s_1 = (       0 );
++  uint32_t t_0 = (       m );
++  uint32_t t_1 = ( x_1 ^ m );
++
++  mask_b_sub( &s_0, &s_1, s_0, s_1, t_0, t_1 );
++
++  *r_0 = ( s_0       );
++  *r_1 = ( s_1       );
 +}
 +  
 +inline void mask_b_mask  ( uint32_t* r_0, uint32_t* r_1, uint32_t x                 ) {
@@ -413,44 +427,55 @@ index 425a68e..6dd6b44 100644
    int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
    int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index ec16c0f..ef55839 100644
+index ec16c0f..431053d 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
-@@ -41,6 +41,33 @@
+@@ -41,6 +41,44 @@
  #define SSTATUS_UXL         0x0000000300000000
  #define SSTATUS64_SD        0x8000000000000000
  
-+#define UXCRYPTO_B1         (0xFF << 24)
-+#define UXCRYPTO_B0         (0xFF << 16)
-+#define UXCRYPTO_MEM        (0x1  << 10)
-+#define UXCRYPTO_RNG        (0x1  <<  9)
-+#define UXCRYPTO_PACK16     (0x1  <<  8)
-+#define UXCRYPTO_PACK8      (0x1  <<  7)
-+#define UXCRYPTO_PACK4      (0x1  <<  6)
-+#define UXCRYPTO_PACK2      (0x1  <<  5)
-+#define UXCRYPTO_MP         (0x1  <<  4)
-+#define UXCRYPTO_SHA3       (0x1  <<  3)
-+#define UXCRYPTO_SHA2       (0x1  <<  2)
-+#define UXCRYPTO_AES        (0x1  <<  1)
-+#define UXCRYPTO_CT         (0x1  <<  0)
++#define UXCRYPTO_RNG        (0x1  <<  0)
++#define UXCRYPTO_MEM        (0x1  <<  1)
++#define UXCRYPTO_BIT        (0x1  <<  2)
++#define UXCRYPTO_PACK2      (0x1  <<  3)
++#define UXCRYPTO_PACK4      (0x1  <<  4)
++#define UXCRYPTO_PACK8      (0x1  <<  5)
++#define UXCRYPTO_PACK16     (0x1  <<  6)
++#define UXCRYPTO_MP         (0x1  <<  7)
++#define UXCRYPTO_LEAK       (0x1  <<  8)
++#define UXCRYPTO_MASK       (0x1  <<  9)
++#define UXCRYPTO_AES        (0x1  << 10)
++#define UXCRYPTO_SHA2       (0x1  << 11)
++#define UXCRYPTO_SHA3       (0x1  << 12)
 +
-+#define UXCRYPTO_WMASK      (UXCRYPTO_B1     | UXCRYPTO_B0   | UXCRYPTO_CT)
-+#define UXCRYPTO_INIT       (UXCRYPTO_MEM    | \
-+                             UXCRYPTO_RNG    | \
-+                             UXCRYPTO_PACK16 | \
-+                             UXCRYPTO_PACK8  | \
-+                             UXCRYPTO_PACK4  | \
++#define UXCRYPTO_WMASK      (0xFFFFE000)
++#define UXCRYPTO_INIT       (UXCRYPTO_RNG    | \
++                             UXCRYPTO_MEM    | \
++                             UXCRYPTO_BIT    | \
 +                             UXCRYPTO_PACK2  | \
++                             UXCRYPTO_PACK4  | \
++                             UXCRYPTO_PACK8  | \
++                             UXCRYPTO_PACK16 | \
 +                             UXCRYPTO_MP     | \
-+                             UXCRYPTO_SHA3   | \
++                             UXCRYPTO_LEAK   | \
++                             UXCRYPTO_MASK   | \
++                             UXCRYPTO_AES    | \
 +                             UXCRYPTO_SHA2   | \
-+                             UXCRYPTO_AES    )
++                             UXCRYPTO_SHA3)
 +
++#define UBOP_0              (0xFF <<  0)
++#define UBOP_1              (0xFF <<  8)
++
++#define UBOP_WMASK          (0xFFFF0000)
++#define UBOP_INIT           (0x00000000)
++
++#define UFENL_WMASK         (0x00000000)
++#define UFENL_INIT          (0x00000000)
 +
  #define USTATUS_UIE         0x00000001
  #define USTATUS_UPIE        0x00000010
  
-@@ -621,6 +648,168 @@
+@@ -621,6 +659,167 @@
  #define MASK_PACKUW  0xfe00707f
  #define MATCH_BFPW 0x4800703b
  #define MASK_BFPW  0xfe00707f
@@ -478,24 +503,20 @@ index ec16c0f..ef55839 100644
 +#define MASK_XC_STR_W 0x6007fff
 +#define MATCH_XC_STR_D 0x41a3
 +#define MASK_XC_STR_D 0x6007fff
-+#define MATCH_XC_MMUL_3 0x4004023
-+#define MASK_XC_MMUL_3 0x60070ff
-+#define MATCH_XC_MACC_1 0x40040a3
-+#define MASK_XC_MACC_1 0x60070ff
-+#define MATCH_XC_MADD_3 0x6004023
-+#define MASK_XC_MADD_3 0x60070ff
-+#define MATCH_XC_MSUB_3 0x60050a3
-+#define MASK_XC_MSUB_3 0x60070ff
-+#define MATCH_XC_MROR 0x5023
-+#define MASK_XC_MROR 0x60070ff
-+#define MATCH_XC_LKGFENCE 0x308073
-+#define MASK_XC_LKGFENCE 0xffffffff
 +#define MATCH_XC_RNGTEST 0x300073
 +#define MASK_XC_RNGTEST 0xfffff07f
 +#define MATCH_XC_RNGSAMP 0x500073
 +#define MASK_XC_RNGSAMP 0xfffff07f
 +#define MATCH_XC_RNGSEED 0x700073
 +#define MASK_XC_RNGSEED 0xfff07fff
++#define MATCH_XC_SCATTER_B 0x4223
++#define MASK_XC_SCATTER_B 0x6007fff
++#define MATCH_XC_SCATTER_H 0x42a3
++#define MASK_XC_SCATTER_H 0x6007fff
++#define MATCH_XC_GATHER_B 0x34006013
++#define MASK_XC_GATHER_B 0xfe00707f
++#define MATCH_XC_GATHER_H 0x36006013
++#define MASK_XC_GATHER_H 0xfe00707f
 +#define MATCH_XC_LUT 0x62006033
 +#define MASK_XC_LUT 0xfe00707f
 +#define MATCH_XC_BOP 0x64006033
@@ -524,53 +545,18 @@ index ec16c0f..ef55839 100644
 +#define MASK_XC_PCLMUL_L 0x3e00707f
 +#define MATCH_XC_PCLMUL_H 0x12000033
 +#define MASK_XC_PCLMUL_H 0x3e00707f
-+#define MATCH_XC_SCATTER_B 0x4223
-+#define MASK_XC_SCATTER_B 0x6007fff
-+#define MATCH_XC_SCATTER_H 0x42a3
-+#define MASK_XC_SCATTER_H 0x6007fff
-+#define MATCH_XC_GATHER_B 0x34006013
-+#define MASK_XC_GATHER_B 0xfe00707f
-+#define MATCH_XC_GATHER_H 0x36006013
-+#define MASK_XC_GATHER_H 0xfe00707f
-+#define MATCH_XC_AESSUB_ENC 0x1a007003
-+#define MASK_XC_AESSUB_ENC 0xfe00707f
-+#define MATCH_XC_AESSUB_ENCROT 0x1c007003
-+#define MASK_XC_AESSUB_ENCROT 0xfe00707f
-+#define MATCH_XC_AESSUB_DEC 0x1e007003
-+#define MASK_XC_AESSUB_DEC 0xfe00707f
-+#define MATCH_XC_AESSUB_DECROT 0x20007003
-+#define MASK_XC_AESSUB_DECROT 0xfe00707f
-+#define MATCH_XC_AESMIX_ENC 0x22007003
-+#define MASK_XC_AESMIX_ENC 0xfe00707f
-+#define MATCH_XC_AESMIX_DEC 0x24007003
-+#define MASK_XC_AESMIX_DEC 0xfe00707f
-+#define MATCH_XC_SHA3_XY 0x10007003
-+#define MASK_XC_SHA3_XY 0x3e00707f
-+#define MATCH_XC_SHA3_X1 0x12007003
-+#define MASK_XC_SHA3_X1 0x3e00707f
-+#define MATCH_XC_SHA3_X2 0x14007003
-+#define MASK_XC_SHA3_X2 0x3e00707f
-+#define MATCH_XC_SHA3_X4 0x16007003
-+#define MASK_XC_SHA3_X4 0x3e00707f
-+#define MATCH_XC_SHA3_YX 0x18007003
-+#define MASK_XC_SHA3_YX 0x3e00707f
-+#define MATCH_XC_SHA256_S0 0xe007003
-+#define MASK_XC_SHA256_S0 0xfff0707f
-+#define MATCH_XC_SHA256_S1 0xe107003
-+#define MASK_XC_SHA256_S1 0xfff0707f
-+#define MATCH_XC_SHA256_S2 0xe207003
-+#define MASK_XC_SHA256_S2 0xfff0707f
-+#define MATCH_XC_SHA256_S3 0xe307003
-+#define MASK_XC_SHA256_S3 0xfff0707f
-+#define MATCH_XC_SHA512_S0 0xe407003
-+#define MASK_XC_SHA512_S0 0xfff0707f
-+#define MATCH_XC_SHA512_S1 0xe507003
-+#define MASK_XC_SHA512_S1 0xfff0707f
-+#define MATCH_XC_SHA512_S2 0xe607003
-+#define MASK_XC_SHA512_S2 0xfff0707f
-+#define MATCH_XC_SHA512_S3 0xe707003
-+#define MASK_XC_SHA512_S3 0xfff0707f
-+
++#define MATCH_XC_MMUL_3 0x4004023
++#define MASK_XC_MMUL_3 0x60070ff
++#define MATCH_XC_MACC_1 0x40040a3
++#define MASK_XC_MACC_1 0x60070ff
++#define MATCH_XC_MADD_3 0x6004023
++#define MASK_XC_MADD_3 0x60070ff
++#define MATCH_XC_MSUB_3 0x60050a3
++#define MASK_XC_MSUB_3 0x60070ff
++#define MATCH_XC_MROR 0x5023
++#define MASK_XC_MROR 0x60070ff
++#define MATCH_XC_FENL 0x308073
++#define MASK_XC_FENL 0xffffffff
 +#define MATCH_MASK_B2A 0x5b
 +#define MASK_MASK_B2A  0xfff0f0ff
 +#define MATCH_MASK_A2B 0x805b
@@ -615,19 +601,59 @@ index ec16c0f..ef55839 100644
 +#define MASK_MASK_F_AFF  0xfe10f0ff
 +#define MATCH_MASK_F_SQR 0xf000205b
 +#define MASK_MASK_F_SQR  0xfff0f0ff
++#define MATCH_XC_AESSUB_ENC 0x1a007003
++#define MASK_XC_AESSUB_ENC 0xfe00707f
++#define MATCH_XC_AESSUB_ENCROT 0x1c007003
++#define MASK_XC_AESSUB_ENCROT 0xfe00707f
++#define MATCH_XC_AESSUB_DEC 0x1e007003
++#define MASK_XC_AESSUB_DEC 0xfe00707f
++#define MATCH_XC_AESSUB_DECROT 0x20007003
++#define MASK_XC_AESSUB_DECROT 0xfe00707f
++#define MATCH_XC_AESMIX_ENC 0x22007003
++#define MASK_XC_AESMIX_ENC 0xfe00707f
++#define MATCH_XC_AESMIX_DEC 0x24007003
++#define MASK_XC_AESMIX_DEC 0xfe00707f
++#define MATCH_XC_SHA256_S0 0xe007003
++#define MASK_XC_SHA256_S0 0xfff0707f
++#define MATCH_XC_SHA256_S1 0xe107003
++#define MASK_XC_SHA256_S1 0xfff0707f
++#define MATCH_XC_SHA256_S2 0xe207003
++#define MASK_XC_SHA256_S2 0xfff0707f
++#define MATCH_XC_SHA256_S3 0xe307003
++#define MASK_XC_SHA256_S3 0xfff0707f
++#define MATCH_XC_SHA512_S0 0xe407003
++#define MASK_XC_SHA512_S0 0xfff0707f
++#define MATCH_XC_SHA512_S1 0xe507003
++#define MASK_XC_SHA512_S1 0xfff0707f
++#define MATCH_XC_SHA512_S2 0xe607003
++#define MASK_XC_SHA512_S2 0xfff0707f
++#define MATCH_XC_SHA512_S3 0xe707003
++#define MASK_XC_SHA512_S3 0xfff0707f
++#define MATCH_XC_SHA3_XY 0x10007003
++#define MASK_XC_SHA3_XY 0x3e00707f
++#define MATCH_XC_SHA3_X1 0x12007003
++#define MASK_XC_SHA3_X1 0x3e00707f
++#define MATCH_XC_SHA3_X2 0x14007003
++#define MASK_XC_SHA3_X2 0x3e00707f
++#define MATCH_XC_SHA3_X4 0x16007003
++#define MASK_XC_SHA3_X4 0x3e00707f
++#define MATCH_XC_SHA3_YX 0x18007003
++#define MASK_XC_SHA3_YX 0x3e00707f
 +
  #define MATCH_AMOADD_W 0x202f
  #define MASK_AMOADD_W  0xf800707f
  #define MATCH_AMOXOR_W 0x2000202f
-@@ -1880,6 +2069,7 @@
+@@ -1880,6 +2079,9 @@
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
 +#define CSR_UXCRYPTO 0x800
++#define CSR_UBOP 0x801
++#define CSR_UFENL 0x802
  #define CSR_USTATUS 0x0
  #define CSR_UIE 0x4
  #define CSR_UTVEC 0x5
-@@ -2165,6 +2355,86 @@
+@@ -2165,6 +2367,87 @@
  #define CAUSE_STORE_PAGE_FAULT 0xf
  #endif
  #ifdef DECLARE_INSN
@@ -643,14 +669,13 @@ index ec16c0f..ef55839 100644
 +DECLARE_INSN(xc_str_h, MATCH_XC_STR_H, MASK_XC_STR_H)
 +DECLARE_INSN(xc_str_w, MATCH_XC_STR_W, MASK_XC_STR_W)
 +DECLARE_INSN(xc_str_d, MATCH_XC_STR_D, MASK_XC_STR_D)
-+DECLARE_INSN(xc_mmul_3, MATCH_XC_MMUL_3, MASK_XC_MMUL_3)
-+DECLARE_INSN(xc_macc_1, MATCH_XC_MACC_1, MASK_XC_MACC_1)
-+DECLARE_INSN(xc_madd_3, MATCH_XC_MADD_3, MASK_XC_MADD_3)
-+DECLARE_INSN(xc_msub_3, MATCH_XC_MSUB_3, MASK_XC_MSUB_3)
-+DECLARE_INSN(xc_mror, MATCH_XC_MROR, MASK_XC_MROR)
 +DECLARE_INSN(xc_rngtest, MATCH_XC_RNGTEST, MASK_XC_RNGTEST)
 +DECLARE_INSN(xc_rngsamp, MATCH_XC_RNGSAMP, MASK_XC_RNGSAMP)
 +DECLARE_INSN(xc_rngseed, MATCH_XC_RNGSEED, MASK_XC_RNGSEED)
++DECLARE_INSN(xc_scatter_b, MATCH_XC_SCATTER_B, MASK_XC_SCATTER_B)
++DECLARE_INSN(xc_scatter_h, MATCH_XC_SCATTER_H, MASK_XC_SCATTER_H)
++DECLARE_INSN(xc_gather_b, MATCH_XC_GATHER_B, MASK_XC_GATHER_B)
++DECLARE_INSN(xc_gather_h, MATCH_XC_GATHER_H, MASK_XC_GATHER_H)
 +DECLARE_INSN(xc_lut, MATCH_XC_LUT, MASK_XC_LUT)
 +DECLARE_INSN(xc_bop, MATCH_XC_BOP, MASK_XC_BOP)
 +DECLARE_INSN(xc_padd, MATCH_XC_PADD, MASK_XC_PADD)
@@ -665,29 +690,12 @@ index ec16c0f..ef55839 100644
 +DECLARE_INSN(xc_pmul_h, MATCH_XC_PMUL_H, MASK_XC_PMUL_H)
 +DECLARE_INSN(xc_pclmul_l, MATCH_XC_PCLMUL_L, MASK_XC_PCLMUL_L)
 +DECLARE_INSN(xc_pclmul_h, MATCH_XC_PCLMUL_H, MASK_XC_PCLMUL_H)
-+DECLARE_INSN(xc_scatter_b, MATCH_XC_SCATTER_B, MASK_XC_SCATTER_B)
-+DECLARE_INSN(xc_scatter_h, MATCH_XC_SCATTER_H, MASK_XC_SCATTER_H)
-+DECLARE_INSN(xc_gather_b, MATCH_XC_GATHER_B, MASK_XC_GATHER_B)
-+DECLARE_INSN(xc_gather_h, MATCH_XC_GATHER_H, MASK_XC_GATHER_H)
-+DECLARE_INSN(xc_aessub_enc, MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC)
-+DECLARE_INSN(xc_aessub_encrot, MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT)
-+DECLARE_INSN(xc_aessub_dec, MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC)
-+DECLARE_INSN(xc_aessub_decrot, MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT)
-+DECLARE_INSN(xc_aesmix_enc, MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC)
-+DECLARE_INSN(xc_aesmix_dec, MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC)
-+DECLARE_INSN(xc_sha3_xy, MATCH_XC_SHA3_XY, MASK_XC_SHA3_XY)
-+DECLARE_INSN(xc_sha3_x1, MATCH_XC_SHA3_X1, MASK_XC_SHA3_X1)
-+DECLARE_INSN(xc_sha3_x2, MATCH_XC_SHA3_X2, MASK_XC_SHA3_X2)
-+DECLARE_INSN(xc_sha3_x4, MATCH_XC_SHA3_X4, MASK_XC_SHA3_X4)
-+DECLARE_INSN(xc_sha3_yx, MATCH_XC_SHA3_YX, MASK_XC_SHA3_YX)
-+DECLARE_INSN(xc_sha256_s0, MATCH_XC_SHA256_S0, MASK_XC_SHA256_S0)
-+DECLARE_INSN(xc_sha256_s1, MATCH_XC_SHA256_S1, MASK_XC_SHA256_S1)
-+DECLARE_INSN(xc_sha256_s2, MATCH_XC_SHA256_S2, MASK_XC_SHA256_S2)
-+DECLARE_INSN(xc_sha256_s3, MATCH_XC_SHA256_S3, MASK_XC_SHA256_S3)
-+DECLARE_INSN(xc_sha512_s0, MATCH_XC_SHA512_S0, MASK_XC_SHA512_S0)
-+DECLARE_INSN(xc_sha512_s1, MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1)
-+DECLARE_INSN(xc_sha512_s2, MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2)
-+DECLARE_INSN(xc_sha512_s3, MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3)
++DECLARE_INSN(xc_mmul_3, MATCH_XC_MMUL_3, MASK_XC_MMUL_3)
++DECLARE_INSN(xc_macc_1, MATCH_XC_MACC_1, MASK_XC_MACC_1)
++DECLARE_INSN(xc_madd_3, MATCH_XC_MADD_3, MASK_XC_MADD_3)
++DECLARE_INSN(xc_msub_3, MATCH_XC_MSUB_3, MASK_XC_MSUB_3)
++DECLARE_INSN(xc_mror, MATCH_XC_MROR, MASK_XC_MROR)
++DECLARE_INSN(xc_fenl, MATCH_XC_FENL, MASK_XC_FENL)
 +DECLARE_INSN(mask_b2a, MATCH_MASK_B2A, MASK_MASK_B2A)
 +DECLARE_INSN(mask_a2b, MATCH_MASK_A2B, MASK_MASK_A2B)
 +DECLARE_INSN(mask_b_mask, MATCH_MASK_B_MASK, MASK_MASK_B_MASK)
@@ -710,15 +718,36 @@ index ec16c0f..ef55839 100644
 +DECLARE_INSN(mask_f_sqr, MATCH_MASK_F_SQR, MASK_MASK_F_SQR)
 +DECLARE_INSN(mask_f_mul, MATCH_MASK_F_MUL, MASK_MASK_F_MUL)
 +DECLARE_INSN(mask_f_aff, MATCH_MASK_F_AFF, MASK_MASK_F_AFF)
++DECLARE_INSN(xc_aessub_enc, MATCH_XC_AESSUB_ENC, MASK_XC_AESSUB_ENC)
++DECLARE_INSN(xc_aessub_encrot, MATCH_XC_AESSUB_ENCROT, MASK_XC_AESSUB_ENCROT)
++DECLARE_INSN(xc_aessub_dec, MATCH_XC_AESSUB_DEC, MASK_XC_AESSUB_DEC)
++DECLARE_INSN(xc_aessub_decrot, MATCH_XC_AESSUB_DECROT, MASK_XC_AESSUB_DECROT)
++DECLARE_INSN(xc_aesmix_enc, MATCH_XC_AESMIX_ENC, MASK_XC_AESMIX_ENC)
++DECLARE_INSN(xc_aesmix_dec, MATCH_XC_AESMIX_DEC, MASK_XC_AESMIX_DEC)
++DECLARE_INSN(xc_sha256_s0, MATCH_XC_SHA256_S0, MASK_XC_SHA256_S0)
++DECLARE_INSN(xc_sha256_s1, MATCH_XC_SHA256_S1, MASK_XC_SHA256_S1)
++DECLARE_INSN(xc_sha256_s2, MATCH_XC_SHA256_S2, MASK_XC_SHA256_S2)
++DECLARE_INSN(xc_sha256_s3, MATCH_XC_SHA256_S3, MASK_XC_SHA256_S3)
++DECLARE_INSN(xc_sha512_s0, MATCH_XC_SHA512_S0, MASK_XC_SHA512_S0)
++DECLARE_INSN(xc_sha512_s1, MATCH_XC_SHA512_S1, MASK_XC_SHA512_S1)
++DECLARE_INSN(xc_sha512_s2, MATCH_XC_SHA512_S2, MASK_XC_SHA512_S2)
++DECLARE_INSN(xc_sha512_s3, MATCH_XC_SHA512_S3, MASK_XC_SHA512_S3)
++DECLARE_INSN(xc_sha3_xy, MATCH_XC_SHA3_XY, MASK_XC_SHA3_XY)
++DECLARE_INSN(xc_sha3_x1, MATCH_XC_SHA3_X1, MASK_XC_SHA3_X1)
++DECLARE_INSN(xc_sha3_x2, MATCH_XC_SHA3_X2, MASK_XC_SHA3_X2)
++DECLARE_INSN(xc_sha3_x4, MATCH_XC_SHA3_X4, MASK_XC_SHA3_X4)
++DECLARE_INSN(xc_sha3_yx, MATCH_XC_SHA3_YX, MASK_XC_SHA3_YX)
 +
  DECLARE_INSN(slli_rv32, MATCH_SLLI_RV32, MASK_SLLI_RV32)
  DECLARE_INSN(srli_rv32, MATCH_SRLI_RV32, MASK_SRLI_RV32)
  DECLARE_INSN(srai_rv32, MATCH_SRAI_RV32, MASK_SRAI_RV32)
-@@ -2991,6 +3261,7 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
+@@ -2991,6 +3274,9 @@ DECLARE_INSN(vmvnfr_v, MATCH_VMVNFR_V, MASK_VMVNFR_V)
  DECLARE_CSR(fflags, CSR_FFLAGS)
  DECLARE_CSR(frm, CSR_FRM)
  DECLARE_CSR(fcsr, CSR_FCSR)
 +DECLARE_CSR(uxcrypto, CSR_UXCRYPTO)
++DECLARE_CSR(ubop, CSR_UBOP)
++DECLARE_CSR(ufenl, CSR_UFENL)
  DECLARE_CSR(ustatus, CSR_USTATUS)
  DECLARE_CSR(uie, CSR_UIE)
  DECLARE_CSR(utvec, CSR_UTVEC)
@@ -1306,15 +1335,15 @@ index 0000000..eb3dc66
 +
 diff --git a/riscv/insns/xc_bop.h b/riscv/insns/xc_bop.h
 new file mode 100644
-index 0000000..d308b36
+index 0000000..0d131ad
 --- /dev/null
 +++ b/riscv/insns/xc_bop.h
 @@ -0,0 +1,25 @@
 +
-+uint32_t    uxcrypto_csr = p -> get_csr(CSR_UXCRYPTO);
++uint32_t    ubop_csr = p -> get_csr(CSR_UXCRYPTO);
 +
-+uint32_t    lut = insn.xc_l() ? (uxcrypto_csr >> 24) & 0xFF :
-+                                (uxcrypto_csr >> 16) & 0xFF ;
++uint32_t    lut = insn.xc_l() ? (ubop_csr >> 8) & 0xFF :
++                                (ubop_csr >> 0) & 0xFF ;
 +
 +uint32_t    r2  = RD ;
 +uint32_t    r1  = RS1;
@@ -1335,6 +1364,9 @@ index 0000000..d308b36
 +}
 +
 +WRITE_RD(wdata);
+diff --git a/riscv/insns/xc_fenl.h b/riscv/insns/xc_fenl.h
+new file mode 100644
+index 0000000..e69de29
 diff --git a/riscv/insns/xc_gather_b.h b/riscv/insns/xc_gather_b.h
 new file mode 100644
 index 0000000..9c13790
@@ -2588,50 +2620,60 @@ index 0000000..c5141dc
 +MMU.store_uint32(RS1 + (RS2 << 2), RS3);
 +
 diff --git a/riscv/processor.cc b/riscv/processor.cc
-index 4f42cc5..da18f4b 100644
+index 4f42cc5..9d6b841 100644
 --- a/riscv/processor.cc
 +++ b/riscv/processor.cc
-@@ -921,6 +921,11 @@ void processor_t::set_csr(int which, reg_t val)
+@@ -921,6 +921,16 @@ void processor_t::set_csr(int which, reg_t val)
        dirty_vs_state;
        VU.vxrm = val & 0x3ul;
        break;
 +    case CSR_UXCRYPTO:
-+      // if(!supports_extension('crypto')) break;
 +      state.uxcrypto = (state.uxcrypto & ~UXCRYPTO_WMASK) |
 +                       (val            &  UXCRYPTO_WMASK) ;
++    case CSR_UBOP:
++      state.ubop     = (state.ubop     &     ~UBOP_WMASK) |
++                       (val            &      UBOP_WMASK) ;
++    case CSR_UFENL:
++      state.ufenl    = (state.ufenl    &    ~UFENL_WMASK) |
++                       (val            &     UFENL_WMASK) ;
 +      break;
    }
  }
  
-@@ -1145,6 +1150,9 @@ reg_t processor_t::get_csr(int which)
+@@ -1145,6 +1155,12 @@ reg_t processor_t::get_csr(int which)
        if (!supports_extension('V'))
          break;
        return VU.vlenb;
 +    case CSR_UXCRYPTO:
-+      // if(!supports_extension('crypto')) break;
 +      return state.uxcrypto;
++    case CSR_UBOP:
++      return state.ubop;
++    case CSR_UFENL:
++      return state.ufenl;
    }
    throw trap_illegal_instruction(0);
  }
 diff --git a/riscv/processor.h b/riscv/processor.h
-index 676a52d..cc8e77f 100644
+index 676a52d..63025f1 100644
 --- a/riscv/processor.h
 +++ b/riscv/processor.h
-@@ -185,6 +185,9 @@ struct state_t
+@@ -185,6 +185,11 @@ struct state_t
    reg_t satp;
    reg_t scause;
  
-+  // XCrypto CSR
++  // XCrypto CSRs
 +  reg_t uxcrypto;
++  reg_t ubop;
++  reg_t ufenl;
 +
    reg_t dpc;
    reg_t dscratch0, dscratch1;
    dcsr_t dcsr;
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index f1fa5b3..c7e4a4a 100644
+index f1fa5b3..b4d4603 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -822,6 +822,85 @@ riscv_insn_priv = \
+@@ -822,6 +822,86 @@ riscv_insn_priv = \
  	sret \
  	wfi \
  
@@ -2647,14 +2689,13 @@ index f1fa5b3..c7e4a4a 100644
 +    xc_str_h\
 +    xc_str_w\
 +    xc_str_d\
-+    xc_mmul_3\
-+    xc_macc_1\
-+    xc_madd_3\
-+    xc_msub_3\
-+    xc_mror\
 +    xc_rngtest\
 +    xc_rngsamp\
 +    xc_rngseed\
++    xc_scatter_b\
++    xc_scatter_h\
++    xc_gather_b\
++    xc_gather_h\
 +    xc_lut\
 +    xc_bop\
 +    xc_padd\
@@ -2669,29 +2710,12 @@ index f1fa5b3..c7e4a4a 100644
 +    xc_pmul_h\
 +    xc_pclmul_l\
 +    xc_pclmul_h\
-+    xc_scatter_b\
-+    xc_scatter_h\
-+    xc_gather_b\
-+    xc_gather_h\
-+    xc_aessub_enc\
-+    xc_aessub_encrot\
-+    xc_aessub_dec\
-+    xc_aessub_decrot\
-+    xc_aesmix_enc\
-+    xc_aesmix_dec\
-+    xc_sha3_xy\
-+    xc_sha3_x1\
-+    xc_sha3_x2\
-+    xc_sha3_x4\
-+    xc_sha3_yx\
-+    xc_sha256_s0\
-+    xc_sha256_s1\
-+    xc_sha256_s2\
-+    xc_sha256_s3\
-+    xc_sha512_s0\
-+    xc_sha512_s1\
-+    xc_sha512_s2\
-+    xc_sha512_s3\
++    xc_mmul_3\
++    xc_macc_1\
++    xc_madd_3\
++    xc_msub_3\
++    xc_mror\
++    xc_fenl\
 +    mask_b2a\
 +    mask_a2b\
 +    mask_b_mask\
@@ -2713,11 +2737,30 @@ index f1fa5b3..c7e4a4a 100644
 +    mask_a_sub\
 +    mask_f_sqr\
 +    mask_f_mul\
-+    mask_f_aff
++    mask_f_aff\
++    xc_aessub_enc\
++    xc_aessub_encrot\
++    xc_aessub_dec\
++    xc_aessub_decrot\
++    xc_aesmix_enc\
++    xc_aesmix_dec\
++    xc_sha256_s0\
++    xc_sha256_s1\
++    xc_sha256_s2\
++    xc_sha256_s3\
++    xc_sha512_s0\
++    xc_sha512_s1\
++    xc_sha512_s2\
++    xc_sha512_s3\
++    xc_sha3_xy\
++    xc_sha3_x1\
++    xc_sha3_x2\
++    xc_sha3_x4\
++    xc_sha3_yx
  
  riscv_insn_list = \
  	$(riscv_insn_ext_a) \
-@@ -834,6 +913,7 @@ riscv_insn_list = \
+@@ -834,6 +914,7 @@ riscv_insn_list = \
  	$(riscv_insn_ext_b) \
  	$(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
  	$(riscv_insn_priv) \
