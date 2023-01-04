@@ -51,6 +51,17 @@ output wire         ready             // Outputs ready.
 
 );
 
+wire fsm_init;
+wire fsm_mdr;
+wire fsm_msub_1;
+wire fsm_macc_1;
+wire fsm_mmul_1;
+wire fsm_mmul_2;
+wire fsm_mmul_3;
+wire fsm_done;
+
+wire ld_mdr;
+wire ld_long;
 
 //
 // Submodule interface wires
@@ -145,14 +156,14 @@ localparam FSM_MMUL_2   = 8'b00100000;
 localparam FSM_MMUL_3   = 8'b01000000;
 localparam FSM_DONE     = 8'b10000000;
 
-wire fsm_init   = fsm[0];
-wire fsm_mdr    = fsm[1];
-wire fsm_msub_1 = fsm[2];
-wire fsm_macc_1 = fsm[3];
-wire fsm_mmul_1 = fsm[4];
-wire fsm_mmul_2 = fsm[5];
-wire fsm_mmul_3 = fsm[6];
-wire fsm_done   = fsm[7];
+assign fsm_init   = fsm[0];
+assign fsm_mdr    = fsm[1];
+assign fsm_msub_1 = fsm[2];
+assign fsm_macc_1 = fsm[3];
+assign fsm_mmul_1 = fsm[4];
+assign fsm_mmul_2 = fsm[5];
+assign fsm_mmul_3 = fsm[6];
+assign fsm_done   = fsm[7];
 
 always @(*) begin 
     
@@ -226,8 +237,8 @@ reg  [63:0] acc         ; // Accumulator
 
 // Route outputs of MDR instruction into registers. Can happen even if
 // there isn't an MDR instruction executing, as in the case of xc.mmul.
-wire        ld_mdr   = insn_mdr  ||  ((fsm_init||fsm_mmul_1) && uop_mmul);
-wire        ld_long  = insn_long && !((fsm_init||fsm_mmul_1) && uop_mmul);
+assign ld_mdr   = insn_mdr  ||  ((fsm_init||fsm_mmul_1) && uop_mmul);
+assign ld_long  = insn_long && !((fsm_init||fsm_mmul_1) && uop_mmul);
 
 wire [63:0] n_acc    = {64{ld_mdr   }} &  mdr_n_acc  |
                        {64{ld_long  }} & long_n_acc  ;

@@ -32,13 +32,13 @@ output wire         ready
 
 reg         div_run     ;
 
+wire        div_finished= (div_run && count == 32);
 assign      ready       = div_finished;
 
 wire        signed_lhs  = (op_signed) && rs1[31];
 wire        signed_rhs  = (op_signed) && rs2[31];
 
 wire        div_start   = valid     && !div_run;
-wire        div_finished= (div_run && count == 32);
 
 wire [31:0] qmask       = (32'b1<<31  ) >> count  ;
 
