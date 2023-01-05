@@ -24,6 +24,8 @@ output wire [31:0] result  //
 // Single cycle implementation (set) or 4-cycle implementation (clear).
 parameter FAST = 1'b1;
 
+wire [7:0] step_out;
+
 //
 // Multiply by 2 in GF(2^8) modulo 8'h1b
 function [7:0] xtime2;
@@ -181,7 +183,7 @@ wire [7:0] dec_byte     = dec_0_out ^ dec_1_out ^ dec_2_out ^ dec_3_out;
 //
 // Result collection
 
-wire [7:0] step_out     = enc ? enc_byte : dec_byte;
+assign step_out         = enc ? enc_byte : dec_byte;
 
 assign     result_enc       = {b_3, b_2, b_1, b_0};
 assign     result_dec       = {b_3, b_2, b_1, b_0};
